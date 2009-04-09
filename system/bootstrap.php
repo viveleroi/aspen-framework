@@ -273,8 +273,7 @@ class Bootstrap extends Base {
 		}
 
 		// update app version
-		$version = $this->config('application_version');
-		define('VERSION', $version);
+		define('VERSION', $this->formatVersionNumber($this->config('application_version')));
 
 		// set monetary locale
 		setlocale(LC_MONETARY, $this->config('currency_locale'));
@@ -1174,21 +1173,17 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	public function formatVersionNumber($build){
-		
-		// ensure it's familiar by stripping non-numeric chars, except . and -
-		$build = preg_replace('/[^0-9\.]/', '', str_replace(array('-', '_'), '.', $build));
-		
-		// turn it into an array
+
+		$build = str_replace(array('-', '_'), '.', $build);
 		$build = explode('.', $build);
 		
-		// remove any empty values
 		$version = array();
-		foreach($build as $vers){
-			if(strlen($vers) > 0){
-				$version[] = (int)$vers;
+		foreach($build as $key => $inc){
+			if(!preg_match('/[a-zA-Z]/', $inc) && strlen($inc) > 0){
+				$version[] = (int)$inc;
 			}
 		}
-		
+
 		return implode('.', $version);
 		
 	}
