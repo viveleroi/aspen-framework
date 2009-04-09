@@ -322,7 +322,7 @@ class Install {
 	 * @access private
 	 */
 	private function recordCurrentBuild(){
-		$this->APP->model->executeInsert('upgrade_history', array('current_build' => $this->APP->config('application_build'), 'upgrade_completed' => date("Y-m-d H:i:s")));
+		$this->APP->model->executeInsert('upgrade_history', array('current_build' => $this->APP->formatVersionNumber($this->APP->config('application_version')), 'upgrade_completed' => date("Y-m-d H:i:s")));
 	}
 	
 	
@@ -356,7 +356,7 @@ class Install {
 		
 		if(isset($sql) && is_array($sql)){
 			
-			$my_old_build = $this->APP->latestBuild();
+			$my_old_build = $this->APP->latestVersion();
 			
 			foreach($sql as $query_build => $queries){
 				

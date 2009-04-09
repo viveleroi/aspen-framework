@@ -273,8 +273,7 @@ class Bootstrap extends Base {
 		}
 
 		// update app version
-		$build = $this->config('application_build');
-		$version = $this->config('application_version') . (!empty($build) ? ' Build: ' . $build : '');
+		$version = $this->config('application_version');
 		define('VERSION', $version);
 
 		// set monetary locale
@@ -1098,46 +1097,109 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function awaitingUpgrade(){
-		
+		$this->setConfig('watch_pending_db_upgrade', true);
 		if($this->config('watch_pending_db_upgrade')){
 			
-			$build = (int)$this->config('application_build');
+			$build = $this->formatVersionNumber($this->config('application_version'));
+			$latest_build = $this->latestVersion();
 
-			if(!empty($build)){
-	
-				// get latest build in database
-				$latest_build = (int)$this->latestBuild();
-	
-				if($build > $latest_build){
-					$sql_path = MODULES_PATH . '/Install/sql/upgrade.sql.php';
-	
-					// include file with all upgrade queries
-					if(file_exists($sql_path)){
-						include($sql_path);
-					}
-	
-					if(isset($sql) && is_array($sql)){
-						foreach($sql as $new_build => $updates){
-							if($new_build > $latest_build){ return true; }
-						}
+			if($this->versionCompare($build, $latest_build) == 'greater'){
+				$sql_path = MODULES_PATH . '/Install/sql/upgrade.sql.php';
+
+				// include file with all upgrade queries
+				if(file_exists($sql_path)){
+					include($sql_path);
+				}
+
+				if(isset($sql) && is_array($sql)){
+					foreach($sql as $new_build => $updates){
+						if($new_build > $latest_build){ return true; }
 					}
 				}
-	
-				if($build < $latest_build){
-					$this->error->raise(1, 'Your database appears to be from a version newer than your current installation.', __FILE__, __LINE__);
-				}
+			}
+			if($this->versionCompare($build, $latest_build) == 'less'){
+				$this->error->raise(1, 'Your database appears to be from a version newer than your current installation.', __FILE__, __LINE__);
 			}
 		}
 		return false;
 	}
 
+	
+	/**
+	 * @abstract Compared two version strings for similarity
+	 * @param string $build
+	 * @param string $match
+	 * @return string
+	 * @access public
+	 */
+	public function versionCompare($build, $match){
+		
+		$diff = false;
+		
+		$build = explode('.', $build);
+		$match = explode('.', $match);
+		
+		foreach($build as $key => $inc){
+			
+			if(isset($match[$key])){
+				
+				if((int)$inc > (int)$match[$key]){
+					$diff = 'greater';
+				}
+				elseif((int)$inc < (int)$match[$key]){
+					$diff =  'less';
+				}
+				elseif((int)$inc == (int)$match[$key]){
+					$diff =  'equal';
+				} else {
+				}
+				
+				if($diff != 'equal'){
+					return $diff;
+				}
+			} else {
+				if((int)$inc > 0){
+					$diff = 'greater';
+				}
+			}
+		}
+		return $diff;
+	}
+	
+	
+	/**
+	 * @abstract formats a version number to match a 1.2.3.456 or similar type format
+	 * @param string $build
+	 * @return string
+	 * @access private
+	 */
+	public function formatVersionNumber($build){
+		
+		// ensure it's familiar by stripping non-numeric chars, except . and -
+		$build = preg_replace('/[^0-9\.]/', '', str_replace(array('-', '_'), '.', $build));
+		
+		// turn it into an array
+		$build = explode('.', $build);
+		
+		// remove any empty values
+		$version = array();
+		foreach($build as $vers){
+			if(strlen($vers) > 0){
+				$version[] = (int)$vers;
+			}
+		}
+		
+		return implode('.', $version);
+		
+	}
+	
 
 	/**
 	 * @abstract Returns the latest build number from the database
 	 * @return mixed
 	 * @access private
 	 */
-	public function latestBuild(){
+	public function latestVersion(){
 		
 		$version = '';
 
@@ -1153,7 +1215,7 @@ class Bootstrap extends Base {
 			}
 		}
 		
-		return $version;
+		return $this->formatVersionNumber($version);
 		
 	}
 }

@@ -38,9 +38,6 @@
 	// application version
 	$config['application_version'] = '';
 	
-	// application build
-	$config['application_build'] = '';
-	
 	// application url - set to false for auto-detect
 	$config['application_url'] = false;
 
@@ -374,7 +371,7 @@
 	
 /**
  * LOADING CUSTOM CLASSES
- * 
+ *
  * You may create custom classes that exist outside of the system folder.
  */
 	/*
