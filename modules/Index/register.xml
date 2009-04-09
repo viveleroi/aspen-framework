@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<package>
+
+	<type>Module</type>
+	<guid>652d519c-b7f3-11dc-8314-0800200c9a66</guid>
+	<classname>Index</classname>
+	<name>Welcome</name>
+	<description>Displays the index/welcome screen.</description>
+	<vendor>Trellis Development, LLC</vendor>
+	<pressUrl>http://www.aspen-framework.org</pressUrl>
+	<updateUrl>http://www.aspen-framework.org</updateUrl>
+
+</package>
