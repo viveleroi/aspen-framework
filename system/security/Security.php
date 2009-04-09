@@ -5,9 +5,7 @@
  * @subpackage 	System
  * @author 		Michael Botsko
  * @copyright 	2009 Trellis Development, LLC
- * @version    	$Revision: 461 $
  * @since 		1.0
- * @revision 	$Id: bootstrap.php 461 2009-04-02 04:56:02Z mbotsko $
  */
 
 /**

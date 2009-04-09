@@ -5,9 +5,7 @@
  * @subpackage 	System
  * @author 		Michael Botsko
  * @copyright 	2009 Trellis Development, LLC
- * @version    	$Revision: 479 $
  * @since 		1.0
- * @revision $Id: bootstrap.php 479 2009-04-06 22:56:43Z mbotsko $
  */
 
 // turn off the default error display
@@ -991,9 +989,10 @@ class Bootstrap extends Base {
 
 			foreach($modules_to_load as $module){
 
-				return $this->loadModule($module);
+				$this->loadModule($module);
 
 			}
+			return true;
 		}
 		return false;
 	}
