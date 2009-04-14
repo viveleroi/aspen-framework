@@ -14,42 +14,50 @@ else
 fi
 
 # remove any existing exports
-rm -rf trunk
-
-# make a branch for this release
-export SVN_EDITOR=vi
-svn copy http://svn.trellisdevelopment.com/aspen-framework/trunk http://svn.trellisdevelopment.com/aspen-framework/branches/$versname
+rm -rf aspen-framework
 
 # checkout the latest code from trunk
-svn co http://svn.trellisdevelopment.com/aspen-framework/trunk
-cd trunk
+git clone ssh://mbotsko@69.168.53.4/git/repos/aspen-framework.git
+cd aspen-framework
 
-# get the svn revision number and create a RELEASE file
-svnvers=`svnversion .`
+# make a branch for this release
+git tag -a $versname -m "tagging for release of $versname"
+git push --tags origin master
+
+# if this is a final release, then we need to branch
+if [ $2 = "final" ]; then
+	git branch $1$2
+	git push origin $1$2
+fi
+
+# get the git revision number 
+gitvers=`git describe`
 
 # add in revision to app.default.config.php
-sed -e "s/application_build'] = ''/application_build'] = '$svnvers'/g" app.default.config.php > adc-new.php
+sed -e "s/application_version'] = ''/application_version'] = '$gitvers'/g" app.default.config.php > adc-new.php
 mv adc-new.php app.default.config.php
+
+# add in revision to bootstrap define
+cd system
+sed -e "s/define('FRAMEWORK_REV', '')/define('FRAMEWORK_REV', '$gitvers')/g" bootstrap.php > bootstrap-new.php
+mv bootstrap-new.php bootstrap.php
+cd ..
 
 #remove support dirs
 rm -rf tests
 rm -rf build
 
-# remove all .svn directories
-find . -name .svn -exec rm -rf {} \;
-
-# add in revision to bootstrap define
-cd system
-sed -e "s/define('FRAMEWORK_REV', '')/define('FRAMEWORK_REV', '$svnvers')/g" bootstrap.php > bootstrap-new.php
-mv bootstrap-new.php bootstrap.php
-cd ..
+# remove all .git directories
+rm -rf .git
+rm -f .gitignore
+rm -f .DS_Store
 
 # make tarball
 tar czvf af-temp.tar.gz *
 mv af-temp.tar.gz ../aspen-$versname.tar.gz
 cd ..
 rm -rf latest
-mv trunk latest
+mv aspen-framework latest
 
 # get file size
 fsize=$(du -ks aspen-$versname.tar.gz | cut -f1)
