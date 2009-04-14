@@ -153,9 +153,9 @@ INSERT INTO `permissions` (`id`, `user_id`, `group_id`, `interface`, `module`, `
 $sql[] = "
 
 INSERT INTO `permissions` (`id`, `user_id`, `group_id`, `interface`, `module`, `method`) VALUES
-(2, 0, 2, '*', 'Index_Admin', '*'),
-(3, 0, 2, '*', 'Settings_Admin', '*'),
-(4, 0, 2, '*', 'Users_Admin', 'my_account');
+(2, 0, 2, '*', 'Index', '*'),
+(3, 0, 2, '*', 'Settings', '*'),
+(4, 0, 2, '*', 'Users', 'my_account');
 	
 ";
 
