@@ -412,9 +412,7 @@ class Bootstrap extends Base {
 			if(isset($config) && is_array($config)){
 				foreach($config as $param => $value){
 
-					if(isset($all_config[$param]) && is_array($value)){
-						$all_config[$param] = array_merge($all_config[$param], $value);
-					} else {
+					if(isset($all_config[$param])){
 						$all_config[$param] = $value;
 					}
 
@@ -541,7 +539,13 @@ class Bootstrap extends Base {
 		// compile our final array of classes to load
 		$all_classes 	= array();
 		$base_classes 	= $this->config('load_core_class');
+		$add_classes 	= $this->config('load_add_core_class');
 		$custom_classes = $this->config('custom_classes');
+		
+		// if add classes is an array, append to base
+		if(is_array($add_classes)){
+			$base_classes = array_merge($base_classes, $add_classes);
+		}
 		
 		foreach($base_classes as $class){
 			$class['root'] = SYSTEM_PATH;

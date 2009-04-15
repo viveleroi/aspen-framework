@@ -353,10 +353,10 @@
 	/*
 	 
 	// Xml encoding and output functionality
-	$config['load_core_class'][] = array('classname' => 'Xml', 'folder' => 'formats');
+	$config['load_add_core_class'][] = array('classname' => 'Xml', 'folder' => 'formats');
 
 	// RSS feed generation tool
-	$config['load_core_class'][] = array(	'classname' => 'RSSBuilder',
+	$config['load_add_core_class'][] = array(	'classname' => 'RSSBuilder',
 											'folder' => 'formats/rss',
 											'filename' => 'class.RSSBuilder.inc');
 
@@ -364,7 +364,7 @@
 	$config['load_core_class'][] = array('classname' => 'Json', 'folder' => 'formats');
 
 	// Image thumbnail generation
-	$config['load_core_class'][] = array('classname' => 'Thumbnail', 'autoload' => false);
+	$config['load_add_core_class'][] = array('classname' => 'Thumbnail', 'autoload' => false);
 
 	*/
 	
