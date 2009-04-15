@@ -20,15 +20,8 @@ rm -rf aspen-framework
 git clone ssh://mbotsko@69.168.53.4/git/repos/aspen-framework.git
 cd aspen-framework
 
-# make a branch for this release
-git tag -a $versname -m "tagging for release of $versname"
-git push --tags origin master
-
-# if this is a final release, then we need to branch
-if [ $2 = "final" ]; then
-	git branch $1$2
-	git push origin $1$2
-fi
+# checkout the proper branch
+git checkout $1$2
 
 # get the git revision number 
 gitvers=`git describe`

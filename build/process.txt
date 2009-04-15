@@ -1,0 +1,17 @@
+
+
+# The first step is to tag the current release.
+
+git tag -a <1.0.0> -m "tagging for release"
+git push --tags origin master
+
+
+# If you're simply going from 1.0.0 -> 1.0.1, no need to branch
+# Only If doing a new major release, create a new branch
+# Branch names may not be the same as a tag
+
+git branch <1.0.0final>
+git push --tags  origin <1.0.0final>
+
+
+Run release.sh on remote server
