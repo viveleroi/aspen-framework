@@ -2,7 +2,6 @@
 
 require('../system/loader.inc.php');
 
-
 require_once 'AppTest.php';
 require_once 'BootstrapTest.php';
 require_once 'CacheTest.php';
@@ -23,6 +22,7 @@ require_once 'SmlTest.php';
 require_once 'UserTest.php';
 require_once 'XmlTest.php';
 
+require_once 'Index_AdminTest.php';
 require_once 'errorLogTest.php';
 
 /**
@@ -53,7 +53,7 @@ class testsSuite extends PHPUnit_Framework_TestSuite {
 	public function __construct() {
 		
 		// load the framework
-		$this->sharedFixture = load_framework();
+		$this->sharedFixture = load_framework('Admin');
 		
 		// wipe out any tables needed for the tests
 		$this->sharedFixture->model->query("TRUNCATE `config`");
@@ -62,7 +62,6 @@ class testsSuite extends PHPUnit_Framework_TestSuite {
 		$this->setName ( 'testsSuite' );
 		
 		$this->addTestSuite ( 'AppTest' );
-		
 		$this->addTestSuite ( 'BootstrapTest' );
 		$this->addTestSuite ( 'CacheTest' );
 		$this->addTestSuite ( 'ErrorTest' );
@@ -81,7 +80,8 @@ class testsSuite extends PHPUnit_Framework_TestSuite {
 		$this->addTestSuite ( 'SmlTest' );
 		$this->addTestSuite ( 'UserTest' );
 		$this->addTestSuite ( 'XmlTest' );
-		
+
+		$this->addTestSuite( 'Index_AdminTest' );
 		$this->addTestSuite( 'errorLogTest' );
 
 	}

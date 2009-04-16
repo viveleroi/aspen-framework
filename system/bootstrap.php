@@ -558,6 +558,7 @@ class Bootstrap extends Base {
 				$all_classes[$class['classname']] = $class;
 			}
 		}
+	
 
 		// load all required modules
 		if(is_array($all_classes) && count($all_classes) > 0){

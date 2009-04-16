@@ -5,21 +5,15 @@
  * @subpackage 	System
  * @author 		Michael Botsko
  * @copyright 	2009 Trellis Development, LLC
- * @version    	$Revision: 461 $
  * @since 		1.0
- * @revision 	$Id: bootstrap.php 461 2009-04-02 04:56:02Z mbotsko $
  */
 
 /**
  * @abstract Define information required in bootstrap, application
  */
-define('LOADING_SECTION', '');
-define('INCLUDE_ONLY', true);
-
 // define our application paths
 define('SYSTEM_PATH', dirname(__FILE__));
 define('APPLICATION_PATH', str_replace(DIRECTORY_SEPARATOR . "system", '', SYSTEM_PATH));
-define('INTERFACE_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . strtolower(LOADING_SECTION));
 define('MODULES_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'modules');
 define('PLUGINS_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'plugins');
 
@@ -35,6 +29,11 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 	 * @return mixed
 	 */
 	function load_module($module = false){
+	
+		define('LOADING_SECTION', '');
+		define('INTERFACE_PATH', APPLICATION_PATH);
+		define('INCLUDE_ONLY', true);
+		
 		if($module){
 			
 			$module = ucwords(strtolower($module));
@@ -70,7 +69,11 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 	 * @abstract Returns the pure bootstrap application
 	 * @return mixed
 	 */
-	function load_framework(){
+	function load_framework($interface = false){
+	
+		define('LOADING_SECTION', ucwords($interface));
+		define('INTERFACE_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . strtolower(LOADING_SECTION));
+
 		$config = Bootstrap::loadAllConfigs();
 		return new Bootstrap($config);
 	}
