@@ -11,6 +11,8 @@
 		# Mark proper categories
 
 	# Post a quick note, linking to the blog, to the google group
+	
+	# Update bugzilla with new version, target milestone, flags
 
 
 # Push code release package
