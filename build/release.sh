@@ -21,7 +21,7 @@ git clone ssh://mbotsko@69.168.53.4/git/repos/aspen-framework.git
 cd aspen-framework
 
 # checkout the proper branch
-git checkout $1$2
+git checkout --track -b $1$2 origin/$1$2
 
 # get the git revision number 
 gitvers=`git describe`
@@ -44,6 +44,9 @@ rm -rf build
 rm -rf .git
 rm -f .gitignore
 rm -f .DS_Store
+
+# comment this out if pushing a true release
+# exit 0
 
 # make tarball
 tar czvf af-temp.tar.gz *
@@ -68,6 +71,6 @@ mv aspen-$versname.tar.gz builds/aspen-$versname.tar.gz
 
 echo "LOADED TO S3, ADDING NEW RELEASE INFO TO MySQL"
 
-mysql -uroot -pURQU9UWpVABgS9Zr3RXhIhxno -D aspen -e "INSERT INTO releases (file_name,file_size,version_number,build_number,release_type,release_timestamp) VALUES ('aspen-$versname.tar.gz','$fsize','$1 $2','$versname','$3','$(date +"%F %T")');"
+mysql -uroot -pURQU9UWpVABgS9Zr3RXhIhxno -D aspen -e "INSERT INTO releases (file_name,file_size,version_number,release_type,release_timestamp) VALUES ('aspen-$versname.tar.gz','$fsize','$versname','$3','$(date +"%F %T")');"
 
 echo "RELEASE COMPLETE"

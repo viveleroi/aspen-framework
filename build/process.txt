@@ -1,17 +1,31 @@
 
+# Prepare release material:
 
-# The first step is to tag the current release.
+	# Document important items to note for compatibility:
+		# http://docs.aspen-framework.org/wiki/Compatibility:1.0.1
+	
+	# Prepare a new blog entry describing the release:
+		# http://blog.aspen-framework.org/wp-login.php
+		
+		# Title: Aspen 1.0.1 Released
+		# Mark proper categories
 
-git tag -a <1.0.0> -m "tagging for release"
-git push --tags origin master
-
-
-# If you're simply going from 1.0.0 -> 1.0.1, no need to branch
-# Only If doing a new major release, create a new branch
-# Branch names may not be the same as a tag
-
-git branch <1.0.0final>
-git push --tags  origin <1.0.0final>
+	# Post a quick note, linking to the blog, to the google group
 
 
-Run release.sh on remote server
+# Push code release package
+
+	# The first step is to tag the current release.
+		git tag -a <1.0.0> -m "tagging for release"
+		git push --tags origin master
+
+
+	# If you're simply going from 1.0.0 -> 1.0.1, no need to branch
+	# Only If doing a new major release, create a new branch
+	# Branch names may not be the same as a tag
+		git branch <1.0.0final>
+		git push --tags origin <1.0.0final>
+
+
+	# Run aspen.sh on remote server
+		sh aspen.sh 1.0.1 final Stable
