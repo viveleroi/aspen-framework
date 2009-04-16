@@ -1,27 +1,20 @@
 <?php
 
 /**
+ * @package 	Aspen_Framework
+ * @subpackage 	Modules.Base
+ * @author 		Michael Botsko
+ * @copyright 	2009 Trellis Development, LLC
+ * @since 		1.0
+ */
+
+/**
  * @abstract Handles forms for user preferences & settings
  * @package Aspen_Framework
- * @author Michael Botsko
- * @copyright 2008 Trellis Development, LLC
+ * @uses Module
  */
-class Settings_Admin {
-	
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	private $APP;
+class Settings_Admin extends Module {
 
-
-	/**
-	 * @abstract Constructor, initializes the module
-	 * @return Settings_Admin
-	 * @access public
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
-	
 
 	/**
 	 * @abstract Displays the settings page, including change password fields, etc

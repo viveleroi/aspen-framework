@@ -332,6 +332,8 @@
 	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Scaffold');
 	
+	$config['load_core_class'][] = array('classname' => 'Module', 'autoload' => false);
+	
 	// if user auth enabled - otherwise this is no use
 	if($config['enable_authentication_support']){
 		$config['load_core_class'][] = array('classname' => 'Preferences', 'var' => 'prefs');

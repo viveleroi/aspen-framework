@@ -58,6 +58,20 @@ class testsSuite extends PHPUnit_Framework_TestSuite {
 		// wipe out any tables needed for the tests
 		$this->sharedFixture->model->query("TRUNCATE `config`");
 		$this->sharedFixture->model->query("TRUNCATE `error_log`");
+		$this->sharedFixture->model->query("TRUNCATE `companies`");
+		$this->sharedFixture->model->query("TRUNCATE `company_types`");
+		$this->sharedFixture->model->query("TRUNCATE `contacts`");
+		$this->sharedFixture->model->query("TRUNCATE `discounts`");
+		$this->sharedFixture->model->query("TRUNCATE `estimates`");
+		$this->sharedFixture->model->query("TRUNCATE `estimates_items`");
+		$this->sharedFixture->model->query("TRUNCATE `invoices`");
+		$this->sharedFixture->model->query("TRUNCATE `invoice_entries`");
+		$this->sharedFixture->model->query("TRUNCATE `notes`");
+		$this->sharedFixture->model->query("TRUNCATE `payments`");
+		$this->sharedFixture->model->query("TRUNCATE `preferences_sorts`");
+		$this->sharedFixture->model->query("TRUNCATE `projects`");
+		$this->sharedFixture->model->query("TRUNCATE `tasks`");
+		$this->sharedFixture->model->query("TRUNCATE `work_detail`");
 		
 		$this->setName ( 'testsSuite' );
 		

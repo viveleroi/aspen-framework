@@ -1,26 +1,19 @@
 <?php
 
 /**
+ * @package 	Aspen_Framework
+ * @subpackage 	Modules.Base
+ * @author 		Michael Botsko
+ * @copyright 	2009 Trellis Development, LLC
+ * @since 		1.0
+ */
+
+/**
  * @abstract Handles installtion of our application.
  * @package Aspen_Framework
- * @author Michael Botsko
- * @copyright 2008 Trellis Development, LLC
- * @uses Install
+ * @uses Module
  */
-class Install_Admin {
-
-	/**
-	 * @var object $APP Allows access to the base application
-	 * @access private
-	 */
-	private $APP;
-
-
-	/**
-	 * @abstract Constructor, initializes the module
-	 * @access public
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
+class Install_Admin extends Module {
 
 
 	/**

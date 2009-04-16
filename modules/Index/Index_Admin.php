@@ -1,26 +1,19 @@
 <?php
 
 /**
+ * @package 	Aspen_Framework
+ * @subpackage 	Modules.Base
+ * @author 		Michael Botsko
+ * @copyright 	2009 Trellis Development, LLC
+ * @since 		1.0
+ */
+
+/**
  * @abstract Displays the default dashboard/welcome screens
  * @package Aspen_Framework
- * @author Michael Botsko
- * @copyright 2008 Trellis Development, LLC
+ * @uses Module
  */
-class Index_Admin {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	private $APP;
-
-
-	/**
-	 * @abstract Constructor, initializes the module
-	 * @return Index_Admin
-	 * @access public
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
+class Index_Admin extends Module {
 
 
 	/**
