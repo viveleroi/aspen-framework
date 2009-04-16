@@ -27,6 +27,6 @@ class Module {
 	 * @access public
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
-	
+
 }
 ?>
