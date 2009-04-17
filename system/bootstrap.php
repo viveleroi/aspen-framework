@@ -1083,12 +1083,9 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	private function registryVersionMatch($min, $max){
+		$app_vers = $this->config('application_version');
 
-		$app_vers = substr(str_replace(".", '', $this->config('application_version')), 0, 3);
-		$min_vers = substr(str_replace(".", '', $min), 0, 3);
-		$max_vers = substr(str_replace(".", '', $max), 0, 3);
-
-		if((int)$app_vers >= (int)$min_vers  &&  (int)$app_vers <= (int)$max_vers){
+		if($this->versionCompare($min, $app_vers) != 'greater' && $this->versionCompare($max, $app_vers) != 'less'){
 			return true;
 		} else {
 			return false;
@@ -1138,9 +1135,9 @@ class Bootstrap extends Base {
 	public function versionCompare($build, $match){
 		
 		$diff = false;
-		
-		$build = explode('.', $build);
-		$match = explode('.', $match);
+
+		$build = explode('.', $this->formatVersionNumber($build));
+		$match = explode('.', $this->formatVersionNumber($match));
 		
 		foreach($build as $key => $inc){
 			
