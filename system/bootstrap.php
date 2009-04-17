@@ -1139,29 +1139,29 @@ class Bootstrap extends Base {
 		$build = explode('.', $this->formatVersionNumber($build));
 		$match = explode('.', $this->formatVersionNumber($match));
 		
-		foreach($build as $key => $inc){
+		// get full count so we know the largest array
+		$fullcnt = count($build) > count($match) ? count($build) : count($match);
+		
+		for($i = 0; $i <= $fullcnt; $i++){
+		
+			$build_inc = isset($build[$i]) ? $build[$i] : 0;
+			$match_inc = isset($match[$i]) ? $match[$i] : 0;
 			
-			if(isset($match[$key])){
-				
-				if((int)$inc > (int)$match[$key]){
-					$diff = 'greater';
-				}
-				elseif((int)$inc < (int)$match[$key]){
-					$diff =  'less';
-				}
-				elseif((int)$inc == (int)$match[$key]){
-					$diff =  'equal';
-				} else {
-				}
-				
-				if($diff != 'equal'){
-					return $diff;
-				}
-			} else {
-				if((int)$inc > 0){
-					$diff = 'greater';
-				}
+			if((int)$build_inc > $match_inc){
+				$diff = 'greater';
 			}
+			elseif((int)$build_inc < $match_inc){
+				$diff =  'less';
+			}
+			elseif((int)$build_inc == $match_inc){
+				$diff =  'equal';
+			} else {
+			}
+			
+			if($diff != 'equal'){
+				return $diff;
+			}
+
 		}
 		return $diff;
 	}

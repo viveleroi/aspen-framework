@@ -15,7 +15,6 @@ class BootstrapTest extends TestHelper {
 	 */
 	public function testAwaitingUpgrade() {
 		$this->assertEquals(false, $this->sharedFixture->awaitingUpgrade());
-	
 	}
 	
 	/**
@@ -196,6 +195,34 @@ class BootstrapTest extends TestHelper {
 		$this->assertEquals('phpunit', $this->sharedFixture->config('setconfigsetvalue'));
 	
 	}
+	
+	
+	/**
+	 * Tests Bootstrap->formatVersionNumber()
+	 */
+	public function testformatVersionNumber() {
+		$this->assertEquals('1.1', $this->sharedFixture->formatVersionNumber('1.1'));
+		$this->assertEquals('1.1', $this->sharedFixture->formatVersionNumber('1-1'));
+		$this->assertEquals('1.1', $this->sharedFixture->formatVersionNumber('1.1-eghma'));
+		$this->assertEquals('1', $this->sharedFixture->formatVersionNumber('abs1..1'));
+	}
+	
+	
+	/**
+	 * Tests Bootstrap->versionCompare()
+	 */
+	public function testversionCompare() {
+		$this->assertEquals('equal', $this->sharedFixture->versionCompare('1.1', '1.1'));
+		$this->assertEquals('equal', $this->sharedFixture->versionCompare('1.1.0', '1.1'));
+		$this->assertEquals('equal', $this->sharedFixture->versionCompare('1.1', '1.1.0'));
+		$this->assertEquals('equal', $this->sharedFixture->versionCompare('1.1-egha', '1.1'));
+		
+		$this->assertEquals('less', $this->sharedFixture->versionCompare('1.0.1', '1.1'));
+		$this->assertEquals('greater', $this->sharedFixture->versionCompare('10.1', '1.1'));
 
+		$this->assertEquals('less', $this->sharedFixture->versionCompare('1.0.1', '1.0.1-256'));
+		$this->assertEquals('equal', $this->sharedFixture->versionCompare('1.0.1.256.0', '1.0.1-256'));
+	}
+	
 }
 
