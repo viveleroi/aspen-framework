@@ -408,15 +408,17 @@ class Install {
 					$tmp_reg = $this->APP->moduleRegistry($guid);
 
 					if(isset($tmp_reg->classname)){
+					
 						$classname = $tmp_reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
 						$this->APP->loadModule($guid);
+						
+						// call module install process if it exists
 						if(method_exists($this->APP->{$classname}, 'install')){
-							if($this->APP->{$classname}->install($guid)){
-								$this->APP->sml->addNewMessage('The ' . $tmp_reg->classname . ' module has been installed successfully.');
-							} else {
-								$this->APP->sml->addNewMessage('There was an error installing the module. Please try again.');
-							}
+							$this->APP->{$classname}->install($guid);
 						}
+						
+						$this->APP->sml->addNewMessage('The ' . $tmp_reg->classname . ' module has been installed successfully.');
+						
 					}
 				}
 			}
@@ -440,20 +442,19 @@ class Install {
 		if(isset($tmp_reg->classname)){
 			$classname = $tmp_reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
 			$this->APP->loadModule($guid);
+			
+			// call module uninstall function if available
 			if(method_exists($this->APP->{$classname}, 'uninstall')){
-				if($this->APP->{$classname}->uninstall($guid)){
-					
-					// remove all connections from databases
-					$this->APP->model->query('DELETE FROM modules WHERE guid = "'.$guid.'"');
-					$this->APP->model->query('UPDATE modules SET autoload_with = "" WHERE autoload_with = "'.$guid.'"');
-					$this->APP->model->query('DELETE FROM permissions WHERE module = "'.$tmp_reg->classname.'"');
-					
-					$this->APP->sml->addNewMessage('The ' . $tmp_reg->classname . ' module has been uninstalled successfully.');
-					
-				} else {
-					$this->APP->sml->addNewMessage('There was an error uninstalling the module. Please try again.');
-				}
+				$this->APP->{$classname}->uninstall($guid);
 			}
+				
+			// remove all connections from databases
+			$this->APP->model->query('DELETE FROM modules WHERE guid = "'.$guid.'"');
+			$this->APP->model->query('UPDATE modules SET autoload_with = "" WHERE autoload_with = "'.$guid.'"');
+			$this->APP->model->query('DELETE FROM permissions WHERE module = "'.$tmp_reg->classname.'"');
+			
+			$this->APP->sml->addNewMessage('The ' . $tmp_reg->classname . ' module has been uninstalled successfully.');
+				
 		}
 		
 		$this->APP->router->returnToReferrer();
