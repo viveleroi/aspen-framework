@@ -18,7 +18,7 @@ class Inspekt_Cage_Session extends Inspekt_Cage {
 //
 //	var $_session_name;
 	
-	static function Factory(&$source, $conf_file = NULL, $conf_section = NULL, $strict = TRUE) {
+	static function Factory(&$source) {
 
 		if (!is_array($source)) {
 			user_error('$source '.$source.' is not an array', E_USER_NOTICE);
@@ -26,7 +26,6 @@ class Inspekt_Cage_Session extends Inspekt_Cage {
 
 		$cage = new Inspekt_Cage_Session();
 		$cage->_setSource($source);
-		$cage->_parseAndApplyAutoFilters($conf_file, $conf_section);
 		/*
 		if (ini_get('session.use_cookies') || ini_get('session.use_only_cookies') ) {
 			if (isset($_COOKIE) && isset($_COOKIE[session_name()])) {
@@ -55,3 +54,4 @@ class Inspekt_Cage_Session extends Inspekt_Cage {
 		
 	}
 }
+?>

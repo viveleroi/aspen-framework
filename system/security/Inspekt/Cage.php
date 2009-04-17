@@ -4,7 +4,7 @@
  *
  * @author Chris Shiflett <chris@shiflett.org>
  * @author Ed Finkler <coj@funkatron.com>
- *
+ * @author Michael Botsko <mbotsko@trellisdev.com>
  * @package Inspekt
  */
 
@@ -13,10 +13,9 @@
  */
 require_once 'Inspekt.php';
 
-
 define ('ISPK_ARRAY_PATH_SEPARATOR', '/');
-
 define ('ISPK_RECURSION_MAX', 10);
+
 
 /**
  * @package Inspekt
@@ -31,20 +30,24 @@ class Inspekt_Cage
 	 * Don't try to access this.  ever.
 	 *
 	 * @var array
+	 * @access private
 	 */
-	var $_source = NULL;
-
-
-	var $_autofilter_conf = NULL;
-
+	private $_source = NULL;
 
 	/**
-     *
-     * @return Inspekt_Cage
+     * @var string
+     * @access private
      */
-	function Inspekt_Cage() {
-		// placeholder -- we're using a factory here
+	private $_autofilter_conf = NULL;
 
+	
+	/**
+	 * @abstract Returns the raw source as an array
+	 *
+	 * @return unknown
+	 */
+	public function getRawSource(){
+		return $this->_source;
 	}
 
 
@@ -59,10 +62,9 @@ class Inspekt_Cage
      * @param string $conf_section
      * @param boolean $strict
      * @return Inspekt_Cage
-     *
      * @static
      */
-	static function Factory(&$source, $conf_file = NULL, $conf_section = NULL, $strict = TRUE) {
+	static public function Factory(&$source) {
 
 		if (!is_array($source)) {
 			user_error('$source '.$source.' is not an array', E_USER_NOTICE);
@@ -70,85 +72,24 @@ class Inspekt_Cage
 
 		$cage = new Inspekt_Cage();
 		$cage->_setSource($source);
-		$cage->_parseAndApplyAutoFilters($conf_file, $conf_section);
-
-		if ($strict) {
-			$source = NULL;
-		}
-
+		$source = NULL;
+	
 		return $cage;
+		
 	}
 
 
 	/**
 	 * {@internal we use this to set the data array in Factory()}}
-	 *
 	 * @see Factory()
 	 * @param array $newsource
+	 * @access private
 	 */
-	function _setSource(&$newsource) {
-
+	protected function _setSource(&$newsource) {
 		if (!is_array($newsource)) {
 			user_error('$source is not an array', E_USER_NOTICE);
 		}
-
 		$this->_source = $newsource;
-	}
-
-
-	function _parseAndApplyAutoFilters($conf_file, $conf_section)
-	{
-		if (isset($conf_file)) {
-			$conf = parse_ini_file($conf_file, true);
-			if ($conf_section) {
-				if (isset($conf[$conf_section])) {
-					$this->_autofilter_conf = $conf[$conf_section];
-				}
-			} else {
-				$this->_autofilter_conf = $conf;
-			}
-
-			$this->_applyAutoFilters();
-		}
-	}
-	
-
-	function _applyAutoFilters() {
-
-		if ( isset($this->_autofilter_conf) && is_array($this->_autofilter_conf)) {
-
-			foreach($this->_autofilter_conf as $key=>$filters) {
-
-				// get universal filter key
-				if ($key == '*') {
-
-					// get filters for this key
-					$uni_filters = explode(',', $this->_autofilter_conf[$key]);
-					array_walk($uni_filters, 'trim');
-
-					// apply uni filters
-					foreach($uni_filters as $this_filter) {
-						foreach($this->_source as $key=>$val) {
-							$this->_source[$key] = $this->$this_filter($key);
-						}
-					}
-//					echo "<pre>UNI FILTERS"; echo var_dump($this->_source); echo "</pre>\n";
-
-				} elseif($val = $this->keyExists($key)) {
-
-					// get filters for this key
-					$filters = explode(',', $this->_autofilter_conf[$key]);
-					array_walk($filters, 'trim');
-
-					// apply filters
-					foreach($filters as $this_filter) {
-						$this->_setValue($key, $this->$this_filter($key));
-					}
-//					echo "<pre> Filter $this_filter/$key: "; echo var_dump($this->_source); echo "</pre>\n";
-
-				}
-			}
-		}
 	}
 
 
@@ -169,6 +110,7 @@ class Inspekt_Cage
 		return Inspekt::getAlpha($this->_getValue($key));
 	}
 
+	
 	/**
      * Returns only the alphabetic characters and digits in value.
      *
@@ -185,6 +127,7 @@ class Inspekt_Cage
 		return Inspekt::getAlnum($this->_getValue($key));
 	}
 
+	
 	/**
      * Returns only the digits in value. This differs from getInt().
      *
@@ -200,6 +143,7 @@ class Inspekt_Cage
 		}
 		return Inspekt::getDigits($this->_getValue($key));
 	}
+	
 	
 	/**
      * Returns only the digits with decimal. This differs from getInt().
@@ -217,6 +161,7 @@ class Inspekt_Cage
 		return Inspekt::getFloat($this->_getValue($key));
 	}
 
+	
 	/**
      * Returns dirname(value).
      *
@@ -233,6 +178,7 @@ class Inspekt_Cage
 		return Inspekt::getDir($this->_getValue($key));
 	}
 
+	
 	/**
      * Returns (int) value.
      *
@@ -249,6 +195,7 @@ class Inspekt_Cage
 		return Inspekt::getInt($this->_getValue($key));
 	}
 
+	
 	/**
      * Returns realpath(value).
      *
@@ -265,6 +212,7 @@ class Inspekt_Cage
 		return Inspekt::getPath($this->_getValue($key));
 	}
 
+	
 	/**
      * Returns value.
      *
@@ -281,6 +229,7 @@ class Inspekt_Cage
 		return $this->_getValue($key);
 	}
 
+	
 	/**
      * Returns value if every character is alphabetic or a digit,
      * FALSE otherwise.
@@ -302,6 +251,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if every character is alphabetic, FALSE
      * otherwise.
@@ -323,6 +273,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it is greater than or equal to $min and less
      * than or equal to $max, FALSE otherwise. If $inc is set to
@@ -349,6 +300,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it is a valid credit card number format. The
      * optional second argument allows developers to indicate the
@@ -371,6 +323,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
+	
 
 	/**
      * Returns $value if it is a valid date, FALSE otherwise. The
@@ -393,6 +346,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if every character is a digit, FALSE otherwise.
      * This is just like isInt(), except there is no upper limit.
@@ -414,6 +368,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it is a valid email format, FALSE otherwise.
      *
@@ -434,6 +389,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it is a valid float value, FALSE otherwise.
      *
@@ -454,6 +410,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it is greater than $min, FALSE otherwise.
      *
@@ -474,6 +431,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
+	
 
 	/**
      * Returns value if it is a valid hexadecimal format, FALSE
@@ -495,6 +453,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
+	
 
 	/**
      * Returns value if it is a valid hostname, FALSE otherwise.
@@ -520,6 +479,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
+	
 
 	/**
      * Returns value if it is a valid integer value, FALSE otherwise.
@@ -541,6 +501,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it is a valid IP format, FALSE otherwise.
      *
@@ -560,6 +521,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
+	
 
 	/**
      * Returns value if it is less than $max, FALSE otherwise.
@@ -582,6 +544,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it is one of $allowed, FALSE otherwise.
      *
@@ -602,6 +565,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it is a valid phone number format, FALSE
      * otherwise. The optional second argument indicates the country.
@@ -623,6 +587,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it matches $pattern, FALSE otherwise. Uses
      * preg_match() for the matching.
@@ -666,6 +631,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value if it is a valid US ZIP, FALSE otherwise.
      *
@@ -686,6 +652,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
+	
 	/**
      * Returns value with all tags removed.
      *
@@ -702,6 +669,7 @@ class Inspekt_Cage
 		return Inspekt::noTags($this->_getValue($key));
 	}
 
+	
 	/**
      * Returns basename(value).
      *
@@ -718,6 +686,7 @@ class Inspekt_Cage
 		return Inspekt::noPath($this->_getValue($key));
 	}
 
+	
 	/**
      * Checks if a key exists
      *
@@ -725,36 +694,8 @@ class Inspekt_Cage
      * @return bool
      *
      */
-	function keyExists($key)
-	{
-		if (strpos($key, ISPK_ARRAY_PATH_SEPARATOR) !== FALSE) {
-			$key = trim($key, ISPK_ARRAY_PATH_SEPARATOR);
-			$keys = explode(ISPK_ARRAY_PATH_SEPARATOR, $key);
-			return $this->_keyExistsRecursive($keys, $this->_source);
-		} else {
-			return array_key_exists($key, $this->_source);
-		}
-	}
-
-
-
-	function _keyExistsRecursive($keys, $data_array) {
-		$thiskey = current($keys);
-
-		if (is_numeric($thiskey)) { // force numeric strings to be integers
-			$thiskey = (int)$thiskey;
-		}
-
-		if ( array_key_exists($thiskey, $data_array) ) {
-			if (sizeof($keys) == 1) {
-				return true;
-			} elseif ( is_array($data_array[$thiskey]) ) {
-				unset($keys[key($keys)]);
-				return $this->_keyExistsRecursive($keys, $data_array[$thiskey]);
-			}
-		} else { // if any key DNE, return false
-			return false;
-		}
+	public function keyExists($key){
+		return array_key_exists($key, $this->_source);
 	}
 
 
@@ -764,40 +705,8 @@ class Inspekt_Cage
 	 * @param string $key
 	 * @return mixed
 	 */
-	function _getValue($key) {
-		if (strpos($key, ISPK_ARRAY_PATH_SEPARATOR)!== FALSE) {
-			$key = trim($key, ISPK_ARRAY_PATH_SEPARATOR);
-			$keys = explode(ISPK_ARRAY_PATH_SEPARATOR, $key);
-			return $this->_getValueRecursive($keys, $this->_source);
-		} else {
-			return $this->_source[$key];
-		}
-	}
-
-
-
-	function _getValueRecursive($keys, $data_array, $level=0) {
-		$thiskey = current($keys);
-
-		if (is_numeric($thiskey)) { // force numeric strings to be integers
-			$thiskey = (int)$thiskey;
-		}
-
-		if ( array_key_exists($thiskey, $data_array) ) {
-			if (sizeof($keys) == 1) {
-				return $data_array[$thiskey];
-			} elseif ( is_array($data_array[$thiskey]) ) {
-				if ($level < ISPK_RECURSION_MAX) {
-					unset($keys[key($keys)]);
-					return $this->_getValueRecursive($keys, $data_array[$thiskey], $level+1);
-				} else {
-					trigger_error('Recursion limit met', E_USER_WARNING);
-					return false;
-				}
-			}
-		} else { // if any key DNE, return false
-			return false;
-		}
+	private function _getValue($key){
+		return $this->_source[$key];
 	}
 
 
@@ -808,42 +717,9 @@ class Inspekt_Cage
 	 * @param mixed $val
 	 * @return mixed
 	 */
-	function _setValue($key, $val) {
-		if (strpos($key, ISPK_ARRAY_PATH_SEPARATOR)!== FALSE) {
-			$key = trim($key, ISPK_ARRAY_PATH_SEPARATOR);
-			$keys = explode(ISPK_ARRAY_PATH_SEPARATOR, $key);
-			return $this->_setValueRecursive($keys, $this->_source);
-		} else {
-			$this->_source[$key] = $val;
-			return $this->_source[$key];
-		}
+	private function _setValue($key, $val){
+		$this->_source[$key] = $val;
+		return $this->_source[$key];
 	}
-
-
-	function _setValueRecursive($keys, $val, $data_array, $level=0) {
-		$thiskey = current($keys);
-
-		if (is_numeric($thiskey)) { // force numeric strings to be integers
-			$thiskey = (int)$thiskey;
-		}
-
-		if ( array_key_exists($thiskey, $data_array) ) {
-			if (sizeof($keys) == 1) {
-				$data_array[$thiskey] = $val;
-				return $data_array[$thiskey];
-			} elseif ( is_array($data_array[$thiskey]) ) {
-				if ($level < ISPK_RECURSION_MAX) {
-					unset($keys[key($keys)]);
-					return $this->_setValueRecursive($keys, $val, $data_array[$thiskey], $level+1);
-				} else {
-					trigger_error('Recursion limit met', E_USER_WARNING);
-					return false;
-				}
-			}
-		} else { // if any key DNE, return false
-			return false;
-		}
-	}
-
-
 }
+?>

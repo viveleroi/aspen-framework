@@ -3,122 +3,98 @@
  * Inspekt Supercage
  *
  * @author Ed Finkler <coj@funkatron.com>
- *
+ * @author Michael Botsko
  * @package Inspekt
  */
 
-/**
- * require main Inspekt class
- */
 require_once 'Inspekt.php';
-
-/**
- * require the Cage class
- */
 require_once 'Cage.php';
 
 /**
- * The Supercage object wraps ALL of the superglobals
- *
+ * @abstract The Supercage object wraps ALL of the superglobals
  * @package Inspekt
- *
  */
 Class Inspekt_Supercage {
 
 	/**
-	 * The get cage
-	 *
-	 * @var Inspekt_Cage
+	 * @var Inspekt_Cage The get cage
 	 */
-	var $get;
+	public $get;
 
 	/**
-	 * The post cage
-	 *
-	 * @var Inspekt_Cage
+	 * @var Inspekt_Cage  The post cage
 	 */
-	var $post;
+	public $post;
 
 	/**
 	 * The cookie cage
 	 *
-	 * @var Inspekt_Cage
+	 * @var Inspekt_Cage The cookie cage
 	 */
-	var $cookie;
+	public $cookie;
 
 	/**
-	 * The env cage
-	 *
-	 * @var Inspekt_Cage
+	 * @var Inspekt_Cage The env cage
 	 */
-	var $env;
+	public $env;
 
 	/**
-	 * The files cage
-	 *
-	 * @var Inspekt_Cage
+	 * @var Inspekt_Cage The files cage
 	 */
-	var $files;
+	public $files;
 
 	/**
-	 * The session cage
-	 *
-	 * @var Inspekt_Cage
+	 * @var Inspekt_Cage The session cage
 	 */
-	var $session;
-
-	var $server;
+	public $session;
 
 	/**
-	 * Enter description here...
-	 *
-	 * @return Inspekt_Supercage
+	 * @var Inspekt_Cage The server cage
 	 */
-	function Inspekt_Supercage() {
-		// placeholder
-	}
-	
-	
-	function getRawSource($type = 'get'){
-		return $this->{$type}->_source;
+	public $server;
+
+
+	/**
+	 * @abstract Returns the raw source of a cage
+	 * @param string $type
+	 * @return array
+	 * @access public
+	 */
+	public function getRawSource($type = 'get'){
+		return $this->{$type}->getRawSource();
 	}
 
+	
 	/**
-	 * Enter description here...
-	 *
+	 * @abstract 
 	 * @param string  $config_file
 	 * @param boolean $strict
 	 * @return Inspekt_Supercage
+	 * @access public
 	 */
-	 static function Factory($config_file = NULL, $strict = TRUE) {
-
+	 static public function Factory() {
 		$sc	= new Inspekt_Supercage();
-		$sc->_makeCages($strict, $config_file);
-
-		// eliminate the $_REQUEST superglobal
-		if ($strict) {
-			$_REQUEST = null;
-		}
-
+		$sc->_makeCages();
+		$_REQUEST = null;
 		return $sc;
-
 	}
 
+
 	/**
-	 * Enter description here...
-	 *
+	 * @abstract Sets the cages into internal member variables
 	 * @see Inspekt_Supercage::Factory()
 	 * @param string  $config_file
 	 * @param boolean $strict
+	 * @access private
 	 */
-	function _makeCages($config_file=NULL, $strict=TRUE) {
-		$this->get		= Inspekt::makeGetCage($config_file, $strict);
-		$this->post		= Inspekt::makePostCage($config_file, $strict);
-		$this->cookie	= Inspekt::makeCookieCage($config_file, $strict);
-		$this->env		= Inspekt::makeEnvCage($config_file, $strict);
-		$this->files	= Inspekt::makeFilesCage($config_file, $strict);
-		$this->session	= Inspekt::makeSessionCage($config_file, $strict);
-		$this->server	= Inspekt::makeServerCage($config_file, $strict);
+	public function _makeCages() {
+		$this->get		= Inspekt::makeGetCage();
+		$this->post		= Inspekt::makePostCage();
+		$this->cookie	= Inspekt::makeCookieCage();
+		$this->env		= Inspekt::makeEnvCage();
+		$this->files	= Inspekt::makeFilesCage();
+		$this->session	= Inspekt::makeSessionCage();
+		$this->server	= Inspekt::makeServerCage();
 	}
 	
 	
@@ -129,25 +105,25 @@ Class Inspekt_Supercage {
 
 		switch($type){
 			case 'get':
-				$this->get		= Inspekt::makeGetCage($config_file, $strict);
+				$this->get		= Inspekt::makeGetCage();
 				break;
 			case 'post':
-				$this->post		= Inspekt::makePostCage($config_file, $strict);
+				$this->post		= Inspekt::makePostCage();
 				break;
 			case 'cookie':
-				$this->cookie	= Inspekt::makeCookieCage($config_file, $strict);
+				$this->cookie	= Inspekt::makeCookieCage();
 				break;
 			case 'env':
-				$this->env		= Inspekt::makeEnvCage($config_file, $strict);
+				$this->env		= Inspekt::makeEnvCage();
 				break;
 			case 'files':
-				$this->files	= Inspekt::makeFilesCage($config_file, $strict);
+				$this->files	= Inspekt::makeFilesCage();
 				break;
 			case 'session':
-				$this->session	= Inspekt::makeSessionCage($config_file, $strict);
+				$this->session	= Inspekt::makeSessionCage();
 				break;
 			case 'server':
-				$this->server	= Inspekt::makeServerCage($config_file, $strict);
+				$this->server	= Inspekt::makeServerCage();
 				break;
 			default:
 				break;

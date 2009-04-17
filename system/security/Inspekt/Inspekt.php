@@ -1,34 +1,14 @@
 <?php
 /**
  * Inspekt - main source file
- *
- *
- *
  * @author Chris Shiflett <chris@shiflett.org>
  * @author Ed Finkler <coj@funkatron.com>
- *
+ * @author Michael Botsko
  * @package Inspekt
  */
 
-
-/**
- * Inspekt_Error
- */
-require_once('Error.php');
-
-/**
- * Inspekt_Cage
- */
 require_once('Cage.php');
-
-/**
- * Inspekt_Cage_Session
- */
 require_once('Cage/Session.php');
-
-/**
- * Inspekt_Supercage
- */
 require_once('Supercage.php');
 
 
@@ -104,15 +84,9 @@ class Inspekt
 	 * @param boolean $strict whether or not to nullify the superglobal array
 	 * @return Inspekt_Cage
 	 */
-	static function makeServerCage($config_file=NULL, $strict=TRUE) {
-		/**
-		 * @staticvar $_instance
-		 */
+	static function makeServerCage() {
 		static $_instance;
-
-		//if (!isset($_instance)) {
-			$_instance = Inspekt_Cage::Factory($_SERVER, $config_file, '_SERVER', $strict);
-		//}
+		$_instance = Inspekt_Cage::Factory($_SERVER);
 		$GLOBALS['HTTP_SERVER_VARS'] = NULL;
 		return $_instance;
 	}
@@ -128,15 +102,9 @@ class Inspekt
 	 * @return Inspekt_Cage
 	 * @static
 	 */
-	static function makeGetCage($config_file=NULL, $strict=TRUE) {
-		/**
-		 * @staticvar $_instance
-		 */
+	static function makeGetCage() {
 		static $_instance;
-
-		//if (!isset($_instance)) {
-			$_instance = Inspekt_Cage::Factory($_GET, $config_file, '_GET', $strict);
-		//}
+		$_instance = Inspekt_Cage::Factory($_GET);
 		$GLOBALS['HTTP_GET_VARS'] = NULL;
 		return $_instance;
 	}
@@ -152,19 +120,14 @@ class Inspekt
 	 * @return Inspekt_Cage
 	 * @static
 	 */
-	static function makePostCage($config_file=NULL, $strict=TRUE) {
-		/**
-		 * @staticvar $_instance
-		 */
+	static function makePostCage() {
 		static $_instance;
-
-		//if (!isset($_instance)) {
-			$_instance = Inspekt_Cage::Factory($_POST, $config_file, '_POST', $strict);
-		//}
+		$_instance = Inspekt_Cage::Factory($_POST);
 		$GLOBALS['HTTP_POST_VARS'] = NULL;
 		return $_instance;
 	}
 
+	
 	/**
 	 * Returns the $_COOKIE data wrapped in an Inspekt_Cage object
 	 *
@@ -175,15 +138,9 @@ class Inspekt
 	 * @return Inspekt_Cage
 	 * @static
 	 */
-	static function makeCookieCage($config_file=NULL, $strict=TRUE) {
-		/**
-		 * @staticvar $_instance
-		 */
+	static function makeCookieCage() {
 		static $_instance;
-
-		//if (!isset($_instance)) {
-			$_instance = Inspekt_Cage::Factory($_COOKIE, $config_file, '_COOKIE', $strict);
-		//}
+		$_instance = Inspekt_Cage::Factory($_COOKIE);
 		$GLOBALS['HTTP_COOKIE_VARS'] = NULL;
 		return $_instance;
 	}
@@ -199,15 +156,9 @@ class Inspekt
 	 * @return Inspekt_Cage
 	 * @static
 	 */
-	static function makeEnvCage($config_file=NULL, $strict=TRUE) {
-		/**
-		 * @staticvar $_instance
-		 */
+	static function makeEnvCage() {
 		static $_instance;
-
-		//if (!isset($_instance)) {
-			$_instance = Inspekt_Cage::Factory($_ENV, $config_file, '_ENV', $strict);
-		//}
+		$_instance = Inspekt_Cage::Factory($_ENV);
 		$GLOBALS['HTTP_ENV_VARS'] = NULL;
 		return $_instance;
 	}
@@ -223,15 +174,9 @@ class Inspekt
 	 * @return Inspekt_Cage
 	 * @static
 	 */
-	static function makeFilesCage($config_file=NULL, $strict=TRUE) {
-		/**
-		 * @staticvar $_instance
-		 */
+	static function makeFilesCage() {
 		static $_instance;
-
-		//if (!isset($_instance)) {
-			$_instance = Inspekt_Cage::Factory($_FILES, $config_file, '_FILES', $strict);
-		//}
+		$_instance = Inspekt_Cage::Factory($_FILES);
 		$GLOBALS['HTTP_POST_FILES'] = NULL;
 		return $_instance;
 	}
@@ -247,21 +192,10 @@ class Inspekt
 	 * @return Inspekt_Cage
 	 * @static
 	 */
-	static function makeSessionCage($config_file=NULL, $strict=TRUE) {
-		
-		/**
-		 * @staticvar $_instance
-		 */
+	static function makeSessionCage() {
 		static $_instance;
-
-		if (!isset($_SESSION)) {
-			return NULL;
-		}
-
-		// commented out to prevent issues when refreshing values
-		//if (!isset($_instance)) {
-			$_instance = Inspekt_Cage_Session::Factory($_SESSION, $config_file, '_SESSION', $strict);
-		//}
+		if (!isset($_SESSION)) { return NULL; }
+		$_instance = Inspekt_Cage_Session::Factory($_SESSION);
 		//$GLOBALS['HTTP_SESSION_VARS'] = NULL;
 		return $_instance;
 	}
@@ -275,17 +209,12 @@ class Inspekt
 	 * @return Inspekt_Supercage
 	 * @static
 	 */
-	static function makeSuperCage($config_file=NULL, $strict=TRUE) {
-		/**
-		 * @staticvar $_instance
-		 */
+	static function makeSuperCage() {
 		static $_scinstance;
-
 		if (!isset($_scinstance)) {
-			$_scinstance = Inspekt_Supercage::Factory($strict, $config_file);
+			$_scinstance = Inspekt_Supercage::Factory();
 		}
 		return $_scinstance;
-
 	}
 
 
@@ -301,7 +230,7 @@ class Inspekt
 	 * @return array
 	 *
 	 */
-	static function _walkArray($input, $method) {
+	static private function _walkArray($input, $method) {
 
 		if (!is_array($input)) {
 			user_error('$input must be an array', E_USER_ERROR);
@@ -325,11 +254,9 @@ class Inspekt
 	}
 
 
-
-
-
-
-
+	
+	
+	
 	/**
      * Returns only the alphabetic characters in value.
      *
@@ -348,6 +275,7 @@ class Inspekt
 		}
 	}
 
+	
 	/**
      * Returns only the alphabetic characters and digits in value.
      *
@@ -366,6 +294,7 @@ class Inspekt
 		}
 	}
 
+	
 	/**
      * Returns only the digits in value. This differs from getInt().
      *
@@ -383,6 +312,7 @@ class Inspekt
 			return preg_replace('/[^\d]/', '', $value);
 		}
 	}
+	
 	
 	/**
      * Returns only the digits in value. This differs from getInt().
@@ -402,6 +332,7 @@ class Inspekt
 		}
 	}
 
+	
 	/**
      * Returns dirname(value).
      *
@@ -420,6 +351,7 @@ class Inspekt
 		}
 	}
 
+	
 	/**
      * Returns (int) value.
      *
@@ -436,6 +368,7 @@ class Inspekt
 			return (int) $value;
 		}
 	}
+	
 
 	/**
      * Returns realpath(value).
@@ -453,6 +386,7 @@ class Inspekt
 			return realpath($value);
 		}
 	}
+	
 
 	/**
      * Returns TRUE if every character is alphabetic or a digit,
@@ -468,6 +402,7 @@ class Inspekt
 		return ctype_alnum($value);
 	}
 
+	
 	/**
      * Returns TRUE if every character is alphabetic, FALSE
      * otherwise.
@@ -482,6 +417,7 @@ class Inspekt
 		return ctype_alpha($value);
 	}
 
+	
 	/**
      * Returns TRUE if value is greater than or equal to $min and less
      * than or equal to $max, FALSE otherwise. If $inc is set to
@@ -511,6 +447,7 @@ class Inspekt
 		return FALSE;
 	}
 
+	
 	/**
      * Returns TRUE if it is a valid credit card number format. The
      * optional second argument allows developers to indicate the
@@ -549,6 +486,7 @@ class Inspekt
 		return ($mod == $value[$length - 1]);
 	}
 
+	
 	/**
      * Returns TRUE if value is a valid date, FALSE otherwise. The
      * date is required to be in ISO 8601 format.
@@ -565,6 +503,7 @@ class Inspekt
 		return checkdate($month, $day, $year);
 	}
 
+	
 	/**
      * Returns TRUE if every character is a digit, FALSE otherwise.
      * This is just like isInt(), except there is no upper limit.
@@ -579,6 +518,7 @@ class Inspekt
 		return ctype_digit((string) $value);
 	}
 
+	
 	/**
      * Returns TRUE if value is a valid email format, FALSE otherwise.
      *
@@ -594,6 +534,7 @@ class Inspekt
 		return (bool) preg_match(ISPK_EMAIL_VALID, $value);
 	}
 
+	
 	/**
      * Returns TRUE if value is a valid float value, FALSE otherwise.
      *
@@ -612,6 +553,7 @@ class Inspekt
 		return (strval(floatval($value)) == $value);
 	}
 
+	
 	/**
      * Returns TRUE if value is greater than $min, FALSE otherwise.
      *
@@ -627,6 +569,7 @@ class Inspekt
 		return ($value > $min);
 	}
 
+	
 	/**
      * Returns TRUE if value is a valid hexadecimal format, FALSE
      * otherwise.
@@ -642,6 +585,7 @@ class Inspekt
 		return ctype_xdigit($value);
 	}
 
+	
 	/**
      * Returns TRUE if value is a valid hostname, FALSE otherwise.
      * Depending upon the value of $allow, Internet domain names, IP
@@ -711,6 +655,7 @@ class Inspekt
 		}
 	}
 
+	
 	/**
      * Returns TRUE if value is a valid integer value, FALSE otherwise.
      *
@@ -730,6 +675,7 @@ class Inspekt
 		return (strval(intval($value)) == $value);
 	}
 
+	
 	/**
      * Returns TRUE if value is a valid IP format, FALSE otherwise.
      *
@@ -744,6 +690,7 @@ class Inspekt
 		return (bool) ip2long($value);
 	}
 
+	
 	/**
      * Returns TRUE if value is less than $max, FALSE otherwise.
      *
@@ -759,6 +706,7 @@ class Inspekt
 		return ($value < $max);
 	}
 
+	
 	/**
      * Returns TRUE if value is one of $allowed, FALSE otherwise.
      *
@@ -779,6 +727,7 @@ class Inspekt
 		return in_array($value, $allowed);
 	}
 
+	
 	/**
      * Returns TRUE if value is a valid phone number format, FALSE
      * otherwise. The optional second argument indicates the country.
@@ -858,6 +807,7 @@ class Inspekt
 		}
 	}
 
+	
 	/**
      * Returns TRUE if value matches $pattern, FALSE otherwise. Uses
      * preg_match() for the matching.
@@ -920,31 +870,14 @@ class Inspekt
 
 				user_error('isUri() for ISPK_URI_ALLOW_ABSOLUTE has not been implemented.', E_USER_WARNING);
 				return FALSE;
-
-//				$regex .= '&';
-//				$regex .= '^(ftp|http|https):';					// protocol
-//				$regex .= '(//)';								// authority-start
-//				$regex .= '([-a-z0-9/~;:@=+$,.!*()\']+@)?';		// userinfo
-//				$regex .= '(';
-//					$regex .= '((?:[^\W_]((?:[^\W_]|-){0,61}[^\W_])?\.)+[a-zA-Z]{2,6}\.?)';		// domain name
-//				$regex .= '|';
-//					$regex .= '([0-9]{1,3}(\.[0-9]{1,3})?(\.[0-9]{1,3})?(\.[0-9]{1,3})?)';	// OR ipv4
-//				$regex .= ')';
-//				$regex .= '(:([0-9]*))?';						// port
-//				$regex .= '(/((%[0-9a-f]{2}|[-a-z0-9/~;:@=+$,.!*()\'\&]*)*)/?)?';	// path
-//				$regex .= '(\?[^#]*)?';							// query
-//				$regex .= '(#([-a-z0-9_]*))?';					// anchor (fragment)
-//				$regex .= '$&i';
-				//echo "<pre>"; echo print_r($regex, true); echo "</pre>\n";
-
 				break;
 
 		}
 		$result = preg_match($regex, $value, $subpatterns);
-		//echo "<pre>"; echo print_r($subpatterns, true); echo "</pre>\n";
 		return $result;
 	}
 
+	
 	/**
      * Returns TRUE if value is a valid US ZIP, FALSE otherwise.
      *
@@ -958,41 +891,5 @@ class Inspekt
 	{
 		return (bool) preg_match('/(^\d{5}$)|(^\d{5}-\d{4}$)/', $value);
 	}
-
-	/**
-     * Returns value with all tags removed.
-     *
-     * @param mixed $value
-     * @return mixed
-     *
-     * @tag filter
-     * @static
-     */
-	static function noTags($value)
-	{
-		if (is_array($value)) {
-			return Inspekt::_walkArray($value, 'noTags');
-		} else {
-			return strip_tags($value);
-		}
-	}
-
-	/**
-     * Returns basename(value).
-     *
-     * @param mixed $value
-     * @return mixed
-     *
-     * @tag filter
-     * @static
-     */
-	static function noPath($value)
-	{
-		if (is_array($value)) {
-			return Inspekt::_walkArray($value, 'noPath');
-		} else {
-			return basename($value);
-		}
-	}
 }
-
+?>
