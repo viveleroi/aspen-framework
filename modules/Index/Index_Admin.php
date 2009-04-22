@@ -22,7 +22,18 @@ class Index_Admin extends Module {
 	 */
 	public function view(){
 		
+		/*
+		 
 		$new_model = new TestModel('authentication');
+		//print_r($new_model);
+		$new_model->select();
+		print_r($new_model->results());
+
+		*/
+		
+		//$new_model = $this->APP->model->open('test');
+		
+		$new_model = Model::open('test');
 		//print_r($new_model);
 		$new_model->select();
 		print_r($new_model->results());

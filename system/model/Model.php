@@ -87,6 +87,14 @@ class Model {
 //| OPEN / SET / GET FUNCTIONS
 //+-----------------------------------------------------------------------+
 
+	static public function open($table){
+		if($table){
+			return new TestModel($table);
+		}
+	}
+	
+	
+
 	/**
 	 * @abstract Sets the current table and loads the table schema
 	 * @param string $table
