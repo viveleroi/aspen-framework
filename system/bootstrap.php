@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', false);
+ini_set('display_errors', true);
 error_reporting(E_ALL);
 
 /**
@@ -280,6 +280,9 @@ class Bootstrap extends Base {
 
 		// load in system libraries / classes
 		$this->loadSystemLibraries();
+		
+		// load any model extensions
+		$this->loadSystemModelExtensions($this->config('models'));
 		
 		// enable system logging
 		if($this->config('enable_logging')){
@@ -709,7 +712,73 @@ class Bootstrap extends Base {
 		}
 		return false;
 	}
+	
+	
+	/**
+	 * Accepted values for "model" are:
+	 * 'table' => 'test'
+	 *
+	 * @abstract Accepts an array of models to load
+	 * @param array $library_array
+	 * @return boolean
+	 * @access private
+	 */
+	
+	public function loadSystemModelExtensions($models){
 
+		$load_success 	= true;
+		//$original_vars 	= array();
+
+		if($load_success){
+			foreach($models as $model){
+
+				if(isset($model['table'])){
+					
+
+					include(MODULES_PATH.DS.'Index'.DS.'models'.DS.ucwords(strtolower($model['table'])).'.php');
+					
+					/*
+
+					$folder 	= isset($library['folder']) ? $library['folder'] : strtolower($library['classname']);
+					$filename 	= isset($library['filename']) ? $library['filename'] : $library['classname'];
+					$var 		= isset($library['var']) ? $library['var'] : strtolower($library['classname']);
+					$original_vars[$library['classname']] = $var;
+					$autoload 	= isset($library['autoload']) ? $library['autoload'] : true;
+					$extends 	= isset($library['extends']) ? $library['extends'] : false;
+					$filebase 	= $library['root'] . DS . $folder;
+					$filepath 	= $filebase . DS . $filename . '.php';
+
+					if(!class_exists($library['classname'])){
+						if(!include($filepath)){
+							$this->error->raise(1, "Failed loading system library: " . $library, __FILE__, __LINE__);
+							$load_success = false;
+						} else {
+							$this->_load_libraries[] = $library;
+						}
+					}
+					
+					// if extending a previous class, set variable to previous class,
+					// but classname to extension
+					if($extends){
+						$var = isset($original_vars[$library['extends']]) ? $original_vars[$library['extends']] : false;
+					}
+
+					// if class included but no instance, load instance
+					if($autoload){
+                        $this->{$var} = false;
+                        if(class_exists($library['classname']) && !is_object($this->{$var})){
+                            $this->{$var} = new $library['classname'];
+                        }
+                    }
+*/
+				}
+			}
+		}
+		
+
+		return $load_success;
+
+	}
 	
 	/**
 	 * @abstract Returns whether or not our db connection was made, and tables exist

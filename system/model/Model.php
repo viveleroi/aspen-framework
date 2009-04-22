@@ -236,6 +236,7 @@ class Model {
 		
 		// open the table
 		if($table){ $this->openTable($table); }
+		//$this->openTable($table);
 
 		// begin the select, append SQL_CALC_FOUND_ROWS is pagination is enabled
 		$this->sql['SELECT'] = $this->paginate ? 'SELECT SQL_CALC_FOUND_ROWS' : 'SELECT';
