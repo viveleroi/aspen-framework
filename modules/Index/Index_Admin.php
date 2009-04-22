@@ -22,6 +22,12 @@ class Index_Admin extends Module {
 	 */
 	public function view(){
 		
+		$new_model = $this->APP->orm->factory('authentication');
+
+		$new_model->select('authentication');
+		
+		print_r($new_model->results());
+		
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
