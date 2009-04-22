@@ -216,7 +216,7 @@ class Error {
 					$this->getServerValue('HTTP_REFERER'),
 					$this->getServerValue('REQUEST_URI'),
 					$this->getServerValue('HTTP_USER_AGENT'),
-					$this->errType[$this->errNo],
+					isset($this->errType[$this->errNo]) ? $this->errType[$this->errNo] : $this->errNo,
 					$this->file,
 					$this->line,
 					mysql_real_escape_string($this->errMsg)

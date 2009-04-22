@@ -459,6 +459,27 @@ class Template {
 	
 	
 	/**
+	 * @abstract Generate a basic LI set of pagination links
+	 * @param integer $current_page
+	 * @param integer $per_page
+	 * @param integer $total
+	 * @return string
+	 */
+	public function paginateLinks($current_page, $per_page, $total){
+		
+		$html = '';
+	
+		$pages = $total / $per_page;
+		for($i = 1; $i <= ceil($pages); $i++){
+			$html .= '<li'.($current_page == $i ? ' class="at"' : '').'>' . $this->createLink($i, false, array('page'=>$i)) . '</li>' . "\n";
+		}
+
+		return $html;
+		
+	}
+	
+	
+	/**
 	 * @abstract Returns a body id of the module/method
 	 * @return string
 	 * @access public

@@ -897,10 +897,13 @@ class Model {
 	 * @access public
 	 */
 	public function quickSelectSingle($table = false, $id = false, $field = false){
-
+		
+		// select table first
+		$this->select($table);
+		
+		// set primary key field
 		$field = $field ? $field : $this->getPrimaryKey();
 		
-		$this->select($table);
 		$this->where($field, $id);
 		$record = $this->APP->model->results($field);
 		
