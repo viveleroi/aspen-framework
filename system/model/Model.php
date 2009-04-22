@@ -74,7 +74,13 @@ class Model {
 	 * @return Model
 	 * @access private
 	 */
-	public function __construct(){ $this->APP = get_instance(); }
+	public function __construct($table = false){ 
+		$this->APP = get_instance(); 
+	
+		if($table){
+			$this->openTable($table);
+		}
+	}
 	
 	
 //+-----------------------------------------------------------------------+
@@ -227,9 +233,9 @@ class Model {
 	 * @access public
 	 */
 	public function select($table = false, $fields = false, $distinct = false){
-
+		
 		// open the table
-		$this->openTable($table);
+		if($table){ $this->openTable($table); }
 
 		// begin the select, append SQL_CALC_FOUND_ROWS is pagination is enabled
 		$this->sql['SELECT'] = $this->paginate ? 'SELECT SQL_CALC_FOUND_ROWS' : 'SELECT';

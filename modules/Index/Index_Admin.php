@@ -22,10 +22,8 @@ class Index_Admin extends Module {
 	 */
 	public function view(){
 		
-		$new_model = $this->APP->orm->factory('authentication');
-
-		$new_model->select('authentication');
-		
+		$new_model = new Model('authentication');
+		$new_model->select();
 		print_r($new_model->results());
 		
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
