@@ -135,10 +135,13 @@ class Form {
 	 */
 	public function save($id = false){
 		if(!$this->error()){
+			
+			$model = $this->APP->model->open($this->table);
+			
 			if($id){
-				return $this->APP->model->updateForm($this->table, $id);
+				return $model->updateForm($this->table, $id);
 			} else {
-				return $this->APP->model->insertForm($this->table);
+				return $model->insertForm($this->table);
 			}
 		} else {
 			return false;

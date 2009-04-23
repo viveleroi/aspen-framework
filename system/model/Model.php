@@ -1101,42 +1101,16 @@ class Model {
 //+-----------------------------------------------------------------------+
 //| INSERT / UPDATE FUNCTIONS
 //+-----------------------------------------------------------------------+
-
-	
-	/**
-	 * @abstract Generates an INSERT query and auto-executes it. Aliases executeInsert
-	 * @param string $table
-	 * @param array $fields
-	 * @return integer
-	 * @access public
-	 */
-	public function insert($table = false, $fields = false){
-		return $this->executeInsert($table, $fields);
-	}
-	
 	
 	/**
 	 * @abstract Generates an INSERT query and auto-executes it
-	 * @param string $table
 	 * @param array $fields
 	 * @return integer
 	 * @access private
 	 */
-	public function executeInsert($table = false, $fields = false){
-		$this->generateInsert($table, $fields);
-		return $this->results();
-	}
+	public function insert($fields = false){
 	
-	
-	/**
-	 * @abstract Generates an INSERT query
-	 * @param string $table
-	 * @param array $fields
-	 * @access public
-	 */
-	public function generateInsert($table = false, $fields = false){
-	
-		if($table && is_array($fields)){
+		if($this->table && is_array($fields)){
 		
 			$ins_fields = '';
 			$ins_values = '';
@@ -1149,27 +1123,26 @@ class Model {
 			}
 			
 			$this->sql['INSERT'] = sprintf('INSERT INTO %s (%s) VALUES (%s)',
-								$this->APP->security->dbescape($table),
+								$this->APP->security->dbescape($this->table),
 								$ins_fields,
 								$ins_values
 							);
 			
 		}
+		
+		return $this->results();
 	}
-
+	
 
 	/**
 	 * @abstract Generates an insert query using current Form class values
-	 * @param string $table
 	 * @return integer
 	 * @access public
 	 * @uses Form
 	 */
-	public function insertForm($table = false){
+	public function insertForm(){
 
-		if($table){
-
-			$this->openTable($table);
+		if($this->table){
 
 			// get our field names
 			foreach($this->schema as $field){
@@ -1193,99 +1166,59 @@ class Model {
 	
 	
 	/**
-	 * @abstract Auto-generates and executes an UPDATE query. Aliases executeUpdate
-	 * @param string $table
-	 * @param array $fields
-	 * @param mixed $where_value
-	 * @param string $where_field
-	 * @return boolean
-	 * @access public
-	 */
-	public function update($table = false, $fields = false, $where_value, $where_field = false ){
-		return $this->executeUpdate($table, $fields, $where_value, $where_field);
-	}
-	
-	
-	/**
 	 * @abstract Auto-generates and executes an UPDATE query
-	 * @param string $table
 	 * @param array $fields
 	 * @param mixed $where_value
 	 * @param string $where_field
 	 * @return boolean
 	 * @access private
 	 */
-	public function executeUpdate($table = false, $fields = false, $where_value, $where_field = false ){
-		$this->openTable($table);
+	public function update($fields = false, $where_value, $where_field = false ){
+
 		$where_field = $where_field ? $where_field : $this->getPrimaryKey();
-		$this->generateUpdate($table, $fields, $where_value, $where_field );
-		return $this->results();
-	}
-	
-	
-	/**
-	 * @abstract Auto-generates an UPDATE query
-	 * @param string $table
-	 * @param array $fields
-	 * @param mixed $where_value
-	 * @param string $where_field
-	 * @access public
-	 */
-	public function generateUpdate($table = false, $fields = false, $where_value, $where_field = 'id' ){
-	
-		if($table && is_array($fields)){
+		
+		if($this->table && is_array($fields)){
 		
 			$ins_fields = '';
-		
 			foreach($fields as $field_name => $field_value){
-			
 				$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
-
 			}
 			
 			$this->sql['UPDATE'] = sprintf('UPDATE %s SET %s WHERE %s = "%s"',
-												$this->APP->security->dbescape($table),
+												$this->APP->security->dbescape($this->table),
 												$ins_fields,
 												$this->APP->security->dbescape($where_field),
 												$this->APP->security->dbescape($where_value, $this->getSecurityRule($field_name, 'allow_html')));
-
-			
+												
 		}
+		
+		return $this->results();
+		
 	}
 	
 	
 	/**
 	 * @abstract Updates a database record from Form class values
-	 * @param string $table
 	 * @return integer
 	 * @access public
 	 * @uses Form
 	 */
-	public function updateForm($table = false){
-
-		if($table){
-
-			$this->openTable($table);
-
-			// get our field names
+	public function updateForm(){
+		if($this->table){
 			foreach($this->schema as $field){
 				if(!$field->primary_key){
 					$fields[] = $field->name . ' = "' . $this->APP->security->dbescape(
 																	$this->APP->form->cv($field->name, false),
 																	$this->getSecurityRule($field->name, 'allow_html')) . '"';
 				} else {
-
 					$primary = $field->name . ' = ' . $this->APP->form->cv($this->getPrimaryKey(), false);
-
 				}
 			}
 
-
 			$this->sql['UPDATE'] = sprintf('UPDATE %s SET %s WHERE %s', $this->table, implode(", ", $fields), $primary);
-
+			
 		}
-
-		// execute the query
+		
 		return $this->results();
 		
 	}

@@ -20,8 +20,8 @@ class AuthenticationModel extends Model {
 	 */
 	public function __construct($table = false){ parent::__construct($table); }
 	
-	public function add(){
-		return 'it worked';
+	public function insertForm(){
+		return false;
 	}
 }
 ?>
