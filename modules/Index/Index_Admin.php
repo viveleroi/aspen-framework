@@ -22,14 +22,8 @@ class Index_Admin extends Module {
 	 */
 	public function view(){
 		
-		/*
-		 
-		$new_model = new Model('authentication');
-		$new_model->select();
-		print_r($new_model->results());
 
-		*/
-		
+		/* example of ORM use */
 		$new_model = $this->APP->model->open('test');
 		$new_model->select();
 		print_r($new_model->results());

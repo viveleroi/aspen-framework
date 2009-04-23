@@ -89,13 +89,13 @@ class Model {
 
 	
 	/**
-	 * @abstract Returns a model object or it's child.
+	 * @abstract Returns a model object or its child.
 	 * @param string $table
 	 * @return object
 	 * @access public
 	 */
 	 public function open($table){
-	 	
+
 	 	if($table){
 	 	
 		 	$class = 'Model';
@@ -116,7 +116,6 @@ class Model {
 		return false;
 		
 	}
-	
 	
 
 	/**
