@@ -183,12 +183,16 @@ class Model {
 	 * @param string $table
 	 * @return array
 	 */
-	public function showStatus($table){
+	public function showStatus($table = false){
+		
+		$table = $table ? $table : $this->table;
 
-		$records = $this->query(sprintf('SHOW TABLE STATUS LIKE "%s"', $table));
-		if($records->RecordCount()){
-			while($record = $records->FetchRow()){
-				return $record;
+		if($table){
+			$records = $this->query(sprintf('SHOW TABLE STATUS LIKE "%s"', $table));
+			if($records->RecordCount()){
+				while($record = $records->FetchRow()){
+					return $record;
+				}
 			}
 		}
 		return false;
@@ -267,7 +271,6 @@ class Model {
 		
 		// open the table
 		if($table){ $this->openTable($table); }
-		//$this->openTable($table);
 
 		// begin the select, append SQL_CALC_FOUND_ROWS is pagination is enabled
 		$this->sql['SELECT'] = $this->paginate ? 'SELECT SQL_CALC_FOUND_ROWS' : 'SELECT';
@@ -294,9 +297,7 @@ class Model {
 	 * @access public
 	 */
 	public function addSelectField($field){
-
 		$this->sql['FIELDS'] .= sprintf(', %s', $field);
-
 	}
 
 
@@ -946,6 +947,7 @@ class Model {
 			return $record['RECORDS'][$id];
 		}
 		return false;
+		
 	}
 	
 	
@@ -963,22 +965,15 @@ class Model {
 	
 	/**
 	 * @abstract Generates and executes a select query
-	 * @param string $table
 	 * @param integer $id
 	 * @param string $field_name
 	 * @return boolean
 	 * @access public
 	 */
-	public function delete($table = false, $id = false, $field_name = false){
+	public function delete($id = false, $field_name = false){
 
-		if($table){
-
-			$this->openTable($table);
-			$field_name = $field_name ? $field_name : $this->getPrimaryKey();
-			
-			$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
-
-		}
+		$field_name = $field_name ? $field_name : $this->getPrimaryKey();
+		$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
 
 		return $this->query($this->sql['DELETE']);
 		
@@ -991,23 +986,24 @@ class Model {
 	 * @return boolean
 	 * @access public
 	 */
-	public function drop($table){
-		return $this->query(sprintf('DROP TABLE %s', $table));
+	public function drop(){
+		if($this->table){
+			return $this->query(sprintf('DROP TABLE %s', $this->table));
+		}
+		return false;
 	}
 	
 	
 	/**
 	 * @abstract Duplicates records using INSERT... SELECT...
-	 * @param string $table
 	 * @param mixed $id
 	 * @param string $field_name
 	 * @param string $select_table
 	 * @return integer
 	 * @access public
 	 */
-	public function duplicate($table, $id, $field_name = 'id', $replace_field = false){
+	public function duplicate($id, $field_name = 'id', $replace_field = false){
 
-		$this->openTable($table);
 		$fields = $this->getSchema();
 
 		foreach($fields as $field){
