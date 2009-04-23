@@ -46,6 +46,7 @@ class User {
 		if($this->APP->form->isSubmitted()){
 
 			// validation
+			/*
 			if(!$this->APP->form->isFilled('username')){
 				$this->APP->form->addError('username', 'You must enter a username.');
 			}
@@ -66,6 +67,7 @@ class User {
 			if(empty($groups)){
 				$this->APP->form->addError('group', 'You must select at least one user group.');
 			}
+*/
 
 			// if no errors, process groups
 			if(!$this->APP->form->error()){
