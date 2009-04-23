@@ -138,14 +138,20 @@ class Form {
 			
 			$model = $this->APP->model->open($this->table);
 			
-			if($id){
-				return $model->updateForm($this->table, $id);
-			} else {
-				return $model->insertForm($this->table);
+			// build the array of field/vars
+			$fields = array();
+			foreach($model->getSchema() as $field){
+				if(!$field->primary_key){
+					$fields[$field->name] = $this->APP->form->cv($field->name, false);
+				}
 			}
-		} else {
-			return false;
+			
+			return $id ? $model->update($fields, $id) : $model->insert($fields);
+			
 		}
+		
+		return false;
+		
 	}
 
 	

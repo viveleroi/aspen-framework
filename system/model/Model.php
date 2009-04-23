@@ -1133,37 +1133,6 @@ class Model {
 		return $this->results();
 	}
 	
-
-	/**
-	 * @abstract Generates an insert query using current Form class values
-	 * @return integer
-	 * @access public
-	 * @uses Form
-	 */
-	public function insertForm(){
-
-		if($this->table){
-
-			// get our field names
-			foreach($this->schema as $field){
-				if(!$field->primary_key){
-					$field_names[] = $field->name;
-					$field_values[] = $this->APP->security->dbescape(
-																$this->APP->form->cv($field->name, false),
-																$this->getSecurityRule($field->name, 'allow_html')
-															);
-				}
-			}
-
-			$this->sql['INSERT'] = sprintf('INSERT INTO %s (%s) VALUES("%s")', $this->table, implode(", ", $field_names), implode('", "', $field_values));
-
-		}
-
-		// execute the query
-		return $this->results();
-		
-	}
-	
 	
 	/**
 	 * @abstract Auto-generates and executes an UPDATE query
@@ -1190,33 +1159,6 @@ class Model {
 												$this->APP->security->dbescape($where_field),
 												$this->APP->security->dbescape($where_value, $this->getSecurityRule($field_name, 'allow_html')));
 												
-		}
-		
-		return $this->results();
-		
-	}
-	
-	
-	/**
-	 * @abstract Updates a database record from Form class values
-	 * @return integer
-	 * @access public
-	 * @uses Form
-	 */
-	public function updateForm(){
-		if($this->table){
-			foreach($this->schema as $field){
-				if(!$field->primary_key){
-					$fields[] = $field->name . ' = "' . $this->APP->security->dbescape(
-																	$this->APP->form->cv($field->name, false),
-																	$this->getSecurityRule($field->name, 'allow_html')) . '"';
-				} else {
-					$primary = $field->name . ' = ' . $this->APP->form->cv($this->getPrimaryKey(), false);
-				}
-			}
-
-			$this->sql['UPDATE'] = sprintf('UPDATE %s SET %s WHERE %s', $this->table, implode(", ", $fields), $primary);
-			
 		}
 		
 		return $this->results();

@@ -20,8 +20,11 @@ class AuthenticationModel extends Model {
 	 */
 	public function __construct($table = false){ parent::__construct($table); }
 	
-	public function insertForm(){
-		return false;
+	public function insert(){
+		print 'user class does not currently permit inserts';
+		exit;
+		
+		//return false;
 	}
 }
 ?>
