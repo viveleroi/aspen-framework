@@ -296,6 +296,19 @@
 	
 	// cache directory
 	$config['cache_dir'] = str_replace("system", '', dirname(__FILE__)) . 'cache';
+	
+	
+/**
+ * LOADING DATABASE MODEL EXTENSIONS
+ *
+ * The following classes are extensions to the default database models. They're
+ * extended so that we can add additional functionality surrounding the table
+ * interactions.
+ *
+ * @todo add url here
+ */	
+	
+	$config['models']['authentication'] = array('module' => 'Users');
 
 	
 /**

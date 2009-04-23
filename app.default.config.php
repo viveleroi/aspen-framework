@@ -21,8 +21,5 @@
 	
 	// require user authentication for admin subdirectory application
 	DEFINE('USER_AUTH_ADMIN', true);
-	
-	
-	$config['models']['test'] = array('module' => 'Index');
 
 ?>

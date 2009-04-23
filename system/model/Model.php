@@ -121,10 +121,10 @@ class Model {
 	/**
 	 * @abstract Sets the current table and loads the table schema
 	 * @param string $table
-	 * @access public
+	 * @access private
 	 * @return mixed
 	 */
-	public function openTable($table = false){
+	private function openTable($table = false){
 		$this->table = $table;
 		$this->generateSchema();
 	}

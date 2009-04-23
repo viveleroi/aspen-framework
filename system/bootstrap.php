@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', true);
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 
 /**
@@ -1074,17 +1074,19 @@ class Bootstrap extends Base {
 						// verify the target versions match
 						if($this->registryVersionMatch($tmp_reg->targetApplication->minVersion, $tmp_reg->targetApplication->maxVersion)){
 							$allowed = true;
-							$this->log->write('targetApplication versions matched for ' . $tmp_reg->classname . ' module.');
+							$this->log->write('Target application version requirements matched for ' . $tmp_reg->classname . ' module.');
 						} else {
-							$this->log->write('targetApplication versions failed to matched for ' . $tmp_reg->classname . ' module.');
+							$this->log->write('Target application versions failed to matched for ' . $tmp_reg->classname . ' module.');
+							$this->error->raise(1, 'Target application versions failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
 						}
 		
 					} else {
-						$this->log->write('targetApplication set but failed to matched for ' . $tmp_reg->classname . ' module.');
+						$this->log->write('Target application set but failed to matched for ' . $tmp_reg->classname . ' module.');
+						$this->error->raise(1, 'Target application set but failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
 					}
 				} else {
 					$allowed = true;
-					$this->log->write('No targetApplication set for ' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . ' module, IGNORING.');
+					$this->log->write('No target application set for ' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . ' module, IGNORING.');
 				}
 			} else {
 				$this->error->raise(1, 'Attempting to load module ("' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . '") which is not installed.', __FILE__, __LINE__);
@@ -1129,8 +1131,13 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	private function registryVersionMatch($min, $max){
+		
 		$app_vers = $this->config('application_version');
-
+		
+		if(empty($app_vers)){
+			$this->error->raise(1, 'Module requires a version check, but the application version is empty.', __FILE__, __LINE__);
+		}
+		
 		if($this->versionCompare($min, $app_vers) != 'greater' && $this->versionCompare($max, $app_vers) != 'less'){
 			return true;
 		} else {

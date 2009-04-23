@@ -77,10 +77,10 @@ class Form {
 
 		if($this->table){
 
-			$this->APP->model->openTable($this->table);
-			$this->_primary_key_field = $this->APP->model->getPrimaryKey();
+			$model = $this->APP->model->open($this->table);
+			$this->_primary_key_field = $model->getPrimaryKey();
 
-			foreach($this->APP->model->getSchema() as $field){
+			foreach($model->getSchema() as $field){
 
 				$default_val = $field->has_default ? $field->default_value : '';
 				$this->APP->form->addField($field->name, $default_val, $default_val);
@@ -103,14 +103,14 @@ class Form {
 	
 		if($id){
 			
-			$this->APP->model->openTable($this->table);
-			$this->_primary_key_field = $this->APP->model->getPrimaryKey();
+			$model = $this->APP->model->open($this->table);
+			$this->_primary_key_field = $model->getPrimaryKey();
 		
 			$field = $field ? $field : $this->_primary_key_field;
 			
-			$this->APP->model->select($this->table);
-			$this->APP->model->where($field, $this->APP->security->dbescape($id));
-			$records = $this->APP->model->results();
+			$model->select($this->table);
+			$model->where($field, $this->APP->security->dbescape($id));
+			$records = $model->results();
 
 			if($records['RECORDS']){
 				foreach($records['RECORDS'] as $record){

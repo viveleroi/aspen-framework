@@ -24,9 +24,11 @@ class Index_Admin extends Module {
 		
 
 		/* example of ORM use */
+		/*
 		$new_model = $this->APP->model->open('test');
 		$new_model->select();
 		print_r($new_model->results());
+*/
 
 		
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
