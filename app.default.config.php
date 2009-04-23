@@ -23,6 +23,6 @@
 	DEFINE('USER_AUTH_ADMIN', true);
 	
 	
-	$config['models'][] = array('table' => 'test');
+	$config['models']['test'] = array('module' => 'Index');
 
 ?>

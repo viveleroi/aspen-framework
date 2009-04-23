@@ -715,8 +715,11 @@ class Bootstrap extends Base {
 	
 	
 	/**
-	 * Accepted values for "model" are:
-	 * 'table' => 'test'
+	 * Accepted values for "models" are:
+	 * 'module' => 'Index',
+	 * 'folder' => false,
+	 * 'filename' => false,
+	 * 'root' => '/full/path/to/root/of/class'
 	 *
 	 * @abstract Accepts an array of models to load
 	 * @param array $library_array
@@ -727,54 +730,28 @@ class Bootstrap extends Base {
 	public function loadSystemModelExtensions($models){
 
 		$load_success 	= true;
-		//$original_vars 	= array();
 
 		if($load_success){
-			foreach($models as $model){
-
-				if(isset($model['table'])){
-					
-
-					include(MODULES_PATH.DS.'Index'.DS.'models'.DS.ucwords(strtolower($model['table'])).'.php');
-					
-					/*
-
-					$folder 	= isset($library['folder']) ? $library['folder'] : strtolower($library['classname']);
-					$filename 	= isset($library['filename']) ? $library['filename'] : $library['classname'];
-					$var 		= isset($library['var']) ? $library['var'] : strtolower($library['classname']);
-					$original_vars[$library['classname']] = $var;
-					$autoload 	= isset($library['autoload']) ? $library['autoload'] : true;
-					$extends 	= isset($library['extends']) ? $library['extends'] : false;
-					$filebase 	= $library['root'] . DS . $folder;
-					$filepath 	= $filebase . DS . $filename . '.php';
-
-					if(!class_exists($library['classname'])){
-						if(!include($filepath)){
-							$this->error->raise(1, "Failed loading system library: " . $library, __FILE__, __LINE__);
-							$load_success = false;
-						} else {
-							$this->_load_libraries[] = $library;
+			if(is_array($models)){
+				foreach($models as $table => $model){
+					if(isset($model['module'])){
+						
+						$module 	= isset($model['module']) ? $model['module'] : false;
+						$folder 	= isset($model['folder']) ? $model['folder'] : 'models';
+						$filebase 	= isset($model['root']) ? $model['root'] : MODULES_PATH . DS . $module . DS . $folder;
+						$filename 	= isset($model['filename']) ? $model['filename'] : ucwords(strtolower($table));
+						$filepath 	= $filebase . DS . $filename . '.php';
+	
+						if(!class_exists($table)){
+							if(!include($filepath)){
+								$this->error->raise(1, "Failed loading model extension: " . $table, __FILE__, __LINE__);
+								$load_success = false;
+							}
 						}
 					}
-					
-					// if extending a previous class, set variable to previous class,
-					// but classname to extension
-					if($extends){
-						$var = isset($original_vars[$library['extends']]) ? $original_vars[$library['extends']] : false;
-					}
-
-					// if class included but no instance, load instance
-					if($autoload){
-                        $this->{$var} = false;
-                        if(class_exists($library['classname']) && !is_object($this->{$var})){
-                            $this->{$var} = new $library['classname'];
-                        }
-                    }
-*/
 				}
 			}
 		}
-		
 
 		return $load_success;
 

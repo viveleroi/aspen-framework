@@ -74,8 +74,8 @@ class Model {
 	 * @return Model
 	 * @access private
 	 */
-	public function __construct($table = false){ 
-		$this->APP = get_instance(); 
+	public function __construct($table = false){
+		$this->APP = get_instance();
 	
 		if($table){
 			$this->openTable($table);
@@ -87,10 +87,34 @@ class Model {
 //| OPEN / SET / GET FUNCTIONS
 //+-----------------------------------------------------------------------+
 
-	static public function open($table){
-		if($table){
-			return new TestModel($table);
+	
+	/**
+	 * @abstract Returns a model object or it's child.
+	 * @param string $table
+	 * @return object
+	 * @access public
+	 */
+	 public function open($table){
+	 	
+	 	if($table){
+	 	
+		 	$class = 'Model';
+			
+			// identify available model extensions
+			$exts = $this->APP->config('models');
+			
+			if(is_array($exts)){
+				if(array_key_exists($table, $exts)){
+					$class = $table.'Model';
+				}
+			}
+
+			return new $class($table);
+			
 		}
+			
+		return false;
+		
 	}
 	
 	
