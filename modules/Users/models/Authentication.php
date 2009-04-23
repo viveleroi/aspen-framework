@@ -20,11 +20,20 @@ class AuthenticationModel extends Model {
 	 */
 	public function __construct($table = false){ parent::__construct($table); }
 	
-	public function insert(){
-		print 'user class does not currently permit inserts';
-		exit;
+	
+	/**
+	 * @abstract Only allow a user record to be added if a username is set
+	 * @param array $fields
+	 * @return mixed
+	 */
+	public function insert($fields = false){
 		
-		//return false;
+		if(isset($fields['username']) && !empty($fields['username'])){
+			return parent::insert($fields);
+		}
+		
+		return false;
+		
 	}
 }
 ?>

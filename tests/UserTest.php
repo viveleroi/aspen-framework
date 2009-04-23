@@ -12,11 +12,8 @@ class UserTest extends TestHelper {
 	 * Tests User->add()
 	 */
 	public function testAdd() {
-		// TODO Auto-generated UserTest->testAdd()
-		$this->markTestIncomplete ( "add test not implemented" );
-		
-		//->add(/* parameters */);
-	
+		$user = $this->sharedFixture->model->open('authentication');
+		$this->assertEquals(false, $user->insert(array('username'=>'')) );
 	}
 	
 	/**
