@@ -164,6 +164,16 @@ class Model {
 	
 	
 	/**
+	 * @abstract Verifies that a field is present in the current db schema
+	 * @param string $field
+	 * @access public
+	 */
+	final public function inSchema($field){
+		return array_key_exists(strtoupper($field), $this->schema);
+	}
+	
+	
+	/**
 	 * @abstract Returns the field marked as primary key for current table
 	 * @return mixed
 	 */
@@ -246,7 +256,9 @@ class Model {
 	 * @access public
 	 */
 	final public function setSecurityRule($field, $key, $value){
-		$this->field_security_rules[$field][$key] = $value;
+		if($this->inSchema($field_name)){
+			$this->field_security_rules[$field][$key] = $value;
+		}
 	}
 	
 	
@@ -260,8 +272,10 @@ class Model {
 		
 		$rule_result = false;
 		
-		if(isset($this->field_security_rules[$field][$key])){
-			$rule_result = $this->field_security_rules[$field][$key];
+		if($this->inSchema($field_name)){
+			if(isset($this->field_security_rules[$field][$key])){
+				$rule_result = $this->field_security_rules[$field][$key];
+			}
 		}
 		
 		return $rule_result;
@@ -976,10 +990,11 @@ class Model {
 	public function delete($id = false, $field_name = false){
 
 		$field_name = $field_name ? $field_name : $this->getPrimaryKey();
-		$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
-
-		return $this->query($this->sql['DELETE']);
-		
+		if($this->inSchema($field_name)){
+			$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
+			return $this->query($this->sql['DELETE']);
+		}
+		return false;
 	}
 	
 	
@@ -1119,10 +1134,12 @@ class Model {
 			$ins_values = '';
 		
 			foreach($fields as $field_name => $field_value){
+				if($this->inSchema($field_name)){
 			
-				$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name);
-				$ins_values .= ($ins_values == '' ? '' : ', ') . '"' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+					$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name);
+					$ins_values .= ($ins_values == '' ? '' : ', ') . '"' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
 			
+				}
 			}
 			
 			$this->sql['INSERT'] = sprintf('INSERT INTO %s (%s) VALUES (%s)',
@@ -1153,7 +1170,9 @@ class Model {
 		
 			$ins_fields = '';
 			foreach($fields as $field_name => $field_value){
-				$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+				if($this->inSchema($field_name)){
+					$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+				}
 			}
 			
 			$this->sql['UPDATE'] = sprintf('UPDATE %s SET %s WHERE %s = "%s"',

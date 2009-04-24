@@ -69,7 +69,7 @@ class Settings {
 		$cfg_model = $this->APP->model->open('config');
 
 		if($key){
-			$rec = $cfg_model->quickSelectSingle('config', $key, 'config_key');
+			$rec = $cfg_model->quickSelectSingle($key, 'config_key');
 			if(is_array($rec)){
 				$cfg_model->update(array('current_value'=>$value), $key, 'config_key');
 			} else {
