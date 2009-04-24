@@ -283,16 +283,6 @@ class FormTest extends TestHelper {
 	
 	}
 	
-	/**
-	 * Tests Form->loadRecord()
-	 */
-	public function testLoadRecord() {
-		// TODO Auto-generated FormTest->testLoadRecord()
-		$this->markTestIncomplete ( "loadRecord test not implemented" );
-		
-		$this->Form->loadRecord(/* parameters */);
-	
-	}
 	
 	/**
 	 * Tests Form->loadSingleValues()

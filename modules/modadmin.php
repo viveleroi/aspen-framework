@@ -197,7 +197,7 @@ $class_output .= "
 	 */
 	public function add(){
  
-		\$this->APP->form->loadTable('".$table_name."');
+		\$this->APP->form->load('".$table_name."');
  
 		// if form has been submitted
 		if(\$this->APP->form->isSubmitted()){
@@ -227,7 +227,7 @@ $class_output .= "
 	 */
 	public function edit(\$id = false){
 
-		\$this->APP->form->loadRecord('".$table_name."', \$id);
+		\$this->APP->form->load('".$table_name."', \$id);
  
 		// if form has been submitted
 		if(\$this->APP->form->isSubmitted()){

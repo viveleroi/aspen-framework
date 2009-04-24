@@ -38,7 +38,7 @@ class User {
 	
 		$id = false;
 
-		$this->APP->form->loadTable('authentication');
+		$this->APP->form->load('authentication');
 		$this->APP->form->addField('password_confirm');
 		$this->APP->form->addField('group', array(), array());
 
@@ -46,7 +46,6 @@ class User {
 		if($this->APP->form->isSubmitted()){
 
 			// validation
-			/*
 			if($this->APP->form->isFilled('password')){
 				if(!$this->APP->form->isFilled('password_confirm')){
 					$this->APP->form->addError('password', 'You must enter a valid password.');
@@ -63,7 +62,6 @@ class User {
 			if(empty($groups)){
 				$this->APP->form->addError('group', 'You must select at least one user group.');
 			}
-			*/
 
 				
 			$this->APP->form->setCurrentValue('password', sha1( $this->APP->form->cv('password') ));
@@ -90,7 +88,7 @@ class User {
 	 */
 	public function edit($id){
 
-		$this->APP->form->loadRecord('authentication', $id);
+		$this->APP->form->load('authentication', $id);
 		$this->APP->form->addField('password_confirm');
 
 		// pull all groups this user is associated with

@@ -257,7 +257,7 @@ $tbody .= "		</tr>\n
 	public function recordForm($table = false, $type = 'Add', $id = false, $return_html = false){
 		
 		// loads record - if fails it defaults to loadTable
-		$this->APP->form->loadRecord($table, $id);
+		$this->APP->form->load($table, $id);
 		
 		// if form has been submitted
 		if($this->APP->form->isSubmitted()){

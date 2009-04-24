@@ -64,14 +64,30 @@ class Form {
 	 * @access private
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
+	
+	
+	/**
+	 * @abstract Loads a single record - field names and values
+	 * @param string $table
+	 * @param integer $id
+	 * @param string $field
+	 * @access public
+	 */
+	public function load($table, $id = false, $field = false){
+		if($id){
+			$this->loadRecord($table, $id, $field);
+		} else {
+			$this->loadTable($table);
+		}
+	}
 
 
 	/**
 	 * @abstract Loads a table's fields and it's schema
 	 * @param string $table
-	 * @access public
+	 * @access private
 	 */
-	public function loadTable($table = false){
+	private function loadTable($table = false){
 	
 		$this->table = $table;
 
@@ -95,9 +111,9 @@ class Form {
 	 * @param string $table
 	 * @param integer $id
 	 * @param string $field
-	 * @access public
+	 * @access private
 	 */
-	public function loadRecord($table, $id = false, $field = false){
+	private function loadRecord($table, $id = false, $field = false){
 
 		$this->table = $table;
 	
