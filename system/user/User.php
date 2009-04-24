@@ -48,6 +48,16 @@ class User {
 			// validation
 			if(!$this->APP->form->isFilled('username')){
 				$this->APP->form->addError('username', 'You must enter a username.');
+			} else {
+				
+				// verify unique
+				$this->APP->model->select('authentication');
+				$this->APP->model->where('username', $this->APP->form->cv('username'));
+				$unique = $this->APP->model->results();
+				
+				if($unique['RECORDS']){
+					$this->APP->form->addError('username', 'That username has already been used.');
+				}
 			}
 	
 			if($this->APP->form->isFilled('password')){
