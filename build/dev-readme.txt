@@ -1,2 +1,2 @@
 Testing bug 1297
-2
+3
