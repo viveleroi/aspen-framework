@@ -134,6 +134,9 @@ class Form {
 	 * @access public
 	 */
 	public function save($id = false){
+		
+		$success = false;
+		
 		if(!$this->error()){
 			
 			$model = $this->APP->model->open($this->table);
@@ -146,11 +149,18 @@ class Form {
 				}
 			}
 			
-			return $id ? $model->update($fields, $id) : $model->insert($fields);
+			$success = $id ? $model->update($fields, $id) : $model->insert($fields);
 			
+			if(!$success){
+				foreach($model->getErrors() as $field => $errors){
+					foreach($errors as $error){
+						$this->addError($field, $error);
+					}
+				}
+			}
 		}
 		
-		return false;
+		return $success;
 		
 	}
 

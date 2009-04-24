@@ -18,11 +18,11 @@ $lang['admin']['forgot:button'] 		= 'Send New Password';
 $lang['admin']['forgot:login'] 			= 'Back to Login';
 
 // my account
-$lang['admin']['myaccount:title'] 	= 'My Account';
+$lang['admin']['myaccount:title'] 		= 'My Account';
 $lang['admin']['myaccount:help']	 	= 'Enter in your password twice to change it.';
 
 $lang['admin']['myaccount:label:password'] 		= 'Password';
-$lang['admin']['myaccount:label:password_2'] 		= 'Confirm';
+$lang['admin']['myaccount:label:password_2'] 	= 'Confirm';
 $lang['admin']['myaccount:button:submit'] 		= 'Save Changes';
 
 // user list
@@ -52,4 +52,8 @@ $lang['admin']['userform:editbutton'] 	= 'Save Changes';
 // permission denied
 $lang['admin']['denied:title'] 	= 'Permission Denied';
 $lang['admin']['denied:intro'] 	= 'Your user account does not currently have sufficient permission to access this page. Please contact an administrator for assistance.';
+
+// query validation errors
+$lang['admin']['query:username'] = 'You must enter a username.';
+
 ?>

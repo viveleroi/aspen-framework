@@ -28,11 +28,11 @@ class AuthenticationModel extends Model {
 	 */
 	public function insert($fields = false){
 		
-		if(isset($fields['username']) && !empty($fields['username'])){
-			return parent::insert($fields);
+		if(!isset($fields['username']) || empty($fields['username'])){
+			$this->addError('username', $this->APP->template->text('query:username'));
 		}
 		
-		return false;
+		return parent::insert($fields);
 		
 	}
 }

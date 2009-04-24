@@ -47,10 +47,6 @@ class User {
 
 			// validation
 			/*
-			if(!$this->APP->form->isFilled('username')){
-				$this->APP->form->addError('username', 'You must enter a username.');
-			}
-	
 			if($this->APP->form->isFilled('password')){
 				if(!$this->APP->form->isFilled('password_confirm')){
 					$this->APP->form->addError('password', 'You must enter a valid password.');
@@ -67,21 +63,19 @@ class User {
 			if(empty($groups)){
 				$this->APP->form->addError('group', 'You must select at least one user group.');
 			}
-*/
+			*/
 
-			// if no errors, process groups
-			if(!$this->APP->form->error()){
 				
-				$this->APP->form->setCurrentValue('password', sha1( $this->APP->form->cv('password') ));
+			$this->APP->form->setCurrentValue('password', sha1( $this->APP->form->cv('password') ));
 
-				if($id = $this->APP->form->save()){
+			if($id = $this->APP->form->save()){
 
-					// add new user groups
-					foreach($this->APP->form->cv('group') as $group){
-						$this->APP->model->executeInsert('user_group_link', array('user_id' => $id, 'group_id' => $group));
-					}
+				// add new user groups
+				foreach($this->APP->form->cv('group') as $group){
+					$this->APP->model->executeInsert('user_group_link', array('user_id' => $id, 'group_id' => $group));
 				}
 			}
+		
 		}
 		
 		return $id;
@@ -359,7 +353,8 @@ class User {
 
 					// update last login date
 					$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
-					$this->APP->model->executeUpdate('authentication', $upd, $account['id']);
+					$model = $this->APP->model->open('authentication', $upd, $account['id']);
+					$model->update($upd, $account['id']);
 
 					$auth = true;
 					

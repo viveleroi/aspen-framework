@@ -18,13 +18,26 @@ class Model {
 	 * @var object Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 	
 	/**
 	 * @var array Holds an array of calculations we need to perform on the results
 	 * @access private
 	 */
 	private $calcs = false;
+	
+	/**
+	 * @var array $errors Holds an array of field validation errors
+	 * @access private
+	 */
+	private $errors = array();
+
+	/**
+	 * @abstract Flags a validation error
+	 * @var boolean $error
+	 * @access private
+	 */
+	private $error = false;
 	
 	/**
 	 * @var array Holds an array of security rules to apply to each field.
@@ -94,7 +107,7 @@ class Model {
 	 * @return object
 	 * @access public
 	 */
-	 public function open($table){
+	 final public function open($table){
 
 	 	if($table){
 	 	
@@ -145,7 +158,7 @@ class Model {
 	 * @return array
 	 * @access public
 	 */
-	public function getSchema(){
+	final public function getSchema(){
 		return $this->schema;
 	}
 	
@@ -154,7 +167,7 @@ class Model {
 	 * @abstract Returns the field marked as primary key for current table
 	 * @return mixed
 	 */
-	public function getPrimaryKey(){
+	final public function getPrimaryKey(){
 
 		$schema = $this->getSchema();
 
@@ -232,7 +245,7 @@ class Model {
 	 * @param string $value
 	 * @access public
 	 */
-	public function setSecurityRule($field, $key, $value){
+	final public function setSecurityRule($field, $key, $value){
 		$this->field_security_rules[$field][$key] = $value;
 	}
 	
@@ -243,7 +256,7 @@ class Model {
 	 * @param string $key
 	 * @return mixed
 	 */
-	private function getSecurityRule($field, $key){
+	final private function getSecurityRule($field, $key){
 		
 		$rule_result = false;
 		
@@ -635,18 +648,6 @@ class Model {
 	
 	
 	/**
-	 * @abstract Adds a sort order, optionally pulls from saved prefs DEPRACATED
-	 * @param string $sort_location
-	 * @param string $field
-	 * @param string $dir
-	 * @access public
-	 */
-	public function orderByPreference($sort_location = false, $field = 'id', $dir = 'ASC'){
-		$this->orderBy($field, $dir, $sort_location);
-	}
-	
-	
-	/**
 	 * @abstract Limits the results returned
 	 * @param integer $start
 	 * @param integer $limit
@@ -778,7 +779,7 @@ class Model {
 		
 		$results = false;
 		
-		if($query){
+		if($query && !$this->error()){
 		
 			$this->last_query = $query;
 			
@@ -917,7 +918,7 @@ class Model {
 	 * @abstract Clears any generated queries
 	 * @access public
 	 */
-	public function clearQuery(){
+	final public function clearQuery(){
 		$this->sql = false;
 	}
 	
@@ -929,14 +930,15 @@ class Model {
 
 	/**
 	 * @abstract Generates a quick select statement for a single record
-	 * @param string $table
 	 * @param integer $id
 	 * @param string $field
+	 * @param string $table
 	 * @return array
 	 * @access public
 	 */
-	public function quickSelectSingle($table = false, $id = false, $field = false){
+	public function quickSelectSingle($id = false, $field = false, $table = false){
 
+		$table = $table ? $table : $this->table;
 		$field = $field ? $field : $this->getPrimaryKey();
 		
 		$this->select($table);
@@ -953,13 +955,14 @@ class Model {
 	
 	/**
 	 * @abstract Generates a quick select statement for a single record and returns the result as xml
-	 * @param string $table
 	 * @param integer $id
+	 * @param string $table
 	 * @return string
 	 * @access public
 	 */
-	public function quickSelectSingleToXml($table = false, $id = false){
-		return $this->APP->xml->arrayToXml( $this->quickSelectSingle($table, $id) );
+	public function quickSelectSingleToXml($id = false, $table = false){
+		$table = $table ? $table : $this->table;
+		return $this->APP->xml->arrayToXml( $this->quickSelectSingle($id, false, $table) );
 	}
 
 	
@@ -1163,6 +1166,47 @@ class Model {
 		
 		return $this->results();
 		
+	}
+	
+	
+//+-----------------------------------------------------------------------+
+//| FIELD ERROR HANDLING FUNCTIONS
+//+-----------------------------------------------------------------------+
+
+	/**
+	 * @abstract Adds a new field validation error to the error queue
+	 * @param string $field
+	 * @param string $message
+	 */
+	public function addError($field, $message){
+		
+		$this->error = true;
+
+		if(isset($this->errors[$field]) && is_array($this->errors[$field])){
+			array_push($this->errors[$field], $message);
+		} else {
+			$this->errors[$field] = array($message);
+		}
+	}
+	
+	
+	/**
+	 * @abstract Returns an array of current form errors
+	 * @return array
+	 * @access public
+	 */
+	public function getErrors(){
+		return $this->errors;
+	}
+	
+	
+	/**
+	 * @abstract Returns a boolean whether there is a field validation error or not
+	 * @return boolean
+	 * @access public
+	 */
+	final public function error(){
+		return $this->error;
 	}
 }
 ?>
