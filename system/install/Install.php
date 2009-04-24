@@ -322,7 +322,8 @@ class Install {
 	 * @access private
 	 */
 	private function recordCurrentBuild(){
-		$this->APP->model->executeInsert('upgrade_history', array('current_build' => $this->APP->formatVersionNumber($this->APP->config('application_version')), 'upgrade_completed' => date("Y-m-d H:i:s")));
+		$model = $this->APP->model->open('upgrade_history');
+		$model->executeInsert(array('current_build' => $this->APP->formatVersionNumber($this->APP->config('application_version')), 'upgrade_completed' => date("Y-m-d H:i:s")));
 	}
 	
 	

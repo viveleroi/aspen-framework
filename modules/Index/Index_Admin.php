@@ -22,28 +22,6 @@ class Index_Admin extends Module {
 	 */
 	public function view(){
 		
-
-		/* example of ORM use */
-		/*
-		$new_model = $this->APP->model->open('test');
-		$new_model->select();
-		print_r($new_model->results());
-		*/
-		
-	/*
-		$new_model = $this->APP->model->open('test');
-		$new_model->select();
-		$new_model->where('id', 1);
-		print_r($new_model->results());
-
-
-		$new_model = $this->APP->model->open('test');
-		$new_module->id = 1;
-		$new_model->select();
-		print_r($new_model->results());
-	*/
-
-		
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');

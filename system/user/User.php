@@ -54,8 +54,6 @@ class User {
 						$this->APP->form->addError('password', 'Your passwords do not match.');
 					}
 				}
-			} else {
-				$this->APP->form->addError('password', 'You must enter a valid password.');
 			}
 			
 			$groups = $this->APP->form->cv('group');
