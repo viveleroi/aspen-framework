@@ -1,4 +1,1 @@
-
-
-Testing git/bz 1297
-5
+Testing bug 1297
