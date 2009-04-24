@@ -77,17 +77,6 @@ class App extends Bootstrap {
 		$this->log->write('Application request completed at ' . date("Y-m-d H:i:s"));
 		
 	}
-	
-	
-	/**
-	 * @abstract [DEPRECATED] Generates an unordered list nav admin menu based off of all links currently in the array. Aliases generateInterfaceMenu
-	 * @param boolean $display_ul Whether or not to print out the UL element wrapper
-	 * @return string
-	 * @access private
-	 */
-	public function generateAdminMenu($display_ul = true){
-		return $this->generateInterfaceMenu($display_ul);
-	}
 
 	
 	/**
