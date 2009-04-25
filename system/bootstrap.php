@@ -985,7 +985,7 @@ class Bootstrap extends Base {
 	 */
 	public function listModules(){
 		if($this->checkDbConnection()){
-			$model = $this->APP->model->open('modules');
+			$model = $this->model->open('modules');
 			$model->select();
 			$model->orderBy('sort_order');
 			$modules = $model->results();
@@ -1254,10 +1254,10 @@ class Bootstrap extends Base {
 		$version = '';
 
 		// get latest build in database
-		$model = $this->APP->model->open('upgrade_history');
+		$model = $this->model->open('upgrade_history');
 		$model->select();
 		$model->orderBy('id', 'DESC');
-		$model>limit(0, 1);
+		$model->limit(0, 1);
 		$ughist = $model->results();
 		
 		if($ughist['RECORDS']){

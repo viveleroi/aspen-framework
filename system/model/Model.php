@@ -269,7 +269,7 @@ class Model {
 		
 		$rule_result = false;
 		
-		if($this->inSchema($field_name)){
+		if($this->inSchema($field)){
 			if(isset($this->field_security_rules[$field][$key])){
 				$rule_result = $this->field_security_rules[$field][$key];
 			}
@@ -291,9 +291,6 @@ class Model {
 	 * @access public
 	 */
 	public function select($fields = false, $distinct = false){
-		
-		// open the table
-		if($table){ $this->openTable($table); }
 
 		// begin the select, append SQL_CALC_FOUND_ROWS is pagination is enabled
 		$this->sql['SELECT'] = $this->paginate ? 'SELECT SQL_CALC_FOUND_ROWS' : 'SELECT';
