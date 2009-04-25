@@ -21,6 +21,31 @@ class AuthenticationModel extends Model {
 	public function __construct($table = false){ parent::__construct($table); }
 	
 	
+	public function validate($fields = false){
+		
+		if(is_array($fields)){
+			
+			// validate username
+			if(!isset($fields['username']) || empty($fields['username'])){
+				$this->addError('username', $this->APP->template->text('query:username'));
+			}
+			
+			// validate password
+			if(!isset($fields['password']) || empty($fields['password'])){
+				$this->addError('password', 'You must enter a valid password.');
+			} else {
+				
+				// enforce sha1 on password
+				$fields['password'] = sha1($fields['password']);
+				
+			}
+		}
+		
+		return $this->error();
+		
+	}
+	
+	
 	/**
 	 * @abstract Only allow a user record to be added if a username is set
 	 * @param array $fields
@@ -28,21 +53,7 @@ class AuthenticationModel extends Model {
 	 */
 	public function insert($fields = false){
 		
-		// validate username
-		if(!isset($fields['username']) || empty($fields['username'])){
-			$this->addError('username', $this->APP->template->text('query:username'));
-		}
-		
-		// validate password
-		if(!isset($fields['password']) || empty($fields['password'])){
-			$this->APP->form->addError('password', 'You must enter a valid password.');
-		} else {
-			
-			// enforce sha1 on password
-			$fields['password'] = sha1($fields['password']);
-			
-		}
-		
+		$this->validate($fields);
 		return parent::insert($fields);
 		
 	}

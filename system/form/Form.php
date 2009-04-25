@@ -151,27 +151,29 @@ class Form {
 	 */
 	public function save($id = false){
 		
-		$success = false;
+		$model 		= $this->APP->model->open($this->table);
+		$success 	= false;
 		
-		if(!$this->error()){
-			
-			$model = $this->APP->model->open($this->table);
-			
-			// build the array of field/vars
-			$fields = array();
-			foreach($model->getSchema() as $field){
-				if(!$field->primary_key){
-					$fields[$field->name] = $this->APP->form->cv($field->name, false);
-				}
+		// build the array of field/vars
+		$fields = array();
+		foreach($model->getSchema() as $field){
+			if(!$field->primary_key){
+				$fields[$field->name] = $this->APP->form->cv($field->name, false);
 			}
-			
+		}
+		
+		// process ins/upd for real, otherwise pre-validate data through model
+		if(!$this->error()){
 			$success = $id ? $model->update($fields, $id) : $model->insert($fields);
-			
-			if(!$success){
-				foreach($model->getErrors() as $field => $errors){
-					foreach($errors as $error){
-						$this->addError($field, $error);
-					}
+		} else {
+			$model->validate($fields);
+		}
+		
+		// if failed, pull all model validation errors into form array
+		if(!$success){
+			foreach($model->getErrors() as $field => $errors){
+				foreach($errors as $error){
+					$this->addError($field, $error);
 				}
 			}
 		}
