@@ -85,7 +85,7 @@ class File {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 	
 	/**

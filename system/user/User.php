@@ -18,7 +18,7 @@ class User {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -92,8 +92,7 @@ class User {
 		// pull all groups this user is associated with
 		$group_array = array();
 		
-		$model = $this->APP->model->open('user_group_link');
-		$model->select();
+		$model = $this->APP->model->openAndSelect('user_group_link');
 		$model->where('user_id', $id);
 		$groups = $model->results();
 		if($groups['RECORDS']){
@@ -327,8 +326,7 @@ class User {
 
 		if($user && $pass){
 			
-			$model = $this->APP->model->open('authentication');
-			$model->select();
+			$model = $this->APP->model->openAndSelect('authentication');
 			$model->where('password', $pass);
 			$model->where('username', $user);
 			$model->where('allow_login', 1);
@@ -486,8 +484,7 @@ class User {
 		
 		if($user_id){
 			
-			$model = $this->APP->model->open('user_group_link');
-			$model->select();
+			$model = $this->APP->model->openAndSelect('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
 			$model->where('groups.name', $group_name);
@@ -514,8 +511,7 @@ class User {
 		
 		if($user_id){
 			
-			$model = $this->APP->model->open('user_group_link');
-			$model->select();
+			$model = $this->APP->model->openAndSelect('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
 			$groups = $model->results();
@@ -543,8 +539,7 @@ class User {
 
 		if($this->isLoggedIn()){
 			
-			$model = $this->APP->model->open('user_group_link');
-			$model->select();
+			$model = $this->APP->model->openAndSelect('user_group_link');
 			$model->where('user_id', $this->APP->params->session->getInt('user_id'));
 			$model->where('group_id', 1);
 			$groups = $model->results();
@@ -567,8 +562,7 @@ class User {
 
 		if($this->APP->checkDbConnection()){
 
-			$model = $this->APP->model->open('authentication');
-			$model->select();
+			$model = $this->APP->model->openAndSelect('authentication');
 			$accounts = $model->results();
 			return count($accounts['RECORDS']);
 
@@ -617,8 +611,7 @@ class User {
 	 */
 	public function groupList(){
 
-		$model = $this->APP->model->open('groups');
-		$model->select();
+		$model = $this->APP->model->openAndSelect('groups');
 		$model->orderBy('name');
 		$groups = $model->results();
 		return $groups['RECORDS'];

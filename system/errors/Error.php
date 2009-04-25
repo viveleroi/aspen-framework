@@ -68,7 +68,7 @@ class Error {
 	 * @var object $APP Holds an instance of our app
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**

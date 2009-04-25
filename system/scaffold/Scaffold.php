@@ -18,7 +18,7 @@ class Scaffold {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -69,8 +69,7 @@ class Scaffold {
 			$thead = '';
 			$tbody = '';
 	 
-			$model = $this->APP->model->open($table);
-			$model->select();
+			$model = $this->APP->model->openAndSelect($table);
 			$results 	= $model->results();
 			$schema 	= $model->getSchema();
 			$key_field 	= $model->getPrimaryKey();
@@ -133,7 +132,6 @@ class Scaffold {
 			$tbody = '';
 	 
 			$model = $this->APP->model->open($table);
-			$model->select();
 			$results 	= $model->results();
 			$schema 	= $model->getSchema();
 			$key_field 	= $model->getPrimaryKey();

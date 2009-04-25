@@ -127,6 +127,24 @@ class Model {
 		
 	}
 	
+	
+	/**
+	 * @abstract Returns a model object or its child, and begins a basic SELECT statement.
+	 * @param string $table
+	 * @return object
+	 * @access public
+	 */
+	 final public function openAndSelect($table){
+
+	 	$model = $this->open($table);
+	 	if(is_object($model)){
+	 		$model->select();
+	 	}
+			
+		return $model;
+		
+	}
+	
 
 	/**
 	 * @abstract Sets the current table and loads the table schema
@@ -228,6 +246,15 @@ class Model {
 		return $this->last_query;
 	}
 	
+	
+	/**
+	 * @abstract Returns the last run query - aliases getLastQuery
+	 * @return string
+	 * @access public
+	 */
+	public function lq(){
+		return $this->getLastQuery();
+	}
 	
 	/**
 	 * @abstract Returns the query currently being built
@@ -760,15 +787,22 @@ class Model {
 		}
 		
 		// generate the insert query
-		if(isset($this->sql['INSERT'])){
+		elseif(isset($this->sql['INSERT'])){
 			$this->query_type = 'insert';
 			$sql = $this->sql['INSERT'];
 		}
 		
 		// generate the update query
-		if(isset($this->sql['UPDATE'])){
+		elseif(isset($this->sql['UPDATE'])){
 			$this->query_type = 'update';
 			$sql = $this->sql['UPDATE'];
+		}
+		
+		else {
+			
+			$this->select();
+			$sql = $this->writeSql();
+			
 		}
 
 		return $sql;

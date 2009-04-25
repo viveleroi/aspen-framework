@@ -18,7 +18,7 @@ class Cache {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 	
 	/**
 	 * @var boolean $dir The directory path to our cache files

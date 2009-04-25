@@ -18,7 +18,7 @@ class Preferences {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -39,8 +39,7 @@ class Preferences {
 		if($this->APP->params->session->getInt('user_id', false) && $this->APP->checkDbConnection()){
 
 			// load sort settings
-			$pref_model = $this->APP->model->open('preferences_sorts');
-			$pref_model->select();
+			$pref_model = $this->APP->model->openAndSelect('preferences_sorts');
 			$pref_model->where('user_id', $this->APP->params->session->getInt('user_id'));
 			$sorts = $pref_model->results();
 			

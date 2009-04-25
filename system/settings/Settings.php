@@ -18,7 +18,7 @@ class Settings {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -40,8 +40,7 @@ class Settings {
 		
 		if($this->APP->checkDbConnection()){
 
-			$cfg_model = $this->APP->model->open('config');
-			$cfg_model->select();
+			$cfg_model = $this->APP->model->openAndSelect('config');
 			$cfg_model->where('config_key', $key);
 			$config = $cfg_model->results();
 	

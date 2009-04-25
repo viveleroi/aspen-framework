@@ -353,8 +353,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->select()
 	 */
 	public function testSelect() {
-		$model = $model->open('authentication');
-		$model->select();
+		$model = $model->openAndSelect('authentication');
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
@@ -398,7 +397,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->where()
 	 */
 	public function testWhere() {
-		$model = $model->open('authentication');
+		$model = $model->openAndSelect('authentication');
 		$model->select();
 		$model->where('id', 1);
 		
@@ -413,7 +412,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereAfterToday()
 	 */
 	public function testWhereAfterToday() {
-		$model = $model->open('authentication');
+		$model = $model->openAndSelect('authentication');
 		$model->select();
 		$model->whereAfterToday('last_login');
 		
@@ -427,7 +426,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereBeforeToday()
 	 */
 	public function testWhereBeforeToday() {
-		$model = $model->open('authentication');
+		$model = $model->openAndSelect('authentication');
 		$model->select();
 		$model->whereBeforeToday('last_login');
 		
@@ -442,7 +441,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereBetween()
 	 */
 	public function testWhereBetween() {
-		$model = $model->open('authentication');
+		$model = $model->openAndSelect('authentication');
 		$model->select();
 		$model->whereBetween('allow_login', 0, 3);
 		
@@ -458,7 +457,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereGreaterThan()
 	 */
 	public function testWhereGreaterThan() {
-		$model = $model->open('authentication');
+		$model = $model->openAndSelect('authentication');
 		$model->select();
 		$model->whereGreaterThan('allow_login', 0);
 		
@@ -474,7 +473,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereLessThan()
 	 */
 	public function testWhereLessThan() {
-		$model = $model->open('authentication');
+		$model = $model->openAndSelect('authentication');
 		$model->select();
 		$model->whereLessThan('allow_login', 3);
 		
@@ -490,8 +489,8 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereLike()
 	 */
 	public function testWhereLike() {
-		$model = $model->open('authentication');
-		$model->select();
+		$model = $model->openAndSelect('authentication');
+		
 		$model->whereLike('nice_name', 'Mike');
 		
 		$qry = $model->getBuildQuery();
@@ -505,8 +504,8 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereNot()
 	 */
 	public function testWhereNot() {
-		$model = $model->open('authentication');
-		$model->select();
+		$model = $model->openAndSelect('authentication');
+		
 		$model->whereNot('nice_name', 'Bobblehead');
 		
 		$qry = $model->getBuildQuery();
