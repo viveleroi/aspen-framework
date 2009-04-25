@@ -32,7 +32,7 @@
 		
 		<?php if($this->APP->user->isLoggedIn()){ ?>
 		<ul id="nav">
-			<?php print $this->APP->generateAdminMenu(false) ?>
+			<?php print $this->APP->generateInterfaceMenu(false) ?>
 			<li><?php print $this->createLink('Logout', 'logout', false, 'Users'); ?></li>
 		</ul>
 		<?php } ?>
