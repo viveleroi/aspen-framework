@@ -135,14 +135,11 @@ class Model {
 	 * @access public
 	 */
 	 final public function openAndSelect($table){
-
 	 	$model = $this->open($table);
 	 	if(is_object($model)){
 	 		$model->select();
-	 	}
-			
+	 	}	
 		return $model;
-		
 	}
 	
 
