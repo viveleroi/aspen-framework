@@ -36,7 +36,7 @@ class Template {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -176,10 +176,9 @@ class Template {
 
 
 	/**
-	 * Adds a template to the display stack, so when the display
+	 * @abstract Adds a template to the display stack, so when the display
 	 * function is called, the templates will be output in the
 	 * order they were added.
-	 *
 	 * @param string $template
 	 * @access public
 	 */
@@ -209,13 +208,11 @@ class Template {
 		// set values, or use default if false.
 		$method = $method ? $method : $this->APP->router->getSelectedMethod();
 		$module = $module ? $module : $this->APP->router->getSelectedModule();
-		$title = $title ? $title : $text;
-		
-		$link = '';
+		$title 	= $title ? $title : $text;
+		$link 	= '';
+		$class 	= false;
 
 		if($this->APP->user->userHasAccess($module, $method, $interface)){
-
-			$class = false;
 
 			// highlight the link if the user is at the page
 			if($method == $this->APP->router->getSelectedMethod() && $module == $this->APP->router->getSelectedModule()){
@@ -330,7 +327,6 @@ class Template {
 		if($this->APP->router->arg(1)){
 			$bits = array('id' => $this->APP->router->arg(1));
 		}
-	
 		return $this->createXhtmlValidUrl($method, $bits);
 	}
 	

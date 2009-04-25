@@ -18,13 +18,26 @@ class Model {
 	 * @var object Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 	
 	/**
 	 * @var array Holds an array of calculations we need to perform on the results
 	 * @access private
 	 */
 	private $calcs = false;
+	
+	/**
+	 * @var array $errors Holds an array of field validation errors
+	 * @access private
+	 */
+	private $errors = array();
+
+	/**
+	 * @abstract Flags a validation error
+	 * @var boolean $error
+	 * @access private
+	 */
+	private $error = false;
 	
 	/**
 	 * @var array Holds an array of security rules to apply to each field.
@@ -74,20 +87,69 @@ class Model {
 	 * @return Model
 	 * @access private
 	 */
-	public function __construct(){ $this->APP = get_instance(); }
+	public function __construct($table = false){
+		$this->APP = get_instance();
+	
+		if($table){ $this->openTable($table); }
+	}
 	
 	
 //+-----------------------------------------------------------------------+
 //| OPEN / SET / GET FUNCTIONS
 //+-----------------------------------------------------------------------+
 
+	
+	/**
+	 * @abstract Returns a model object or its child.
+	 * @param string $table
+	 * @return object
+	 * @access public
+	 */
+	 final public function open($table){
+
+	 	if($table){
+	 	
+		 	$class = 'Model';
+			
+			// identify available model extensions
+			$exts = $this->APP->config('models');
+			if(is_array($exts)){
+				if(array_key_exists($table, $exts)){
+					$class = $table.'Model';
+				}
+			}
+
+			return new $class($table);
+			
+		}
+			
+		return false;
+		
+	}
+	
+	
+	/**
+	 * @abstract Returns a model object or its child, and begins a basic SELECT statement.
+	 * @param string $table
+	 * @return object
+	 * @access public
+	 */
+	 final public function openAndSelect($table){
+	 	$model = $this->open($table);
+	 	if(is_object($model)){
+	 		$model->select();
+	 	}	
+		return $model;
+	}
+	
+
 	/**
 	 * @abstract Sets the current table and loads the table schema
 	 * @param string $table
-	 * @access public
+	 * @access private
 	 * @return mixed
 	 */
-	public function openTable($table = false){
+	private function openTable($table = false){
 		$this->table = $table;
 		$this->generateSchema();
 	}
@@ -108,8 +170,18 @@ class Model {
 	 * @return array
 	 * @access public
 	 */
-	public function getSchema(){
+	final public function getSchema(){
 		return $this->schema;
+	}
+	
+	
+	/**
+	 * @abstract Verifies that a field is present in the current db schema
+	 * @param string $field
+	 * @access public
+	 */
+	final public function inSchema($field){
+		return array_key_exists(strtoupper($field), $this->schema);
 	}
 	
 	
@@ -117,7 +189,7 @@ class Model {
 	 * @abstract Returns the field marked as primary key for current table
 	 * @return mixed
 	 */
-	public function getPrimaryKey(){
+	final public function getPrimaryKey(){
 
 		$schema = $this->getSchema();
 
@@ -146,12 +218,16 @@ class Model {
 	 * @param string $table
 	 * @return array
 	 */
-	public function showStatus($table){
+	public function showStatus($table = false){
+		
+		$table = $table ? $table : $this->table;
 
-		$records = $this->query(sprintf('SHOW TABLE STATUS LIKE "%s"', $table));
-		if($records->RecordCount()){
-			while($record = $records->FetchRow()){
-				return $record;
+		if($table){
+			$records = $this->query(sprintf('SHOW TABLE STATUS LIKE "%s"', $table));
+			if($records->RecordCount()){
+				while($record = $records->FetchRow()){
+					return $record;
+				}
 			}
 		}
 		return false;
@@ -167,6 +243,15 @@ class Model {
 		return $this->last_query;
 	}
 	
+	
+	/**
+	 * @abstract Returns the last run query - aliases getLastQuery
+	 * @return string
+	 * @access public
+	 */
+	public function lq(){
+		return $this->getLastQuery();
+	}
 	
 	/**
 	 * @abstract Returns the query currently being built
@@ -191,8 +276,10 @@ class Model {
 	 * @param string $value
 	 * @access public
 	 */
-	public function setSecurityRule($field, $key, $value){
-		$this->field_security_rules[$field][$key] = $value;
+	final public function setSecurityRule($field, $key, $value){
+		if($this->inSchema($field_name)){
+			$this->field_security_rules[$field][$key] = $value;
+		}
 	}
 	
 	
@@ -202,12 +289,14 @@ class Model {
 	 * @param string $key
 	 * @return mixed
 	 */
-	private function getSecurityRule($field, $key){
+	final private function getSecurityRule($field, $key){
 		
 		$rule_result = false;
 		
-		if(isset($this->field_security_rules[$field][$key])){
-			$rule_result = $this->field_security_rules[$field][$key];
+		if($this->inSchema($field)){
+			if(isset($this->field_security_rules[$field][$key])){
+				$rule_result = $this->field_security_rules[$field][$key];
+			}
 		}
 		
 		return $rule_result;
@@ -221,15 +310,11 @@ class Model {
 	
 	/**
 	 * @abstract Adds a new select statement to our query
-	 * @param string $table
 	 * @param array $fields
 	 * @param boolean $distinct
 	 * @access public
 	 */
-	public function select($table = false, $fields = false, $distinct = false){
-
-		// open the table
-		$this->openTable($table);
+	public function select($fields = false, $distinct = false){
 
 		// begin the select, append SQL_CALC_FOUND_ROWS is pagination is enabled
 		$this->sql['SELECT'] = $this->paginate ? 'SELECT SQL_CALC_FOUND_ROWS' : 'SELECT';
@@ -256,9 +341,7 @@ class Model {
 	 * @access public
 	 */
 	public function addSelectField($field){
-
 		$this->sql['FIELDS'] .= sprintf(', %s', $field);
-
 	}
 
 
@@ -596,18 +679,6 @@ class Model {
 	
 	
 	/**
-	 * @abstract Adds a sort order, optionally pulls from saved prefs DEPRACATED
-	 * @param string $sort_location
-	 * @param string $field
-	 * @param string $dir
-	 * @access public
-	 */
-	public function orderByPreference($sort_location = false, $field = 'id', $dir = 'ASC'){
-		$this->orderBy($field, $dir, $sort_location);
-	}
-	
-	
-	/**
 	 * @abstract Limits the results returned
 	 * @param integer $start
 	 * @param integer $limit
@@ -713,15 +784,22 @@ class Model {
 		}
 		
 		// generate the insert query
-		if(isset($this->sql['INSERT'])){
+		elseif(isset($this->sql['INSERT'])){
 			$this->query_type = 'insert';
 			$sql = $this->sql['INSERT'];
 		}
 		
 		// generate the update query
-		if(isset($this->sql['UPDATE'])){
+		elseif(isset($this->sql['UPDATE'])){
 			$this->query_type = 'update';
 			$sql = $this->sql['UPDATE'];
+		}
+		
+		else {
+			
+			$this->select();
+			$sql = $this->writeSql();
+			
 		}
 
 		return $sql;
@@ -739,7 +817,7 @@ class Model {
 		
 		$results = false;
 		
-		if($query){
+		if($query && !$this->error()){
 		
 			$this->last_query = $query;
 			
@@ -878,7 +956,7 @@ class Model {
 	 * @abstract Clears any generated queries
 	 * @access public
 	 */
-	public function clearQuery(){
+	final public function clearQuery(){
 		$this->sql = false;
 	}
 	
@@ -890,20 +968,16 @@ class Model {
 
 	/**
 	 * @abstract Generates a quick select statement for a single record
-	 * @param string $table
 	 * @param integer $id
 	 * @param string $field
 	 * @return array
 	 * @access public
 	 */
-	public function quickSelectSingle($table = false, $id = false, $field = false){
-		
-		// select table first
-		$this->select($table);
-		
-		// set primary key field
+	public function quickSelectSingle($id = false, $field = false){
+
 		$field = $field ? $field : $this->getPrimaryKey();
 		
+		$this->select();
 		$this->where($field, $id);
 		$record = $this->APP->model->results($field);
 		
@@ -911,42 +985,36 @@ class Model {
 			return $record['RECORDS'][$id];
 		}
 		return false;
+		
 	}
 	
 	
 	/**
 	 * @abstract Generates a quick select statement for a single record and returns the result as xml
-	 * @param string $table
 	 * @param integer $id
 	 * @return string
 	 * @access public
 	 */
-	public function quickSelectSingleToXml($table = false, $id = false){
-		return $this->APP->xml->arrayToXml( $this->quickSelectSingle($table, $id) );
+	public function quickSelectSingleToXml($id = false){
+		return $this->APP->xml->arrayToXml( $this->quickSelectSingle($id) );
 	}
 
 	
 	/**
 	 * @abstract Generates and executes a select query
-	 * @param string $table
 	 * @param integer $id
 	 * @param string $field_name
 	 * @return boolean
 	 * @access public
 	 */
-	public function delete($table = false, $id = false, $field_name = false){
+	public function delete($id = false, $field_name = false){
 
-		if($table){
-
-			$this->openTable($table);
-			$field_name = $field_name ? $field_name : $this->getPrimaryKey();
-			
+		$field_name = $field_name ? $field_name : $this->getPrimaryKey();
+		if($this->inSchema($field_name)){
 			$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
-
+			return $this->query($this->sql['DELETE']);
 		}
-
-		return $this->query($this->sql['DELETE']);
-		
+		return false;
 	}
 	
 	
@@ -956,23 +1024,24 @@ class Model {
 	 * @return boolean
 	 * @access public
 	 */
-	public function drop($table){
-		return $this->query(sprintf('DROP TABLE %s', $table));
+	public function drop(){
+		if($this->table){
+			return $this->query(sprintf('DROP TABLE %s', $this->table));
+		}
+		return false;
 	}
 	
 	
 	/**
 	 * @abstract Duplicates records using INSERT... SELECT...
-	 * @param string $table
 	 * @param mixed $id
 	 * @param string $field_name
 	 * @param string $select_table
 	 * @return integer
 	 * @access public
 	 */
-	public function duplicate($table, $id, $field_name = 'id', $replace_field = false){
+	public function duplicate($id, $field_name = 'id', $replace_field = false){
 
-		$this->openTable($table);
 		$fields = $this->getSchema();
 
 		foreach($fields as $field){
@@ -1070,193 +1139,113 @@ class Model {
 //+-----------------------------------------------------------------------+
 //| INSERT / UPDATE FUNCTIONS
 //+-----------------------------------------------------------------------+
-
-	
-	/**
-	 * @abstract Generates an INSERT query and auto-executes it. Aliases executeInsert
-	 * @param string $table
-	 * @param array $fields
-	 * @return integer
-	 * @access public
-	 */
-	public function insert($table = false, $fields = false){
-		return $this->executeInsert($table, $fields);
-	}
-	
 	
 	/**
 	 * @abstract Generates an INSERT query and auto-executes it
-	 * @param string $table
 	 * @param array $fields
 	 * @return integer
 	 * @access private
 	 */
-	public function executeInsert($table = false, $fields = false){
-		$this->generateInsert($table, $fields);
-		return $this->results();
-	}
+	public function insert($fields = false){
 	
-	
-	/**
-	 * @abstract Generates an INSERT query
-	 * @param string $table
-	 * @param array $fields
-	 * @access public
-	 */
-	public function generateInsert($table = false, $fields = false){
-	
-		if($table && is_array($fields)){
+		if($this->table && is_array($fields)){
 		
 			$ins_fields = '';
 			$ins_values = '';
 		
 			foreach($fields as $field_name => $field_value){
+				if($this->inSchema($field_name)){
 			
-				$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name);
-				$ins_values .= ($ins_values == '' ? '' : ', ') . '"' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+					$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name);
+					$ins_values .= ($ins_values == '' ? '' : ', ') . '"' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
 			
+				}
 			}
 			
 			$this->sql['INSERT'] = sprintf('INSERT INTO %s (%s) VALUES (%s)',
-								$this->APP->security->dbescape($table),
+								$this->APP->security->dbescape($this->table),
 								$ins_fields,
 								$ins_values
 							);
 			
 		}
-	}
-
-
-	/**
-	 * @abstract Generates an insert query using current Form class values
-	 * @param string $table
-	 * @return integer
-	 * @access public
-	 * @uses Form
-	 */
-	public function insertForm($table = false){
-
-		if($table){
-
-			$this->openTable($table);
-
-			// get our field names
-			foreach($this->schema as $field){
-				if(!$field->primary_key){
-					$field_names[] = $field->name;
-					$field_values[] = $this->APP->security->dbescape(
-																$this->APP->form->cv($field->name, false),
-																$this->getSecurityRule($field->name, 'allow_html')
-															);
-				}
-			}
-
-			$this->sql['INSERT'] = sprintf('INSERT INTO %s (%s) VALUES("%s")', $this->table, implode(", ", $field_names), implode('", "', $field_values));
-
-		}
-
-		// execute the query
-		return $this->results();
 		
-	}
-	
-	
-	/**
-	 * @abstract Auto-generates and executes an UPDATE query. Aliases executeUpdate
-	 * @param string $table
-	 * @param array $fields
-	 * @param mixed $where_value
-	 * @param string $where_field
-	 * @return boolean
-	 * @access public
-	 */
-	public function update($table = false, $fields = false, $where_value, $where_field = false ){
-		return $this->executeUpdate($table, $fields, $where_value, $where_field);
+		return $this->results();
 	}
 	
 	
 	/**
 	 * @abstract Auto-generates and executes an UPDATE query
-	 * @param string $table
 	 * @param array $fields
 	 * @param mixed $where_value
 	 * @param string $where_field
 	 * @return boolean
 	 * @access private
 	 */
-	public function executeUpdate($table = false, $fields = false, $where_value, $where_field = false ){
-		$this->openTable($table);
+	public function update($fields = false, $where_value, $where_field = false ){
+
 		$where_field = $where_field ? $where_field : $this->getPrimaryKey();
-		$this->generateUpdate($table, $fields, $where_value, $where_field );
-		return $this->results();
-	}
-	
-	
-	/**
-	 * @abstract Auto-generates an UPDATE query
-	 * @param string $table
-	 * @param array $fields
-	 * @param mixed $where_value
-	 * @param string $where_field
-	 * @access public
-	 */
-	public function generateUpdate($table = false, $fields = false, $where_value, $where_field = 'id' ){
-	
-		if($table && is_array($fields)){
+		
+		if($this->table && is_array($fields)){
 		
 			$ins_fields = '';
-		
 			foreach($fields as $field_name => $field_value){
-			
-				$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
-
+				if($this->inSchema($field_name)){
+					$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+				}
 			}
 			
 			$this->sql['UPDATE'] = sprintf('UPDATE %s SET %s WHERE %s = "%s"',
-												$this->APP->security->dbescape($table),
+												$this->APP->security->dbescape($this->table),
 												$ins_fields,
 												$this->APP->security->dbescape($where_field),
 												$this->APP->security->dbescape($where_value, $this->getSecurityRule($field_name, 'allow_html')));
+												
+		}
+		
+		return $this->results();
+		
+	}
+	
+	
+//+-----------------------------------------------------------------------+
+//| FIELD ERROR HANDLING FUNCTIONS
+//+-----------------------------------------------------------------------+
 
-			
+	/**
+	 * @abstract Adds a new field validation error to the error queue
+	 * @param string $field
+	 * @param string $message
+	 */
+	public function addError($field, $message){
+		
+		$this->error = true;
+
+		if(isset($this->errors[$field]) && is_array($this->errors[$field])){
+			array_push($this->errors[$field], $message);
+		} else {
+			$this->errors[$field] = array($message);
 		}
 	}
 	
 	
 	/**
-	 * @abstract Updates a database record from Form class values
-	 * @param string $table
-	 * @return integer
+	 * @abstract Returns an array of current form errors
+	 * @return array
 	 * @access public
-	 * @uses Form
 	 */
-	public function updateForm($table = false){
-
-		if($table){
-
-			$this->openTable($table);
-
-			// get our field names
-			foreach($this->schema as $field){
-				if(!$field->primary_key){
-					$fields[] = $field->name . ' = "' . $this->APP->security->dbescape(
-																	$this->APP->form->cv($field->name, false),
-																	$this->getSecurityRule($field->name, 'allow_html')) . '"';
-				} else {
-
-					$primary = $field->name . ' = ' . $this->APP->form->cv($this->getPrimaryKey(), false);
-
-				}
-			}
-
-
-			$this->sql['UPDATE'] = sprintf('UPDATE %s SET %s WHERE %s', $this->table, implode(", ", $fields), $primary);
-
-		}
-
-		// execute the query
-		return $this->results();
-		
+	public function getErrors(){
+		return $this->errors;
+	}
+	
+	
+	/**
+	 * @abstract Returns a boolean whether there is a field validation error or not
+	 * @return boolean
+	 * @access public
+	 */
+	final public function error(){
+		return $this->error;
 	}
 }
 ?>

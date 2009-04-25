@@ -13,47 +13,18 @@
  * @package Aspen_Framework
  * @uses Module
  */
-class Users_Admin extends Module {
-	
-	
-	/**
-	 * @abstract Runs the authentication process on the login form data
-	 * @access public
-	 */
-	public function authenticate(){
-		if($this->APP->user->authenticate()){
-		
-			$redirect = $this->APP->params->session->getRaw('post-login_redirect');
-			$redirect = empty($redirect) ? $this->APP->router->getInterfaceUrl() : $redirect;
-		
-			header("Location: " . $redirect);
-			exit;
-		} else {
-			$this->APP->user->login_failed();
-		}
-	}
+class Users_Admin extends Module {	
 
 	
-	/**
-	 * @abstract Processes a logout
-	 * @access public
-	 */
-	public function logout(){
-		$this->APP->user->logout();
-		header("Location: " . $this->APP->router->getInterfaceUrl());
-		exit;
-	}
-	
-
 	/**
 	 * @abstract Displays the list of users
 	 * @access public
 	 */
 	public function view(){
 
-		$this->APP->model->select('authentication');
-		$this->APP->model->orderBy('username', 'ASC');
-		$data['users'] = $this->APP->model->results();
+		$model = $this->APP->model->openAndSelect('authentication');
+		$model->orderBy('username', 'ASC');
+		$data['users'] = $model->results();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
@@ -136,6 +107,35 @@ class Users_Admin extends Module {
 		if($this->APP->user->delete($id)){
 			$this->APP->router->redirect('view');
 		}
+	}
+	
+	
+	/**
+	 * @abstract Runs the authentication process on the login form data
+	 * @access public
+	 */
+	public function authenticate(){
+		if($this->APP->user->authenticate()){
+		
+			$redirect = $this->APP->params->session->getRaw('post-login_redirect');
+			$redirect = empty($redirect) ? $this->APP->router->getInterfaceUrl() : $redirect;
+		
+			header("Location: " . $redirect);
+			exit;
+		} else {
+			$this->APP->user->login_failed();
+		}
+	}
+
+	
+	/**
+	 * @abstract Processes a logout
+	 * @access public
+	 */
+	public function logout(){
+		$this->APP->user->logout();
+		header("Location: " . $this->APP->router->getInterfaceUrl());
+		exit;
 	}
 
 

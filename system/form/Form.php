@@ -55,7 +55,7 @@ class Form {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -64,23 +64,39 @@ class Form {
 	 * @access private
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
+	
+	
+	/**
+	 * @abstract Loads a single record - field names and values
+	 * @param string $table
+	 * @param integer $id
+	 * @param string $field
+	 * @access public
+	 */
+	public function load($table, $id = false, $field = false){
+		if($id){
+			$this->loadRecord($table, $id, $field);
+		} else {
+			$this->loadTable($table);
+		}
+	}
 
 
 	/**
 	 * @abstract Loads a table's fields and it's schema
 	 * @param string $table
-	 * @access public
+	 * @access private
 	 */
-	public function loadTable($table = false){
+	private function loadTable($table = false){
 	
 		$this->table = $table;
 
 		if($this->table){
 
-			$this->APP->model->openTable($this->table);
-			$this->_primary_key_field = $this->APP->model->getPrimaryKey();
+			$model = $this->APP->model->open($this->table);
+			$this->_primary_key_field = $model->getPrimaryKey();
 
-			foreach($this->APP->model->getSchema() as $field){
+			foreach($model->getSchema() as $field){
 
 				$default_val = $field->has_default ? $field->default_value : '';
 				$this->APP->form->addField($field->name, $default_val, $default_val);
@@ -95,22 +111,22 @@ class Form {
 	 * @param string $table
 	 * @param integer $id
 	 * @param string $field
-	 * @access public
+	 * @access private
 	 */
-	public function loadRecord($table, $id = false, $field = false){
+	private function loadRecord($table, $id = false, $field = false){
 
 		$this->table = $table;
 	
 		if($id){
 			
-			$this->APP->model->openTable($this->table);
-			$this->_primary_key_field = $this->APP->model->getPrimaryKey();
+			$model = $this->APP->model->open($this->table);
+			$this->_primary_key_field = $model->getPrimaryKey();
 		
 			$field = $field ? $field : $this->_primary_key_field;
 			
-			$this->APP->model->select($this->table);
-			$this->APP->model->where($field, $this->APP->security->dbescape($id));
-			$records = $this->APP->model->results();
+			$model->select();
+			$model->where($field, $this->APP->security->dbescape($id));
+			$records = $model->results();
 
 			if($records['RECORDS']){
 				foreach($records['RECORDS'] as $record){
@@ -134,15 +150,34 @@ class Form {
 	 * @access public
 	 */
 	public function save($id = false){
+		
+		$success = false;
+		
 		if(!$this->error()){
-			if($id){
-				return $this->APP->model->updateForm($this->table, $id);
-			} else {
-				return $this->APP->model->insertForm($this->table);
+			
+			$model = $this->APP->model->open($this->table);
+			
+			// build the array of field/vars
+			$fields = array();
+			foreach($model->getSchema() as $field){
+				if(!$field->primary_key){
+					$fields[$field->name] = $this->APP->form->cv($field->name, false);
+				}
 			}
-		} else {
-			return false;
+			
+			$success = $id ? $model->update($fields, $id) : $model->insert($fields);
+			
+			if(!$success){
+				foreach($model->getErrors() as $field => $errors){
+					foreach($errors as $error){
+						$this->addError($field, $error);
+					}
+				}
+			}
 		}
+		
+		return $success;
+		
 	}
 
 	

@@ -11,12 +11,41 @@ class UserTest extends TestHelper {
 	/**
 	 * Tests User->add()
 	 */
-	public function testAdd() {
-		// TODO Auto-generated UserTest->testAdd()
-		$this->markTestIncomplete ( "add test not implemented" );
-		
-		//->add(/* parameters */);
+	public function testAddFailsUsername() {
+		$user = $this->sharedFixture->model->open('authentication');
+		$this->assertEquals(false, $user->insert(array('username'=>'')) );
+	}
 	
+	/**
+	 * Tests User->add()
+	 */
+	public function testAddFailsPassword() {
+		$user = $this->sharedFixture->model->open('authentication');
+		$this->assertEquals(false, $user->insert(array('username'=>'unit-tester')) );
+	}
+	
+	/**
+	 * Tests User->add()
+	 */
+	public function testAddSendsInvalidField() {
+		$user = $this->sharedFixture->model->open('authentication');
+		$this->assertEquals(false, $user->insert(array('username'=>'unit-tester','password'=>'test','scubadodooba'=>'')) );
+	}
+	
+	/**
+	 * Tests User->add()
+	 */
+	public function testAddSendsInvalidPassconfirm() {
+		$user = $this->sharedFixture->model->open('authentication');
+		$this->assertEquals(false, $user->insert(array('username'=>'unit-tester','password'=>'test','pass_confirm'=>'test1')) );
+	}
+	
+	/**
+	 * Tests User->add()
+	 */
+	public function testAddSendsValidRecord() {
+		$user = $this->sharedFixture->model->open('authentication');
+		$this->assertEquals(2, $user->insert(array('username'=>'unit-tester','password'=>'test','pass_confirm'=>'test')) );
 	}
 	
 	/**

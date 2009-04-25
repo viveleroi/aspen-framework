@@ -281,6 +281,9 @@ class Bootstrap extends Base {
 		// load in system libraries / classes
 		$this->loadSystemLibraries();
 		
+		// load any model extensions
+		$this->loadSystemModelExtensions($this->config('models'));
+		
 		// enable system logging
 		if($this->config('enable_logging')){
 			$this->log->enable();
@@ -709,7 +712,50 @@ class Bootstrap extends Base {
 		}
 		return false;
 	}
+	
+	
+	/**
+	 * Accepted values for "models" are:
+	 * 'module' => 'Index',
+	 * 'folder' => false,
+	 * 'filename' => false,
+	 * 'root' => '/full/path/to/root/of/class'
+	 *
+	 * @abstract Accepts an array of models to load
+	 * @param array $library_array
+	 * @return boolean
+	 * @access private
+	 */
+	
+	public function loadSystemModelExtensions($models){
 
+		$load_success 	= true;
+
+		if($load_success){
+			if(is_array($models)){
+				foreach($models as $table => $model){
+					if(isset($model['module'])){
+						
+						$module 	= isset($model['module']) ? $model['module'] : false;
+						$folder 	= isset($model['folder']) ? $model['folder'] : 'models';
+						$filebase 	= isset($model['root']) ? $model['root'] : MODULES_PATH . DS . $module . DS . $folder;
+						$filename 	= isset($model['filename']) ? $model['filename'] : ucwords(strtolower($table));
+						$filepath 	= $filebase . DS . $filename . '.php';
+	
+						if(!class_exists($table)){
+							if(!include($filepath)){
+								$this->error->raise(1, "Failed loading model extension: " . $table, __FILE__, __LINE__);
+								$load_success = false;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $load_success;
+
+	}
 	
 	/**
 	 * @abstract Returns whether or not our db connection was made, and tables exist
@@ -939,9 +985,9 @@ class Bootstrap extends Base {
 	 */
 	public function listModules(){
 		if($this->checkDbConnection()){
-			$this->model->select('modules');
-			$this->model->orderBy('sort_order');
-			$modules = $this->model->results();
+			$model = $this->model->openAndSelect('modules');
+			$model->orderBy('sort_order');
+			$modules = $model->results();
 			if($modules['RECORDS']){
 				foreach($modules['RECORDS'] as $module){
 					$this->_modules[] = $module['guid'];
@@ -1028,17 +1074,19 @@ class Bootstrap extends Base {
 						// verify the target versions match
 						if($this->registryVersionMatch($tmp_reg->targetApplication->minVersion, $tmp_reg->targetApplication->maxVersion)){
 							$allowed = true;
-							$this->log->write('targetApplication versions matched for ' . $tmp_reg->classname . ' module.');
+							$this->log->write('Target application version requirements matched for ' . $tmp_reg->classname . ' module.');
 						} else {
-							$this->log->write('targetApplication versions failed to matched for ' . $tmp_reg->classname . ' module.');
+							$this->log->write('Target application versions failed to matched for ' . $tmp_reg->classname . ' module.');
+							$this->error->raise(1, 'Target application versions failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
 						}
 		
 					} else {
-						$this->log->write('targetApplication set but failed to matched for ' . $tmp_reg->classname . ' module.');
+						$this->log->write('Target application set but failed to matched for ' . $tmp_reg->classname . ' module.');
+						$this->error->raise(1, 'Target application set but failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
 					}
 				} else {
 					$allowed = true;
-					$this->log->write('No targetApplication set for ' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . ' module, IGNORING.');
+					$this->log->write('No target application set for ' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . ' module, IGNORING.');
 				}
 			} else {
 				$this->error->raise(1, 'Attempting to load module ("' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . '") which is not installed.', __FILE__, __LINE__);
@@ -1083,8 +1131,13 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	private function registryVersionMatch($min, $max){
+		
 		$app_vers = $this->config('application_version');
-
+		
+		if(empty($app_vers)){
+			$this->error->raise(1, 'Module requires a version check, but the application version is empty.', __FILE__, __LINE__);
+		}
+		
 		if($this->versionCompare($min, $app_vers) != 'greater' && $this->versionCompare($max, $app_vers) != 'less'){
 			return true;
 		} else {
@@ -1200,10 +1253,10 @@ class Bootstrap extends Base {
 		$version = '';
 
 		// get latest build in database
-		$this->model->select('upgrade_history');
-		$this->model->orderBy('id', 'DESC');
-		$this->model->limit(0, 1);
-		$ughist = $this->model->results();
+		$model = $this->model->openAndSelect('upgrade_history');
+		$model->orderBy('id', 'DESC');
+		$model->limit(0, 1);
+		$ughist = $model->results();
 		
 		if($ughist['RECORDS']){
 			foreach($ughist['RECORDS'] as $vers){

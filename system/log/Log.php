@@ -18,7 +18,7 @@ class Log {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 	
 	/**
 	 * @var boolean $on Whether or not logging  is enabled

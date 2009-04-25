@@ -18,7 +18,7 @@ class Settings {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -40,9 +40,9 @@ class Settings {
 		
 		if($this->APP->checkDbConnection()){
 
-			$this->APP->model->select('config');
-			$this->APP->model->where('config_key', $key);
-			$config = $this->APP->model->results();
+			$cfg_model = $this->APP->model->openAndSelect('config');
+			$cfg_model->where('config_key', $key);
+			$config = $cfg_model->results();
 	
 			if($config['RECORDS']){
 				foreach($config['RECORDS'] as $setting){
@@ -64,13 +64,15 @@ class Settings {
 	 * @param string $value
 	 */
 	public function setConfig($key = false, $value = false){
+		
+		$cfg_model = $this->APP->model->open('config');
 
 		if($key){
-			$rec = $this->APP->model->quickSelectSingle('config', $key, 'config_key');
+			$rec = $cfg_model->quickSelectSingle($key, 'config_key');
 			if(is_array($rec)){
-				$this->APP->model->executeUpdate('config', array('current_value'=>$value), $key, 'config_key');
+				$cfg_model->update(array('current_value'=>$value), $key, 'config_key');
 			} else {
-				$this->APP->model->executeInsert('config', array('current_value'=>$value,'config_key'=>$key));
+				$cfg_model->insert(array('current_value'=>$value,'config_key'=>$key));
 			}
 		}
 	}

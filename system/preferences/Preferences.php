@@ -18,7 +18,7 @@ class Preferences {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -39,9 +39,9 @@ class Preferences {
 		if($this->APP->params->session->getInt('user_id', false) && $this->APP->checkDbConnection()){
 
 			// load sort settings
-			$this->APP->model->select('preferences_sorts');
-			$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
-			$sorts = $this->APP->model->results();
+			$pref_model = $this->APP->model->openAndSelect('preferences_sorts');
+			$pref_model->where('user_id', $this->APP->params->session->getInt('user_id'));
+			$sorts = $pref_model->results();
 			
 			if($sorts['RECORDS']){
 				foreach($sorts['RECORDS'] as $sort){
@@ -68,6 +68,8 @@ class Preferences {
 	public function addSort($location = false, $field = false, $dir = 'ASC'){
 
 		if($this->APP->params->session->getInt('user_id', false)){
+			
+			$pref_model = $this->APP->model->open('preferences_sorts');
 
 			// remove any old entry for this location
 			$sql = sprintf('DELETE FROM preferences_sorts WHERE user_id = "%s" AND location = "%s"',
@@ -81,7 +83,7 @@ class Preferences {
 							'sort_by' => $sort,
 							'direction' => $dir
 						);
-			$this->APP->model->executeInsert('preferences_sorts', $settings);
+			$pref_model->insert($settings);
 
 		}
 	}

@@ -58,6 +58,7 @@ class testsSuite extends PHPUnit_Framework_TestSuite {
 		// wipe out any tables needed for the tests
 		$this->sharedFixture->model->query("TRUNCATE `config`");
 		$this->sharedFixture->model->query("TRUNCATE `error_log`");
+		$this->sharedFixture->model->query("DELETE FROM authentication WHERE id > 1");
 		
 		$this->setName ( 'testsSuite' );
 		

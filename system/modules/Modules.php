@@ -18,7 +18,7 @@ class Modules {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -41,9 +41,9 @@ class Modules {
 			$autoload = array();
 			
 			// find any modules with autoload set to current guid
-			$this->APP->model->select('modules');
-			$this->APP->model->where('autoload_with', $guid);
-			$modules = $this->APP->model->results();
+			$model = $this->APP->model->openAndSelect('modules');
+			$model->where('autoload_with', $guid);
+			$modules = $model->results();
 			
 			if($modules['RECORDS']){
 				foreach($modules['RECORDS'] as $module){
@@ -90,10 +90,10 @@ class Modules {
 		if($this->APP->checkDbConnection()){
 		
 			// find any modules with autoload set to current guid
-			$this->APP->model->select('modules');
-			$this->APP->model->where('is_base_module', 0);
-			$this->APP->model->orderBy('sort_order');
-			$modules = $this->APP->model->results();
+			$model = $this->APP->model->openAndSelect('modules');
+			$model->where('is_base_module', 0);
+			$model->orderBy('sort_order');
+			$modules = $model->results();
 			
 			if($modules['RECORDS']){
 				foreach($modules['RECORDS'] as $module){
@@ -118,9 +118,9 @@ class Modules {
 		foreach($this->APP->getModuleRegistry() as $module){
 		
 			// find any modules with autoload set to current guid
-			$this->APP->model->select('modules');
-			$this->APP->model->where('guid', (string)$module->guid);
-			$modules = $this->APP->model->results();
+			$model = $this->APP->model->openAndSelect('modules');
+			$model->where('guid', (string)$module->guid);
+			$modules = $model->results();
 	
 			if($modules['RECORDS']){
 				foreach($modules['RECORDS'] as $nonbasemod){

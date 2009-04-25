@@ -18,7 +18,7 @@ class User {
 	 * @var object $APP Holds our original application
 	 * @access private
 	 */
-	private $APP;
+	protected $APP;
 
 
 	/**
@@ -38,7 +38,7 @@ class User {
 	
 		$id = false;
 
-		$this->APP->form->loadTable('authentication');
+		$this->APP->form->load('authentication');
 		$this->APP->form->addField('password_confirm');
 		$this->APP->form->addField('group', array(), array());
 
@@ -46,10 +46,6 @@ class User {
 		if($this->APP->form->isSubmitted()){
 
 			// validation
-			if(!$this->APP->form->isFilled('username')){
-				$this->APP->form->addError('username', 'You must enter a username.');
-			}
-	
 			if($this->APP->form->isFilled('password')){
 				if(!$this->APP->form->isFilled('password_confirm')){
 					$this->APP->form->addError('password', 'You must enter a valid password.');
@@ -58,8 +54,6 @@ class User {
 						$this->APP->form->addError('password', 'Your passwords do not match.');
 					}
 				}
-			} else {
-				$this->APP->form->addError('password', 'You must enter a valid password.');
 			}
 			
 			$groups = $this->APP->form->cv('group');
@@ -67,19 +61,17 @@ class User {
 				$this->APP->form->addError('group', 'You must select at least one user group.');
 			}
 
-			// if no errors, process groups
-			if(!$this->APP->form->error()){
 				
-				$this->APP->form->setCurrentValue('password', sha1( $this->APP->form->cv('password') ));
+			$this->APP->form->setCurrentValue('password', sha1( $this->APP->form->cv('password') ));
 
-				if($id = $this->APP->form->save()){
+			if($id = $this->APP->form->save()){
 
-					// add new user groups
-					foreach($this->APP->form->cv('group') as $group){
-						$this->APP->model->executeInsert('user_group_link', array('user_id' => $id, 'group_id' => $group));
-					}
+				// add new user groups
+				foreach($this->APP->form->cv('group') as $group){
+					$this->APP->model->executeInsert('user_group_link', array('user_id' => $id, 'group_id' => $group));
 				}
 			}
+		
 		}
 		
 		return $id;
@@ -94,15 +86,15 @@ class User {
 	 */
 	public function edit($id){
 
-		$this->APP->form->loadRecord('authentication', $id);
+		$this->APP->form->load('authentication', $id);
 		$this->APP->form->addField('password_confirm');
 
 		// pull all groups this user is associated with
 		$group_array = array();
 		
-		$this->APP->model->select('user_group_link');
-		$this->APP->model->where('user_id', $id);
-		$groups = $this->APP->model->results();
+		$model = $this->APP->model->openAndSelect('user_group_link');
+		$model->where('user_id', $id);
+		$groups = $model->results();
 		if($groups['RECORDS']){
 			foreach($groups['RECORDS'] as $group){
 				$group_array[] = $group['group_id'];
@@ -334,12 +326,12 @@ class User {
 
 		if($user && $pass){
 			
-			$this->APP->model->select('authentication');
-			$this->APP->model->where('password', $pass);
-			$this->APP->model->where('username', $this->APP->security->dbescape($user));
-			$this->APP->model->where('allow_login', 1);
-			$this->APP->model->limit(0, 1);
-			$result = $this->APP->model->results();
+			$model = $this->APP->model->openAndSelect('authentication');
+			$model->where('password', $pass);
+			$model->where('username', $user);
+			$model->where('allow_login', 1);
+			$model->limit(0, 1);
+			$result = $model->results();
 
 			if($result['RECORDS']){
 				foreach($result['RECORDS'] as $account){
@@ -357,7 +349,8 @@ class User {
 
 					// update last login date
 					$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
-					$this->APP->model->executeUpdate('authentication', $upd, $account['id']);
+					$model = $this->APP->model->open('authentication', $upd, $account['id']);
+					$model->update($upd, $account['id']);
 
 					$auth = true;
 					
@@ -425,9 +418,10 @@ class User {
 			if($this->isLoggedIn() && $method != 'logout'){
 
 				// first identify any groups this user belongs to
-				$this->APP->model->select('user_group_link', array('group_id'));
-				$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
-				$groups = $this->APP->model->results();
+				$model = $this->APP->model->open('user_group_link');
+				$model->select(array('group_id'));
+				$model->where('user_id', $this->APP->params->session->getInt('user_id'));
+				$groups = $model->results();
 
 				$group_where = '';
 
@@ -490,11 +484,11 @@ class User {
 		
 		if($user_id){
 			
-			$this->APP->model->select('user_group_link');
-			$this->APP->model->leftJoin('groups', 'id', 'group_id', array('name'));
-			$this->APP->model->where('user_id', $user_id);
-			$this->APP->model->where('groups.name', $group_name);
-			$groups = $this->APP->model->results();
+			$model = $this->APP->model->openAndSelect('user_group_link');
+			$model->leftJoin('groups', 'id', 'group_id', array('name'));
+			$model->where('user_id', $user_id);
+			$model->where('groups.name', $group_name);
+			$groups = $model->results();
 				
 			$ingroup = (boolean)$groups['RECORDS'];
 			
@@ -517,10 +511,10 @@ class User {
 		
 		if($user_id){
 			
-			$this->APP->model->select('user_group_link');
-			$this->APP->model->leftJoin('groups', 'id', 'group_id', array('name'));
-			$this->APP->model->where('user_id', $user_id);
-			$groups = $this->APP->model->results();
+			$model = $this->APP->model->openAndSelect('user_group_link');
+			$model->leftJoin('groups', 'id', 'group_id', array('name'));
+			$model->where('user_id', $user_id);
+			$groups = $model->results();
 				
 			if($groups['RECORDS']){
 				foreach($groups['RECORDS'] as $group){
@@ -545,10 +539,10 @@ class User {
 
 		if($this->isLoggedIn()){
 			
-			$this->APP->model->select('user_group_link');
-			$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
-			$this->APP->model->where('group_id', 1);
-			$groups = $this->APP->model->results();
+			$model = $this->APP->model->openAndSelect('user_group_link');
+			$model->where('user_id', $this->APP->params->session->getInt('user_id'));
+			$model->where('group_id', 1);
+			$groups = $model->results();
 				
 			$has_access = $groups['RECORDS'] ? true : false;
 
@@ -568,8 +562,8 @@ class User {
 
 		if($this->APP->checkDbConnection()){
 
-			$this->APP->model->select('authentication');
-			$accounts = $this->APP->model->results();
+			$model = $this->APP->model->openAndSelect('authentication');
+			$accounts = $model->results();
 			return count($accounts['RECORDS']);
 
 		} else {
@@ -617,9 +611,9 @@ class User {
 	 */
 	public function groupList(){
 
-		$this->APP->model->select('groups');
-		$this->APP->model->orderBy('name');
-		$groups = $this->APP->model->results();
+		$model = $this->APP->model->openAndSelect('groups');
+		$model->orderBy('name');
+		$groups = $model->results();
 		return $groups['RECORDS'];
 
 	}
