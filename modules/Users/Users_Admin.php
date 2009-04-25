@@ -51,9 +51,10 @@ class Users_Admin extends Module {
 	 */
 	public function view(){
 
-		$this->APP->model->select('authentication');
-		$this->APP->model->orderBy('username', 'ASC');
-		$data['users'] = $this->APP->model->results();
+		$model = $this->APP->model->open('authentication');
+		$model->select();
+		$model->orderBy('username', 'ASC');
+		$data['users'] = $model->results();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');

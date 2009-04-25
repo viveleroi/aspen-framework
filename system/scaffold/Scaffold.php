@@ -69,10 +69,11 @@ class Scaffold {
 			$thead = '';
 			$tbody = '';
 	 
-			$this->APP->model->select($table);
-			$results 	= $this->APP->model->results();
-			$schema 	= $this->APP->model->getSchema();
-			$key_field 	= $this->APP->model->getPrimaryKey();
+			$model = $this->APP->model->open($table);
+			$model->select();
+			$results 	= $model->results();
+			$schema 	= $model->getSchema();
+			$key_field 	= $model->getPrimaryKey();
 			
 			foreach($schema as $field){
 				$thead .= sprintf('<th>%s</th>' . "\n", $this->fieldName($field->name));
@@ -131,10 +132,11 @@ class Scaffold {
 			$thead = '';
 			$tbody = '';
 	 
-			$this->APP->model->select($table);
-			$results 	= $this->APP->model->results();
-			$schema 	= $this->APP->model->getSchema();
-			$key_field 	= $this->APP->model->getPrimaryKey();
+			$model = $this->APP->model->open($table);
+			$model->select();
+			$results 	= $model->results();
+			$schema 	= $model->getSchema();
+			$key_field 	= $model->getPrimaryKey();
 			
 			foreach($schema as $field){
 				$thead .= sprintf('			<th>%s</th>' . "\n", $this->fieldName($field->name));

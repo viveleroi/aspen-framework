@@ -353,9 +353,10 @@ class ModelTest extends TestHelper {
 	 * Tests Model->select()
 	 */
 	public function testSelect() {
-		$this->sharedFixture->model->select('authentication');
-		$qry = $this->sharedFixture->model->getBuildQuery();
-		$this->sharedFixture->model->clearQuery();
+		$model = $model->open('authentication');
+		$model->select();
+		$qry = $model->getBuildQuery();
+		$model->clearQuery();
 		
 		$this->assertEquals('SELECT authentication.* FROM authentication  ORDER BY authentication.id ASC ', $qry);
 	}
@@ -375,7 +376,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->showStatus()
 	 */
 	public function testShowStatus() {
-		$status = $this->sharedFixture->model->showStatus('authentication');
+		$status = $model->showStatus('authentication');
 		
 		$this->assertEquals('authentication', $status['Name']);
 		$this->assertEquals(18, count($status));
@@ -397,11 +398,12 @@ class ModelTest extends TestHelper {
 	 * Tests Model->where()
 	 */
 	public function testWhere() {
-		$this->sharedFixture->model->select('authentication');
-		$this->sharedFixture->model->where('id', 1);
+		$model = $model->open('authentication');
+		$model->select();
+		$model->where('id', 1);
 		
-		$qry = $this->sharedFixture->model->getBuildQuery();
-		$this->sharedFixture->model->clearQuery();
+		$qry = $model->getBuildQuery();
+		$model->clearQuery();
 		
 		$this->assertEquals('SELECT authentication.* FROM authentication WHERE id = "1"  ORDER BY authentication.id ASC ', $qry);
 	
@@ -411,11 +413,12 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereAfterToday()
 	 */
 	public function testWhereAfterToday() {
-		$this->sharedFixture->model->select('authentication');
-		$this->sharedFixture->model->whereAfterToday('last_login');
+		$model = $model->open('authentication');
+		$model->select();
+		$model->whereAfterToday('last_login');
 		
-		$qry = $this->sharedFixture->model->getBuildQuery();
-		$this->sharedFixture->model->clearQuery();
+		$qry = $model->getBuildQuery();
+		$model->clearQuery();
 		
 		$this->assertEquals('SELECT authentication.* FROM authentication WHERE TO_DAYS(last_login) > TO_DAYS(NOW())  ORDER BY authentication.id ASC ', $qry);
 	}
@@ -424,11 +427,12 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereBeforeToday()
 	 */
 	public function testWhereBeforeToday() {
-		$this->sharedFixture->model->select('authentication');
-		$this->sharedFixture->model->whereBeforeToday('last_login');
+		$model = $model->open('authentication');
+		$model->select();
+		$model->whereBeforeToday('last_login');
 		
-		$qry = $this->sharedFixture->model->getBuildQuery();
-		$this->sharedFixture->model->clearQuery();
+		$qry = $model->getBuildQuery();
+		$model->clearQuery();
 		
 		$this->assertEquals('SELECT authentication.* FROM authentication WHERE TO_DAYS(last_login) <= TO_DAYS(NOW())  ORDER BY authentication.id ASC ', $qry);
 	
@@ -438,11 +442,12 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereBetween()
 	 */
 	public function testWhereBetween() {
-		$this->sharedFixture->model->select('authentication');
-		$this->sharedFixture->model->whereBetween('allow_login', 0, 3);
+		$model = $model->open('authentication');
+		$model->select();
+		$model->whereBetween('allow_login', 0, 3);
 		
-		$qry = $this->sharedFixture->model->getBuildQuery();
-		$this->sharedFixture->model->clearQuery();
+		$qry = $model->getBuildQuery();
+		$model->clearQuery();
 		
 		$this->assertEquals('SELECT authentication.* FROM authentication WHERE allow_login BETWEEN "0" AND "3"  ORDER BY authentication.id ASC ', $qry);
 	
@@ -453,11 +458,12 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereGreaterThan()
 	 */
 	public function testWhereGreaterThan() {
-		$this->sharedFixture->model->select('authentication');
-		$this->sharedFixture->model->whereGreaterThan('allow_login', 0);
+		$model = $model->open('authentication');
+		$model->select();
+		$model->whereGreaterThan('allow_login', 0);
 		
-		$qry = $this->sharedFixture->model->getBuildQuery();
-		$this->sharedFixture->model->clearQuery();
+		$qry = $model->getBuildQuery();
+		$model->clearQuery();
 		
 		$this->assertEquals('SELECT authentication.* FROM authentication WHERE allow_login > "0"  ORDER BY authentication.id ASC ', $qry);
 	
@@ -468,11 +474,12 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereLessThan()
 	 */
 	public function testWhereLessThan() {
-		$this->sharedFixture->model->select('authentication');
-		$this->sharedFixture->model->whereLessThan('allow_login', 3);
+		$model = $model->open('authentication');
+		$model->select();
+		$model->whereLessThan('allow_login', 3);
 		
-		$qry = $this->sharedFixture->model->getBuildQuery();
-		$this->sharedFixture->model->clearQuery();
+		$qry = $model->getBuildQuery();
+		$model->clearQuery();
 		
 		$this->assertEquals('SELECT authentication.* FROM authentication WHERE allow_login < "3"  ORDER BY authentication.id ASC ', $qry);
 	
@@ -483,11 +490,12 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereLike()
 	 */
 	public function testWhereLike() {
-		$this->sharedFixture->model->select('authentication');
-		$this->sharedFixture->model->whereLike('nice_name', 'Mike');
+		$model = $model->open('authentication');
+		$model->select();
+		$model->whereLike('nice_name', 'Mike');
 		
-		$qry = $this->sharedFixture->model->getBuildQuery();
-		$this->sharedFixture->model->clearQuery();
+		$qry = $model->getBuildQuery();
+		$model->clearQuery();
 		
 		$this->assertEquals('SELECT authentication.* FROM authentication WHERE nice_name LIKE "%Mike%"  ORDER BY authentication.id ASC ', $qry);
 	
@@ -497,11 +505,12 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereNot()
 	 */
 	public function testWhereNot() {
-		$this->sharedFixture->model->select('authentication');
-		$this->sharedFixture->model->whereNot('nice_name', 'Bobblehead');
+		$model = $model->open('authentication');
+		$model->select();
+		$model->whereNot('nice_name', 'Bobblehead');
 		
-		$qry = $this->sharedFixture->model->getBuildQuery();
-		$this->sharedFixture->model->clearQuery();
+		$qry = $model->getBuildQuery();
+		$model->clearQuery();
 		
 		$this->assertEquals('SELECT authentication.* FROM authentication WHERE nice_name != "Bobblehead"  ORDER BY authentication.id ASC ', $qry);
 	

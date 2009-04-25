@@ -172,8 +172,9 @@ class ".$classname." {
 	
 		\$data = array();
  
-		\$this->APP->model->select('".$table_name."');
-		\$data['".$table_name."'] = \$this->APP->model->results();";
+		\$model = $this->APP->model->open('".$table_name."');
+		\$model->select();
+		\$data['".$table_name."'] = \$model->results();";
 	}
 		
 	$class_output .= "

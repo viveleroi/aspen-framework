@@ -40,7 +40,7 @@ class Preferences {
 
 			// load sort settings
 			$pref_model = $this->APP->model->open('preferences_sorts');
-			$pref_model->select('preferences_sorts');
+			$pref_model->select();
 			$pref_model->where('user_id', $this->APP->params->session->getInt('user_id'));
 			$sorts = $pref_model->results();
 			

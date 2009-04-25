@@ -90,9 +90,7 @@ class Model {
 	public function __construct($table = false){
 		$this->APP = get_instance();
 	
-		if($table){
-			$this->openTable($table);
-		}
+		if($table){ $this->openTable($table); }
 	}
 	
 	
@@ -115,7 +113,6 @@ class Model {
 			
 			// identify available model extensions
 			$exts = $this->APP->config('models');
-			
 			if(is_array($exts)){
 				if(array_key_exists($table, $exts)){
 					$class = $table.'Model';
@@ -289,12 +286,11 @@ class Model {
 	
 	/**
 	 * @abstract Adds a new select statement to our query
-	 * @param string $table
 	 * @param array $fields
 	 * @param boolean $distinct
 	 * @access public
 	 */
-	public function select($table = false, $fields = false, $distinct = false){
+	public function select($fields = false, $distinct = false){
 		
 		// open the table
 		if($table){ $this->openTable($table); }
@@ -946,16 +942,14 @@ class Model {
 	 * @abstract Generates a quick select statement for a single record
 	 * @param integer $id
 	 * @param string $field
-	 * @param string $table
 	 * @return array
 	 * @access public
 	 */
-	public function quickSelectSingle($id = false, $field = false, $table = false){
+	public function quickSelectSingle($id = false, $field = false){
 
-		$table = $table ? $table : $this->table;
 		$field = $field ? $field : $this->getPrimaryKey();
 		
-		$this->select($table);
+		$this->select();
 		$this->where($field, $id);
 		$record = $this->APP->model->results($field);
 		
@@ -970,13 +964,11 @@ class Model {
 	/**
 	 * @abstract Generates a quick select statement for a single record and returns the result as xml
 	 * @param integer $id
-	 * @param string $table
 	 * @return string
 	 * @access public
 	 */
-	public function quickSelectSingleToXml($id = false, $table = false){
-		$table = $table ? $table : $this->table;
-		return $this->APP->xml->arrayToXml( $this->quickSelectSingle($id, false, $table) );
+	public function quickSelectSingleToXml($id = false){
+		return $this->APP->xml->arrayToXml( $this->quickSelectSingle($id) );
 	}
 
 	

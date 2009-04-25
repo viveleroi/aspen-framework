@@ -12,8 +12,9 @@ class errorLogTest extends TestHelper {
 	 */
 	public function testNoErrors() {
 		
-		$this->sharedFixture->model->select('error_log');
-		$errors = $this->sharedFixture->model->results();
+		$model = $this->sharedFixture->model->open('error_log');
+		$model->select();
+		$errors = $model->results();
 		
 		$this->assertEquals(false, $errors['RECORDS']);
 	}

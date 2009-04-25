@@ -41,7 +41,7 @@ class Settings {
 		if($this->APP->checkDbConnection()){
 
 			$cfg_model = $this->APP->model->open('config');
-			$cfg_model->select('config');
+			$cfg_model->select();
 			$cfg_model->where('config_key', $key);
 			$config = $cfg_model->results();
 	

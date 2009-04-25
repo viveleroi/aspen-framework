@@ -92,9 +92,10 @@ class User {
 		// pull all groups this user is associated with
 		$group_array = array();
 		
-		$this->APP->model->select('user_group_link');
-		$this->APP->model->where('user_id', $id);
-		$groups = $this->APP->model->results();
+		$model = $this->APP->model->open('user_group_link');
+		$model->select();
+		$model->where('user_id', $id);
+		$groups = $model->results();
 		if($groups['RECORDS']){
 			foreach($groups['RECORDS'] as $group){
 				$group_array[] = $group['group_id'];
@@ -326,12 +327,13 @@ class User {
 
 		if($user && $pass){
 			
-			$this->APP->model->select('authentication');
-			$this->APP->model->where('password', $pass);
-			$this->APP->model->where('username', $this->APP->security->dbescape($user));
-			$this->APP->model->where('allow_login', 1);
-			$this->APP->model->limit(0, 1);
-			$result = $this->APP->model->results();
+			$model = $this->APP->model->open('authentication');
+			$model->select();
+			$model->where('password', $pass);
+			$model->where('username', $user);
+			$model->where('allow_login', 1);
+			$model->limit(0, 1);
+			$result = $model->results();
 
 			if($result['RECORDS']){
 				foreach($result['RECORDS'] as $account){
@@ -418,9 +420,10 @@ class User {
 			if($this->isLoggedIn() && $method != 'logout'){
 
 				// first identify any groups this user belongs to
-				$this->APP->model->select('user_group_link', array('group_id'));
-				$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
-				$groups = $this->APP->model->results();
+				$model = $this->APP->model->open('user_group_link');
+				$model->select(array('group_id'));
+				$model->where('user_id', $this->APP->params->session->getInt('user_id'));
+				$groups = $model->results();
 
 				$group_where = '';
 
@@ -483,11 +486,12 @@ class User {
 		
 		if($user_id){
 			
-			$this->APP->model->select('user_group_link');
-			$this->APP->model->leftJoin('groups', 'id', 'group_id', array('name'));
-			$this->APP->model->where('user_id', $user_id);
-			$this->APP->model->where('groups.name', $group_name);
-			$groups = $this->APP->model->results();
+			$model = $this->APP->model->open('user_group_link');
+			$model->select();
+			$model->leftJoin('groups', 'id', 'group_id', array('name'));
+			$model->where('user_id', $user_id);
+			$model->where('groups.name', $group_name);
+			$groups = $model->results();
 				
 			$ingroup = (boolean)$groups['RECORDS'];
 			
@@ -510,10 +514,11 @@ class User {
 		
 		if($user_id){
 			
-			$this->APP->model->select('user_group_link');
-			$this->APP->model->leftJoin('groups', 'id', 'group_id', array('name'));
-			$this->APP->model->where('user_id', $user_id);
-			$groups = $this->APP->model->results();
+			$model = $this->APP->model->open('user_group_link');
+			$model->select();
+			$model->leftJoin('groups', 'id', 'group_id', array('name'));
+			$model->where('user_id', $user_id);
+			$groups = $model->results();
 				
 			if($groups['RECORDS']){
 				foreach($groups['RECORDS'] as $group){
@@ -538,10 +543,11 @@ class User {
 
 		if($this->isLoggedIn()){
 			
-			$this->APP->model->select('user_group_link');
-			$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
-			$this->APP->model->where('group_id', 1);
-			$groups = $this->APP->model->results();
+			$model = $this->APP->model->open('user_group_link');
+			$model->select();
+			$model->where('user_id', $this->APP->params->session->getInt('user_id'));
+			$model->where('group_id', 1);
+			$groups = $model->results();
 				
 			$has_access = $groups['RECORDS'] ? true : false;
 
@@ -561,8 +567,9 @@ class User {
 
 		if($this->APP->checkDbConnection()){
 
-			$this->APP->model->select('authentication');
-			$accounts = $this->APP->model->results();
+			$model = $this->APP->model->open('authentication');
+			$model->select();
+			$accounts = $model->results();
 			return count($accounts['RECORDS']);
 
 		} else {
@@ -610,9 +617,10 @@ class User {
 	 */
 	public function groupList(){
 
-		$this->APP->model->select('groups');
-		$this->APP->model->orderBy('name');
-		$groups = $this->APP->model->results();
+		$model = $this->APP->model->open('groups');
+		$model->select();
+		$model->orderBy('name');
+		$groups = $model->results();
 		return $groups['RECORDS'];
 
 	}

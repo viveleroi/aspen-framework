@@ -985,9 +985,10 @@ class Bootstrap extends Base {
 	 */
 	public function listModules(){
 		if($this->checkDbConnection()){
-			$this->model->select('modules');
-			$this->model->orderBy('sort_order');
-			$modules = $this->model->results();
+			$model = $this->APP->model->open('modules');
+			$model->select();
+			$model->orderBy('sort_order');
+			$modules = $model->results();
 			if($modules['RECORDS']){
 				foreach($modules['RECORDS'] as $module){
 					$this->_modules[] = $module['guid'];
@@ -1253,10 +1254,11 @@ class Bootstrap extends Base {
 		$version = '';
 
 		// get latest build in database
-		$this->model->select('upgrade_history');
-		$this->model->orderBy('id', 'DESC');
-		$this->model->limit(0, 1);
-		$ughist = $this->model->results();
+		$model = $this->APP->model->open('upgrade_history');
+		$model->select();
+		$model->orderBy('id', 'DESC');
+		$model>limit(0, 1);
+		$ughist = $model->results();
 		
 		if($ughist['RECORDS']){
 			foreach($ughist['RECORDS'] as $vers){
