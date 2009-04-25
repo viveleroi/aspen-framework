@@ -45,7 +45,7 @@ class User {
 		// process the form if submitted
 		if($this->APP->form->isSubmitted()){
 
-			// validation
+			// form-side data validation
 			if($this->APP->form->isFilled('password')){
 				if(!$this->APP->form->isFilled('password_confirm')){
 					$this->APP->form->addError('password', 'You must enter a valid password.');
@@ -54,24 +54,24 @@ class User {
 						$this->APP->form->addError('password', 'Your passwords do not match.');
 					}
 				}
+			} else {
+				$this->APP->form->addError('password', 'You must enter a valid password and confirm it.');
 			}
 			
+			
+			// validate the user has selected a group
 			$groups = $this->APP->form->cv('group');
 			if(empty($groups)){
 				$this->APP->form->addError('group', 'You must select at least one user group.');
 			}
 
-				
-			$this->APP->form->setCurrentValue('password', sha1( $this->APP->form->cv('password') ));
-
+			// save the data as well as the groups
 			if($id = $this->APP->form->save()){
-
-				// add new user groups
+				$group_model = $this->APP->model->open('user_group_link');
 				foreach($this->APP->form->cv('group') as $group){
-					$this->APP->model->executeInsert('user_group_link', array('user_id' => $id, 'group_id' => $group));
+					$group_model->insert(array('user_id' => $id, 'group_id' => $group));
 				}
 			}
-		
 		}
 		
 		return $id;

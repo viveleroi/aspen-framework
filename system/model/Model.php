@@ -89,7 +89,6 @@ class Model {
 	 */
 	public function __construct($table = false){
 		$this->APP = get_instance();
-	
 		if($table){ $this->openTable($table); }
 	}
 	
