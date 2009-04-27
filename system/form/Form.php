@@ -162,7 +162,11 @@ class Form {
 			}
 		}
 		
-		// process ins/upd for real, otherwise pre-validate data through model
+		// If there are no form errors, then attempt to process the database action.
+		// The database action will force the model validation and will return false if
+		// something fails.
+		// If a form error does exist, then we proceed with finding any other
+		// field validation errors from the model, but without actually saving the data.
 		if(!$this->error()){
 			$success = $id ? $model->update($fields, $id) : $model->insert($fields);
 		} else {

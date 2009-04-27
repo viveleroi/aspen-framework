@@ -45,19 +45,17 @@ class User {
 		// process the form if submitted
 		if($this->APP->form->isSubmitted()){
 
-			// form-side data validation
+			// We need to validate the confirm password field here
+			// because the model doesn't care about this field.
 			if($this->APP->form->isFilled('password')){
 				if(!$this->APP->form->isFilled('password_confirm')){
-					$this->APP->form->addError('password', 'You must enter a valid password.');
+					$this->APP->form->addError('password', 'You must confirm your password.');
 				} else {
 					if(!$this->APP->form->fieldsMatch('password', 'password_confirm')){
 						$this->APP->form->addError('password', 'Your passwords do not match.');
 					}
 				}
-			} else {
-				$this->APP->form->addError('password', 'You must enter a valid password and confirm it.');
 			}
-			
 			
 			// validate the user has selected a group
 			$groups = $this->APP->form->cv('group');

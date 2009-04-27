@@ -306,7 +306,7 @@
  * interactions.
  *
  * @todo add url here
- */	
+ */
 	
 	$config['models']['authentication'] = array('module' => 'Users');
 
@@ -374,9 +374,6 @@
 	$config['load_add_core_class'][] = array(	'classname' => 'RSSBuilder',
 											'folder' => 'formats/rss',
 											'filename' => 'class.RSSBuilder.inc');
-
-	// JSON related functions
-	$config['load_core_class'][] = array('classname' => 'Json', 'folder' => 'formats');
 
 	// Image thumbnail generation
 	$config['load_add_core_class'][] = array('classname' => 'Thumbnail', 'autoload' => false);
