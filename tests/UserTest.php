@@ -23,22 +23,7 @@ class UserTest extends TestHelper {
 		$user = $this->sharedFixture->model->open('authentication');
 		$this->assertEquals(false, $user->insert(array('username'=>'unit-tester')) );
 	}
-	
-	/**
-	 * Tests User->add()
-	 */
-	public function testAddSendsInvalidField() {
-		$user = $this->sharedFixture->model->open('authentication');
-		$this->assertEquals(false, $user->insert(array('username'=>'unit-tester','password'=>'test','scubadodooba'=>'')) );
-	}
-	
-	/**
-	 * Tests User->add()
-	 */
-	public function testAddSendsInvalidPassconfirm() {
-		$user = $this->sharedFixture->model->open('authentication');
-		$this->assertEquals(false, $user->insert(array('username'=>'unit-tester','password'=>'test','pass_confirm'=>'test1')) );
-	}
+
 	
 	/**
 	 * Tests User->add()

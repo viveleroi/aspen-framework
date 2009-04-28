@@ -9,7 +9,6 @@ require_once 'ErrorTest.php';
 require_once 'FileTest.php';
 require_once 'FormTest.php';
 require_once 'InstallTest.php';
-require_once 'JsonTest.php';
 require_once 'LogTest.php';
 require_once 'ModelTest.php';
 require_once 'ModulesTest.php';
@@ -58,8 +57,9 @@ class testsSuite extends PHPUnit_Framework_TestSuite {
 		// wipe out any tables needed for the tests
 		$this->sharedFixture->model->query("TRUNCATE `config`");
 		$this->sharedFixture->model->query("TRUNCATE `error_log`");
-		$this->sharedFixture->model->query("DELETE FROM authentication WHERE id > 1");
-		
+		$this->sharedFixture->model->query("TRUNCATE `authentication`");
+		$this->sharedFixture->model->query("INSERT INTO `authentication` (`id`, `username`, `nice_name`, `password`, `latest_login`, `last_login`, `allow_login`) VALUES (1, 'botsko@gmail.com', 'Mike', 'd033e22ae348aeb5660fc2140aec35850c4da997', '2009-04-27 16:11:57', '2009-04-24 18:43:40', 1);");
+
 		$this->setName ( 'testsSuite' );
 		
 		$this->addTestSuite ( 'AppTest' );
@@ -69,7 +69,6 @@ class testsSuite extends PHPUnit_Framework_TestSuite {
 		$this->addTestSuite ( 'FileTest' );
 		$this->addTestSuite ( 'FormTest' );
 		$this->addTestSuite ( 'InstallTest' );
-		//$this->addTestSuite ( 'JsonTest' );
 		$this->addTestSuite ( 'LogTest' );
 		$this->addTestSuite ( 'ModelTest' );
 		$this->addTestSuite ( 'ModulesTest' );

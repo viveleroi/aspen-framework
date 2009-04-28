@@ -17,6 +17,13 @@ class SettingsTest extends TestHelper {
 	/**
 	 * Tests Settings->setConfig()
 	 */
+	public function testSetConfig_NoKey() {
+		$this->assertEquals(false, $this->sharedFixture->settings->setConfig(''));
+	}
+	
+	/**
+	 * Tests Settings->setConfig()
+	 */
 	public function testSetConfig() {
 		$this->sharedFixture->settings->setConfig('exampleconfig', 'testvalue');
 		$this->assertEquals('testvalue', $this->sharedFixture->settings->getConfig('exampleconfig'));

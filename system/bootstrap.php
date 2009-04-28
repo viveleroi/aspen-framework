@@ -734,14 +734,14 @@ class Bootstrap extends Base {
 		if($load_success){
 			if(is_array($models)){
 				foreach($models as $table => $model){
-					if(isset($model['module'])){
+					if(is_array($model)){
 						
 						$module 	= isset($model['module']) ? $model['module'] : false;
 						$folder 	= isset($model['folder']) ? $model['folder'] : 'models';
-						$filebase 	= isset($model['root']) ? $model['root'] : MODULES_PATH . DS . $module . DS . $folder;
+						$filebase 	= (isset($model['root']) ? $model['root'] : MODULES_PATH . DS . $module) . DS . $folder;
 						$filename 	= isset($model['filename']) ? $model['filename'] : ucwords(strtolower($table));
 						$filepath 	= $filebase . DS . $filename . '.php';
-	
+
 						if(!class_exists($table)){
 							if(!include($filepath)){
 								$this->error->raise(1, "Failed loading model extension: " . $table, __FILE__, __LINE__);

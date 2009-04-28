@@ -44,18 +44,5 @@ class AuthenticationModel extends Model {
 		return $this->error();
 		
 	}
-	
-	
-	/**
-	 * @abstract Only allow a user record to be added if a username is set
-	 * @param array $fields
-	 * @return mixed
-	 */
-	public function insert($fields = false){
-		
-		$this->validate($fields);
-		return parent::insert($fields);
-		
-	}
 }
 ?>

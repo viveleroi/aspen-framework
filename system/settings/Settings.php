@@ -41,6 +41,7 @@ class Settings {
 		if($this->APP->checkDbConnection()){
 
 			$cfg_model = $this->APP->model->openAndSelect('config');
+			
 			$cfg_model->where('config_key', $key);
 			$config = $cfg_model->results();
 	
@@ -65,16 +66,13 @@ class Settings {
 	 */
 	public function setConfig($key = false, $value = false){
 		
-		$cfg_model = $this->APP->model->open('config');
-
-		if($key){
-			$rec = $cfg_model->quickSelectSingle($key, 'config_key');
-			if(is_array($rec)){
-				$cfg_model->update(array('current_value'=>$value), $key, 'config_key');
-			} else {
-				$cfg_model->insert(array('current_value'=>$value,'config_key'=>$key));
-			}
-		}
+		$cfg_model	= $this->APP->model->open('config');
+		$rec		= $cfg_model->quickSelectSingle($key, 'config_key');
+		
+		// update the record
+		$new_rc = array('current_value'=>$value,'config_key'=>$key);
+		return is_array($rec) ? $cfg_model->update($new_rc, $key, 'config_key') : $cfg_model->insert($new_rc);
+		
 	}
 }
 ?>

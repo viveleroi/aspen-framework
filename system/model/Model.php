@@ -117,7 +117,7 @@ class Model {
 					$class = $table.'Model';
 				}
 			}
-
+			
 			return new $class($table);
 			
 		}
@@ -137,7 +137,7 @@ class Model {
 	 	$model = $this->open($table);
 	 	if(is_object($model)){
 	 		$model->select();
-	 	}	
+	 	}
 		return $model;
 	}
 	
@@ -151,6 +151,20 @@ class Model {
 	private function openTable($table = false){
 		$this->table = $table;
 		$this->generateSchema();
+		
+		if(!is_array($this->schema)){
+			$this->APP->error->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
+		}
+	}
+	
+	
+	/**
+	 * @abstract Empty validator function
+	 * @abstract private
+	 * @return boolean
+	 */
+	public function validate(){
+		return true;
 	}
 	
 	
@@ -978,7 +992,7 @@ class Model {
 		
 		$this->select();
 		$this->where($field, $id);
-		$record = $this->APP->model->results($field);
+		$record = $this->results($field);
 		
 		if($record['RECORDS']){
 			return $record['RECORDS'][$id];
@@ -1146,6 +1160,8 @@ class Model {
 	 * @access private
 	 */
 	public function insert($fields = false){
+		
+		$this->validate($fields);
 	
 		if($this->table && is_array($fields)){
 		
@@ -1182,6 +1198,8 @@ class Model {
 	 * @access private
 	 */
 	public function update($fields = false, $where_value, $where_field = false ){
+		
+		$this->validate($fields);
 
 		$where_field = $where_field ? $where_field : $this->getPrimaryKey();
 		
