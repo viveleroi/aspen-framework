@@ -551,7 +551,7 @@ class Bootstrap extends Base {
 		}
 		
 		foreach($base_classes as $class){
-			$class['root'] = SYSTEM_PATH;
+			$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
 			$all_classes[$class['classname']] = $class;
 		}
 		
@@ -742,7 +742,7 @@ class Bootstrap extends Base {
 						$filename 	= isset($model['filename']) ? $model['filename'] : ucwords(strtolower($table));
 						$filepath 	= $filebase . DS . $filename . '.php';
 
-						if(!class_exists($table)){
+						if(!class_exists( ucwords($table).'Model' )){
 							if(!include($filepath)){
 								$this->error->raise(1, "Failed loading model extension: " . $table, __FILE__, __LINE__);
 								$load_success = false;

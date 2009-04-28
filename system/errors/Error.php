@@ -282,17 +282,23 @@ class Error {
 
 		// If we need to display this error, do so
 		if($this->errNo <= $this->APP->config('minimum_displayable_error')){
+			if(
+				!$this->APP->params->env->keyExists('SSH_CLIENT')
+				&& !$this->APP->params->env->keyExists('TERM')
+				&& !$this->APP->params->env->keyExists('SSH_CONNECTION')
+				&& $this->APP->params->server->keyExists('HTTP_HOST')){
 			
-			if($this->errNo > 1){
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'error.tpl.php');
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-				$this->APP->template->display();
-				exit;
-			} else {
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'error.tpl.php');
-				$this->APP->template->display();
-				exit;
+				if($this->errNo > 1){
+					$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
+					$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'error.tpl.php');
+					$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
+					$this->APP->template->display();
+					exit;
+				} else {
+					$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'error.tpl.php');
+					$this->APP->template->display();
+					exit;
+				}
 			}
 		}
 	}
