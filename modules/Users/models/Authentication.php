@@ -41,7 +41,7 @@ class AuthenticationModel extends Model {
 			}
 		}
 		
-		return $this->error();
+		return !$this->error();
 		
 	}
 }
