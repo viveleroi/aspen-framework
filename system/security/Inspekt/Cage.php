@@ -91,7 +91,57 @@ class Inspekt_Cage
 		}
 		$this->_source = $newsource;
 	}
+	
+	
+	/**
+     * Returns TRUE if string is empty
+     *
+     * @param mixed $key
+     * @return mixed
+     *
+     * @tag filter
+     */
+	function isSetAndEmpty($key)
+	{
+		if ($this->keyExists($key)) {
+			return Inspekt::isEmpty($this->_getValue($key));
+		}
+		return false;
+	}
+	
+	
+	/**
+     * Returns TRUE if string is empty
+     *
+     * @param mixed $key
+     * @return mixed
+     *
+     * @tag filter
+     */
+	function isSetAndNotEmpty($key)
+	{
+		if ($this->keyExists($key)) {
+			return Inspekt::isNotEmpty($this->_getValue($key));
+		}
+		return false;
+	}
 
+	
+	/**
+     * Returns TRUE if string is empty
+     *
+     * @param mixed $key
+     * @return mixed
+     *
+     * @tag filter
+     */
+	function isEmpty($key)
+	{
+		if (!$this->keyExists($key)) {
+			return true;
+		}
+		return Inspekt::isEmpty($this->_getValue($key));
+	}
 
 
 	/**

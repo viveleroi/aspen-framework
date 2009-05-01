@@ -252,9 +252,36 @@ class Inspekt
 		}
 		return $input;
 	}
-
-
 	
+	
+	/**
+     * Returns TRUE if string is empty
+     *
+     * @param mixed $value
+     * @return mixed
+     *
+     * @tag filter
+     * @static
+     */
+	static function isNotEmpty($value)
+	{
+		return !empty($value);
+	}
+
+
+	/**
+     * Returns TRUE if string is empty
+     *
+     * @param mixed $value
+     * @return mixed
+     *
+     * @tag filter
+     * @static
+     */
+	static function isEmpty($value)
+	{
+		return empty($value);
+	}
 	
 	
 	/**
