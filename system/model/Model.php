@@ -228,7 +228,7 @@ class Model {
 					/**
 					 * Validate ENUMs
 					 */
-					if($column->type == 'ENUM'){
+					if($column->type == 'enum'){
 						if(!in_array($clean->getRaw( $column->name ), $column->enums)){
 							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' is not in list of acceptable values.');
 						}
