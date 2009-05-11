@@ -309,12 +309,9 @@ class User {
 					$this->APP->mail->FromName  	= $this->APP->config('email_sender_name');
 					$this->APP->mail->Mailer    	= "mail";
 					$this->APP->mail->ContentType 	= 'text/html';
-					$this->APP->mail->Subject   	= $this->APP->config('application_name') . " Password Reset Form";
-
-					$this->APP->mail->Body 			= 'Hello,<br /><br />Your ' .
-									$this->APP->config('application_name') . ' password has been reset to ' . $new_pass . '.';
-									
-									
+					$this->APP->mail->Subject   	= $this->APP->config('password_reset_subject');
+					$this->APP->mail->Body 			= str_replace('{new_pass}', $new_pass, $this->APP->config('password_reset_body'));
+										
 					$this->APP->mail->Send();
 					$this->APP->mail->ClearAddresses();
 					
