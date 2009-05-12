@@ -532,7 +532,7 @@ class Router {
 	 */
 	public function getInterfaceUrl($interface = false){
         $interface = $interface ? $interface : LS;
-        return $this->getApplicationUrl() . '/' . $interface;
+        return $this->getApplicationUrl() . (empty($interface) ? '' : '/' . $interface);
     }
 
     
