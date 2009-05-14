@@ -27,11 +27,6 @@ class Model {
 	private $calcs = false;
 	
 	/**
-	 * @var integer Current page = total results divided by per_page
-	 */
-	private $current_page = false;
-	
-	/**
 	 * @var array Holds an array of security rules to apply to each field.
 	 * @access private
 	 */
@@ -48,11 +43,6 @@ class Model {
 	 * @access private
 	 */
 	private $paginate = false;
-	
-	/**
-	 * @var integer Records per page for pagination
-	 */
-	private $per_page = false;
 	
 	/**
 	 * @var array Holds the type of query we're running, so we know what to return
@@ -663,10 +653,6 @@ class Model {
 	 * @access public
 	 */
 	public function paginate($current_page,$per_page = 25){
-		
-		$this->current_page = $current_page;
-		$this->per_page = $per_page;
-		
 		$query_offset = ($current_page - 1) * abs($per_page);
 		$this->limit($query_offset,$per_page);
 	}
@@ -832,10 +818,11 @@ class Model {
 			// if any pagination, return found rows
 			if($this->paginate){
 				$results = $this->query('SELECT FOUND_ROWS()');
-				$records['TOTAL_RECORDS_FOUND'] = $results->fields['FOUND_ROWS()'];
-				$records['CURRENT_PAGE'] = $this->current_page;
-				$records['RESULTS_PER_PAGE'] = $this->per_page;
-				$records['TOTAL_PAGE_COUNT'] = ceil($records['TOTAL_RECORDS_FOUND'] / $this->per_page);
+				//if($results->RecordCount){
+					//while($found = $results->FetchRow()){
+						$records['TOTAL_RECORDS_FOUND'] = $results->fields['FOUND_ROWS()'];
+					//}
+				//}
 			}
 			
 			$this->tmp_records = false;
