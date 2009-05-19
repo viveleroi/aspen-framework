@@ -95,7 +95,7 @@ class Router {
 			
 			// loop additional bits to pass to our arguments
 			for($i = 3; $i < count($uri); $i++){
-				$bits[] = $uri[$i];
+				$bits[] = preg_replace('/\?(.*)/', '', $uri[$i]);
 			}
 		} else {
 			
@@ -108,7 +108,7 @@ class Router {
 			if(is_array($get)){
 				foreach($get as $key => $value){
 					if($key != 'module' && $key != 'method'){
-						$bits[$key] = $this->APP->params->get->getRaw($key);
+						$bits[$key] = preg_replace('/\?(.*)/', '', $this->APP->params->get->getRaw($key));
 					}
 				}
 			}

@@ -662,9 +662,9 @@ class Model {
 	 * @param integer $per_page
 	 * @access public
 	 */
-	public function paginate($current_page,$per_page = 25){
+	public function paginate($current_page = false,$per_page = 25){
 		
-		$this->current_page = $current_page;
+		$this->current_page = $current_page ? $current_page : 1;
 		$this->per_page = $per_page;
 		
 		$query_offset = ($current_page - 1) * abs($per_page);
