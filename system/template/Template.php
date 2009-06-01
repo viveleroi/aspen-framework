@@ -747,14 +747,16 @@ class Template {
 		if(!empty($city) && !empty($state)){
 			$address .= ", ";
 		} else {
-			$address .= "<br />";
+			if(!empty($city)){
+				$address .= "<br />";
+			}
 		}
 		
 		$address .= empty($state) ? '' : $state . "<br />";
 		$address .= empty($zip) ? '' : $zip . "<br />";
 		$address .= empty($country) ? '' : $country . "<br />";
 		
-		return $address;
+		return $this->na($address);
 		
 	}
 

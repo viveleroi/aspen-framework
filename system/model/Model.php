@@ -50,6 +50,12 @@ class Model {
 	private $paginate = false;
 	
 	/**
+	 * @var string undocumented class variable
+	 * @access private
+	 */
+	private $parenth_start = false;
+	
+	/**
 	 * @var integer Records per page for pagination
 	 */
 	private $per_page = false;
@@ -315,6 +321,26 @@ class Model {
 //+-----------------------------------------------------------------------+
 //| CONDITION GENERATING FUNCTIONS
 //+-----------------------------------------------------------------------+
+
+	
+	/**
+	 * @abstract undocumented function
+	 * @return void
+	 * @access private
+	 **/
+	public function parenthStart(){
+		$this->parenth_start = true;
+	}
+	
+	
+	/**
+	 * @abstract undocumented function
+	 * @return void
+	 * @access private
+	 **/
+	public function parenthEnd(){
+		$this->sql['WHERE'][ (count($this->sql['WHERE'])-1) ] .= ')';
+	}
 	
 	
 	/**
@@ -325,8 +351,15 @@ class Model {
 	 * @access public
 	 */
 	public function where($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s = "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		
+		$match = $this->parenth_start ? $match.' (' : $match;
+		$this->parenth_start = false;
+		
+		$this->sql['WHERE'][] = sprintf('%s %s = "%s"',
+											(isset($this->sql['WHERE']) ? $match : 'WHERE'),
+											$field,
+											$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
+										);
 	}
 	
 
