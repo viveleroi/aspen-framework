@@ -732,15 +732,15 @@ class Template {
 					$value = empty($option[$keys[0]]) ? $option[$keys[1]] : $option[$keys[0]];
 					
 					printf('<option value="%s"%s>%s</option>' . "\n",
-								$value,
+								$this->encodeTextEntities($value),
 								($value == $match_value ? ' selected="selected"' : ''),
-								$option[$keys[1]]);
+								$this->encodeTextEntities($option[$keys[1]]));
 				} else {
 
 					printf('<option value="%s"%s>%s</option>' . "\n",
-								$option,
+								$this->encodeTextEntities($option),
 								($option == $match_value ? ' selected="selected"' : ''),
-								$option);
+								$this->encodeTextEntities($option));
 					
 				}
 				
@@ -764,14 +764,16 @@ class Template {
 		if(!empty($city) && !empty($state)){
 			$address .= ", ";
 		} else {
-			$address .= "<br />";
+			if(!empty($city)){
+				$address .= "<br />";
+			}
 		}
 		
 		$address .= empty($state) ? '' : $state . "<br />";
 		$address .= empty($zip) ? '' : $zip . "<br />";
 		$address .= empty($country) ? '' : $country . "<br />";
 		
-		return $address;
+		return $this->na($address);
 		
 	}
 

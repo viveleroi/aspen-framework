@@ -4,5 +4,5 @@
 	RewriteRule ^\.htaccess$ - [F]
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.*)$  index.php?redirected=$1 [L]
+	RewriteRule ^(.*)$  index.php?redirected=$1 [QSA,L]
 </IfModule>

@@ -768,6 +768,9 @@ class Inspekt
      */
 	static function isPhone($value, $country = 'US')
 	{
+		
+		$value = str_replace(array('-','.'), '', $value);
+		
 		if (!ctype_digit($value)) {
 			return FALSE;
 		}

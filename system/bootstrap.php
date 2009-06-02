@@ -414,11 +414,7 @@ class Bootstrap extends Base {
 			// update our config with the user-set params
 			if(isset($config) && is_array($config)){
 				foreach($config as $param => $value){
-
-					if(isset($all_config[$param])){
-						$all_config[$param] = $value;
-					}
-
+					$all_config[$param] = $value;
 				}
 				define('USER_CONFIG_LOADED', true);
 			}

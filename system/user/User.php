@@ -45,6 +45,21 @@ class User {
 		// process the form if submitted
 		if($this->APP->form->isSubmitted()){
 
+			// validation
+			if(!$this->APP->form->isFilled('username')){
+				$this->APP->form->addError('username', 'You must enter a username.');
+			} else {
+				
+				// verify unique
+				$this->APP->model->select('authentication');
+				$this->APP->model->where('username', $this->APP->form->cv('username'));
+				$unique = $this->APP->model->results();
+				
+				if($unique['RECORDS']){
+					$this->APP->form->addError('username', 'That username has already been used.');
+				}
+			}
+	
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.
 			if($this->APP->form->isFilled('password')){
@@ -289,12 +304,9 @@ class User {
 					$this->APP->mail->FromName  	= $this->APP->config('email_sender_name');
 					$this->APP->mail->Mailer    	= "mail";
 					$this->APP->mail->ContentType 	= 'text/html';
-					$this->APP->mail->Subject   	= $this->APP->config('application_name') . " Password Reset Form";
-
-					$this->APP->mail->Body 			= 'Hello,<br /><br />Your ' .
-									$this->APP->config('application_name') . ' password has been reset to ' . $new_pass . '.';
-									
-									
+					$this->APP->mail->Subject   	= $this->APP->config('password_reset_subject');
+					$this->APP->mail->Body 			= str_replace('{new_pass}', $new_pass, $this->APP->config('password_reset_body'));
+										
 					$this->APP->mail->Send();
 					$this->APP->mail->ClearAddresses();
 					

@@ -131,9 +131,13 @@
 	// email from sender name
 	$config['email_sender_name'] = 'noreply@' .
 			(array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : 'yourdomain.com');
+			
+	// password reset email subject
+	$config['password_reset_subject'] = (array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : '') . 'Password Reset Form';
 
-
-
+	// password reset email body
+	$config['password_reset_body'] = 'Hello,<br /><br />Your password has been reset to {new_pass}.';
+	
 /**
  * DEBUG AND ERROR HANDLING SETTINGS
  *
@@ -339,6 +343,7 @@
 	$config['load_core_class'][] = array('classname' => 'Install');
 	$config['load_core_class'][] = array('classname' => 'Log');
 	$config['load_core_class'][] = array('classname' => 'Model');
+	$config['load_core_class'][] = array('classname' => 'Module');
 	$config['load_core_class'][] = array('classname' => 'Modules');
 	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail');
 	$config['load_core_class'][] = array('classname' => 'Settings');
