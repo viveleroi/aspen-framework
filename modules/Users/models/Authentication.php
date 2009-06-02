@@ -23,21 +23,22 @@ class AuthenticationModel extends Model {
 	
 	public function validate($fields = false){
 		
-		if(is_array($fields)){
+		$clean = parent::validate($fields);
+		
+		if(is_object($clean)){
 			
 			// validate username
-			if(!isset($fields['username']) || empty($fields['username'])){
+			if($clean->isEmpty('username')){
 				$this->addError('username', $this->APP->template->text('query:username'));
 			}
 			
 			// validate password
-			if(!isset($fields['password']) || empty($fields['password'])){
+			if($clean->isEmpty('password')){
 				$this->addError('password', 'You must enter a valid password.');
 			} else {
-				
-				// enforce sha1 on password
-				$fields['password'] = sha1($fields['password']);
-				
+				if(strlen($clean->getAlnum('password')) != 28){
+					$this->addError('password', 'It does not appear that the password has been encrypted properly.');
+				}
 			}
 		}
 		

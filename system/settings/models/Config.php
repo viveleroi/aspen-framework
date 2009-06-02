@@ -29,7 +29,9 @@ class ConfigModel extends Model {
 	 */
 	public function validate($fields = false){
 		
-		if(!isset($fields['config_key']) || empty($fields['config_key'])){
+		$clean = parent::validate($fields);
+		
+		if($clean->isEmpty('config_key')){
 			$this->addError('config_key', 'The configuration key may not be empty.');
 		}
 		

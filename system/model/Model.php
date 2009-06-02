@@ -164,12 +164,91 @@ class Model {
 	
 	
 	/**
-	 * @abstract Empty validator function
-	 * @abstract private
+	 * @abstract Validates data is appropriate for the table before saving.
 	 * @return boolean
+	 * @access public
 	 */
-	public function validate(){
-		return true;
+	public function validate($fields = false){
+
+		$clean = false;
+		
+		// $fields must be an array or insert/update may not happen
+		if(is_array($fields)){
+			
+			// make an inspekt cage so we can verify data
+			$clean 	= Inspekt_Cage::Factory($fields);
+			$schema = $this->getSchema();
+			
+			foreach($schema as $column){
+				
+				// if it's set, and a value is present, we must validate that
+				// value against the database.
+				// whether or not the value is present is up to the model extension, not this
+				if($clean->isSetAndNotEmpty( $column->name )){
+					
+	
+					/**
+					 * Validate INTEGERs along with unsigned and maxlengths
+					 */
+					if(in_array($column->type, $this->APP->config('mysql_field_group_int'))){
+						if(!$clean->getInt( $column->name )){
+							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' should be an integer.');
+						} else {
+							if($column->unsigned && !$clean->testGreaterThan( $column->name, -1 )){
+								$this->addError($column->name, 'Invalid db value. ' . $column->name . ' may not be negative.');
+							}
+						}
+					}
+					
+					
+					/**
+					 * Validate FLOATs along with unsigned and maxlengths
+					 */
+					if(in_array($column->type, $this->APP->config('mysql_field_group_dec'))){
+						if(!$clean->getFloat( $column->name )){
+							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' should be a decimal or float.');
+						} else {
+							if($column->unsigned && !$clean->testGreaterThan( $column->name, -1 )){
+								$this->addError($column->name, 'Invalid db value. ' . $column->name . ' may not be negative.');
+							}
+						}
+					}
+					
+					
+					/**
+					 * Validate DATEs
+					 */
+					if(in_array($column->type, $this->APP->config('mysql_field_group_date'))){
+						//if(!$clean->testDate( $date )){
+							//$this->addError($column->name, 'Invalid db value. ' . $column->name . ' must be a date.');
+						//}
+					}
+					
+				
+					/**
+					 * Validate ENUMs
+					 */
+					if($column->type == 'enum'){
+						if(!in_array($clean->getRaw( $column->name ), $column->enums)){
+							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' is not in list of acceptable values.');
+						}
+					}
+					
+					
+					/**
+					 * Rules to apply to all
+					 */
+					
+					// maxlength
+					if($column->max_length > 0 && strlen($clean->getRaw($column->name)) > $column->max_length){
+						$this->addError($column->name, 'Invalid db value. ' . $column->name . ' exceeds maxlength.');
+					}
+				}
+			}
+		}
+		
+		return $clean;
+		
 	}
 	
 	
