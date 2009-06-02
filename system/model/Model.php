@@ -523,6 +523,21 @@ class Model {
 	}
 	
 	
+	private function base_where($sprint_string = false, $field = false, $value = false, $match = 'AND'){
+	
+		$field = $field ? $field : $this->getPrimaryKey();
+		$match = $this->parenth_start ? $match.' (' : $match;
+		$this->parenth_start = false;
+		
+		$this->sql['WHERE'][] = sprintf($sprint_string,
+											(isset($this->sql['WHERE']) ? $match : 'WHERE'),
+											$field,
+											$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
+										);
+	
+	}
+	
+	
 	/**
 	 * @abstract Adds a standard where condition
 	 * @param string $field
@@ -530,16 +545,8 @@ class Model {
 	 * @param string $match
 	 * @access public
 	 */
-	public function where($field, $value, $match = 'AND'){
-		
-		$match = $this->parenth_start ? $match.' (' : $match;
-		$this->parenth_start = false;
-		
-		$this->sql['WHERE'][] = sprintf('%s %s = "%s"',
-											(isset($this->sql['WHERE']) ? $match : 'WHERE'),
-											$field,
-											$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
-										);
+	public function where($field = false, $value = false, $match = 'AND'){
+		$this->base_where('%s %s = "%s"', $field, $value, $match);
 	}
 	
 
@@ -551,8 +558,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereNot($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s != "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s != "%s"', $field, $value, $match);
 	}
 
 	
@@ -564,8 +570,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereLike($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s LIKE "%%%s%%"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s LIKE "%%%s%%"', $field, $value, $match);
 	}
 	
 	
@@ -578,7 +583,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereBetween($field, $start, $end, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s BETWEEN "%s" AND "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, $start, $end);
+		$this->base_where('%s %s BETWEEN "'.$start.'" AND "'.$end.'"', $field, false, $match);
 	}
 
 	
@@ -590,8 +595,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereGreaterThan($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s > "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s > "%s"', $field, $value, $match);
 	}
 	
 	
@@ -603,8 +607,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereGreaterThanEqualTo($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s >= "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s >= "%s"', $field, $value, $match);
 	}
 	
 	
@@ -616,8 +619,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereLessThan($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s < "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s < "%s"', $field, $value, $match);
 	}
 	
 	
@@ -629,8 +631,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereLessThanEqualTo($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s <= "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s <= "%s"', $field, $value, $match);
 	}
 	
 	
@@ -642,7 +643,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereBeforeToday($field, $include_today = true, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s TO_DAYS(%s) <%s TO_DAYS(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+		$this->base_where('%s TO_DAYS(%s) <'.($include_today ? '=' : '').' TO_DAYS(NOW())', $field, false, $match);
 	}
 	
 	
@@ -654,7 +655,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereAfterToday($field, $include_today = false, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s TO_DAYS(%s) >%s TO_DAYS(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+		$this->base_where('%s TO_DAYS(%s) >'.($include_today ? '=' : '').' TO_DAYS(NOW())', $field, false, $match);
 	}
 	
 	
@@ -666,7 +667,7 @@ class Model {
 	 * @access public
 	 */
 	public function inPastXDays($field, $day_count = 7, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s TO_DAYS(NOW()) - TO_DAYS(%s) <= %s', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, $day_count);
+		$this->base_where('%s TO_DAYS(NOW()) - TO_DAYS(%s) <= ' . $day_count, $field, false, $match);
 	}
 	
 	
@@ -1155,7 +1156,7 @@ class Model {
 		$field_name = $field_name ? $field_name : $this->getPrimaryKey();
 		if($this->inSchema($field_name)){
 			$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
-			return $this->query($this->sql['DELETE']);
+			return (bool)$this->query($this->sql['DELETE']);
 		}
 		return false;
 	}
