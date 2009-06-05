@@ -142,7 +142,13 @@ class FirePHP {
    * @var string
    */
   const GROUP_END = 'GROUP_END';
-  
+
+  /**
+   * @var object $APP Holds our original application
+   * @access private
+   */
+  protected $APP;
+
   /**
    * Singleton instance of FirePHP
    *
@@ -219,7 +225,8 @@ class FirePHP {
   /**
    * The object constructor
    */
-  function __construct() {
+  public function __construct(){
+    $this->APP = get_instance();
   }
 
   /**
@@ -935,8 +942,7 @@ class FirePHP {
    * @return string|false
    */
   protected function getUserAgent() {
-    if(!isset($_SERVER['HTTP_USER_AGENT'])) return false;
-    return $_SERVER['HTTP_USER_AGENT'];
+    return $this->APP->params->server->getRaw('HTTP_USER_AGENT');
   }
 
   /**

@@ -301,6 +301,11 @@ class Error {
 				}
 			}
 		}
+
+        // send the errors to firephp
+        if($this->APP->isLibraryLoaded('Debug')){
+            $this->APP->debug->firephp()->error($this->errMsg . ' Line: ' . $this->line . ' - File: ' . $this->file);
+        }
 	}
 	
 	

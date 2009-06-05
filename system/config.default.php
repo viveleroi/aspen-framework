@@ -385,13 +385,10 @@
 	// Image thumbnail generation
 	$config['load_add_core_class'][] = array('classname' => 'Thumbnail', 'autoload' => false);
 
-        // Debugging functionality
-	$config['load_add_core_class'][] = array('classname' => 'Fb', 'folder' => 'debug/firephp','autoload'=>false);
+    // Debugging functionality
+	$config['load_add_core_class'][] = array('classname' => 'Debug');
 
 	*/
-$config['load_add_core_class'][] = array('classname' => 'Fb', 'folder' => 'debug/firephp','autoload'=>false);
-$config['load_add_core_class'][] = array('classname' => 'Firephp', 'folder' => 'debug/firephp','autoload'=>false);
-	
 	
 /**
  * LOADING CUSTOM CLASSES
