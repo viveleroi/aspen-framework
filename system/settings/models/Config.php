@@ -25,11 +25,12 @@ class ConfigModel extends Model {
 	/**
 	 * @abstract Ensures that a config key has been set before ANY updates allowed
 	 * @param array $fields
+	 * @param string $type insert or update
 	 * @return boolean
 	 */
-	public function validate($fields = false){
+	public function validate($fields = false, $type = false){
 		
-		$clean = parent::validate($fields);
+		$clean = parent::validate($fields, $type);
 		
 		if($clean->isEmpty('config_key')){
 			$this->addError('config_key', 'The configuration key may not be empty.');

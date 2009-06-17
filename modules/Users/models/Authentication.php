@@ -22,10 +22,10 @@ class AuthenticationModel extends Model {
 
 
 	/**
-	 *
-	 * @param <type> $fields
-	 * @param <type> $type
-	 * @return <type>
+	 * @abstract Validates the database table input
+	 * @param array $fields
+	 * @param string $type insert or update
+	 * @return boolean
 	 */
 	public function validate($fields = false, $type = false){
 
