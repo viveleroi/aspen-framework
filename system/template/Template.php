@@ -208,14 +208,20 @@ class Template {
 		// set values, or use default if false.
 		$method = $method ? $method : $this->APP->router->getSelectedMethod();
 		$module = $module ? $module : $this->APP->router->getSelectedModule();
-		$title 	= $title ? $title : $text;
-		$link 	= '';
-		$class 	= false;
+		$interface = $interface ? $interface : LOADING_SECTION;
+		$interface = empty($interface) ? false : $interface;
+		$title = $title ? $title : $text;
 
+		$mi = empty($interface) ? $module : $module.'_'.$interface;
+
+		$link = '';
 		if($this->APP->user->userHasAccess($module, $method, $interface)){
 
+			$class = false;
+
 			// highlight the link if the user is at the page
-			if($method == $this->APP->router->getSelectedMethod() && $module == $this->APP->router->getSelectedModule()){
+			if($method == $this->APP->router->getSelectedMethod()
+					&& $mi == $this->APP->router->getSelectedModule()){
 				$class = true;
 			}
 
@@ -245,13 +251,12 @@ class Template {
 	public function createUrl($method = false, $bits = false, $module = false, $interface = false){
 	
 		// begin url with absolute url to this app
+		$interface = strtolower( $interface ? $interface : (LOADING_SECTION != '' ? LOADING_SECTION : '') );
 		$url = $this->APP->router->getInterfaceUrl($interface);
 
 		$method = $method ? $method : $this->APP->router->getSelectedMethod();
 		$module = $module ? $module : $this->APP->router->getSelectedModule();
-		
-		$interface = (LOADING_SECTION != '' ? '_'.LOADING_SECTION : '');
-		$module = strtolower(str_replace($interface, '', $module));
+		$module = str_replace('_'.$interface, '', strtolower($module));
 		
 		// if mod rewrite/clean urls are off
 		if(!$this->APP->config('enable_mod_rewrite')){

@@ -683,6 +683,18 @@ class Model {
 
 
 	/**
+	 * @abstract Finds timestamps before the current moment
+	 * @param string $field
+	 * @param boolean $include_today
+	 * @param string $match
+	 * @access public
+	 */
+	public function wherePast($field, $include_today = false, $match = 'AND'){
+		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s< UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+	}
+
+
+	/**
 	 * @abstract Finds timestamps after today
 	 * @param string $field
 	 * @param boolean $include_today
@@ -691,6 +703,18 @@ class Model {
 	 */
 	public function whereAfterToday($field, $include_today = false, $match = 'AND'){
 		$this->base_where('%s TO_DAYS(%s) >'.($include_today ? '=' : '').' TO_DAYS(NOW())', $field, false, $match);
+	}
+
+
+	/**
+	 * @abstract Finds timestamps after the current moment
+	 * @param string $field
+	 * @param boolean $include_today
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereFuture($field, $include_today = false, $match = 'AND'){
+		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s> UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
 	}
 
 
@@ -1080,6 +1104,8 @@ class Model {
 				$records['CURRENT_PAGE'] = $this->current_page;
 				$records['RESULTS_PER_PAGE'] = $this->per_page;
 				$records['TOTAL_PAGE_COUNT'] = ceil($records['TOTAL_RECORDS_FOUND'] / $this->per_page);
+			} else {
+				$records['TOTAL_RECORDS_FOUND'] = ($records['RECORDS'] ? count($records['RECORDS']) : 0);
 			}
 
 			$this->tmp_records = false;
@@ -1219,7 +1245,7 @@ class Model {
 	 * @return integer
 	 * @access public
 	 */
-	public function duplicate($id, $field_name = 'id', $replace_field = false){
+	public function duplicate($id, $field_name = false){
 
 		$fields = $this->getSchema();
 
@@ -1230,13 +1256,15 @@ class Model {
 		}
 
 		$key = $this->getPrimaryKey();
+		$field_name = $field_name ? $field_name : $key;
 
-		$sql = sprintf('INSERT INTO %s (' . implode(', ', $field_names) . ') SELECT ' . implode(', ', $field_names) . ' FROM %s WHERE %s = %s ORDER BY %s',
-							$table, $table, $field_name, $id, $key);
-
-		if($replace_field){
-			$sql = str_replace('SELECT ' . $field_name . ', ', 'SELECT "' . $replace_field . '", ', $sql);
-		}
+		$sql = sprintf('INSERT INTO %s (%s) SELECT %2$s FROM %s WHERE %s = %s ORDER BY %s',
+							$this->table,
+							implode(', ', $field_names),
+							$this->table,
+							$field_name,
+							$id,
+							$key);
 
 		$this->query($sql);
 

@@ -13,37 +13,41 @@
  * @package Aspen_Framework
  */
 class AuthenticationModel extends Model {
-	
+
 	/**
 	 * @abstract We must allow the parent constructor to run properly
 	 * @param string $table
 	 */
 	public function __construct($table = false){ parent::__construct($table); }
-	
-	
-	public function validate($fields = false){
-		
-		$clean = parent::validate($fields);
-		
-		if(is_object($clean)){
-			
-			// validate username
-			if($clean->isEmpty('username')){
-				$this->addError('username', $this->APP->template->text('query:username'));
-			}
-			
-			// validate password
-			if($clean->isEmpty('password')){
-				$this->addError('password', 'You must enter a valid password.');
-			} else {
-				if(strlen($clean->getAlnum('password')) != 28){
-					$this->addError('password', 'It does not appear that the password has been encrypted properly.');
-				}
-			}
+
+
+	/**
+	 *
+	 * @param <type> $fields
+	 * @param <type> $type
+	 * @return <type>
+	 */
+	public function validate($fields = false, $type = false){
+
+		$clean = parent::validate($fields, $type);
+
+		// verify username
+		if($clean->isEmpty('username', $type)){
+			$this->addError('username', $this->APP->template->text('db:error:username'));
 		}
-		
+
+		// validate empty pass
+		if($clean->isEmpty('password', $type)){
+			$this->addError('password', $this->APP->template->text('db:error:password'));
+		}
+
+		// enforce sha1 on password
+		if($clean->isSetAndNotEmpty('password')){
+			$fields['password'] = sha1($fields['password']);
+		}
+
 		return !$this->error();
-		
+
 	}
 }
 ?>

@@ -769,7 +769,7 @@ class Inspekt
 	static function isPhone($value, $country = 'US')
 	{
 		
-		$value = str_replace(array('-','.'), '', $value);
+		$value = Inspekt::getDigits($value);
 		
 		if (!ctype_digit($value)) {
 			return FALSE;
