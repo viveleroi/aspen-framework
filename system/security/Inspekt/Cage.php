@@ -135,12 +135,24 @@ class Inspekt_Cage
      *
      * @tag filter
      */
-	function isEmpty($key)
+	function isEmpty($key, $only_if_set = false)
 	{
+
+		// convert db query types to boolean
+		$only_if_set = $only_if_set == 'update' ? true : false;
+
+		// if key does not exist
 		if (!$this->keyExists($key)) {
-			return true;
+			// if we need to return an error because the
+			// key isn't even set, do so
+			// otherwise ignore
+			return !$only_if_set;
+		} else {
+
+			// the key is set, so we do need to process it no matter what
+			return Inspekt::isEmpty($this->_getValue($key));
+
 		}
-		return Inspekt::isEmpty($this->_getValue($key));
 	}
 
 

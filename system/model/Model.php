@@ -45,6 +45,12 @@ class Model {
 	private $current_page = false;
 
 	/**
+	 * @var array
+	 * @access private
+	 */
+	private $field_defaults = array();
+
+	/**
 	 * @var array Holds an array of security rules to apply to each field.
 	 * @access private
 	 */
@@ -245,7 +251,7 @@ class Model {
 					 * Validate ENUMs
 					 */
 					if($column->type == 'enum'){
-						if(!in_array($clean->getRaw( $column->name ), $column->enums)){
+                        if(!$this->enumExists($column->name, $clean->getRaw( $column->name ))){
 							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' is not in list of acceptable values.');
 						}
 					}
@@ -301,6 +307,16 @@ class Model {
 
         return $found;
     }
+
+
+	/**
+	 * @abstract Sets the default value if a field was not set or is empty
+	 * @param <type> $field
+	 * @param <type> $value
+	 */
+	public function setDefaultIfEmpty($field, $value){
+		$this->field_defaults[$field] = $value;
+	}
 
 
 	/**
@@ -1347,6 +1363,7 @@ class Model {
 //| INSERT / UPDATE FUNCTIONS
 //+-----------------------------------------------------------------------+
 
+
 	/**
 	 * @abstract Generates an INSERT query and auto-executes it
 	 * @param array $fields
@@ -1354,6 +1371,9 @@ class Model {
 	 * @access private
 	 */
 	public function insert($fields = false){
+
+		// set default values if prompted from extension install / update funcs
+		$fields = $this->getDefaults($fields);
 
 		if($this->validate($fields, 'insert')){
 
@@ -1398,6 +1418,9 @@ class Model {
 	 */
 	public function update($fields = false, $where_value, $where_field = false ){
 
+		// set default values if prompted from extension install / update funcs
+		$fields = $this->getDefaults($fields);
+
 		if($this->validate($fields, 'update')){
 
 			$where_field = $where_field ? $where_field : $this->getPrimaryKey();
@@ -1428,9 +1451,25 @@ class Model {
 	}
 
 
+	/**
+	 *
+	 * @param <type> $fields
+	 */
+	protected function getDefaults($fields = false){
+		foreach($this->field_defaults as $field => $default){
+			if(!isset($fields[$field]) || empty($fields[$field])){
+				$fields[$field] = $default;
+			}
+		}
+		$this->field_defaults = array();
+		return $fields;
+	}
+
+
 //+-----------------------------------------------------------------------+
 //| FIELD ERROR HANDLING FUNCTIONS
 //+-----------------------------------------------------------------------+
+
 
 	/**
 	 * @abstract Adds a new field validation error to the error queue
