@@ -40,7 +40,7 @@ class Inspekt_Cage
      */
 	private $_autofilter_conf = NULL;
 
-	
+
 	/**
 	 * @abstract Returns the raw source as an array
 	 *
@@ -73,9 +73,9 @@ class Inspekt_Cage
 		$cage = new Inspekt_Cage();
 		$cage->_setSource($source);
 		$source = NULL;
-	
+
 		return $cage;
-		
+
 	}
 
 
@@ -91,8 +91,8 @@ class Inspekt_Cage
 		}
 		$this->_source = $newsource;
 	}
-	
-	
+
+
 	/**
      * Returns TRUE if string is empty
      *
@@ -108,8 +108,8 @@ class Inspekt_Cage
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
      * Returns TRUE if string is empty
      *
@@ -126,7 +126,7 @@ class Inspekt_Cage
 		return false;
 	}
 
-	
+
 	/**
      * Returns TRUE if string is empty
      *
@@ -135,19 +135,18 @@ class Inspekt_Cage
      *
      * @tag filter
      */
-	function isEmpty($key, $only_if_set = false)
+	function isEmpty($key, $count_as_empty = false)
 	{
-
-		// convert db query types to boolean
-		$only_if_set = $only_if_set == 'update' ? true : false;
 
 		// if key does not exist
 		if (!$this->keyExists($key)) {
-			// if we need to return an error because the
-			// key isn't even set, do so
-			// otherwise ignore
-			return !$only_if_set;
+			return true;
 		} else {
+
+			// replace any extra "count as empty" chars
+			if($count_as_empty){
+				$this->_setValue($key, str_replace($count_as_empty, '', $this->_getValue($key)) );
+			}
 
 			// the key is set, so we do need to process it no matter what
 			return Inspekt::isEmpty($this->_getValue($key));
@@ -172,7 +171,7 @@ class Inspekt_Cage
 		return Inspekt::getAlpha($this->_getValue($key));
 	}
 
-	
+
 	/**
      * Returns only the alphabetic characters and digits in value.
      *
@@ -189,7 +188,7 @@ class Inspekt_Cage
 		return Inspekt::getAlnum($this->_getValue($key));
 	}
 
-	
+
 	/**
      * Returns only the digits in value. This differs from getInt().
      *
@@ -205,8 +204,8 @@ class Inspekt_Cage
 		}
 		return Inspekt::getDigits($this->_getValue($key));
 	}
-	
-	
+
+
 	/**
      * Returns only the digits with decimal. This differs from getInt().
      *
@@ -223,7 +222,7 @@ class Inspekt_Cage
 		return Inspekt::getFloat($this->_getValue($key));
 	}
 
-	
+
 	/**
      * Returns dirname(value).
      *
@@ -240,7 +239,7 @@ class Inspekt_Cage
 		return Inspekt::getDir($this->_getValue($key));
 	}
 
-	
+
 	/**
      * Returns (int) value.
      *
@@ -257,7 +256,7 @@ class Inspekt_Cage
 		return Inspekt::getInt($this->_getValue($key));
 	}
 
-	
+
 	/**
      * Returns realpath(value).
      *
@@ -274,7 +273,7 @@ class Inspekt_Cage
 		return Inspekt::getPath($this->_getValue($key));
 	}
 
-	
+
 	/**
      * Returns value.
      *
@@ -291,7 +290,7 @@ class Inspekt_Cage
 		return $this->_getValue($key);
 	}
 
-	
+
 	/**
      * Returns value if every character is alphabetic or a digit,
      * FALSE otherwise.
@@ -313,7 +312,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if every character is alphabetic, FALSE
      * otherwise.
@@ -335,7 +334,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it is greater than or equal to $min and less
      * than or equal to $max, FALSE otherwise. If $inc is set to
@@ -362,7 +361,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it is a valid credit card number format. The
      * optional second argument allows developers to indicate the
@@ -385,7 +384,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
-	
+
 
 	/**
      * Returns $value if it is a valid date, FALSE otherwise. The
@@ -396,11 +395,16 @@ class Inspekt_Cage
      *
      * @tag validator
      */
-	function testDate($key)
+	function testDate($key, $ignore_mysql_default = false)
 	{
 		if (!$this->keyExists($key)) {
 			return false;
 		}
+
+		if($ignore_mysql_default){
+			$this->_setValue( $key, trim(str_replace(array(0,'-',':'), '', $this->_getValue($key))) );
+		}
+
 		if (Inspekt::isDate($this->_getValue($key))) {
 			return $this->_getValue($key);
 		}
@@ -408,7 +412,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if every character is a digit, FALSE otherwise.
      * This is just like isInt(), except there is no upper limit.
@@ -430,7 +434,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it is a valid email format, FALSE otherwise.
      *
@@ -451,7 +455,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it is a valid float value, FALSE otherwise.
      *
@@ -472,7 +476,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it is greater than $min, FALSE otherwise.
      *
@@ -493,7 +497,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
-	
+
 
 	/**
      * Returns value if it is a valid hexadecimal format, FALSE
@@ -515,7 +519,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
-	
+
 
 	/**
      * Returns value if it is a valid hostname, FALSE otherwise.
@@ -541,7 +545,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
-	
+
 
 	/**
      * Returns value if it is a valid integer value, FALSE otherwise.
@@ -563,7 +567,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it is a valid IP format, FALSE otherwise.
      *
@@ -583,7 +587,7 @@ class Inspekt_Cage
 
 		return FALSE;
 	}
-	
+
 
 	/**
      * Returns value if it is less than $max, FALSE otherwise.
@@ -606,7 +610,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it is one of $allowed, FALSE otherwise.
      *
@@ -627,7 +631,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it is a valid phone number format, FALSE
      * otherwise. The optional second argument indicates the country.
@@ -649,7 +653,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it matches $pattern, FALSE otherwise. Uses
      * preg_match() for the matching.
@@ -693,7 +697,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value if it is a valid US ZIP, FALSE otherwise.
      *
@@ -714,7 +718,7 @@ class Inspekt_Cage
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns value with all tags removed.
      *
@@ -731,7 +735,7 @@ class Inspekt_Cage
 		return Inspekt::noTags($this->_getValue($key));
 	}
 
-	
+
 	/**
      * Returns basename(value).
      *
@@ -748,7 +752,7 @@ class Inspekt_Cage
 		return Inspekt::noPath($this->_getValue($key));
 	}
 
-	
+
 	/**
      * Checks if a key exists
      *

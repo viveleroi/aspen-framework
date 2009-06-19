@@ -24,27 +24,27 @@ class AuthenticationModel extends Model {
 	/**
 	 * @abstract Validates the database table input
 	 * @param array $fields
-	 * @param string $type insert or update
+	 * @param string $primary_key
 	 * @return boolean
 	 */
-	public function validate($fields = false, $type = false){
+	public function validate($fields = false, $primary_key = false){
 
-		$clean = parent::validate($fields, $type);
+		$clean = parent::validate($fields, $primary_key);
 
 		// verify username
-		if($clean->isEmpty('username', $type)){
+		if($clean->isEmpty('username')){
 			$this->addError('username', $this->APP->template->text('db:error:username'));
 		}
 
 		// validate empty pass
-		if($clean->isEmpty('password', $type)){
+		if($clean->isEmpty('password')){
 			$this->addError('password', $this->APP->template->text('db:error:password'));
 		}
 
 		// enforce sha1 on password
-		if($clean->isSetAndNotEmpty('password')){
-			$fields['password'] = sha1($fields['password']);
-		}
+//		if($clean->isSetAndNotEmpty('password')){
+//			$fields['password'] = sha1($clean->getRaw('password'));
+//		}
 
 		return !$this->error();
 

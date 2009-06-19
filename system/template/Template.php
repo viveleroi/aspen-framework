@@ -539,6 +539,7 @@ class Template {
 	 * @return string
 	 */
 	public function na($value, $replace = 'N/A'){
+		$value = trim($value);
 		return empty($value) ? $replace : $value;
 	}
 

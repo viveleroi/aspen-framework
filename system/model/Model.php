@@ -41,6 +41,7 @@ class Model {
 
 	/**
 	 * @var integer Current page = total results divided by per_page
+	 * @access private
 	 */
 	private $current_page = false;
 
@@ -76,6 +77,7 @@ class Model {
 
 	/**
 	 * @var integer Records per page for pagination
+	 * @access private
 	 */
 	private $per_page = false;
 
@@ -187,15 +189,28 @@ class Model {
 
 	/**
 	 * @abstract Validates data is appropriate for the table before saving.
-	 * @return boolean
+	 * @param array $fields
+	 * @param mixed $primary_key
+	 * @return object
 	 * @access public
 	 */
-	public function validate($fields = false, $type = false){
+	public function validate($fields = false, $primary_key = false){
 
 		$clean = false;
 
 		// $fields must be an array or insert/update may not happen
 		if(is_array($fields)){
+
+			// if primary key has been set, we need to load an existing record
+			if($primary_key && count($fields)){
+
+				$record = $this->quickSelectSingle($primary_key);
+
+				// merge the record with the incoming fields array
+				// - any key in fields array overrides record
+				$fields = array_merge($record, $fields);
+
+			}
 
 			// make an inspekt cage so we can verify data
 			$clean 	= Inspekt_Cage::Factory($fields);
@@ -574,7 +589,15 @@ class Model {
 	}
 
 
-	private function base_where($sprint_string = false, $field = false, $value = false, $match = 'AND'){
+	/**
+	 * @abstract Forms the basis of the where clauses
+	 * @param string $sprint_string
+	 * @param string $field
+	 * @param string $value
+	 * @param string $match
+	 * @access private
+	 */
+	protected function base_where($sprint_string = false, $field = false, $value = false, $match = 'AND'){
 
 		$field = $field ? $field : $this->getPrimaryKey();
 		$match = $this->parenth_start ? $match.' (' : $match;
@@ -1312,7 +1335,7 @@ class Model {
 	 * @return float
 	 * @access private
 	 */
-	private function calcTotal($field){
+	protected function calcTotal($field){
 
 		$total = 0;
 
@@ -1368,14 +1391,14 @@ class Model {
 	 * @abstract Generates an INSERT query and auto-executes it
 	 * @param array $fields
 	 * @return integer
-	 * @access private
+	 * @access public
 	 */
 	public function insert($fields = false){
 
 		// set default values if prompted from extension install / update funcs
 		$fields = $this->getDefaults($fields);
 
-		if($this->validate($fields, 'insert')){
+		if($this->validate($fields)){
 
 			if($this->table && is_array($fields)){
 
@@ -1414,16 +1437,23 @@ class Model {
 	 * @param mixed $where_value
 	 * @param string $where_field
 	 * @return boolean
-	 * @access private
+	 * @access public
 	 */
 	public function update($fields = false, $where_value, $where_field = false ){
 
 		// set default values if prompted from extension install / update funcs
 		$fields = $this->getDefaults($fields);
 
-		if($this->validate($fields, 'update')){
+		// if where_value is our primary key, we should load the record first
+		// so that we can use those existing values to pass validation more quickly
+		$update_id = false;
+		if(!$where_field || $where_field == $this->getPrimaryKey()){
+			$where_field = $this->getPrimaryKey();
+			$update_id = $where_value;
+		}
 
-			$where_field = $where_field ? $where_field : $this->getPrimaryKey();
+		// if validation passes, build and run the query
+		if($this->validate($fields, $update_id)){
 
 			if($this->table && is_array($fields)){
 

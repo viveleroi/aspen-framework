@@ -76,8 +76,8 @@ class Error {
 	 * @return ErrorHandler
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
-	
-	
+
+
 	/**
 	 * @abstract Returns the error number
 	 * @return string
@@ -86,8 +86,8 @@ class Error {
 	public function getErrorNo(){
 		return $this->errNo;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the error message
 	 * @return string
@@ -96,8 +96,8 @@ class Error {
 	public function getErrorMessage(){
 		return $this->errMsg;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the error type
 	 * @return string
@@ -107,7 +107,7 @@ class Error {
 		return $this->errType[$this->errNo];
 	}
 
-	
+
 	/**
 	 * @abstract Returns the error line
 	 * @return string
@@ -116,8 +116,8 @@ class Error {
 	public function getErrorLine(){
 		return $this->line;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the error file
 	 * @return string
@@ -126,8 +126,8 @@ class Error {
 	public function getErrorFile(){
 		return $this->file;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the error information array
 	 * @return array
@@ -136,8 +136,8 @@ class Error {
 	public function getErrorInfo(){
 		return $this->info;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the error trace
 	 * @return array
@@ -146,8 +146,8 @@ class Error {
 	public function getErrorTrace(){
 		return $this->trace;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Raises a new error message
 	 * @param integer $errNo
@@ -274,7 +274,7 @@ class Error {
 			$this->APP->mail->ClearAddresses();
 
 		}
-		
+
 		// if logging exists, log this error
 		if(isset($this->APP->log) && is_object($this->APP->log)){
 			$this->APP->log->write(sprintf('ERROR (File: %s/%s: %s', $this->file, $this->line, $this->errMsg));
@@ -287,7 +287,7 @@ class Error {
 				&& !$this->APP->params->env->keyExists('TERM')
 				&& !$this->APP->params->env->keyExists('SSH_CONNECTION')
 				&& $this->APP->params->server->keyExists('HTTP_HOST')){
-			
+
 				if($this->errNo > 1){
 					$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 					$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'error.tpl.php');
@@ -303,12 +303,12 @@ class Error {
 		}
 
         // send the errors to firephp
-        if($this->APP->isLibraryLoaded('Debug')){
+        if($this->APP->isLibraryLoaded('Debug') && $this->APP->config('enable_firephp')){
             $this->APP->debug->firephp()->error($this->errMsg . ' Line: ' . $this->line . ' - File: ' . $this->file);
         }
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns a server value, uses params class if loaded
 	 * @param string $key
@@ -317,7 +317,7 @@ class Error {
 	 * @access private
 	 */
 	private function getServerValue($key, $default = 'N/A'){
-		
+
 		if(isset($this->APP->params) && is_object($this->APP->params)){
 			return $this->APP->params->server->getRaw($key);
 		} else {
