@@ -135,7 +135,7 @@ class Model {
 		 	$class = 'Model';
 
 			// identify available model extensions
-			$exts = $this->APP->config('models');
+			$exts = $this->APP->getModelExtensions();
 			if(is_array($exts)){
 				if(array_key_exists($table, $exts)){
 					$class = ucwords($table).'Model';

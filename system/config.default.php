@@ -315,8 +315,6 @@
  * @todo add url here
  */
 
-	$config['models']['authentication'] = array('module' => 'Users');
-
 	$config['models']['config'] = array('root'=>SYSTEM_PATH.DIRECTORY_SEPARATOR.'settings');
 
 

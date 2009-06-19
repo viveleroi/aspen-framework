@@ -56,7 +56,7 @@ function &get_instance(){
  * @package Aspen_Framework
  */
 class Bootstrap extends Base {
-	
+
 	/**
 	 * @var object $cache Holds the cache control object
 	 * @access public
@@ -74,7 +74,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $error = false;
-	
+
 	/**
 	 * @var object $file Holds our file handling object
 	 * @access public
@@ -86,13 +86,13 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $form = false;
-	
+
 	/**
 	 * @var object $html Holds the HTMLPurifier object
 	 * @access public
 	 */
 	public $html = false;
-	
+
 	/**
 	 * @var object $install Holds our installer object
 	 * @access public
@@ -104,7 +104,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $json = false;
-	
+
 	/**
 	 * @var object $log System logging methods
 	 * @access public
@@ -122,7 +122,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $model = false;
-	
+
 	/**
 	 * @var object $modules Holds the module object
 	 * @access public
@@ -134,7 +134,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $params = false;
-	
+
 	/**
 	 * @var object $prefs Holds the preferences object
 	 * @access public
@@ -146,7 +146,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $router = false;
-	
+
 	/**
 	 * @var object $scaffold Holds the scaffolding object
 	 * @access public
@@ -176,7 +176,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $template = false;
-	
+
 	/**
 	 * @var object $thumbnail Holds the thumbail object
 	 * @access public
@@ -195,23 +195,27 @@ class Bootstrap extends Base {
 	 */
 	public $xml = false;
 
-	
+
 	// PRIVATE VAR DEFINITIONS
-	
+
 	/**
-	 * @abstract Holds an array of all configuration settings
-	 * @var array $config
+	 * @var array $config Holds an array of all configuration settings
 	 * @access private
 	 */
 	private $config = false;
-	
+
 	/**
-	 * @abstract Holds an array of all successfully loaded libraries
-	 * @var array $config
+	 * @var array $config Holds an array of all successfully loaded libraries
 	 * @access private
 	 */
 	private $_load_libraries = array();
-	
+
+	/**
+	 * @var array Holds an array of all model class extensions
+	 * @access private
+	 */
+	private $_model_extensions;
+
 	/**
 	 * @var array $_modules Contains a list of modules found in the database.
 	 * @access private
@@ -230,7 +234,7 @@ class Bootstrap extends Base {
 	 */
 	private $_plugins;
 
-	
+
 	/**
 	 * Constructor, loads configurations and required classes.
 	 * The order in which these items are processed is very
@@ -239,15 +243,15 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function __construct($config){
-		
+
 		// assign configuration data
 		$this->config = $config;
 		$this->forceConfigValues();
-		
+
 		if(!defined('LOADING_SECTION')){
 			define('LOADING_SECTION', '');
 		}
-		
+
 		// set a few constants
 		DEFINE('LS', strtolower(LOADING_SECTION));
 		DEFINE('DS', DIRECTORY_SEPARATOR);
@@ -258,7 +262,7 @@ class Bootstrap extends Base {
 
 		// start the session
 		session_start();
-		
+
 		// load all plugins
 		$this->_plugins = $this->parsePluginRegistries();
 
@@ -280,15 +284,24 @@ class Bootstrap extends Base {
 
 		// load in system libraries / classes
 		$this->loadSystemLibraries();
-		
+
+		// generate a list of all available (installed) modules
+		$this->listModules();
+
+		// load all of the module registry files into a local var
+		$this->_module_registry = $this->parseModuleRegistries();
+
+		// identify all model extensions
+		$this->_model_extensions = $this->listModelExtensions();
+
 		// load any model extensions
-		$this->loadSystemModelExtensions($this->config('models'));
-		
+		$this->loadSystemModelExtensions();
+
 		// enable system logging
 		if($this->config('enable_logging')){
 			$this->log->enable();
 		}
-		
+
 		// enable cache
 		if($this->config('enable_cache')){
 			$this->cache->enable();
@@ -306,12 +319,6 @@ class Bootstrap extends Base {
 		} else {
 			$this->log->write('Database connection is up and running.');
 		}
-		
-		// generate a list of all available (installed) modules
-		$this->listModules();
-
-		// load all of the module registry files into a local var
-		$this->_module_registry = $this->parseModuleRegistries();
 
 		// Load the selected module and any dependencies unless the system is being included only
 		if(!INCLUDE_ONLY){
@@ -331,7 +338,7 @@ class Bootstrap extends Base {
 
 		// check for user config
 		$installed = Bootstrap::checkUserConfigExists();
-	
+
 		if($installed){
 			if(isset($this->db) && is_object($this->db)){
 				// attempt a query to see if tables installed
@@ -356,11 +363,11 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	static public function loadDefaultConfig(){
-		
+
 		$config = false;
-		
+
 		include(SYSTEM_PATH . DIRECTORY_SEPARATOR . 'config.default.php');
-		
+
 		if(!defined('APP_CONFIG_PATH')){
 			define('APP_CONFIG_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . "app.default.config.php");
 		}
@@ -368,9 +375,9 @@ class Bootstrap extends Base {
 		if(file_exists(APP_CONFIG_PATH)){
 			include(APP_CONFIG_PATH);
 		}
-		
+
 		return $config;
-		
+
 	}
 
 
@@ -383,18 +390,18 @@ class Bootstrap extends Base {
 	static public function checkUserConfigExists($config_path = false){
 
 		if(!$config_path){
-			
+
 			// set user config file location, using config prefix if set by server
 			// (allows multiple "instances" of single install)
 			if(!defined('CONFIG_PREFIX')){ DEFINE('CONFIG_PREFIX', ''); }
 			$config_path = APPLICATION_PATH . DIRECTORY_SEPARATOR . CONFIG_PREFIX . 'config.php';
-	
+
 		}
 
 		return file_exists($config_path) ? $config_path : false;
 
 	}
-	
+
 
 	/**
 	 * @abstract Loads all config files
@@ -408,7 +415,7 @@ class Bootstrap extends Base {
 
 		// then try to load the user config file
 		if($config_path = Bootstrap::checkUserConfigExists()){
-			
+
 			include($config_path);
 
 			// update our config with the user-set params
@@ -419,18 +426,18 @@ class Bootstrap extends Base {
 				define('USER_CONFIG_LOADED', true);
 			}
 		}
-		
+
 		return $all_config;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * @abstract Forces values for config options if they conflict with environment settings
 	 * @access private
 	 */
 	private function forceConfigValues(){
-		
+
 		// disable mod_rewrite if it's not present
 		if(!$this->config('bypass_apache_modrewrite_check')){
 			if(function_exists('apache_get_modules')){
@@ -442,8 +449,8 @@ class Bootstrap extends Base {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns a configuration value from config files
 	 * @param string $key
@@ -456,8 +463,8 @@ class Bootstrap extends Base {
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the configuration array
 	 * @return array
@@ -466,8 +473,8 @@ class Bootstrap extends Base {
 	public function getConfig(){
 		return $this->config;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Sets a config value
 	 * @param string $key
@@ -478,7 +485,7 @@ class Bootstrap extends Base {
 		$this->config[$key] = $value;
 	}
 
-	
+
 	/**
 	 * @abstract Returns whether or not login is required for the current interface application.
 	 * @access public
@@ -533,31 +540,31 @@ class Bootstrap extends Base {
 		} else {
 			$this->db = false;
 		}
-		
-		
+
+
 		// compile our final array of classes to load
 		$all_classes 	= array();
 		$base_classes 	= $this->config('load_core_class');
 		$add_classes 	= $this->config('load_add_core_class');
 		$custom_classes = $this->config('custom_classes');
-		
+
 		// if add classes is an array, append to base
 		if(is_array($add_classes)){
 			$base_classes = array_merge($base_classes, $add_classes);
 		}
-		
+
 		foreach($base_classes as $class){
 			$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
 			$all_classes[$class['classname']] = $class;
 		}
-		
+
 		if(is_array($custom_classes)){
 			foreach($custom_classes as $class){
 				$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
 				$all_classes[$class['classname']] = $class;
 			}
 		}
-	
+
 
 		// load all required modules
 		if(is_array($all_classes) && count($all_classes) > 0){
@@ -570,13 +577,13 @@ class Bootstrap extends Base {
 		// specifically
 		$this->error = new Error;
     	set_error_handler(array(&$this->error, 'raise'));
-    	
+
     	// assign Inspekt supercage
     	$this->params = Inspekt::makeSuperCage();
-    	
+
     	// router has been used already, so we need to force it to load
     	$this->router = new Router;
-    	
+
     	// set framework-related html purifier settings
     	if($this->isLibraryLoaded('HTMLPurifier')){
 	    	$html_config = HTMLPurifier_Config::createDefault();
@@ -585,14 +592,14 @@ class Bootstrap extends Base {
 	    	} else {
 	    		$html_config->set('Cache', 'DefinitionImpl', null);
 	    	}
-	    	
+
 	    	// set user-defined html purifier settings
 	    	if(is_array($this->config('html_purifier_settings')) && count($this->config('html_purifier_settings')) > 0){
 	    		foreach($this->config('html_purifier_settings') as $setting){
 	    			$html_config->set($setting[0], $setting[1], $setting[2]);
 	    		}
 	    	}
-	    	
+
 	    	// load custom filters
 	    	if(is_array($this->config('html_purifier_custom_filters'))){
 	    		$classes = array();
@@ -600,11 +607,11 @@ class Bootstrap extends Base {
 	    			include(SYSTEM_PATH.DS.'security'.DS.'Htmlpurifier'.DS.'standalone'.DS.'HTMLPurifier'.DS.'Filter/'.$filter['name'].'.php');
 	    			$classes[] = new $filter['class'];
 	    		}
-		    	
+
 		    	$html_config->set('Filter', 'Custom', $classes);
-		    	
+
 	    	}
-    	
+
 	    	$this->html = new HTMLPurifier($html_config);
     	}
 
@@ -661,7 +668,7 @@ class Bootstrap extends Base {
 							$this->_load_libraries[] = $library;
 						}
 					}
-					
+
 					// if extending a previous class, set variable to previous class,
 					// but classname to extension
 					if($extends){
@@ -683,7 +690,7 @@ class Bootstrap extends Base {
 
 	}
 
-	
+
 	/**
 	 * @abstract Returns the array of loaded system classes
 	 * @return array
@@ -692,8 +699,8 @@ class Bootstrap extends Base {
 	public function getLoadedLibraries(){
 		return $this->_load_libraries;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns whether or not a library is loaded
 	 * @param string $library
@@ -708,8 +715,44 @@ class Bootstrap extends Base {
 		}
 		return false;
 	}
-	
-	
+
+
+	/**
+	 * @abstract Returns the list of model extensions
+	 * @return array
+	 */
+	public function getModelExtensions(){
+		return $this->_model_extensions;
+	}
+
+
+	/**
+	 * @abstract Generates a complete list of model extensions
+	 * @return array
+	 * @access private
+	 */
+	private function listModelExtensions(){
+
+		$models = $this->config('models');
+		$models = is_array($models) ? $models : array();
+
+		// pull in any models defined in register.xml files
+		$modules = $this->getModuleRegistry();
+		foreach($modules as $module){
+			if(isset($module->models) && is_object($module->models)){
+				if(isset($module->models->table)){
+					foreach($module->models->table as $table){
+						$models[(string)$table] = array('module'=>(string)$module->folder);
+					}
+				}
+			}
+		}
+
+		return $models;
+
+	}
+
+
 	/**
 	 * Accepted values for "models" are:
 	 * 'module' => 'Index',
@@ -718,20 +761,21 @@ class Bootstrap extends Base {
 	 * 'root' => '/full/path/to/root/of/class'
 	 *
 	 * @abstract Accepts an array of models to load
-	 * @param array $library_array
 	 * @return boolean
 	 * @access private
 	 */
-	
-	public function loadSystemModelExtensions($models){
 
-		$load_success 	= true;
+	public function loadSystemModelExtensions(){
+
+		$load_success = true;
+
+		$models = $this->_model_extensions;
 
 		if($load_success){
-			if(is_array($models)){
+			if(count($models)){
 				foreach($models as $table => $model){
 					if(is_array($model)){
-						
+
 						$module 	= isset($model['module']) ? $model['module'] : false;
 						$folder 	= isset($model['folder']) ? $model['folder'] : 'models';
 						$filebase 	= (isset($model['root']) ? $model['root'] : MODULES_PATH . DS . $module) . DS . $folder;
@@ -752,7 +796,7 @@ class Bootstrap extends Base {
 		return $load_success;
 
 	}
-	
+
 	/**
 	 * @abstract Returns whether or not our db connection was made, and tables exist
 	 * @return boolean
@@ -812,7 +856,7 @@ class Bootstrap extends Base {
 					$this->log->write('Found Module: '
 										. $module_registry[$file]->classname
 										.' guid: ' . $module_registry[$file]->guid);
-					
+
 				}
 			}
 		}
@@ -827,43 +871,43 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	public function parsePluginRegistries(){
-		
+
 		//if($this->config('allow_plugins')){
-	
+
 			$files = array();
-	
+
 			$plugin_registry = false;
-	
+
 			// open the folder
 			if(is_dir(PLUGINS_PATH)){
 				$dir_handle = @opendir(PLUGINS_PATH);
-	
+
 				// loop through the files
 				while ($file = readdir($dir_handle)) {
-	
+
 					if($file != "." && $file != ".."){
-	
+
 						// push the date folder into the array
 						array_push($files, $file);
-	
+
 					}
 				}
-	
+
 				// close
 				closedir($dir_handle);
 			}
-	
+
 			// if files found, begin an array
 			if(count($files) > 0){
 				$plugin_registry = array();
 			}
-	
+
 			// loop through each folder and look for a register.xml
 			if(is_array($plugin_registry)){
 				foreach($files as $file){
-	
+
 					$registry_path = PLUGINS_PATH . DIRECTORY_SEPARATOR . $file . DIRECTORY_SEPARATOR . 'register.xml';
-	
+
 					// ensure the file exists
 					if(file_exists($registry_path)){
 						$plugin_registry[$file] = simplexml_load_file($registry_path);
@@ -871,9 +915,9 @@ class Bootstrap extends Base {
 					}
 				}
 			}
-	
+
 			return $plugin_registry;
-			
+
 		//}
 	}
 
@@ -885,7 +929,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function callPluginHook($hook_to_call = false, $plugins = false){
-		
+
 		//if($this->config('allow_plugins')){
 
 			// if plugins array coming from external source, use it
@@ -901,19 +945,19 @@ class Bootstrap extends Base {
 				foreach($plugins as $plugin){
 					if(isset($plugin->add_hook_func)){
 						if($hook_to_call == $plugin->add_hook_func['hook']){
-	
+
 							$path = PLUGINS_PATH . DIRECTORY_SEPARATOR .
 										$plugin->folder . DIRECTORY_SEPARATOR . $plugin->folder .'.php';
-	
+
 							// include the plugin
 							if(file_exists($path)){
-	
+
 								include($path);
-	
+
 								// call the function
 								$function = (string)$plugin->add_hook_func->function;
 								$function();
-	
+
 							}
 						}
 					}
@@ -922,7 +966,7 @@ class Bootstrap extends Base {
 		//}
 	}
 
-	
+
 	/**
 	 * @abstract Returns a specific registry object for a selected module
 	 * @param string $guid
@@ -938,7 +982,7 @@ class Bootstrap extends Base {
 		} else {
 			$modules = Bootstrap::parseModuleRegistries();
 		}
-	
+
 		// loop the module registry
 		foreach($modules as $module){
 
@@ -955,7 +999,7 @@ class Bootstrap extends Base {
 
 				$interface = $interface ? $interface : LOADING_SECTION;
 				$classname = (string)$module->classname . ($interface ? '_' . $interface  : false);
-				
+
 				if($classname == $name){
 					return $module;
 				}
@@ -972,8 +1016,8 @@ class Bootstrap extends Base {
 	public function getModuleRegistry(){
 		return $this->_module_registry;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Gathers a list of installed modules from db, stores it in local array.
 	 * @return boolean
@@ -993,15 +1037,15 @@ class Bootstrap extends Base {
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the module list as an array
 	 * @return array
 	 * @access private
 	 */
 	public function getInstalledModuleGuids(){
-		
+
 		if(is_array($this->_modules)){
 			return $this->_modules;
 		} else {
@@ -1023,7 +1067,7 @@ class Bootstrap extends Base {
 		$current = $this->moduleRegistry(false, $this->router->getSelectedModule());
 
 		if(is_object($current)){
-				
+
 			$modules_to_load = array($current->guid);
 
 			if(isset($current->prerequisites->required)){
@@ -1053,20 +1097,20 @@ class Bootstrap extends Base {
 
 		// load module
 		$tmp_reg = $this->moduleRegistry($module);
-		
+
 		// assume this module is not allowed
 		$allowed = false;
-		
+
 		if(isset($tmp_reg->classname)){
-			
+
 			if(in_array($tmp_reg->guid, $this->getInstalledModuleGuids())){
-			
+
 				// check the targetApp is set, if so we need to verify it
 				if(isset($tmp_reg->targetApplication) && isset($tmp_reg->targetApplication->guid)){
 					if($tmp_reg->targetApplication->guid == $this->config('application_guid')){
-						
+
 						$this->log->write('targetApplication set and matched for ' . $tmp_reg->classname . ' module.');
-						
+
 						// verify the target versions match
 						if($this->registryVersionMatch($tmp_reg->targetApplication->minVersion, $tmp_reg->targetApplication->maxVersion)){
 							$allowed = true;
@@ -1075,7 +1119,7 @@ class Bootstrap extends Base {
 							$this->log->write('Target application versions failed to matched for ' . $tmp_reg->classname . ' module.');
 							$this->error->raise(1, 'Target application versions failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
 						}
-		
+
 					} else {
 						$this->log->write('Target application set but failed to matched for ' . $tmp_reg->classname . ' module.');
 						$this->error->raise(1, 'Target application set but failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
@@ -1087,33 +1131,33 @@ class Bootstrap extends Base {
 			} else {
 				$this->error->raise(1, 'Attempting to load module ("' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . '") which is not installed.', __FILE__, __LINE__);
 			}
-	
-			
+
+
 			// if we are allowed now
 			if($allowed){
-	
+
 				$classname = $tmp_reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
 				$file = MODULES_PATH . DS . $tmp_reg->folder . DS . $classname. '.php';
-	
+
 				if(file_exists($file)){
 					include($file);
 					$this->{$classname} = new $classname;
 					$this->log->write('Loading Module: ' . $classname);
-					
+
 					// call any module hooks for this module
 					$this->modules->callModuleHooks($tmp_reg->guid);
 					$this->log->write('Calling module hooks for: ' . $classname);
-					
+
 				}
 			} else {
-	
+
 				$this->error->raise(1, 'The module "' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . '" is not compatible with this version of this application.', __FILE__, __LINE__);
-	
+
 			}
 		} else {
-			
+
 			$this->error->raise(1, 'Failure to load module "'.$module.'" - classname was empty.', __FILE__, __LINE__);
-	
+
 		}
 		return true;
 	}
@@ -1127,13 +1171,13 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	private function registryVersionMatch($min, $max){
-		
+
 		$app_vers = $this->config('application_version');
-		
+
 		if(empty($app_vers)){
 			$this->error->raise(1, 'Module requires a version check, but the application version is empty.', __FILE__, __LINE__);
 		}
-		
+
 		if($this->versionCompare($min, $app_vers) != 'greater' && $this->versionCompare($max, $app_vers) != 'less'){
 			return true;
 		} else {
@@ -1148,7 +1192,7 @@ class Bootstrap extends Base {
 	 */
 	public function awaitingUpgrade(){
 		if($this->config('watch_pending_db_upgrade')){
-			
+
 			$build = $this->formatVersionNumber($this->config('application_version'));
 			$latest_build = $this->latestVersion();
 
@@ -1173,7 +1217,7 @@ class Bootstrap extends Base {
 		return false;
 	}
 
-	
+
 	/**
 	 * @abstract Compared two version strings for similarity
 	 * @param string $build
@@ -1182,20 +1226,20 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function versionCompare($build, $match){
-		
+
 		$diff = false;
 
 		$build = explode('.', $this->formatVersionNumber($build));
 		$match = explode('.', $this->formatVersionNumber($match));
-		
+
 		// get full count so we know the largest array
 		$fullcnt = count($build) > count($match) ? count($build) : count($match);
-		
+
 		for($i = 0; $i <= $fullcnt; $i++){
-		
+
 			$build_inc = isset($build[$i]) ? $build[$i] : 0;
 			$match_inc = isset($match[$i]) ? $match[$i] : 0;
-			
+
 			if((int)$build_inc > $match_inc){
 				$diff = 'greater';
 			}
@@ -1206,7 +1250,7 @@ class Bootstrap extends Base {
 				$diff =  'equal';
 			} else {
 			}
-			
+
 			if($diff != 'equal'){
 				return $diff;
 			}
@@ -1214,8 +1258,8 @@ class Bootstrap extends Base {
 		}
 		return $diff;
 	}
-	
-	
+
+
 	/**
 	 * @abstract formats a version number to match a 1.2.3.456 or similar type format
 	 * @param string $build
@@ -1226,7 +1270,7 @@ class Bootstrap extends Base {
 
 		$build = str_replace(array('-', '_'), '.', $build);
 		$build = explode('.', $build);
-		
+
 		$version = array();
 		foreach($build as $key => $inc){
 			if(!preg_match('/[a-zA-Z]/', $inc) && strlen($inc) > 0){
@@ -1235,9 +1279,9 @@ class Bootstrap extends Base {
 		}
 
 		return implode('.', $version);
-		
+
 	}
-	
+
 
 	/**
 	 * @abstract Returns the latest build number from the database
@@ -1245,7 +1289,7 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	public function latestVersion(){
-		
+
 		$version = '';
 
 		// get latest build in database
@@ -1253,15 +1297,15 @@ class Bootstrap extends Base {
 		$model->orderBy('id', 'DESC');
 		$model->limit(0, 1);
 		$ughist = $model->results();
-		
+
 		if($ughist['RECORDS']){
 			foreach($ughist['RECORDS'] as $vers){
 				$version = $vers['current_build'];
 			}
 		}
-		
+
 		return $this->formatVersionNumber($version);
-		
+
 	}
 }
 ?>
