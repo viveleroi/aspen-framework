@@ -1409,7 +1409,12 @@ class Model {
 					if($this->inSchema($field_name)){
 
 						$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name);
-						$ins_values .= ($ins_values == '' ? '' : ', ') . '"' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+
+						if($field_value == NULL){
+							$ins_values .= (empty($ins_values) ? '' : ', ') . 'NULL';
+						} else {
+							$ins_values .= (empty($ins_values) ? '' : ', ') . '"' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+						}
 
 					}
 				}
@@ -1460,7 +1465,11 @@ class Model {
 				$upd_fields = '';
 				foreach($fields as $field_name => $field_value){
 					if($this->inSchema($field_name)){
-						$upd_fields .= ($upd_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+						if($field_value == NULL){
+							$upd_fields .= ($upd_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = NULL';
+						} else {
+							$upd_fields .= ($upd_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+						}
 					}
 				}
 

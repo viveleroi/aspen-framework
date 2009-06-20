@@ -761,7 +761,9 @@ class Inspekt_Cage
      *
      */
 	public function keyExists($key){
-		return array_key_exists($key, $this->_source);
+		if(is_array($this->_source)){
+			return array_key_exists($key, $this->_source);
+		}
 	}
 
 

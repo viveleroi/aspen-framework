@@ -9,7 +9,7 @@
 $sql[] = "
 
 CREATE TABLE IF NOT EXISTS `authentication` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL auto_increment,
   `username` text NOT NULL,
   `nice_name` varchar(155) NOT NULL default '',
   `password` text NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `authentication` (
   `last_login` datetime NOT NULL default '0000-00-00 00:00:00',
   `allow_login` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ";
 
@@ -25,12 +25,14 @@ CREATE TABLE IF NOT EXISTS `authentication` (
 $sql[] = "
 
 CREATE TABLE IF NOT EXISTS `config` (
-  `id` int(10) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `user_id` int(11) unsigned NOT NULL,
   `config_key` varchar(155) NOT NULL default '',
   `default_value` text NOT NULL,
   `current_value` text NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  PRIMARY KEY  (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ";
 	
@@ -51,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `error_log` (
   `error_line` text NOT NULL,
   `error_message` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ";
 		
@@ -59,10 +61,10 @@ CREATE TABLE IF NOT EXISTS `error_log` (
 $sql[] = "
 
 CREATE TABLE IF NOT EXISTS `groups` (
-  `id` int(10) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(155) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ";
 
@@ -76,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `modules` (
   `autoload_with` varchar(155) NOT NULL,
   `sort_order` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ";
 
@@ -84,49 +86,70 @@ CREATE TABLE IF NOT EXISTS `modules` (
 $sql[] = "
 
 CREATE TABLE IF NOT EXISTS `permissions` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `user_id` int(10) unsigned NOT NULL default '0',
-  `group_id` int(10) unsigned NOT NULL default '0',
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `user_id` INT(11) unsigned NULL DEFAULT NULL,
+  `group_id` int(11) unsigned NULL DEFAULT NULL,
   `interface` varchar(155) NOT NULL,
   `module` varchar(155) NOT NULL default '',
   `method` varchar(155) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  PRIMARY KEY  (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `group_id` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ";
-	
-$sql[] = "
 
-CREATE TABLE IF NOT EXISTS `preferences_sorts` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `user_id` int(10) unsigned NOT NULL default '0',
-  `location` varchar(155) NOT NULL default '',
-  `sort_by` varchar(155) NOT NULL default '',
-  `direction` varchar(4) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-";
-	
 $sql[] = "
 
 CREATE TABLE IF NOT EXISTS `upgrade_history` (
-  `id` int(10) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL auto_increment,
   `current_build` varchar(155) NOT NULL default '',
   `upgrade_completed` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 ";
-	
+
+
 $sql[] = "
 
 CREATE TABLE IF NOT EXISTS `user_group_link` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `user_id` int(10) unsigned NOT NULL default '0',
   `group_id` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  PRIMARY KEY  (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `group_id` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+";
+
+
+$sql[] = "
+
+ALTER TABLE `config`
+  ADD CONSTRAINT `config_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE;
+
+";
+
+
+$sql[] = "
+
+ALTER TABLE `permissions`
+  ADD CONSTRAINT `permissions_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `kiwi_trunk`.`groups` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE;
+
+";
+
+
+$sql[] = "
+
+ALTER TABLE `user_group_link`
+  ADD CONSTRAINT `user_group_link_ibfk_4` FOREIGN KEY (`group_id`) REFERENCES `kiwi_trunk`.`groups` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `user_group_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `user_group_link_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `user_group_link_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE;
 
 ";
 
@@ -146,16 +169,17 @@ INSERT INTO `modules` (`id`, `guid`, `is_base_module`, `autoload_with`, `sort_or
 $sql[] = "
 
 INSERT INTO `permissions` (`id`, `user_id`, `group_id`, `interface`, `module`, `method`) VALUES
-(1, 0, 1, '*', '*', '*');
+(1, NULL, 1, '*', '*', '*');
 	
 ";
+
 
 $sql[] = "
 
 INSERT INTO `permissions` (`id`, `user_id`, `group_id`, `interface`, `module`, `method`) VALUES
-(2, 0, 2, '*', 'Index', '*'),
-(3, 0, 2, '*', 'Settings', '*'),
-(4, 0, 2, '*', 'Users', 'my_account');
+(2, NULL, 2, '*', 'Index', '*'),
+(3, NULL, 2, '*', 'Settings', '*'),
+(4, NULL, 2, '*', 'Users', 'my_account');
 	
 ";
 
