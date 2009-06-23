@@ -601,13 +601,15 @@ class Model {
 
 		$field = $field ? $field : $this->getPrimaryKey();
 		$match = $this->parenth_start ? $match.' (' : $match;
-		$this->parenth_start = false;
+
 
 		$this->sql['WHERE'][] = sprintf($sprint_string,
-											(isset($this->sql['WHERE']) ? $match : 'WHERE'),
+											(isset($this->sql['WHERE']) ? $match : 'WHERE'.($this->parenth_start ? ' (' : '') ),
 											$field,
 											$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
 										);
+
+		$this->parenth_start = false;
 
 	}
 
@@ -729,7 +731,7 @@ class Model {
 	 * @access public
 	 */
 	public function wherePast($field, $include_today = false, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s< UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+		$this->base_where('%s UNIX_TIMESTAMP(%s) %s< UNIX_TIMESTAMP(NOW())', $field, ($include_today ? '=' : ''), $match);
 	}
 
 
@@ -753,7 +755,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereFuture($field, $include_today = false, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s> UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+		$this->base_where('%s UNIX_TIMESTAMP(%s) %s> UNIX_TIMESTAMP(NOW())', $field, ($include_today ? '=' : ''), $match);
 	}
 
 
