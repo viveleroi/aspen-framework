@@ -208,8 +208,9 @@ class Model {
 
 				// merge the record with the incoming fields array
 				// - any key in fields array overrides record
-				$fields = array_merge($record, $fields);
-
+				if(is_array($record)){
+					$fields = array_merge($record, $fields);
+				}
 			}
 
 			// make an inspekt cage so we can verify data
@@ -1081,7 +1082,7 @@ class Model {
 			}
 		}
 
-		$this->clearQuery();
+		$this->reset();
 
 		return $results;
 
@@ -1172,7 +1173,7 @@ class Model {
 		}
 
 
-		$this->clearQuery();
+		$this->reset();
 		return false;
 
 	}
@@ -1202,8 +1203,10 @@ class Model {
 	 * @abstract Clears any generated queries
 	 * @access public
 	 */
-	final public function clearQuery(){
-		$this->sql = false;
+	final public function reset(){
+		$this->sql		= false;
+		$this->error	= false;
+		$this->errors	= array();
 	}
 
 

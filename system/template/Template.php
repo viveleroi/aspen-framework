@@ -517,6 +517,29 @@ class Template {
 		return $phrase;
 
 	}
+
+
+	/**
+	 * @abstract Truncates a string to $char_length caracters, and appends an elipse
+	 * @param string $string
+	 * @param integer $char_length
+	 * @return string
+	 * @access public
+	 */
+	public function truncateString($string, $char_length = 40){
+
+		// replace html elements with spaces
+    	$string = preg_replace("/<(\/?)([^>]+)>/i", " ", $string);
+    	$string = html_entity_decode($string, ENT_QUOTES, 'UTF-8');
+		$string = $this->encodeTextEntities(strip_tags($string));
+
+		if(strlen($string) > $char_length){
+			$string = substr($string, 0, $char_length) . '&#8230;';
+		}
+
+		return $string;
+
+	}
 	
 	
 	/**
