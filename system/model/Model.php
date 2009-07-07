@@ -27,6 +27,12 @@ class Model {
 	private $calcs = false;
 
 	/**
+	 * @var integer Current page = total results divided by per_page
+	 * @access private
+	 */
+	private $current_page = false;
+
+	/**
 	 * @var array $errors Holds an array of field validation errors
 	 * @access private
 	 */
@@ -38,12 +44,6 @@ class Model {
 	 * @access private
 	 */
 	private $error = false;
-
-	/**
-	 * @var integer Current page = total results divided by per_page
-	 * @access private
-	 */
-	private $current_page = false;
 
 	/**
 	 * @var array
@@ -58,10 +58,22 @@ class Model {
 	private $field_security_rules = array();
 
 	/**
+	 * @var array Holds an array of foreign key mappings
+	 * @access private
+	 */
+	private $foreignkeys = array();
+
+	/**
 	 * @var string Holds the last executed query
 	 * @access private
 	 */
 	private $last_query;
+
+	/**
+	 * @var string An array of tables to load which have a foreign key to current table
+	 * @access private
+	 */
+	private $load_child_tables;
 
 	/**
 	 * @var boolean Toggles the pagination features
@@ -85,7 +97,13 @@ class Model {
 	 * @var array Holds the type of query we're running, so we know what to return
 	 * @access private
 	 */
-	private $query_type;
+	private $query_type = 'select';
+
+	/**
+	 * @var array Whether or not to return a single record rather than the RECORDS array
+	 * @access private
+	 */
+	private $return_single = false;
 
 	/**
 	 * @var object Holds the schema for the currently selected database
@@ -172,6 +190,21 @@ class Model {
 
 
 	/**
+	 * @abstract Returns a model object or its child, and begins a basic SELECT (single) statement.
+	 * @param string $table
+	 * @return object
+	 * @access public
+	 */
+	 final public function openAndSelectSingle($table){
+	 	$model = $this->open($table);
+	 	if(is_object($model)){
+	 		$model->select_single();
+	 	}
+		return $model;
+	}
+
+
+	/**
 	 * @abstract Sets the current table and loads the table schema
 	 * @param string $table
 	 * @access private
@@ -180,6 +213,7 @@ class Model {
 	private function openTable($table = false){
 		$this->table = $table;
 		$this->generateSchema();
+		$this->generateForeignKeys();
 
 		if(!is_array($this->schema)){
 			$this->APP->error->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
@@ -211,6 +245,7 @@ class Model {
 				if(is_array($record)){
 					$fields = array_merge($record, $fields);
 				}
+
 			}
 
 			// make an inspekt cage so we can verify data
@@ -338,10 +373,10 @@ class Model {
 	/**
 	 * @abstract Loads the current table schema.
 	 * @access private
-	 * @return mixed
+	 * @return array
 	 */
 	private function generateSchema(){
-		return $this->schema = $this->APP->db->MetaColumns($this->table, false);
+		$this->schema = $this->APP->db->MetaColumns($this->table, false);
 	}
 
 
@@ -362,6 +397,49 @@ class Model {
 	 */
 	final public function inSchema($field){
 		return array_key_exists(strtoupper($field), $this->schema);
+	}
+
+
+	/**
+	 * @abstract Loads the current table foreign key mappings.
+	 * @access private
+	 * @return array
+	 */
+	private function generateForeignKeys(){
+
+		$key_maps = array();
+
+		// find all keys in the current table which connect it
+		// to a key of another table
+		$keys = $this->APP->db->MetaForeignKeys($this->table, false);
+		if(is_array($keys)){
+			foreach($keys as $table => $maps){
+				foreach($maps as $table_field => $local_field){
+					$key_maps[$local_field] = array($table => $table_field);
+				}
+			}
+		}
+
+
+		// attempt to find all tables which link to this tables primary key
+		$fks = $this->APP->getChildForeignKeys();
+		if(array_key_exists($this->table, $fks)){
+			$children = $fks[$this->table];
+			$key_maps[$this->getPrimaryKey()] = $children;
+		}
+
+		$this->foreignkeys = $key_maps;
+
+	}
+
+
+	/**
+	 * @abstract Returns raw schema for the current table
+	 * @return array
+	 * @access public
+	 */
+	final public function getForeignKeys(){
+		return $this->foreignkeys;
 	}
 
 
@@ -492,9 +570,9 @@ class Model {
 	 * @abstract Adds a new select statement to our query
 	 * @param array $fields
 	 * @param boolean $distinct
-	 * @access public
+	 * @access private
 	 */
-	public function select($fields = false, $distinct = false){
+	private function select_base($fields = false, $distinct = false){
 
 		// begin the select, append SQL_CALC_FOUND_ROWS is pagination is enabled
 		$this->sql['SELECT'] = $this->paginate ? 'SELECT SQL_CALC_FOUND_ROWS' : 'SELECT';
@@ -512,6 +590,48 @@ class Model {
 		// set the from for our current table
 		$this->sql['FROM'] = sprintf('FROM %s', $this->table);
 
+	}
+
+
+	/**
+	 * @abstract Adds a new select statement to our query
+	 * @param array $fields
+	 * @param boolean $distinct
+	 * @access public
+	 */
+	public function select($fields = false, $distinct = false){
+		$this->return_single = false;
+		$this->select_base($fields, $distinct);
+	}
+
+
+	/**
+	 * @abstract Adds a new select statement to our query, but also forces a single result returned
+	 *  outside of the RECORDS array
+	 * @param array $fields
+	 * @param boolean $distinct
+	 * @access public
+	 */
+	public function select_single($fields = false, $distinct = false){
+		$this->return_single = true;
+		$this->select_base($fields, $distinct);
+	}
+
+
+	/**
+	 * @abstract Adds a child table to inclusion in the results
+	 * @param string $child_table
+	 * @return boolean
+	 * @access public
+	 */
+	public function select_children($child_table){
+		foreach($this->foreignkeys as $field => $map){
+			if(in_array($child_table, array_keys($map))){
+				$this->load_child_tables[$field] = $child_table;
+				return true;
+			}
+		}
+		return false;
 	}
 
 
@@ -553,7 +673,7 @@ class Model {
 		$this->sql['LEFT_JOIN'][] = sprintf('LEFT JOIN %s ON %s = %s.%s', $table . $as, $as_table.'.'.$key, $from_table, $foreign_key);
 
 		// append the fields we've selected
-		if($fields){
+		if(is_array($fields)){
 			foreach($fields as $field){
 				if(strpos($field, "SUM") === false){
 					$this->sql['FIELDS'] .= sprintf(', %s.%s', $as_table, $field);
@@ -602,15 +722,13 @@ class Model {
 
 		$field = $field ? $field : $this->getPrimaryKey();
 		$match = $this->parenth_start ? $match.' (' : $match;
-
+		$this->parenth_start = false;
 
 		$this->sql['WHERE'][] = sprintf($sprint_string,
-											(isset($this->sql['WHERE']) ? $match : 'WHERE'.($this->parenth_start ? ' (' : '') ),
+											(isset($this->sql['WHERE']) ? $match : 'WHERE'),
 											$field,
 											$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
 										);
-
-		$this->parenth_start = false;
 
 	}
 
@@ -732,7 +850,7 @@ class Model {
 	 * @access public
 	 */
 	public function wherePast($field, $include_today = false, $match = 'AND'){
-		$this->base_where('%s UNIX_TIMESTAMP(%s) %s< UNIX_TIMESTAMP(NOW())', $field, ($include_today ? '=' : ''), $match);
+		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s< UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
 	}
 
 
@@ -756,7 +874,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereFuture($field, $include_today = false, $match = 'AND'){
-		$this->base_where('%s UNIX_TIMESTAMP(%s) %s> UNIX_TIMESTAMP(NOW())', $field, ($include_today ? '=' : ''), $match);
+		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s> UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
 	}
 
 
@@ -1108,10 +1226,25 @@ class Model {
 
 			if($results = $this->query($sql)){
 
+				$key = $key_field ? $key_field : $this->getPrimaryKey();
+
 				if($results->RecordCount()){
 					while($result = $results->FetchRow()){
 
-						$key = $key_field ? $key_field : $this->getPrimaryKey();
+						// Load in data from any selected child tables
+						if(!empty($this->load_child_tables)){
+							foreach($this->load_child_tables as $key => $child_table){
+
+								// get the foreign key field name
+								$fk_field = $this->foreignkeys[$key][$child_table];
+
+								// run query on child table to find all records
+								$child = $this->openAndSelect($child_table);
+								$child->where($fk_field, $result[$key]);
+								$result[$child_table] = $child->results();
+
+							}
+						}
 
 						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
 	                    	$records['RECORDS'][$result[$key]] = $result;
@@ -1150,6 +1283,11 @@ class Model {
 				$records['TOTAL_RECORDS_FOUND'] = ($records['RECORDS'] ? count($records['RECORDS']) : 0);
 			}
 
+			// If return single set, grab first array item
+			if($this->return_single){
+				$records = $records['RECORDS'] ? array_shift($records['RECORDS']) : false;
+			}
+
 			$this->tmp_records = false;
 
 			return $records;
@@ -1181,14 +1319,12 @@ class Model {
 
 	/**
 	 * @abstract Returns a single field, single-record value from a query
-	 *
 	 * @param string $sql
 	 * @param string $return_field
 	 * @return mixed
 	 * @access public
 	 */
 	public function quickValue($sql = false, $return_field = 'id'){
-
 		$result = $this->query($sql);
 		if($result->RecordCount()){
 			while($row = $result->FetchRow()){
@@ -1223,18 +1359,10 @@ class Model {
 	 * @access public
 	 */
 	public function quickSelectSingle($id = false, $field = false){
-
 		$field = $field ? $field : $this->getPrimaryKey();
-
-		$this->select();
+		$this->select_single();
 		$this->where($field, $id);
-		$record = $this->results($field);
-
-		if($record['RECORDS']){
-			return $record['RECORDS'][$id];
-		}
-		return false;
-
+		return $this->results($field);
 	}
 
 
@@ -1257,7 +1385,6 @@ class Model {
 	 * @access public
 	 */
 	public function delete($id = false, $field_name = false){
-
 		$field_name = $field_name ? $field_name : $this->getPrimaryKey();
 		if($this->inSchema($field_name)){
 			$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
@@ -1415,7 +1542,7 @@ class Model {
 
 						$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name);
 
-						if($field_value == NULL){
+						if(is_null($field_value)){
 							$ins_values .= (empty($ins_values) ? '' : ', ') . 'NULL';
 						} else {
 							$ins_values .= (empty($ins_values) ? '' : ', ') . '"' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
@@ -1449,7 +1576,7 @@ class Model {
 	 * @return boolean
 	 * @access public
 	 */
-	public function update($fields = false, $where_value, $where_field = false ){
+	public function update($fields = false, $where_value = false, $where_field = false ){
 
 		// set default values if prompted from extension install / update funcs
 		$fields = $this->getDefaults($fields);
@@ -1470,7 +1597,7 @@ class Model {
 				$upd_fields = '';
 				foreach($fields as $field_name => $field_value){
 					if($this->inSchema($field_name)){
-						if($field_value == NULL){
+						if(is_null($field_value)){
 							$upd_fields .= ($upd_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = NULL';
 						} else {
 							$upd_fields .= ($upd_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';

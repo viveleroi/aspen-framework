@@ -127,7 +127,7 @@ class Inspekt
 		return $_instance;
 	}
 
-	
+
 	/**
 	 * Returns the $_COOKIE data wrapped in an Inspekt_Cage object
 	 *
@@ -252,8 +252,8 @@ class Inspekt
 		}
 		return $input;
 	}
-	
-	
+
+
 	/**
      * Returns TRUE if string is empty
      *
@@ -282,8 +282,8 @@ class Inspekt
 	{
 		return empty($value);
 	}
-	
-	
+
+
 	/**
      * Returns only the alphabetic characters in value.
      *
@@ -302,7 +302,7 @@ class Inspekt
 		}
 	}
 
-	
+
 	/**
      * Returns only the alphabetic characters and digits in value.
      *
@@ -321,7 +321,7 @@ class Inspekt
 		}
 	}
 
-	
+
 	/**
      * Returns only the digits in value. This differs from getInt().
      *
@@ -339,8 +339,8 @@ class Inspekt
 			return preg_replace('/[^\d]/', '', $value);
 		}
 	}
-	
-	
+
+
 	/**
      * Returns only the digits in value. This differs from getInt().
      *
@@ -359,7 +359,7 @@ class Inspekt
 		}
 	}
 
-	
+
 	/**
      * Returns dirname(value).
      *
@@ -378,7 +378,7 @@ class Inspekt
 		}
 	}
 
-	
+
 	/**
      * Returns (int) value.
      *
@@ -395,7 +395,25 @@ class Inspekt
 			return (int) $value;
 		}
 	}
-	
+
+
+	/**
+     * Returns (date) value.
+     *
+     * @param mixed $value
+     * @return string
+     *
+     * @tag filter
+     */
+	static function getDate($value)
+	{
+		if (is_array($value)) {
+			return Inspekt::_walkArray($value, 'getInt');
+		} else {
+			return preg_replace('/[^0-9-]/', '', $value);
+		}
+	}
+
 
 	/**
      * Returns realpath(value).
@@ -413,7 +431,7 @@ class Inspekt
 			return realpath($value);
 		}
 	}
-	
+
 
 	/**
      * Returns TRUE if every character is alphabetic or a digit,
@@ -429,7 +447,7 @@ class Inspekt
 		return ctype_alnum($value);
 	}
 
-	
+
 	/**
      * Returns TRUE if every character is alphabetic, FALSE
      * otherwise.
@@ -444,7 +462,7 @@ class Inspekt
 		return ctype_alpha($value);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is greater than or equal to $min and less
      * than or equal to $max, FALSE otherwise. If $inc is set to
@@ -474,7 +492,7 @@ class Inspekt
 		return FALSE;
 	}
 
-	
+
 	/**
      * Returns TRUE if it is a valid credit card number format. The
      * optional second argument allows developers to indicate the
@@ -513,7 +531,7 @@ class Inspekt
 		return ($mod == $value[$length - 1]);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is a valid date, FALSE otherwise. The
      * date is required to be in ISO 8601 format.
@@ -530,7 +548,7 @@ class Inspekt
 		return checkdate($month, $day, $year);
 	}
 
-	
+
 	/**
      * Returns TRUE if every character is a digit, FALSE otherwise.
      * This is just like isInt(), except there is no upper limit.
@@ -545,7 +563,7 @@ class Inspekt
 		return ctype_digit((string) $value);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is a valid email format, FALSE otherwise.
      *
@@ -561,7 +579,7 @@ class Inspekt
 		return (bool) preg_match(ISPK_EMAIL_VALID, $value);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is a valid float value, FALSE otherwise.
      *
@@ -580,7 +598,7 @@ class Inspekt
 		return (strval(floatval($value)) == $value);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is greater than $min, FALSE otherwise.
      *
@@ -596,7 +614,7 @@ class Inspekt
 		return ($value > $min);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is a valid hexadecimal format, FALSE
      * otherwise.
@@ -612,7 +630,7 @@ class Inspekt
 		return ctype_xdigit($value);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is a valid hostname, FALSE otherwise.
      * Depending upon the value of $allow, Internet domain names, IP
@@ -682,7 +700,7 @@ class Inspekt
 		}
 	}
 
-	
+
 	/**
      * Returns TRUE if value is a valid integer value, FALSE otherwise.
      *
@@ -702,7 +720,7 @@ class Inspekt
 		return (strval(intval($value)) == $value);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is a valid IP format, FALSE otherwise.
      *
@@ -717,7 +735,7 @@ class Inspekt
 		return (bool) ip2long($value);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is less than $max, FALSE otherwise.
      *
@@ -733,7 +751,7 @@ class Inspekt
 		return ($value < $max);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is one of $allowed, FALSE otherwise.
      *
@@ -754,7 +772,7 @@ class Inspekt
 		return in_array($value, $allowed);
 	}
 
-	
+
 	/**
      * Returns TRUE if value is a valid phone number format, FALSE
      * otherwise. The optional second argument indicates the country.
@@ -768,9 +786,9 @@ class Inspekt
      */
 	static function isPhone($value, $country = 'US')
 	{
-		
+
 		$value = Inspekt::getDigits($value);
-		
+
 		if (!ctype_digit($value)) {
 			return FALSE;
 		}
@@ -837,7 +855,7 @@ class Inspekt
 		}
 	}
 
-	
+
 	/**
      * Returns TRUE if value matches $pattern, FALSE otherwise. Uses
      * preg_match() for the matching.
@@ -907,7 +925,7 @@ class Inspekt
 		return $result;
 	}
 
-	
+
 	/**
      * Returns TRUE if value is a valid US ZIP, FALSE otherwise.
      *

@@ -205,6 +205,12 @@ class Bootstrap extends Base {
 	private $config = false;
 
 	/**
+	 * @var array $config Holds an array of table child keys
+	 * @access private
+	 */
+	private $_child_foreign_keys;
+
+	/**
 	 * @var array $config Holds an array of all successfully loaded libraries
 	 * @access private
 	 */
@@ -293,6 +299,9 @@ class Bootstrap extends Base {
 
 		// identify all model extensions
 		$this->_model_extensions = $this->listModelExtensions();
+
+		// attempt to map child foreign keys
+		$this->_child_foreign_keys = $this->mapChildForeignKeys();
 
 		// load any model extensions
 		$this->loadSystemModelExtensions();
@@ -750,6 +759,69 @@ class Bootstrap extends Base {
 
 		return $models;
 
+	}
+
+
+	/**
+	 * @abstract Attempts to map foreign keys to their parent table
+	 * @return <type>
+	 */
+	private function mapChildForeignKeys(){
+
+		$_db_schema = array();
+		$_child_fks = array();
+
+		// iterate all tables in db
+		$tables = $this->db->MetaTables();
+		foreach($tables as $table){
+
+			// pull complete schema for this table
+			$_db_schema[$table] = $schema = $this->db->MetaColumns($table);
+
+			// loop the schema and find the primary keys
+			foreach($schema as $field => $field_info){
+				if($field_info->primary_key){
+
+					// convert the primary key to it's likely
+					// foreign key name
+
+					if(substr($table, -1) == 's'){
+						$child_field = substr_replace($table ,"",-1);
+					} else {
+						$child_field = $table;
+					}
+
+					$_child_fks[$table] = $child_field.'_id';
+				}
+			}
+		}
+
+		// now that we know what the child field name should be,
+		// we need to look for it
+		$map = array();
+
+		foreach($_child_fks as $orig_table => $potent_field){
+			foreach($_db_schema as $table => $schema){
+				foreach($schema as $field => $field_info){
+					if($potent_field == strtolower($field)){
+						$map[$orig_table][$table] = $potent_field;
+					}
+				}
+			}
+		}
+
+		return $map;
+
+	}
+
+
+	/**
+	 * @abstract Returns the child key mappings
+	 * @return array
+	 * @access public
+	 */
+	public function getChildForeignKeys(){
+		return $this->_child_foreign_keys;
 	}
 
 

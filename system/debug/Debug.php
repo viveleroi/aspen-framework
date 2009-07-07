@@ -46,23 +46,51 @@ class Debug {
 	/**
 	 *
 	 * @return <type>
+	 * @todo fix this static vs method issue
 	 */
     static public function firephp(){
-		if($this->APP->config('enable_firephp')){
-			return Firephp::getInstance(true);
-		}
+//		if($this->APP->config('enable_firephp')){
+//			return Firephp::getInstance(true);
+//		}
 		return false;
     }
 
 
-	static public function dump($var, $name = 'var_dump', $line_end = false){
+	/**
+	 *
+	 * @param <type> $var
+	 */
+	static public function p($var){
+		Debug::dump($var, false, 'print_r');
+	}
+
+
+	/**
+	 *
+	 * @param <type> $var
+	 */
+	static public function v($var){
+		Debug::dump($var);
+	}
+
+	/**
+	 *
+	 * @param <type> $var
+	 * @param <type> $line_end
+	 * @param <type> $method
+	 */
+	static public function dump($var, $line_end = false, $method = 'var_dump'){
 
 		$line_end = $line_end ? $line_end : "\n";
 
-
 		print $line_end;
-		print $name.': ';
-		var_dump($var);
+		print $method.': ';
+		if($method == 'var_dump'){
+			var_dump($var);
+		}
+		if($method == 'print_r'){
+			print_r($var);
+		}
 		print $line_end;
 
 	}
@@ -73,7 +101,7 @@ class Debug {
 	 * @param <type> $line_end
 	 * @param <type> $ignore_phpunit
 	 */
-	static public function who_called($line_end = false, $ignore_phpunit = false){
+	static public function who_called($line_end = false, $ignore_phpunit = true){
 
 		$line_end = $line_end ? $line_end : "\n";
 
@@ -91,9 +119,8 @@ class Debug {
 			}
 		}
 
-		print $line_end;
+		print ($ignore_phpunit ? ' -- ignoring phpunit -- ' : '') . $line_end;
 
 	}
-
 }
 ?>

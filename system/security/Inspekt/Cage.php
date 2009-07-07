@@ -143,13 +143,15 @@ class Inspekt_Cage
 			return true;
 		} else {
 
+			$val = $this->_getValue($key);
+
 			// replace any extra "count as empty" chars
 			if($count_as_empty){
-				$this->_setValue($key, str_replace($count_as_empty, '', $this->_getValue($key)) );
+				$val = str_replace($count_as_empty, '', $val);
 			}
 
 			// the key is set, so we do need to process it no matter what
-			return Inspekt::isEmpty($this->_getValue($key));
+			return Inspekt::isEmpty($val);
 
 		}
 	}
@@ -258,6 +260,23 @@ class Inspekt_Cage
 
 
 	/**
+     * Returns (date) value.
+     *
+     * @param mixed $key
+     * @return string
+     *
+     * @tag filter
+     */
+	function getDate($key)
+	{
+		if (!$this->keyExists($key)) {
+			return false;
+		}
+		return Inspekt::getDate($this->_getValue($key));
+	}
+
+
+	/**
      * Returns realpath(value).
      *
      * @param mixed $key
@@ -306,7 +325,7 @@ class Inspekt_Cage
 			return false;
 		}
 		if (Inspekt::isAlnum($this->_getValue($key))) {
-			return $this->_getValue($key);
+			return true;
 		}
 
 		return FALSE;
@@ -395,15 +414,13 @@ class Inspekt_Cage
      *
      * @tag validator
      */
-	function testDate($key, $ignore_mysql_default = false)
+	function testDate($key)
 	{
 		if (!$this->keyExists($key)) {
 			return false;
 		}
 
-		if($ignore_mysql_default){
-			$this->_setValue( $key, trim(str_replace(array(0,'-',':'), '', $this->_getValue($key))) );
-		}
+		$this->_setValue( $key, $this->getDate($key) );
 
 		if (Inspekt::isDate($this->_getValue($key))) {
 			return $this->_getValue($key);
@@ -428,7 +445,7 @@ class Inspekt_Cage
 			return false;
 		}
 		if (Inspekt::isDigits($this->_getValue($key))) {
-			return $this->_getValue($key);
+			return true;
 		}
 
 		return FALSE;
@@ -469,8 +486,8 @@ class Inspekt_Cage
 		if (!$this->keyExists($key)) {
 			return false;
 		}
-		if (Inspekt::isFloat($this->_getValue($key))) {
-			return $this->_getValue($key);
+		if (Inspekt::isFloat($this->_getValue($key)) !== false) {
+			return true;
 		}
 
 		return FALSE;
@@ -561,7 +578,7 @@ class Inspekt_Cage
 			return false;
 		}
 		if (Inspekt::isInt($this->_getValue($key))) {
-			return $this->_getValue($key);
+			return true;
 		}
 
 		return FALSE;
