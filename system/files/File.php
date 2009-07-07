@@ -271,7 +271,7 @@ class File {
 	 * @access public
 	 */
 	public function upload($form_field = false, $overwrite = false, $timestamp = true, $rename = false){
-		if($this->APP->config('enable_uploads')){
+		if($this->APP->config('enable_uploads') && $this->APP->params->files->getRaw($form_field)){
 			if($this->setUploadDirectory()){
 				return $this->upload_files($form_field, $rename, $overwrite, $timestamp);
 			}
