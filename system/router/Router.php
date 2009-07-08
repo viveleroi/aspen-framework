@@ -143,7 +143,7 @@ class Router {
 
 					// do a quick check to see if the user is logged in or not
 					// we need to create our own auth check, as the user module is not loaded at this point
-					if($this->APP->user->userHasInterfaceAccess()){
+					if($this->APP->user->isLoggedIn() && $this->APP->user->userHasInterfaceAccess()){
 	
 						$default = $this->map['module'] ? $this->map['module'] : $this->APP->config('default_module');
 	
@@ -304,7 +304,7 @@ class Router {
 	 * @access public
 	 */
 	public function loadFromUrl(){
-
+		
 		// If user is logged in, but does not have access to this interface app
 		if($this->APP->user->isLoggedIn() && !$this->APP->user->userHasInterfaceAccess()){
 			$this->APP->user->logout();

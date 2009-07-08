@@ -350,7 +350,7 @@ class User {
 
 					$_SESSION['authenticated']		= true;
 					$_SESSION['authentication_key'] = sha1($account['username'] . $account['id']);
-					$_SESSION['domain_key'] 		= sha1($this->APP->router->getApplicationUrl());
+					$_SESSION['domain_key'] 		= sha1($this->APP->params->server->getRaw('HTTP_HOST'));
 					$_SESSION['username'] 			= $account['username'];
 					$_SESSION['nice_name'] 			= $account['nice_name'];
 					$_SESSION['latest_login'] 		= $account['latest_login'];
