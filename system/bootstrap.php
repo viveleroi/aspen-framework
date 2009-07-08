@@ -566,14 +566,13 @@ class Bootstrap extends Base {
 			$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
 			$all_classes[$class['classname']] = $class;
 		}
-
+		
 		if(is_array($custom_classes)){
 			foreach($custom_classes as $class){
 				$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
 				$all_classes[$class['classname']] = $class;
 			}
 		}
-
 
 		// load all required modules
 		if(is_array($all_classes) && count($all_classes) > 0){

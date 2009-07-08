@@ -330,6 +330,7 @@
 
 	$config['load_core_class'][] = array('classname' => 'Inspekt', 'folder' => 'security/Inspekt', 'autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'Security');
+	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'Template');
 	$config['load_core_class'][] = array('classname' => 'Error',
@@ -350,7 +351,6 @@
 	$config['load_core_class'][] = array('classname' => 'Settings');
 	$config['load_core_class'][] = array('classname' => 'Sml');
 	$config['load_core_class'][] = array('classname' => 'Form');
-	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Scaffold');
 
 	$config['load_core_class'][] = array('classname' => 'Module', 'autoload' => false);

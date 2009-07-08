@@ -83,7 +83,7 @@ class Router {
 			// we force the entire url as replacement because
 			// an interface app name may be the same as a module
 			// and we don't want to remove both, just one
-			$replace = array($this->getApplicationUrl() .'/'.LS);
+			$replace = array($this->getApplicationUrl() . (LS != '' ? '/'.LS : '' ));
 			if($this->getPath() != '/'){
 				$replace[] = $this->getPath();
 			}
@@ -143,7 +143,7 @@ class Router {
 
 					// do a quick check to see if the user is logged in or not
 					// we need to create our own auth check, as the user module is not loaded at this point
-					if($this->APP->params->session->getAlnum('domain_key') == sha1($this->getApplicationUrl())){
+					if($this->APP->user->userHasInterfaceAccess()){
 	
 						$default = $this->map['module'] ? $this->map['module'] : $this->APP->config('default_module');
 	
@@ -185,7 +185,7 @@ class Router {
 		if($this->APP->requireLogin()){
 
 			// do a basic login check as user module is not loaded at this point
-			if($this->APP->params->session->getAlnum('domain_key') == sha1($this->getApplicationUrl())){
+			if($this->APP->user->userHasInterfaceAccess()){
 	
 				$default = $this->map['method'];
 				$default = $default ? $default : $this->APP->config('default_method');
@@ -304,6 +304,12 @@ class Router {
 	 * @access public
 	 */
 	public function loadFromUrl(){
+
+		// If user is logged in, but does not have access to this interface app
+		if($this->APP->user->isLoggedIn() && !$this->APP->user->userHasInterfaceAccess()){
+			$this->APP->user->logout();
+			$this->redirect('login', false, 'Users');
+		}
 		
 		// redirect if upgrade pending
 		if($this->APP->user->isLoggedIn() && $this->getSelectedModule() != 'Install_Admin'){

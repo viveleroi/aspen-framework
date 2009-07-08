@@ -382,7 +382,7 @@ class User {
 
 		$authenticated 	= false;
 		$auth_key 		= sha1($this->APP->params->session->getRaw('username') . $this->APP->params->session->getInt('user_id'));
-		$domain_key 	= sha1($this->APP->router->getApplicationUrl());
+		$domain_key 	= sha1($this->APP->params->server->getRaw('HTTP_HOST'));
 
 		if($this->APP->checkDbConnection()){
 			if(
@@ -397,31 +397,95 @@ class User {
 		return $authenticated;
 
 	}
-	
+
+
+	/**
+	 * @abstract Checks if user has permissions to access an entire interface
+	 * @param string $interface
+	 * @param integer $user_id
+	 * @return boolean
+	 * @access public
+	 */
+	public function userHasInterfaceAccess($interface = false, $user_id = false){
+
+		if(!$this->APP->requireLogin()){
+			return true;
+		}
+
+		$authenticated 	= false;
+		$interface 		= $interface ? $interface : LOADING_SECTION;
+		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
+
+		if($this->userHasGlobalAccess()){
+
+			$authenticated = true;
+
+		} else {
+
+			if($this->isLoggedIn()){
+
+				// first identify any groups this user belongs to
+				$model = $this->APP->model->open('user_group_link');
+				$model->select(array('group_id'));
+				$model->where('user_id', $user_id);
+				$groups = $model->results();
+
+				$group_where = '';
+
+				if($groups['RECORDS']){
+					foreach($groups['RECORDS'] as $group){
+						$group_where .= '
+							OR group_id = ' . $group['group_id'];
+					}
+				}
+
+
+				// auth if:
+				// interface matches current or is all
+				// module matches current or is all
+				// method matches current or is all
+				$strict_sql = sprintf('
+							SELECT * FROM permissions
+							WHERE (interface = "%s" OR interface = "*") AND (user_id = %s%s)',
+								$interface, $user_id, $group_where);
+
+				$stricts = $this->APP->model->query($strict_sql);
+				$authenticated = $stricts->RecordCount() ? true : false;
+
+			}
+		}
+
+		return $authenticated;
+
+	}
+
 
 	/**
 	 * @abstract Checks if user has permissions to access a page
 	 * @param string $module
 	 * @param string $method
 	 * @param string $interface
+	 * @param integer $user_id
 	 * @return boolean
 	 * @access public
 	 */
-	public function userHasAccess($module = false, $method = false, $interface = false){
-		
-		if(!$this->APP->requireLogin()){
-			return true;
-		}
+	public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
 
 		$authenticated 	= false;
 		$module 		= $module ? $module : $this->APP->router->getSelectedModule();
 		$method 		= $method ? $method : $this->APP->router->getSelectedMethod();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
+		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
 
-		if($this->userHasGlobalAccess()){
+		if(
+			$this->userHasGlobalAccess() ||
+			!$this->APP->requireLogin() ||
+			($module == 'Users' &&
+					($method == 'login' || $method == 'authenticate' || $method == 'logout' || $method == 'forgot') ||
+				$module == 'Install')){
 
-			$authenticated = true;
+			return true;
 
 		} else {
 
@@ -430,7 +494,7 @@ class User {
 				// first identify any groups this user belongs to
 				$model = $this->APP->model->open('user_group_link');
 				$model->select(array('group_id'));
-				$model->where('user_id', $this->APP->params->session->getInt('user_id'));
+				$model->where('user_id', $user_id);
 				$groups = $model->results();
 
 				$group_where = '';
@@ -450,20 +514,11 @@ class User {
 				$strict_sql = sprintf('
 							SELECT * FROM permissions
 							WHERE (interface = "%s" OR interface = "*") AND (module = "%s" OR module = "*") AND (method="%s" OR method = "*") AND (user_id = %s%s)',
-								$interface, $module, $method, $this->APP->params->session->getInt('user_id'), $group_where);
+								$interface, $module, $method, $user_id, $group_where);
 
 				$stricts = $this->APP->model->query($strict_sql);
 				$authenticated = $stricts->RecordCount() ? true : false;
 
-			} else {
-				if(
-					$module == 'Users' &&
-					($method == 'login' || $method == 'authenticate' || $method == 'logout' || $method == 'forgot') ||
-					$module == 'Install'){
-
-					$authenticated = true;
-
-				}
 			}
 		}
 

@@ -423,7 +423,7 @@ class Model {
 
 		// attempt to find all tables which link to this tables primary key
 		$fks = $this->APP->getChildForeignKeys();
-		if(array_key_exists($this->table, $fks)){
+		if(is_array($fks) && array_key_exists($this->table, $fks)){
 			$children = $fks[$this->table];
 			$key_maps[$this->getPrimaryKey()] = $children;
 		}
