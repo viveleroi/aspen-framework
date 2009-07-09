@@ -148,6 +148,8 @@ class Model {
 	 */
 	 final public function open($table){
 
+		$final_obj = false;
+
 	 	if($table){
 
 		 	$class = 'Model';
@@ -161,31 +163,20 @@ class Model {
 			}
 
 			if(class_exists($class)){
-				return new $class($table);
+				$final_obj = new $class($table);
 			} else {
 				$this->APP->error->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
-				return new Model($table);
+				$final_obj = new Model($table);
+			}
+
+			if(is_object($final_obj)){
+				$final_obj->select();
 			}
 
 		}
 
-		return false;
+		return $final_obj;
 
-	}
-
-
-	/**
-	 * @abstract Returns a model object or its child, and begins a basic SELECT statement.
-	 * @param string $table
-	 * @return object
-	 * @access public
-	 */
-	 final public function openAndSelect($table){
-	 	$model = $this->open($table);
-	 	if(is_object($model)){
-	 		$model->select();
-	 	}
-		return $model;
 	}
 
 
@@ -195,7 +186,7 @@ class Model {
 	 * @return object
 	 * @access public
 	 */
-	 final public function openAndSelectSingle($table){
+	 final public function openSingle($table){
 	 	$model = $this->open($table);
 	 	if(is_object($model)){
 	 		$model->select_single();
@@ -1117,8 +1108,20 @@ class Model {
 
 		$sql = '';
 
+		// generate the insert query
+		if(isset($this->sql['INSERT'])){
+			$this->query_type = 'insert';
+			$sql = $this->sql['INSERT'];
+		}
+
+		// generate the update query
+		elseif(isset($this->sql['UPDATE'])){
+			$this->query_type = 'update';
+			$sql = $this->sql['UPDATE'];
+		}
+
 		// generate the select query
-		if(isset($this->sql['SELECT'])){
+		elseif(isset($this->sql['SELECT'])){
 
 			$this->query_type = 'select';
 
@@ -1145,18 +1148,6 @@ class Model {
 
 			$sql .= ' ' . (isset($this->sql['LIMIT']) ? $this->sql['LIMIT'] : '');
 
-		}
-
-		// generate the insert query
-		elseif(isset($this->sql['INSERT'])){
-			$this->query_type = 'insert';
-			$sql = $this->sql['INSERT'];
-		}
-
-		// generate the update query
-		elseif(isset($this->sql['UPDATE'])){
-			$this->query_type = 'update';
-			$sql = $this->sql['UPDATE'];
 		}
 
 		else {
@@ -1239,7 +1230,7 @@ class Model {
 								$fk_field = $this->foreignkeys[$key][$child_table];
 
 								// run query on child table to find all records
-								$child = $this->openAndSelect($child_table);
+								$child = $this->open($child_table);
 								$child->where($fk_field, $result[$key]);
 								$result[$child_table] = $child->results();
 

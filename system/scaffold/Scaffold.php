@@ -27,8 +27,8 @@ class Scaffold {
 	 * @access private
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
-	
-	
+
+
 	/**
 	 * @abstract Converts text into a proper English field name
 	 * @param string $name
@@ -38,42 +38,42 @@ class Scaffold {
 	private function fieldName($name){
 		return ucwords(str_replace(array("-", "_"), ' ', strtolower($name)));
 	}
-	
-	
+
+
 	/**
 	 * @abstract Creates the basic list view scaffold
 	 * @param string $table
 	 * @access public
 	 */
 	public function view($table = false){
-		
+
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView(SYSTEM_PATH.DS.'scaffold'.DS.'templates'.DS . 'generic.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
 		$this->APP->template->display( array('html' => $this->view_html($table) ));
 
 	}
-	
-	
+
+
 	/**
 	 * @abstract Creates the basic list view scaffold
 	 * @param string $table
 	 * @access private
 	 */
 	public function view_html($table = false){
-	
+
 		$html = '';
-		
+
 		if($table){
-		
+
 			$thead = '';
 			$tbody = '';
-	 
-			$model = $this->APP->model->openAndSelect($table);
+
+			$model = $this->APP->model->open($table);
 			$results 	= $model->results();
 			$schema 	= $model->getSchema();
 			$key_field 	= $model->getPrimaryKey();
-			
+
 			foreach($schema as $field){
 				$thead .= sprintf('<th>%s</th>' . "\n", $this->fieldName($field->name));
 			}
@@ -81,23 +81,23 @@ class Scaffold {
 			// loop the results
 			if($results['RECORDS']){
 				foreach($results['RECORDS'] as $result){
-					
+
 					$tbody .= '<tr>' . "\n";
-					
+
 					foreach($result as $field => $value){
 						$tbody .= sprintf('<td>%s</td>' . "\n", $this->APP->template->createLink($value, 'edit', array('id' => $result[$key_field])));
 					}
-					
+
 					$tbody .= '</tr>' . "\n";
-					
+
 				}
 			}
-			
-			
+
+
 			// begin building the html
 			$html .= sprintf('<h2>%s</h2>'."\n", ucwords($table));
 			$html .= '<p>'.$this->APP->template->createLink('Add a new record', 'add') . "</p>\n";
-			
+
 			// create our table
 			$html .= '<table>' . "\n";
 			$html .= sprintf('<tr>%s</tr>' . "\n", $thead);
@@ -106,43 +106,43 @@ class Scaffold {
 			$html .= '<tbody>' . "\n";
 			$html .= $tbody;
 			$html .= '</tbody>' . "\n";
-			
+
 			// close table
 			$html .= '</table>' . "\n";
 
 		}
-		
+
 		return $html;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * @abstract Creates the basic list view scaffold
 	 * @param string $table
 	 * @access private
 	 */
 	public function view_php($table = false){
-	
+
 		$html = '';
-		
+
 		if($table){
-		
+
 			$thead = '';
 			$tbody = '';
-	 
+
 			$model = $this->APP->model->open($table);
 			$results 	= $model->results();
 			$schema 	= $model->getSchema();
 			$key_field 	= $model->getPrimaryKey();
-			
+
 			foreach($schema as $field){
 				$thead .= sprintf('			<th>%s</th>' . "\n", $this->fieldName($field->name));
 			}
 
 			// loop the results
-			
-			
+
+
 $tbody .= "
 		<?php
 			if($".$table."['RECORDS']){
@@ -161,12 +161,12 @@ $tbody .= "		</tr>\n
 		?>
 
 ";
-			
-			
+
+
 			// begin building the html
 			$html .= sprintf('<h2>%s</h2>'."\n", ucwords($table));
 			$html .= "<p><?php print \$this->APP->template->createLink('Add a new record', 'add'); ?></p>\n";
-			
+
 			// create our table
 			$html .= '<table>' . "\n";
 			$html .= '	<thead>' . "\n";
@@ -177,17 +177,17 @@ $tbody .= "		</tr>\n
 			$html .= '	<tbody>' . "\n";
 			$html .= $tbody;
 			$html .= '	</tbody>' . "\n";
-			
+
 			// close table
 			$html .= '</table>' . "\n";
 
 		}
-		
+
 		return $html;
-		
+
 	}
 
-	
+
 	/**
 	 * @abstract Generates an add/edit form field with name and value
 	 * @param string $name
@@ -200,15 +200,15 @@ $tbody .= "		</tr>\n
 
 		$html = '		';
 		$html .= sprintf('<label for="%s">%s:</label><br />' . "\n", $field->name, $this->fieldName($field->name));
-		
+
 		if($return_html){
 			$value = "<?php print \$values['".$field->name."']; ?>";
 		}
-		
+
 		if(in_array($field->type, $this->APP->config('mysql_field_group_int'))){
 			$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" class="text" />', $field->name, $field->name, $value);
 		}
-		
+
 
 		if(in_array($field->type, $this->APP->config('mysql_field_group_text'))){
 			if($field->max_length > 0 && $field->max_length <= 100){
@@ -217,16 +217,16 @@ $tbody .= "		</tr>\n
 				$html .= sprintf('		<textarea rows="20" cols="40" name="%s" id="%s">%s</textarea>', $field->name, $field->name, $value);
 			}
 		}
-		
+
 		if(in_array($field->type, $this->APP->config('mysql_field_group_date'))){
 			$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" class="text" />', $field->name, $field->name, $value);
 		}
-		
+
 		return $html;
-		
+
 	}
 
-	
+
 	/**
 	 * @abstract Creates a basic add record form scaffold
 	 * @param string $table
@@ -235,8 +235,8 @@ $tbody .= "		</tr>\n
 	public function add($table = false){
 		$this->recordForm($table, 'Add');
 	}
-	
-	
+
+
 	/**
 	 * @abstract Creates a basic edit record form scaffold
 	 * @param string $table
@@ -246,8 +246,8 @@ $tbody .= "		</tr>\n
 	public function edit($table = false, $id = false){
 		$this->recordForm($table, 'Edit', $id);
 	}
-	
-	
+
+
 	/**
 	 * @abstract Generates the add and edit form
 	 * @param string $table
@@ -255,27 +255,27 @@ $tbody .= "		</tr>\n
 	 * @access private
 	 */
 	public function recordForm($table = false, $type = 'Add', $id = false, $return_html = false){
-		
+
 		// loads record - if fails it defaults to loadTable
 		$this->APP->form->load($table, $id);
-		
+
 		// if form has been submitted
 		if($this->APP->form->isSubmitted()){
-			
+
 			if($this->APP->form->save($id)){
 				$this->APP->router->redirect('view');
 			}
 		}
-		
-		
+
+
 		// make sure the template has access to all current values
 		$values = $this->APP->form->getCurrentValues();
 		$schema = $this->APP->model->getSchema();
-		
+
 		// build the html form
 		$html = '';
 		$html .= sprintf('<h2>%s</h2>'."\n\n", $type . ' ' . ucwords($table) . ' Record');
-		
+
 		if($type == 'Edit'){
 			if($return_html){
 				$html .= "<p><?php print \$this->createLink('Delete', 'delete', array('".$this->APP->model->getPrimaryKey()."' => \$values['".$this->APP->model->getPrimaryKey()."'])); ?></p>\n\n";
@@ -283,13 +283,13 @@ $tbody .= "		</tr>\n
 				$html .= $this->APP->template->createLink('Delete', 'delete', array($this->APP->model->getPrimaryKey() => $id)) . "\n";
 			}
 		}
-		
+
 		if($return_html){
 			$html .= '<form action="<?php print $this->createFormAction(); ?>" method="post">'."\n";
 		} else {
 			$html .= sprintf('<form action="%s" method="post">'."\n", $this->APP->template->createFormAction());
 		}
-		
+
 		foreach($schema as $field){
 
 			if(!$field->primary_key){
@@ -298,25 +298,25 @@ $tbody .= "		</tr>\n
 				$html .= '	</p>' . "\n";
 			}
 		}
-		
+
 		$html .= '	<p><input type="submit" name="submit" value="'.($type == 'Edit' ? 'Save Changes' : 'Add').'" /></p>' . "\n";
 		$html .= '</form>';
-		
+
 		if($return_html){
-		
+
 			return $html;
-		
+
 		} else {
-		
+
 			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 			$this->APP->template->addView(SYSTEM_PATH.DS.'scaffold'.DS.'templates'.DS . 'generic.tpl.php');
 			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
 			$this->APP->template->display(array('html' => $html));
-			
+
 		}
 	}
-	
-	
+
+
 	/**
 	 * @abstract Creates a basic delete record form scaffold
 	 * @param string $table

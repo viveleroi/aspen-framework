@@ -35,7 +35,7 @@ class User {
 	 * @param integer $id
 	 */
 	public function add(){
-	
+
 		$id = false;
 
 		$this->APP->form->load('authentication');
@@ -49,17 +49,17 @@ class User {
 			if(!$this->APP->form->isFilled('username')){
 				$this->APP->form->addError('username', 'You must enter a username.');
 			} else {
-				
+
 				// verify unique
 				$this->APP->model->select('authentication');
 				$this->APP->model->where('username', $this->APP->form->cv('username'));
 				$unique = $this->APP->model->results();
-				
+
 				if($unique['RECORDS']){
 					$this->APP->form->addError('username', 'That username has already been used.');
 				}
 			}
-	
+
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.
 			if($this->APP->form->isFilled('password')){
@@ -71,7 +71,7 @@ class User {
 					}
 				}
 			}
-			
+
 			// validate the user has selected a group
 			$groups = $this->APP->form->cv('group');
 			if(empty($groups)){
@@ -86,9 +86,9 @@ class User {
 				}
 			}
 		}
-		
+
 		return $id;
-		
+
 	}
 
 
@@ -104,8 +104,8 @@ class User {
 
 		// pull all groups this user is associated with
 		$group_array = array();
-		
-		$model = $this->APP->model->openAndSelect('user_group_link');
+
+		$model = $this->APP->model->open('user_group_link');
 		$model->where('user_id', $id);
 		$groups = $model->results();
 		if($groups['RECORDS']){
@@ -115,7 +115,7 @@ class User {
 		}
 		$this->APP->form->addField('group', $group_array, $group_array);
 
-		
+
 		// process the form if submitted
 		if($this->APP->form->isSubmitted()){
 
@@ -123,29 +123,29 @@ class User {
 			if(!$this->APP->form->isFilled('username')){
 				$this->APP->form->addError('username', 'You must enter a username.');
 			}
-	
+
 			if($this->APP->form->isFilled('password_confirm')){
 				if(!$this->APP->form->fieldsMatch('password', 'password_confirm')){
 					$this->APP->form->addError('password', 'Your passwords do not match.');
 				}
 			}
-			
+
 			$groups = $this->APP->form->cv('group');
 			if(empty($groups)){
 				$this->APP->form->addError('group', 'You must select at least one user group.');
 			}
-			
+
 			// if allow_login not present, set to false
 			$this->APP->form->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
 
 			if(!$this->APP->form->error()){
-				
+
 				$upd = array(
 						'username' => $this->APP->form->cv('username'),
 						'nice_name' => $this->APP->form->cv('nice_name'),
 						'allow_login' => $this->APP->form->cv('allow_login')
 				);
-				
+
 				if($this->APP->form->isFilled('password')){
 					$upd['password'] = sha1($this->APP->form->cv('password'));
 				}
@@ -153,7 +153,7 @@ class User {
 				if($this->APP->model->executeUpdate('authentication', $upd, $id)){
 
 					$groups = $this->APP->form->cv('group');
-					
+
 					// if user is admin, we can't permit them to remove the admin group
 					// from themselves
 					if(IS_ADMIN && $id == $this->APP->params->session->getInt('user_id')){
@@ -175,27 +175,27 @@ class User {
 				}
 			}
 		}
-		
+
 		return false;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * @abstract Allows a user to change their own password
 	 * @access public
 	 */
 	public function my_account(){
-		
+
 		// add these two values since it's all we need right now
 		$this->APP->form->addFields(array('password_1', 'password_2'));
-		
+
 		// if form submitted
 		if($this->APP->form->isSubmitted()){
 
 			// load values
 			$this->APP->form->loadPOST();
-			
+
 			// validate that passwords set and match
 			if($this->APP->form->isFilled('password_1')){
 				if($this->APP->form->cv('password_1') != $this->APP->form->cv('password_2')){
@@ -204,7 +204,7 @@ class User {
 			} else {
 				$this->APP->form->addError('password_1', 'Your password may not be blank.');
 			}
-				
+
 			// if we have no errors, update password in user authentication table
 			if(!$this->APP->form->error()){
 
@@ -212,13 +212,13 @@ class User {
 										'authentication',
 										array('password' => sha1($this->APP->form->cv('password_1'))),
 										$this->APP->params->session->getInt('user_id'));
-					
-	
+
+
 			}
 		}
-		
+
 		return false;
-		
+
 	}
 
 
@@ -243,11 +243,11 @@ class User {
 	 * @access public
 	 */
 	public function login(){
-		
+
 		$uri = $this->APP->params->server->getRaw('REQUEST_URI');
 		$uri .= $this->APP->params->server->getRaw('QUERY_STRING');
 		$uri = preg_replace('/redirected=(.*)/', '', $uri);
-		
+
 		// set the forwarding url if any set pre-login
 		if(
 			$this->APP->config('post_login_redirect') && !strpos($uri, 'install') &&
@@ -306,21 +306,21 @@ class User {
 					$this->APP->mail->ContentType 	= 'text/html';
 					$this->APP->mail->Subject   	= $this->APP->config('password_reset_subject');
 					$this->APP->mail->Body 			= str_replace('{new_pass}', $new_pass, $this->APP->config('password_reset_body'));
-										
+
 					$this->APP->mail->Send();
 					$this->APP->mail->ClearAddresses();
-					
+
 					return 1;
 
 				}
 			}
-			
+
 			return -1;
-			
+
 		}
-		
+
 		return false;
-		
+
 	}
 
 
@@ -335,8 +335,8 @@ class User {
 		$pass = sha1($this->APP->params->post->getRaw('pass'));
 
 		if($user && $pass){
-			
-			$model = $this->APP->model->openAndSelect('authentication');
+
+			$model = $this->APP->model->open('authentication');
 			$model->where('password', $pass);
 			$model->where('username', $user);
 			$model->where('allow_login', 1);
@@ -345,7 +345,7 @@ class User {
 
 			if($result['RECORDS']){
 				foreach($result['RECORDS'] as $account){
-					
+
 					$auth = true;
 
 					$_SESSION['authenticated']		= true;
@@ -363,13 +363,13 @@ class User {
 					$model->update($upd, $account['id']);
 
 					$auth = true;
-					
+
 				}
 			}
 		}
 
 		return $auth;
-		
+
 	}
 
 
@@ -505,7 +505,7 @@ class User {
 							OR group_id = ' . $group['group_id'];
 					}
 				}
-				
+
 
 				// auth if:
 				// interface matches current or is all
@@ -525,8 +525,8 @@ class User {
 		return $authenticated;
 
 	}
-	
-	
+
+
 	/**
 	 * @abstract Logs a user out
 	 * @access public
@@ -535,8 +535,8 @@ class User {
 		$_SESSION = array();
 		session_destroy();
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns whether a user is in a group
 	 * @param string $group_name
@@ -544,26 +544,26 @@ class User {
 	 * @return boolean
 	 */
 	public function inGroup($group_name, $user_id = false){
-		
+
 		$ingroup = false;
-		
+
 		if($user_id){
-			
-			$model = $this->APP->model->openAndSelect('user_group_link');
+
+			$model = $this->APP->model->open('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
 			$model->where('groups.name', $group_name);
 			$groups = $model->results();
-				
+
 			$ingroup = (boolean)$groups['RECORDS'];
-			
+
 		}
-		
+
 		return $ingroup;
-		
+
 	}
 
-	
+
 	/**
 	 * @abstract Returns an array of groups the user is in
 	 * @param integer $user_id
@@ -571,27 +571,27 @@ class User {
 	 * @access public
 	 */
 	public function usersGroups($user_id = false){
-		
+
 		$ingroups = array();
-		
+
 		if($user_id){
-			
-			$model = $this->APP->model->openAndSelect('user_group_link');
+
+			$model = $this->APP->model->open('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
 			$groups = $model->results();
-				
+
 			if($groups['RECORDS']){
 				foreach($groups['RECORDS'] as $group){
 					$ingroups[] = $group['name'];
 				}
 			}
 		}
-		
+
 		return $ingroups;
-		
+
 	}
-	
+
 
 	/**
 	 * @abstract Returns whether or not user has global access (admin/superuser)
@@ -603,12 +603,12 @@ class User {
 		$has_access = false;
 
 		if($this->isLoggedIn()){
-			
-			$model = $this->APP->model->openAndSelect('user_group_link');
+
+			$model = $this->APP->model->open('user_group_link');
 			$model->where('user_id', $this->APP->params->session->getInt('user_id'));
 			$model->where('group_id', 1);
 			$groups = $model->results();
-				
+
 			$has_access = $groups['RECORDS'] ? true : false;
 
 		}
@@ -627,12 +627,12 @@ class User {
 
 		if($this->APP->checkDbConnection()){
 
-			$model = $this->APP->model->openAndSelect('authentication');
+			$model = $this->APP->model->open('authentication');
 			$accounts = $model->results();
 			return count($accounts['RECORDS']);
 
 		} else {
-			
+
 			return 1;
 
 		}
@@ -646,11 +646,11 @@ class User {
 	 * @access public
 	 */
 	public function makePassword($length = 5){
-		
+
 		$password = "";
 		$possible = "0123456789abcdfghjkmnpqrstvwxyz~!@#$%^&_-+";
 		$i = 0;
-		
+
 		// add random characters to $password until $length is reached
 		while ($i < $length) {
 
@@ -676,7 +676,7 @@ class User {
 	 */
 	public function groupList(){
 
-		$model = $this->APP->model->openAndSelect('groups');
+		$model = $this->APP->model->open('groups');
 		$model->orderBy('name');
 		$groups = $model->results();
 		return $groups['RECORDS'];

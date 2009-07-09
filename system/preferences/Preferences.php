@@ -39,7 +39,7 @@ class Preferences {
 //		if($this->APP->params->session->getInt('user_id', false) && $this->APP->checkDbConnection()){
 //
 //			// load sort settings
-//			$pref_model = $this->APP->model->openAndSelect('preferences_sorts');
+//			$pref_model = $this->APP->model->open('preferences_sorts');
 //			$pref_model->where('user_id', $this->APP->params->session->getInt('user_id'));
 //			$sorts = $pref_model->results();
 //
@@ -52,9 +52,9 @@ class Preferences {
 //				}
 //			}
 //		}
-		
+
 		$this->APP->params->refreshCage('session');
-		
+
 	}
 
 
