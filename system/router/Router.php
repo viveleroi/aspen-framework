@@ -306,9 +306,12 @@ class Router {
 	public function loadFromUrl(){
 		
 		// If user is logged in, but does not have access to this interface app
-		if($this->APP->user->isLoggedIn() && !$this->APP->user->userHasInterfaceAccess()){
-			$this->APP->user->logout();
-			$this->redirect('login', false, 'Users');
+		if($this->APP->user->isLoggedIn() && !$this->APP->user->userHasInterfaceAccess()
+				&& $this->getSelectedMethod() != 'authenticate' && $this->getSelectedMethod() != 'logout'){
+//			$this->APP->user->logout();
+//			$this->redirect('login', false, 'Users');
+print 'failure';
+exit;
 		}
 		
 		// redirect if upgrade pending
