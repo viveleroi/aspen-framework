@@ -353,7 +353,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->select()
 	 */
 	public function testSelect() {
-		$model = $this->sharedFixture->model->openAndSelect('authentication');
+		$model = $this->sharedFixture->model->open('authentication');
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
@@ -397,7 +397,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->where()
 	 */
 	public function testWhere() {
-		$model = $this->sharedFixture->model->openAndSelect('authentication');
+		$model = $this->sharedFixture->model->open('authentication');
 		$model->select();
 		$model->where('id', 1);
 		
@@ -412,7 +412,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereAfterToday()
 	 */
 	public function testWhereAfterToday() {
-		$model = $this->sharedFixture->model->openAndSelect('authentication');
+		$model = $this->sharedFixture->model->open('authentication');
 		$model->select();
 		$model->whereAfterToday('last_login');
 		
@@ -426,7 +426,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereBeforeToday()
 	 */
 	public function testWhereBeforeToday() {
-		$model = $this->sharedFixture->model->openAndSelect('authentication');
+		$model = $this->sharedFixture->model->open('authentication');
 		$model->select();
 		$model->whereBeforeToday('last_login');
 		
@@ -441,7 +441,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereBetween()
 	 */
 	public function testWhereBetween() {
-		$model = $this->sharedFixture->model->openAndSelect('authentication');
+		$model = $this->sharedFixture->model->open('authentication');
 		$model->select();
 		$model->whereBetween('allow_login', 0, 3);
 		
@@ -457,7 +457,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereGreaterThan()
 	 */
 	public function testWhereGreaterThan() {
-		$model = $this->sharedFixture->model->openAndSelect('authentication');
+		$model = $this->sharedFixture->model->open('authentication');
 		$model->select();
 		$model->whereGreaterThan('allow_login', 0);
 		
@@ -473,7 +473,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereLessThan()
 	 */
 	public function testWhereLessThan() {
-		$model = $this->sharedFixture->model->openAndSelect('authentication');
+		$model = $this->sharedFixture->model->open('authentication');
 		$model->select();
 		$model->whereLessThan('allow_login', 3);
 		
@@ -489,7 +489,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereLike()
 	 */
 	public function testWhereLike() {
-		$model = $this->sharedFixture->model->openAndSelect('authentication');
+		$model = $this->sharedFixture->model->open('authentication');
 		
 		$model->whereLike('nice_name', 'Mike');
 		
@@ -504,7 +504,7 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereNot()
 	 */
 	public function testWhereNot() {
-		$model = $this->sharedFixture->model->openAndSelect('authentication');
+		$model = $this->sharedFixture->model->open('authentication');
 		
 		$model->whereNot('nice_name', 'Bobblehead');
 		

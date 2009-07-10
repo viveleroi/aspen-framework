@@ -22,7 +22,7 @@ class Users_Admin extends Module {
 	 */
 	public function view(){
 
-		$model = $this->APP->model->openAndSelect('authentication');
+		$model = $this->APP->model->open('authentication');
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
 

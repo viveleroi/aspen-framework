@@ -897,22 +897,26 @@ class Model {
 	public function addFilters($filters = false, $allowed_filter_keys = false, $disabled_filters = false){
 
 
-		$disabled_filters = $disabled_filters ? $disabled_filters : array();
-		$allowed_filter_keys = $allowed_filter_keys ? $allowed_filter_keys : array();
+		$location_id			= $this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod();
+		$disabled_filters		= $disabled_filters ? $disabled_filters : array();
+		$allowed_filter_keys	= $allowed_filter_keys ? $allowed_filter_keys : array();
 
-		if($this->APP->params->get->getAlnum('filter')){
-			$filters = $this->APP->params->get->getAlnum('filter');
+		// check GET or SESSION for any filter overrides
+		if($this->APP->params->get->getRaw('filter')){
+			$filters = $this->APP->params->get->getRaw('filter');
 		} else {
-			if(isset($_SESSION['filters'][$this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod()])){
-				$filters = $_SESSION['filters'][$this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod()];
+			if($sess_filters = $this->APP->params->session->getRaw('filters')){
+				$filters = $sess_filters[$location_id];
 			}
 		}
 
-		if(!$allowed_filter_keys && is_array($filters)){
+		// set base allowed filters if not set
+		if(empty($allowed_filter_keys) && is_array($filters)){
 			$allowed_filter_keys = array_keys($filters);
 		}
 
-		if($filters && is_array($filters)){
+		// loop filters and append to query
+		if(is_array($filters)){
 			foreach($filters as $field => $value){
 				if(
 					$value != '' &&
@@ -946,22 +950,30 @@ class Model {
 					} else {
 
 						if(substr($value, 0, 1) == ">"){
-							$this->APP->model->whereNot($field, str_replace(">", "", $value));
-						} else {
-							$this->APP->model->whereLike($field, $value);
+							$this->whereGreaterThan($field, str_replace(">", "", $value));
 						}
-
+						elseif(substr($value, 0, 2) == ">="){
+							$this->whereGreaterThanEqualTo($field, str_replace(">=", "", $value));
+						}
+						elseif(substr($value, 0, 1) == "<"){
+							$this->whereLessThanEqualTo($field, str_replace("<", "", $value));
+						}
+						elseif(substr($value, 0, 2) == "<="){
+							$this->whereLessThanEqualTo($field, str_replace("<=", "", $value));
+						} else {
+							$this->whereLike($field, $value);
+						}
 					}
 				}
 
 				if($value === 0){
-					$this->APP->model->whereLike($field, 0);
+					$this->where($field, 0);
 				}
 			}
 		}
 
 		// save the filters to the session
-		$_SESSION['filters'][$this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod()] = $filters;
+		$_SESSION['filters'][$location_id] = $filters;
 
 		return $filters;
 
