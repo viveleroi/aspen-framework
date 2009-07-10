@@ -325,6 +325,18 @@ class User {
 
 
 	/**
+	 * @abstract Returns a string used for specific domain/application id
+	 * @return string
+	 * @access private
+	 */
+	private function getDomainKeyValue(){
+		$string = $this->APP->config('application_guid') . LS;
+		$string .= $this->APP->params->server->getRaw('HTTP_HOST');
+		return $string;
+	}
+
+
+	/**
 	 * @abstract Handles authenticating the user
 	 * @access public
 	 */
@@ -350,7 +362,7 @@ class User {
 
 					$_SESSION['authenticated']		= true;
 					$_SESSION['authentication_key'] = sha1($account['username'] . $account['id']);
-					$_SESSION['domain_key'] 		= sha1($this->APP->params->server->getRaw('HTTP_HOST'));
+					$_SESSION['domain_key'] 		= sha1($this->getDomainKeyValue());
 					$_SESSION['username'] 			= $account['username'];
 					$_SESSION['nice_name'] 			= $account['nice_name'];
 					$_SESSION['latest_login'] 		= $account['latest_login'];
@@ -382,7 +394,7 @@ class User {
 
 		$authenticated 	= false;
 		$auth_key 		= sha1($this->APP->params->session->getRaw('username') . $this->APP->params->session->getInt('user_id'));
-		$domain_key 	= sha1($this->APP->params->server->getRaw('HTTP_HOST'));
+		$domain_key 	= sha1($this->getDomainKeyValue());
 
 		if($this->APP->checkDbConnection()){
 			if(
