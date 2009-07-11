@@ -90,8 +90,8 @@ class Router {
 			$uri = str_replace($replace, '', $this->getDomainUrl() . $this->APP->params->server->getRaw('REQUEST_URI'));
 			$uri = explode('/', $uri);
 
-			$this->map['module'] = isset($uri[1]) ? $uri[1] : false;
-			$this->map['method'] = isset($uri[2]) ? $uri[2] : false;
+			$this->map['module'] = isset($uri[1]) ? preg_replace('/\?(.*)/', '', $uri[1]) : false;
+			$this->map['method'] = isset($uri[2]) ? preg_replace('/\?(.*)/', '', $uri[2]) : false;
 
 			// loop additional bits to pass to our arguments
 			for($i = 3; $i < count($uri); $i++){

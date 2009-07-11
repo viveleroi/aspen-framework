@@ -127,45 +127,16 @@ class DebugBase {
  */
 class Debug {
 
-    /**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-    /**
-     * @var object Holds the firephp system
-     * @access private
-     */
-    public $firephp;
-
-
-    /**
-	 * @abstract Constructor
-	 * @return Log
-	 * @access private
-	 */
-	public function __construct(){
-		$this->APP = get_instance();
-
-		// Firephp usage: http://www.firephp.org/HQ/Use.htm
-//		if($this->APP->config('enable_firephp')){
-//			include(dirname(__FILE__).DS.'firephp'.DS.'Fb.php');
-//			include(dirname(__FILE__).DS.'firephp'.DS.'Firephp.php');
-//		}
-    }
-
 
 	/**
 	 *
-	 * @return <type>
-	 * @todo fix this static vs method issue
+	 * @return object
+	 * // Firephp usage: http://www.firephp.org/HQ/Use.htm
 	 */
     static public function firephp(){
-//		if($this->APP->config('enable_firephp')){
-//			return Firephp::getInstance(true);
-//		}
-		return false;
+		include_once(dirname(__FILE__).DS.'firephp'.DS.'Fb.php');
+		include_once(dirname(__FILE__).DS.'firephp'.DS.'Firephp.php');
+		return Firephp::getInstance(true);
     }
 
 
