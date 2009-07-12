@@ -21,8 +21,6 @@ class Index_Admin extends Module {
 	 * @access public
 	 */
 	public function view(){
-
-//		$this->APP->template->addCss('style.css', '/alt/path', 'screen,projection');
 		
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');

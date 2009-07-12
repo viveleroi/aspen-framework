@@ -15,6 +15,18 @@
 class Template {
 
 	/**
+	 * @var array An array of css files queued for loading in the header
+	 * @access private
+	 */
+	private $_load_css;
+
+	/**
+	 * @var array An array of javascript files queued for loading in the header
+	 * @access private
+	 */
+	private $_load_js;
+
+	/**
 	 * @var array $_load_templates An array of templates queued for display
 	 * @access private
 	 */
@@ -83,6 +95,55 @@ class Template {
 		} else {
 			define('MODULE_HEADER_TPL_PATH', '');
 		}
+
+		// append any css files for loading
+		if(!empty($this->_load_css)){
+
+			$css_html_elm = '<link rel="stylesheet" href="%s" type="text/css" media="%s" />'."\n";
+
+			foreach($this->_load_css as $css){
+				printf($css_html_elm, $css['file'], $css['type']);
+			}
+		}
+
+		// append any js files for loading
+		if(!empty($this->_load_js)){
+
+			$js_html_elm = '<script type="text/javascript" src="%s"></script>'."\n";
+
+			foreach($this->_load_js as $js){
+				printf($js_html_elm, $js['file']);
+			}
+		}
+	}
+
+
+	/**
+	 * CSS2 Supported types are: all, braille, embossed, handheld, print, projection, screen, speech, tty, tv
+	 * http://www.w3.org/TR/CSS2/media.html
+	 * @param <type> $filename
+	 * @param <type> $basepath
+	 * @param <type> $type
+	 */
+	public function addCss($filename = false, $basepath = false, $type = false){
+		$type = $type ? $type : 'all';
+		$filename = $filename ? $filename : 'style.css';
+		$basepath = $basepath ? $basepath : $this->APP->router->getModuleUrl() . '/css';
+		$file = $basepath . '/' . $filename;
+		$this->_load_css[] = array('type'=>$type,'file'=>$file);
+	}
+
+
+	/**
+	 *
+	 * @param <type> $filename
+	 * @param <type> $basepath
+	 */
+	public function addJs($filename = false, $basepath = false){
+		$filename = $filename ? $filename : strtolower($this->APP->router->getSelectedMethod()).'.js';
+		$basepath = $basepath ? $basepath : $this->APP->router->getModuleUrl() . '/js';
+		$file = $basepath . '/' . $filename;
+		$this->_load_js[] = array('file'=>$file);
 	}
 	
 	
@@ -192,7 +253,9 @@ class Template {
 	 * @access public
 	 */
 	public function resetTemplateQueue(){
-		$this->_load_templates = array();
+		$this->_load_templates	= array();
+		$this->_load_css		= array();
+		$this->_load_js			= array();
 	}
 
 
@@ -488,8 +551,8 @@ class Template {
 	public function body_id(){
 		return strtolower($this->APP->router->getSelectedModule().'_'.$this->APP->router->getSelectedMethod());
 	}
-	
-	
+
+
 //+-----------------------------------------------------------------------+
 //| TEXT-RELATED/HANDLING FUNCTIONS
 //+-----------------------------------------------------------------------+
