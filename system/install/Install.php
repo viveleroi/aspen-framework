@@ -322,7 +322,7 @@ class Install {
 	 * @access private
 	 */
 	private function recordCurrentBuild(){
-		$this->APP->settings->setConfig( 'app.version.build', $this->APP->formatVersionNumber($this->APP->config('application_version')) );
+		$this->APP->settings->setConfig( 'app.database.version', $this->APP->formatVersionNumber($this->APP->config('application_version')) );
 	}
 	
 	
@@ -361,7 +361,7 @@ class Install {
 			foreach($sql as $query_build => $queries){
 				
 				// the query build is after my old build, then apply the upgrade
-				if((int)$my_old_build < (int)$query_build){
+				if($this->APP->versionCompare($query_build, $my_old_build) == 'greater'){
 				
 					// if array, run all queries
 					if(isset($queries) && is_array($queries)){
@@ -450,7 +450,6 @@ class Install {
 				
 			// remove all connections from databases
 			$this->APP->model->query('DELETE FROM modules WHERE guid = "'.$guid.'"');
-			$this->APP->model->query('UPDATE modules SET autoload_with = "" WHERE autoload_with = "'.$guid.'"');
 			$this->APP->model->query('DELETE FROM permissions WHERE module = "'.$tmp_reg->classname.'"');
 			
 			$this->APP->sml->addNewMessage('The ' . $tmp_reg->classname . ' module has been uninstalled successfully.');

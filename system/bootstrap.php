@@ -1271,7 +1271,7 @@ class Bootstrap extends Base {
 
 				if(isset($sql) && is_array($sql)){
 					foreach($sql as $new_build => $updates){
-						if($new_build > $latest_build){ return true; }
+						if($this->versionCompare($new_build, $latest_build) == 'greater'){ return true; }
 					}
 				}
 			}
@@ -1354,7 +1354,7 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	public function latestVersion(){
-		return $this->formatVersionNumber( $this->settings->getConfig('app.version.build') );
+		return $this->formatVersionNumber( $this->settings->getConfig('app.database.version') );
 	}
 }
 ?>

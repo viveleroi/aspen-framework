@@ -143,19 +143,19 @@ ALTER TABLE `user_group_link`
 $sql[] = "
 
 INSERT INTO `config` (`id`, `user_id`, `config_key`, `default_value`, `current_value`) VALUES
-(1, NULL, 'app.version.build', '', '');
+(1, NULL, 'app.database.version', '', '');
 
 ";
 
 
 $sql[] = "
 
-INSERT INTO `modules` (`id`, `guid`, `is_base_module`, `autoload_with`, `sort_order`) VALUES
-(1, '652d519c-b7f3-11dc-8314-0800200c9a66', 1, '', 0),
-(2, 'f801e330-c7ba-11dc-95ff-0800200c9a66', 1, '', 0),
-(3, 'eee1d8c0-d50a-11dc-95ff-0800200c9a66', 1, '', 0),
-(4, '007b300a-fe0c-4f7b-b36f-ef458c32753a', 1, '', 0),
-(5, '547c1418-8483-6c05-fe86-6517cc590c83', 1, '', 0);
+INSERT INTO `modules` (`id`, `guid`, `sort_order`) VALUES
+(1, '652d519c-b7f3-11dc-8314-0800200c9a66', 0),
+(2, 'f801e330-c7ba-11dc-95ff-0800200c9a66', 0),
+(3, 'eee1d8c0-d50a-11dc-95ff-0800200c9a66', 0),
+(4, '007b300a-fe0c-4f7b-b36f-ef458c32753a', 0),
+(5, '547c1418-8483-6c05-fe86-6517cc590c83', 0);
 
 ";
 

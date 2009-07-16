@@ -69,7 +69,7 @@ class DebugBase {
 		print $this->line_end;
 
 	}
-
+	
 
 	/**
 	 *
