@@ -322,8 +322,7 @@ class Install {
 	 * @access private
 	 */
 	private function recordCurrentBuild(){
-		$model = $this->APP->model->open('upgrade_history');
-		$model->executeInsert(array('current_build' => $this->APP->formatVersionNumber($this->APP->config('application_version')), 'upgrade_completed' => date("Y-m-d H:i:s")));
+		$this->APP->settings->setConfig( 'app.version.build', $this->APP->formatVersionNumber($this->APP->config('application_version')) );
 	}
 	
 	
@@ -400,7 +399,7 @@ class Install {
 		$modules = $this->APP->getModulesAwaitingInstall();
 		foreach($modules as $module){
 			if($guid == $module['guid']){
-				if($this->APP->model->executeInsert('modules', array('guid' => $guid))){
+				if($this->APP->model->insert('modules', array('guid' => $guid))){
 					
 					// refresh installed module guid list
 					$this->APP->listModules();

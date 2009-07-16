@@ -10,12 +10,5 @@
 	<vendor>Trellis Development, LLC</vendor>
 	<pressUrl>http://www.aspen-framework.org</pressUrl>
 	<updateUrl>http://www.aspen-framework.org</updateUrl>
-	
-	<targetApplication>
-		<name>Aspen Framework</name>
-		<guid>8266f8e0-204d-11dd-bd0b-0800200c9a66</guid>
-		<minVersion>1.0.1.4</minVersion>
-		<maxVersion>1.1.0</maxVersion>
-	</targetApplication>
 
 </package>

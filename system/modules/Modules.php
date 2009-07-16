@@ -38,16 +38,16 @@ class Modules {
 
 		if($guid && $this->APP->checkDbConnection()){
 
-			$autoload = array();
+			$autoload	= array();
+			$installed	= $this->APP->getInstalledModuleGuids();
 
-			// find any modules with autoload set to current guid
-			$model = $this->APP->model->open('modules');
-			$model->where('autoload_with', $guid);
-			$modules = $model->results();
-
-			if($modules['RECORDS']){
-				foreach($modules['RECORDS'] as $module){
-					$autoload[] = $module['guid'];
+			foreach($installed as $module){
+				$reg = $this->APP->moduleRegistry($module);
+				if(isset($reg->hook)){
+					$att = $reg->hook->attributes();
+					if((string)$att->type == "module"){
+						$autoload[] = $module;
+					}
 				}
 			}
 
@@ -62,25 +62,7 @@ class Modules {
 
 
 	/**
-	 * @abstract Identifies a module as autoload when parent module is loaded
-	 * @param string $parent_guid
-	 * @param string $depen_guid
-	 * @return boolean
-	 * @access public
-	 */
-	public function registerModuleHook($parent_guid = false, $depen_guid = false){
-
-		$sql = sprintf('UPDATE modules SET autoload_with = "%s" WHERE guid = "%s"',
-							$this->APP->security->dbescape($parent_guid),
-							$this->APP->security->dbescape($depen_guid));
-
-		return $this->APP->model->query($sql);
-
-	}
-
-
-	/**
-	 * @abstract Returns an array of module GUIDs that are not part of the standard install
+	 * @abstract Returns an array of installed module GUIDs that are not part of the standard install
 	 * @return array
 	 */
 	public function getNonBaseModules(){
@@ -91,13 +73,15 @@ class Modules {
 
 			// find any modules with autoload set to current guid
 			$model = $this->APP->model->open('modules');
-			$model->where('is_base_module', 0);
 			$model->orderBy('sort_order');
 			$modules = $model->results();
 
 			if($modules['RECORDS']){
 				foreach($modules['RECORDS'] as $module){
-					$nonbase[] = $module['guid'];
+					$reg = $this->APP->moduleRegistry($module['guid']);
+					if(isset($reg->installable) && $reg->installable){
+						$nonbase[] = $module['guid'];
+					}
 				}
 			}
 		}
@@ -108,7 +92,7 @@ class Modules {
 
 
 	/**
-	 * @abstract Returns an array of module GUIDs that are not part of the standard install, whether they're installed or not
+	 * @abstract Returns an array of ALL module GUIDs that are not part of the standard install, whether they're installed or not
 	 * @return array
 	 */
 	public function getAllNonBaseModules(){
@@ -116,20 +100,8 @@ class Modules {
 		$nonbase = array();
 
 		foreach($this->APP->getModuleRegistry() as $module){
-
-			// find any modules with autoload set to current guid
-			$model = $this->APP->model->open('modules');
-			$model->where('guid', (string)$module->guid);
-			$modules = $model->results();
-
-			if($modules['RECORDS']){
-				foreach($modules['RECORDS'] as $nonbasemod){
-					if(!$nonbasemod['is_base_module']){
-						$nonbase[] = $module->guid;
-					}
-				}
-			} else {
-				$nonbase[] = $module->guid;
+			if(isset($module->installable) && $module->installable){
+				$nonbase[] = (string)$module->guid;
 			}
 		}
 

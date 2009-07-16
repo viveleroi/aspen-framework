@@ -167,7 +167,7 @@ class User {
 
 					// add new user groups
 					foreach($groups as $group){
-						$this->APP->model->executeInsert('user_group_link', array('user_id' => $id, 'group_id' => $group));
+						$this->APP->model->insert('user_group_link', array('user_id' => $id, 'group_id' => $group));
 					}
 
 					return true;

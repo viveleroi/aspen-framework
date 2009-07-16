@@ -108,13 +108,13 @@ class ModelTest extends TestHelper {
 	}
 	
 	/**
-	 * Tests Model->executeInsert()
+	 * Tests Model->insert()
 	 */
-	public function testExecuteInsert() {
-		// TODO Auto-generated ModelTest->testExecuteInsert()
-		$this->markTestIncomplete ( "executeInsert test not implemented" );
+	public function testinsert() {
+		// TODO Auto-generated ModelTest->testinsert()
+		$this->markTestIncomplete ( "insert test not implemented" );
 		
-		//->executeInsert(/* parameters */);
+		//->insert(/* parameters */);
 	
 	}
 	

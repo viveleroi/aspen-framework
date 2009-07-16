@@ -100,12 +100,6 @@ class Bootstrap extends Base {
 	public $install = false;
 
 	/**
-	 * @var object $json Holds our json format functions
-	 * @access public
-	 */
-	public $json = false;
-
-	/**
 	 * @var object $log System logging methods
 	 * @access public
 	 */
@@ -202,7 +196,7 @@ class Bootstrap extends Base {
 	 * @var array $config Holds an array of all configuration settings
 	 * @access private
 	 */
-	private $config = false;
+	private $_config = false;
 
 	/**
 	 * @var array $config Holds an array of table child keys
@@ -251,7 +245,7 @@ class Bootstrap extends Base {
 	public function __construct($config){
 
 		// assign configuration data
-		$this->config = $config;
+		$this->_config = $config;
 		$this->forceConfigValues();
 
 		if(!defined('LOADING_SECTION')){
@@ -451,10 +445,10 @@ class Bootstrap extends Base {
 		if(!$this->config('bypass_apache_modrewrite_check')){
 			if(function_exists('apache_get_modules')){
 				if(!in_array('mod_rewrite', apache_get_modules())){
-					$this->config['enable_mod_rewrite'] = false;
+					$this->_config['enable_mod_rewrite'] = false;
 				}
 			} else {
-				$this->config['enable_mod_rewrite'] = false;
+				$this->_config['enable_mod_rewrite'] = false;
 			}
 		}
 	}
@@ -467,8 +461,8 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function config($key = false){
-		if($key && isset($this->config[$key])){
-			return $this->config[$key];
+		if($key && isset($this->_config[$key])){
+			return $this->_config[$key];
 		}
 		return false;
 	}
@@ -480,7 +474,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function getConfig(){
-		return $this->config;
+		return $this->_config;
 	}
 
 
@@ -491,7 +485,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function setConfig($key, $value){
-		$this->config[$key] = $value;
+		$this->_config[$key] = $value;
 	}
 
 
@@ -1360,23 +1354,7 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	public function latestVersion(){
-
-		$version = '';
-
-		// get latest build in database
-		$model = $this->model->open('upgrade_history');
-		$model->orderBy('id', 'DESC');
-		$model->limit(0, 1);
-		$ughist = $model->results();
-
-		if($ughist['RECORDS']){
-			foreach($ughist['RECORDS'] as $vers){
-				$version = $vers['current_build'];
-			}
-		}
-
-		return $this->formatVersionNumber($version);
-
+		return $this->formatVersionNumber( $this->settings->getConfig('app.version.build') );
 	}
 }
 ?>

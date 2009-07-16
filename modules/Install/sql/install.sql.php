@@ -26,13 +26,13 @@ $sql[] = "
 
 CREATE TABLE IF NOT EXISTS `config` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `user_id` int(11) unsigned NOT NULL,
+  `user_id` int(11) unsigned default NULL,
   `config_key` varchar(155) NOT NULL default '',
   `default_value` text NOT NULL,
   `current_value` text NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 ";
 	
@@ -74,8 +74,6 @@ $sql[] = "
 CREATE TABLE IF NOT EXISTS `modules` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `guid` varchar(50) NOT NULL default '',
-  `is_base_module` tinyint(1) NOT NULL,
-  `autoload_with` varchar(155) NOT NULL,
   `sort_order` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -96,18 +94,6 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   KEY `user_id` (`user_id`),
   KEY `group_id` (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-";
-
-
-$sql[] = "
-
-CREATE TABLE IF NOT EXISTS `upgrade_history` (
-  `id` int(11) unsigned NOT NULL auto_increment,
-  `current_build` varchar(155) NOT NULL default '',
-  `upgrade_completed` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 ";
 
@@ -150,6 +136,14 @@ ALTER TABLE `user_group_link`
   ADD CONSTRAINT `user_group_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_group_link_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_group_link_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE;
+
+";
+
+
+$sql[] = "
+
+INSERT INTO `config` (`id`, `user_id`, `config_key`, `default_value`, `current_value`) VALUES
+(1, NULL, 'app.version.build', '', '');
 
 ";
 

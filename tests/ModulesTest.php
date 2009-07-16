@@ -40,17 +40,5 @@ class ModulesTest extends TestHelper {
 		//->getNonBaseModules(/* parameters */);
 	
 	}
-	
-	/**
-	 * Tests Modules->registerModuleHook()
-	 */
-	public function testRegisterModuleHook() {
-		// TODO Auto-generated ModulesTest->testRegisterModuleHook()
-		$this->markTestIncomplete ( "registerModuleHook test not implemented" );
-		
-		//->registerModuleHook(/* parameters */);
-	
-	}
-
 }
 
