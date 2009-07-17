@@ -54,7 +54,10 @@ $lang['admin']['userform:editbutton'] 	= 'Save Changes';
 
 // group add/edit form
 $lang['admin']['groupform:addtitle'] 	= 'Create User Group';
+$lang['admin']['groupform:edittitle'] 	= 'Edit User Group';
 $lang['admin']['groupform:name']		= 'Name';
+$lang['admin']['groupform:addbutton'] 	= 'Create New Group';
+$lang['admin']['groupform:editbutton'] 	= 'Save Changes';
 
 // permission denied
 $lang['admin']['denied:title'] 	= 'Permission Denied';

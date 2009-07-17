@@ -110,6 +110,20 @@ class User {
 
 
 	/**
+	 * @abstract Displays and processes the add/edit user form
+	 * @access public
+	 * @param integer $id
+	 */
+	public function edit_group($id = false){
+		$this->APP->form->load('groups', $id);
+		if($this->APP->form->isSubmitted()){
+			return $this->APP->form->save($id);
+		}
+		return false;
+	}
+
+
+	/**
 	 * @abstract Allows a user to change their own password
 	 * @access public
 	 */
