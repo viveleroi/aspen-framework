@@ -69,6 +69,19 @@ class Users_Admin extends Module {
 
 
 	/**
+	 * @abstract Deletes a user record
+	 * @param integer $id The record id of the user
+	 * @access public
+	 */
+	public function delete_group($id = false){
+		if($this->APP->user->delete_group($id)){
+			$this->APP->sml->addNewMessage('User group and all permissions have been deleted successfully.');
+			$this->APP->router->redirect('view');
+		}
+	}
+
+
+	/**
 	 * @abstract Displays and processes the add a new user form
 	 * @access public
 	 */

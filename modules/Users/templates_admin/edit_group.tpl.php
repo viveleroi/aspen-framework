@@ -3,6 +3,10 @@
 <?php print $this->APP->form->printErrors(); ?>
 <?php print $this->APP->sml->printMessage(); // print any system messages/errors ?>
 
+<?php if(IS_EDIT_PAGE){ ?>
+<p><a href="<?php print $this->APP->template->createXhtmlValidUrl('delete_group', array('id' => $values['id'])) ?>" onclick="return confirm('<?php print $this->text('groupform:delete_warn'); ?>')"><?php print $this->text('groupform:delete_link'); ?></a></p>
+<?php } ?>
+
 <form method="post" action="<?php print $this->createFormAction(); ?>">
 	
 	<fieldset>

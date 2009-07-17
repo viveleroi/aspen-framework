@@ -58,6 +58,8 @@ $lang['admin']['groupform:edittitle'] 	= 'Edit User Group';
 $lang['admin']['groupform:name']		= 'Name';
 $lang['admin']['groupform:addbutton'] 	= 'Create New Group';
 $lang['admin']['groupform:editbutton'] 	= 'Save Changes';
+$lang['admin']['groupform:delete_link'] 	= 'Delete Group';
+$lang['admin']['groupform:delete_warn'] 	= 'Are you sure you want to delete this user group and all permissions?';
 
 // permission denied
 $lang['admin']['denied:title'] 	= 'Permission Denied';
@@ -67,4 +69,6 @@ $lang['admin']['denied:intro'] 	= 'Your user account does not currently have suf
 $lang['admin']['db:error:username']		= 'You must enter a username.';
 $lang['admin']['db:error:username-dup'] = 'The chosen username has already been used.';
 $lang['admin']['db:error:password']		= 'You must enter a valid password.';
+
+$lang['admin']['db:error:username']		= 'You must enter a group name.';
 ?>

@@ -124,6 +124,20 @@ class User {
 
 
 	/**
+	 * @abstract Deletes a user record
+	 * @param integer $id
+	 * @access public
+	 */
+	public function delete_group($id = false){
+		if($id){
+			$del = $this->APP->model->open('groups');
+			return $del->delete($id);
+		}
+		return false;
+	}
+
+
+	/**
 	 * @abstract Allows a user to change their own password
 	 * @access public
 	 */
@@ -165,8 +179,8 @@ class User {
 	 */
 	public function delete($id = false){
 		if($id){
-			$this->APP->form->load('authentication');
-			return $this->APP->model->delete($id);
+			$auth = $this->APP->model->open('authentication');
+			return $auth->delete($id);
 		}
 		return false;
 	}

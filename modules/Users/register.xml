@@ -12,5 +12,6 @@
 	<updateUrl>http://www.aspen-framework.org</updateUrl>
 
     <model>authentication</model>
+	<model>groups</model>
 	
 </package>
