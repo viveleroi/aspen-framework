@@ -217,6 +217,12 @@ class Bootstrap extends Base {
 	private $_model_extensions;
 
 	/**
+	 * @var array Holds an array of all model support libraries
+	 * @access private
+	 */
+	private $_module_libraries;
+
+	/**
 	 * @var array $_modules Contains a list of modules found in the database.
 	 * @access private
 	 */
@@ -291,8 +297,14 @@ class Bootstrap extends Base {
 		// load all of the module registry files into a local var
 		$this->_module_registry = $this->parseModuleRegistries();
 
+		// identify all model libraries
+		$this->_module_libraries = $this->listModelLibraries();
+
 		// identify all model extensions
 		$this->_model_extensions = $this->listModelExtensions();
+
+		// load any model extensions
+		$this->loadSystemModelLibraries();
 
 		// load any model extensions
 		$this->loadSystemModelExtensions();
@@ -741,16 +753,43 @@ class Bootstrap extends Base {
 		// pull in any models defined in register.xml files
 		$modules = $this->getModuleRegistry();
 		foreach($modules as $module){
-			if(isset($module->models) && is_object($module->models)){
-				if(isset($module->models->table)){
-					foreach($module->models->table as $table){
-						$models[(string)$table] = array('module'=>(string)$module->folder);
-					}
+			if(isset($module->model) && is_object($module->model)){
+				foreach($module->model as $table){
+					$models[(string)$table] = array('module'=>(string)$module->folder);
 				}
 			}
 		}
 
 		return $models;
+
+	}
+
+
+	/**
+	 * @abstract Generates a complete list of model extensions
+	 * @return array
+	 * @access private
+	 */
+	private function listModelLibraries(){
+
+		$libs = array();
+
+		// pull in any models defined in register.xml files
+		$modules = $this->getModuleRegistry();
+		foreach($modules as $module){
+			if(isset($module->library) && is_object($module->library)){
+				foreach($module->library as $lib){
+					$libs[(string)$lib->classname] = array(
+														'classname'=>(string)$lib->classname,
+														'root' => MODULES_PATH.DS.$module->folder,
+														'folder' => 'lib',
+														'autoload' => (isset($lib->autoload) && $lib->autoload ? true : false)
+													 );
+				}
+			}
+		}
+
+		return $libs;
 
 	}
 
@@ -822,6 +861,16 @@ class Bootstrap extends Base {
 
 
 	/**
+	 * @abstract Loads additional support libs for modules
+	 * @return boolean
+	 * @access private
+	 */
+	public function loadSystemModelLibraries(){
+		return $this->loadSystemLibraryArray($this->_module_libraries);
+	}
+
+
+	/**
 	 * Accepted values for "models" are:
 	 * 'module' => 'Index',
 	 * 'folder' => false,
@@ -864,6 +913,7 @@ class Bootstrap extends Base {
 		return $load_success;
 
 	}
+
 
 	/**
 	 * @abstract Returns whether or not our db connection was made, and tables exist

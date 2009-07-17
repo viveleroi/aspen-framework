@@ -26,6 +26,10 @@ class Users_Admin extends Module {
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
 
+		$model = $this->APP->model->open('groups');
+		$model->orderBy('name', 'ASC');
+		$data['groups'] = $model->results();
+
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
@@ -33,23 +37,23 @@ class Users_Admin extends Module {
 
 	}
 
-	
+
 	/**
 	 * @abstract Displays and processes the add a new user form
 	 * @access public
 	 */
-	public function add(){
+	public function add_group(){
 
-		if($this->APP->user->add()){
-			$this->APP->sml->addNewMessage('User account has been created successfully.');
-			$this->APP->router->redirect('view');
-		}
-		
-		$data['groups'] = $this->APP->user->groupList();
-		$data['values'] = $this->APP->form->getCurrentValues();
+//		if($this->APP->user->add_group()){
+//			$this->APP->sml->addNewMessage('User group has been created successfully.');
+//			$this->APP->router->redirect('view');
+//		}
+
+//		$data['groups'] = $this->APP->user->groupList();
+//		$data['values'] = $this->APP->form->getCurrentValues();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'add.tpl.php');
+		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'add_group.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
 		$this->APP->template->display($data);
 
@@ -57,11 +61,20 @@ class Users_Admin extends Module {
 
 
 	/**
+	 * @abstract Displays and processes the add a new user form
+	 * @access public
+	 */
+	public function add(){
+		$this->edit();
+	}
+	
+
+	/**
 	 * @abstract Displays and processes the edit user form
 	 * @access public
 	 * @param $id The id of the user record
 	 */
-	public function edit($id){
+	public function edit($id = false){
 
 		if($this->APP->user->edit($id)){
 			$this->APP->sml->addNewMessage('User account changes have been saved successfully.');
@@ -90,10 +103,12 @@ class Users_Admin extends Module {
 			$this->APP->router->redirect('view', false, 'Index');
 		}
 
+		$data['values'] = $this->APP->form->getCurrentValues();
+
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'my_account.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		$this->APP->template->display($data);
 
 	}
 
@@ -105,6 +120,7 @@ class Users_Admin extends Module {
 	 */
 	public function delete($id = false){
 		if($this->APP->user->delete($id)){
+			$this->APP->sml->addNewMessage('User account has been deleted successfully.');
 			$this->APP->router->redirect('view');
 		}
 	}
@@ -116,10 +132,8 @@ class Users_Admin extends Module {
 	 */
 	public function authenticate(){
 		if($this->APP->user->authenticate()){
-		
 			$redirect = $this->APP->params->session->getRaw('post-login_redirect');
 			$redirect = empty($redirect) ? $this->APP->router->getInterfaceUrl() : $redirect;
-		
 			header("Location: " . $redirect);
 			exit;
 		} else {
@@ -134,8 +148,7 @@ class Users_Admin extends Module {
 	 */
 	public function logout(){
 		$this->APP->user->logout();
-		header("Location: " . $this->APP->router->getInterfaceUrl());
-		exit;
+		$this->APP->router->redirect('view', false, 'Index');
 	}
 
 

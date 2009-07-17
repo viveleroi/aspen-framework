@@ -75,8 +75,12 @@ class Form {
 	 */
 	public function load($table, $id = false, $field = false){
 		if($id){
+			define('ADD_OR_EDIT', 'edit');
+			define('IS_EDIT_PAGE', true);
 			$this->loadRecord($table, $id, $field);
 		} else {
+			define('ADD_OR_EDIT', 'add');
+			define('IS_EDIT_PAGE', false);
 			$this->loadTable($table);
 		}
 	}
@@ -170,7 +174,7 @@ class Form {
 		if(!$this->error()){
 			$success = $id ? $model->update($fields, $id) : $model->insert($fields);
 		} else {
-			$model->validate($fields);
+			$model->validate($fields, $id);
 		}
 		
 		// if failed, pull all model validation errors into form array

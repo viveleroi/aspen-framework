@@ -2,9 +2,8 @@
 
 <?php print $this->APP->sml->printMessage(); ?>
 
-<p><?php print $this->createLink($this->text('userlist:adduser'), 'add'); ?></p>
-
 <table cellspacing="0">
+	<caption>User Accounts | <?php print $this->createLink($this->text('userlist:adduser'), 'add'); ?></caption>
 	<thead>
 		<tr>
 			<th><?php print $this->text('userlist:th:name'); ?></th>
@@ -27,6 +26,29 @@
 			}
 		} else { ?>
 		<tr><td><?php print $this->text('userlist:noresults'); ?></td></tr>
+		<?php } ?>
+	</tbody>
+</table>
+
+
+<table cellspacing="0">
+	<caption>Groups | <?php print $this->createLink($this->text('grouplist:addgroup'), 'add_group'); ?></caption>
+	<thead>
+		<tr>
+			<th><?php print $this->text('grouplist:th:name'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php
+		if($groups['RECORDS']){
+			foreach($groups['RECORDS'] as $group){ ?>
+		<tr>
+			<td><?php print $this->createLink($group['name'], 'edit_group', array('id' => $group['id'])) ?></td>
+		</tr>
+		<?php
+			}
+		} else { ?>
+		<tr><td><?php print $this->text('grouplist:noresults'); ?></td></tr>
 		<?php } ?>
 	</tbody>
 </table>

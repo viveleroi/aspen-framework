@@ -133,7 +133,7 @@
 			(array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : 'yourdomain.com');
 
 	// password reset email subject
-	$config['password_reset_subject'] = (array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : '') . 'Password Reset Form';
+	$config['password_reset_subject'] = (array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : '') . ' Password Reset Form';
 
 	// password reset email body
 	$config['password_reset_body'] = 'Hello,<br /><br />Your password has been reset to {new_pass}.';

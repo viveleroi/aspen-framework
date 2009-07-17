@@ -30,35 +30,32 @@ class User {
 
 
 	/**
-	 * @abstract Displays and processes the add new user form
+	 * @abstract Displays and processes the add/edit user form
 	 * @access public
 	 * @param integer $id
 	 */
-	public function add(){
+	public function edit($id = false){
 
-		$id = false;
-
-		$this->APP->form->load('authentication');
+		$this->APP->form->load('authentication', $id);
 		$this->APP->form->addField('password_confirm');
-		$this->APP->form->addField('group', array(), array());
+
+		// pull all groups this user is associated with
+		$group_array = array();
+		if($id){
+			$model = $this->APP->model->open('user_group_link');
+			$model->where('user_id', $id);
+			$groups = $model->results();
+			if($groups['RECORDS']){
+				foreach($groups['RECORDS'] as $group){
+					$group_array[] = $group['group_id'];
+				}
+			}
+		}
+		$this->APP->form->addField('group', $group_array, $group_array);
+
 
 		// process the form if submitted
 		if($this->APP->form->isSubmitted()){
-
-			// validation
-			if(!$this->APP->form->isFilled('username')){
-				$this->APP->form->addError('username', 'You must enter a username.');
-			} else {
-
-				// verify unique
-				$this->APP->model->select('authentication');
-				$this->APP->model->where('username', $this->APP->form->cv('username'));
-				$unique = $this->APP->model->results();
-
-				if($unique['RECORDS']){
-					$this->APP->form->addError('username', 'That username has already been used.');
-				}
-			}
 
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.
@@ -72,64 +69,7 @@ class User {
 				}
 			}
 
-			// validate the user has selected a group
-			$groups = $this->APP->form->cv('group');
-			if(empty($groups)){
-				$this->APP->form->addError('group', 'You must select at least one user group.');
-			}
-
-			// save the data as well as the groups
-			if($id = $this->APP->form->save()){
-				$group_model = $this->APP->model->open('user_group_link');
-				foreach($this->APP->form->cv('group') as $group){
-					$group_model->insert(array('user_id' => $id, 'group_id' => $group));
-				}
-			}
-		}
-
-		return $id;
-
-	}
-
-
-	/**
-	 * @abstract Displays and processes the edit user form
-	 * @access public
-	 * @param integer $id
-	 */
-	public function edit($id){
-
-		$this->APP->form->load('authentication', $id);
-		$this->APP->form->addField('password_confirm');
-
-		// pull all groups this user is associated with
-		$group_array = array();
-
-		$model = $this->APP->model->open('user_group_link');
-		$model->where('user_id', $id);
-		$groups = $model->results();
-		if($groups['RECORDS']){
-			foreach($groups['RECORDS'] as $group){
-				$group_array[] = $group['group_id'];
-			}
-		}
-		$this->APP->form->addField('group', $group_array, $group_array);
-
-
-		// process the form if submitted
-		if($this->APP->form->isSubmitted()){
-
-			// validation
-			if(!$this->APP->form->isFilled('username')){
-				$this->APP->form->addError('username', 'You must enter a username.');
-			}
-
-			if($this->APP->form->isFilled('password_confirm')){
-				if(!$this->APP->form->fieldsMatch('password', 'password_confirm')){
-					$this->APP->form->addError('password', 'Your passwords do not match.');
-				}
-			}
-
+			// validate the groups
 			$groups = $this->APP->form->cv('group');
 			if(empty($groups)){
 				$this->APP->form->addError('group', 'You must select at least one user group.');
@@ -138,41 +78,29 @@ class User {
 			// if allow_login not present, set to false
 			$this->APP->form->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
 
-			if(!$this->APP->form->error()){
+			// save the data as well as the groups
+			if($id = $this->APP->form->save($id)){
 
-				$upd = array(
-						'username' => $this->APP->form->cv('username'),
-						'nice_name' => $this->APP->form->cv('nice_name'),
-						'allow_login' => $this->APP->form->cv('allow_login')
-				);
-
-				if($this->APP->form->isFilled('password')){
-					$upd['password'] = sha1($this->APP->form->cv('password'));
+				$groups = $this->APP->form->cv('group');
+				// if user is admin, we can't permit them to remove the admin group
+				// from themselves
+				if(IS_ADMIN && $id == $this->APP->params->session->getInt('user_id')){
+					if(!in_array(1, $groups)){
+						$groups[] = 1;
+					}
 				}
 
-				if($this->APP->model->executeUpdate('authentication', $upd, $id)){
+				// remove existing groups
+				$this->APP->model->delete('user_group_link', $id, 'user_id');
 
-					$groups = $this->APP->form->cv('group');
-
-					// if user is admin, we can't permit them to remove the admin group
-					// from themselves
-					if(IS_ADMIN && $id == $this->APP->params->session->getInt('user_id')){
-						if(!in_array(1, $groups)){
-							$groups[] = 1;
-						}
-					}
-
-					// remove existing groups
-					$this->APP->model->delete('user_group_link', $id, 'user_id');
-
-					// add new user groups
-					foreach($groups as $group){
-						$this->APP->model->insert('user_group_link', array('user_id' => $id, 'group_id' => $group));
-					}
-
-					return true;
-
+				// add in new groups
+				$group_model = $this->APP->model->open('user_group_link');
+				foreach($this->APP->form->cv('group') as $group){
+					$group_model->insert(array('user_id' => $id, 'group_id' => $group));
 				}
+
+				return true;
+
 			}
 		}
 
@@ -187,34 +115,28 @@ class User {
 	 */
 	public function my_account(){
 
-		// add these two values since it's all we need right now
-		$this->APP->form->addFields(array('password_1', 'password_2'));
+		$id = $this->APP->params->session->getInt('user_id');
+
+		$this->APP->form->load('authentication', $id);
+		$this->APP->form->addField('password_confirm');
 
 		// if form submitted
 		if($this->APP->form->isSubmitted()){
 
-			// load values
-			$this->APP->form->loadPOST();
-
-			// validate that passwords set and match
-			if($this->APP->form->isFilled('password_1')){
-				if($this->APP->form->cv('password_1') != $this->APP->form->cv('password_2')){
-					$this->APP->form->addError('password_1', 'Your passwords must match.');
+			// We need to validate the confirm password field here
+			// because the model doesn't care about this field.
+			if($this->APP->form->isFilled('password')){
+				if(!$this->APP->form->isFilled('password_confirm')){
+					$this->APP->form->addError('password', 'You must confirm your password.');
+				} else {
+					if(!$this->APP->form->fieldsMatch('password', 'password_confirm')){
+						$this->APP->form->addError('password', 'Your passwords do not match.');
+					}
 				}
-			} else {
-				$this->APP->form->addError('password_1', 'Your password may not be blank.');
 			}
 
-			// if we have no errors, update password in user authentication table
-			if(!$this->APP->form->error()){
-
-				return $this->APP->model->executeUpdate(
-										'authentication',
-										array('password' => sha1($this->APP->form->cv('password_1'))),
-										$this->APP->params->session->getInt('user_id'));
-
-
-			}
+			return $this->APP->form->save($id);
+			
 		}
 
 		return false;
@@ -229,9 +151,8 @@ class User {
 	 */
 	public function delete($id = false){
 		if($id){
-			$this->APP->model->delete('authentication', $id);
-			$this->APP->sml->addNewMessage('User account has been deleted successfully.');
-			return true;
+			$this->APP->form->load('authentication');
+			return $this->APP->model->delete($id);
 		}
 		return false;
 	}
@@ -283,18 +204,18 @@ class User {
 		// process the form if submitted
 		if($this->APP->form->isSubmitted()){
 
-			// validation
-			if(!$this->APP->form->isFilled('user')){
-				$this->APP->form->addError('user', 'Please enter your username.');
-			}
+			// generate a new password
+			$new_pass = $this->makePassword();
 
-			if(!$this->APP->form->error()){
+			// load the account
+			$auth = $this->APP->model->open('authentication');
+			$user = $auth->quickSelectSingle($this->APP->form->cv('user'), 'username');
 
-				// generate a new password
-				$new_pass = $this->makePassword();
+			if(is_array($user)){
 
 				// update the account
-				$this->APP->model->executeUpdate('authentication', array('password' => sha1($new_pass)), strtolower($this->APP->form->cv('user')), 'LOWER(username)');
+				$user['password'] = $new_pass;
+				$auth->update($user, $user['id']);
 
 				if($this->APP->db->Affected_Rows()){
 
@@ -311,12 +232,10 @@ class User {
 					$this->APP->mail->ClearAddresses();
 
 					return 1;
-
 				}
+			} else {
+				return -1;
 			}
-
-			return -1;
-
 		}
 
 		return false;

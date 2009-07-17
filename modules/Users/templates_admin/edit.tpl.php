@@ -1,9 +1,11 @@
-<h2><?php print $this->text('userform:edittitle'); ?></h2>
+<h2><?php print $this->text('userform:'.ADD_OR_EDIT.'title'); ?></h2>
 
 <?php print $this->APP->form->printErrors(); ?>
 <?php print $this->APP->sml->printMessage(); ?>
 
+<?php if(IS_EDIT_PAGE){ ?>
 <p><a href="<?php print $this->APP->template->createXhtmlValidUrl('delete', array('id' => $values['id'])) ?>" onclick="return confirm('<?php print $this->text('userform:delete_warn'); ?>')"><?php print $this->text('userform:delete_link'); ?></a></p>
+<?php } ?>
 
 <form method="post" action="<?php print $this->createFormAction(); ?>">
 	<fieldset>
@@ -51,6 +53,6 @@
 		?>
 		</p>
 		
-		<p><input type="submit" name="submit" value="<?php print $this->text('userform:editbutton'); ?>" /></p>
+		<p><input type="submit" name="submit" value="<?php print $this->text('userform:'.ADD_OR_EDIT.'button'); ?>" /></p>
 	</fieldset>
 </form>
