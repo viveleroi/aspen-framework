@@ -294,9 +294,6 @@ class Bootstrap extends Base {
 		// identify all model extensions
 		$this->_model_extensions = $this->listModelExtensions();
 
-		// attempt to map child foreign keys
-		$this->_child_foreign_keys = $this->mapChildForeignKeys();
-
 		// load any model extensions
 		$this->loadSystemModelExtensions();
 
@@ -544,6 +541,9 @@ class Bootstrap extends Base {
 			$this->db = false;
 		}
 
+		// attempt to map child foreign keys
+		$this->_child_foreign_keys = $this->mapChildForeignKeys();
+
 
 		// compile our final array of classes to load
 		$all_classes 	= array();
@@ -764,27 +764,30 @@ class Bootstrap extends Base {
 		$_db_schema = array();
 		$_child_fks = array();
 
-		// iterate all tables in db
-		$tables = $this->db->MetaTables();
-		foreach($tables as $table){
+		if($this->checkDbConnection()){
 
-			// pull complete schema for this table
-			$_db_schema[$table] = $schema = $this->db->MetaColumns($table);
+			// iterate all tables in db
+			$tables = $this->db->MetaTables();
+			foreach($tables as $table){
 
-			// loop the schema and find the primary keys
-			foreach($schema as $field => $field_info){
-				if($field_info->primary_key){
+				// pull complete schema for this table
+				$_db_schema[$table] = $schema = $this->db->MetaColumns($table);
 
-					// convert the primary key to it's likely
-					// foreign key name
+				// loop the schema and find the primary keys
+				foreach($schema as $field => $field_info){
+					if($field_info->primary_key){
 
-					if(substr($table, -1) == 's'){
-						$child_field = substr_replace($table ,"",-1);
-					} else {
-						$child_field = $table;
+						// convert the primary key to it's likely
+						// foreign key name
+
+						if(substr($table, -1) == 's'){
+							$child_field = substr_replace($table ,"",-1);
+						} else {
+							$child_field = $table;
+						}
+
+						$_child_fks[$table] = $child_field.'_id';
 					}
-
-					$_child_fks[$table] = $child_field.'_id';
 				}
 			}
 		}
