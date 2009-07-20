@@ -439,7 +439,7 @@ class User {
 
 		if(
 			$this->userHasGlobalAccess() ||
-			!$this->APP->requireLogin() ||
+			!$this->APP->requireLogin($interface) ||
 			($module == 'Users' &&
 					($method == 'login' || $method == 'authenticate' || $method == 'logout' || $method == 'forgot') ||
 				$module == 'Install')){

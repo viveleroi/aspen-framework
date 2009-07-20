@@ -748,9 +748,14 @@ class Template {
 	 */
 	public function grabSelectArray(
 								$selectTable, $selectField, $method = "ENUM",
-								$orderby = 'id', $select_id = 'id', $where = false){
+								$orderby = 'id', $select_id = false, $where = false){
 
 		$return_select_array = array();
+
+		if(!$select_id){
+			$tbl = $this->APP->model->open($selectTable);
+			$select_id = $tbl->getPrimaryKey();
+		}
 
 		// If the type is ENUM, we'll get the possible values from
 		// the database
