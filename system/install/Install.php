@@ -399,7 +399,10 @@ class Install {
 		$modules = $this->APP->getModulesAwaitingInstall();
 		foreach($modules as $module){
 			if($guid == $module['guid']){
-				if($this->APP->model->insert('modules', array('guid' => $guid))){
+
+				$module_db = $this->APP->model->open('modules');
+
+				if($module_db->insert(array('guid' => $guid))){
 					
 					// refresh installed module guid list
 					$this->APP->listModules();
