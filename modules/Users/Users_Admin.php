@@ -26,58 +26,11 @@ class Users_Admin extends Module {
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
 
-		$model = $this->APP->model->open('groups');
-		$model->orderBy('name', 'ASC');
-		$data['groups'] = $model->results();
-
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
 		$this->APP->template->display($data);
 
-	}
-
-
-	/**
-	 * @abstract Displays and processes the add a new user form
-	 * @access public
-	 */
-	public function add_group(){
-		$this->edit_group();
-	}
-
-
-	/**
-	 * @abstract Displays and processes the add a new user form
-	 * @access public
-	 */
-	public function edit_group($id = false){
-
-		if($this->APP->user->edit_group($id)){
-			$this->APP->sml->addNewMessage('User group has been updated successfully.');
-			$this->APP->router->redirect('view');
-		}
-
-		$data['values'] = $this->APP->form->getCurrentValues();
-
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit_group.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
-
-	}
-
-
-	/**
-	 * @abstract Deletes a user record
-	 * @param integer $id The record id of the user
-	 * @access public
-	 */
-	public function delete_group($id = false){
-		if($this->APP->user->delete_group($id)){
-			$this->APP->sml->addNewMessage('User group and all permissions have been deleted successfully.');
-			$this->APP->router->redirect('view');
-		}
 	}
 
 
