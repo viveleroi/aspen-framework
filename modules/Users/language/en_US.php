@@ -32,11 +32,6 @@ $lang['admin']['userlist:th:latestlogin']	= 'Latest Login';
 $lang['admin']['userlist:th:groups']		= 'User Groups';
 $lang['admin']['userlist:noresults'] 		= 'No user accounts were found.';
 
-// group list
-$lang['admin']['grouplist:addgroup'] 		= 'Create New User Group';
-$lang['admin']['grouplist:th:name'] 		= 'Name';
-$lang['admin']['grouplist:noresults'] 		= 'No user groups were found.';
-
 // user add/edit form
 $lang['admin']['userform:addtitle'] 	= 'Create Account';
 $lang['admin']['userform:edittitle'] 	= 'Update Account';
@@ -52,15 +47,6 @@ $lang['admin']['userform:accessgroup'] 	= 'Access Groups';
 $lang['admin']['userform:addbutton'] 	= 'Create New User';
 $lang['admin']['userform:editbutton'] 	= 'Save Changes';
 
-// group add/edit form
-$lang['admin']['groupform:addtitle'] 	= 'Create User Group';
-$lang['admin']['groupform:edittitle'] 	= 'Edit User Group';
-$lang['admin']['groupform:name']		= 'Name';
-$lang['admin']['groupform:addbutton'] 	= 'Create New Group';
-$lang['admin']['groupform:editbutton'] 	= 'Save Changes';
-$lang['admin']['groupform:delete_link'] 	= 'Delete Group';
-$lang['admin']['groupform:delete_warn'] 	= 'Are you sure you want to delete this user group and all permissions?';
-
 // permission denied
 $lang['admin']['denied:title'] 	= 'Permission Denied';
 $lang['admin']['denied:intro'] 	= 'Your user account does not currently have sufficient permission to access this page. Please contact an administrator for assistance.';
@@ -69,6 +55,5 @@ $lang['admin']['denied:intro'] 	= 'Your user account does not currently have suf
 $lang['admin']['db:error:username']		= 'You must enter a username.';
 $lang['admin']['db:error:username-dup'] = 'The chosen username has already been used.';
 $lang['admin']['db:error:password']		= 'You must enter a valid password.';
-
-$lang['admin']['db:error:username']		= 'You must enter a group name.';
+$lang['admin']['db:error:groupname']	= 'You must enter a name.';
 ?>

@@ -36,4 +36,23 @@
 		<input id="allow_login" name="allow_login"<?php print $values['allow_login'] ? ' checked="checked"' : '' ?> type="checkbox" value="1" />
 		</p>
 	</fieldset>
+
+	<fieldset>
+		<legend><?php print $this->text('userform:accessgroup'); ?></legend>
+
+		<p>
+		<?php
+		if($groups){
+			foreach($groups as $group){
+		?>
+		<input type="checkbox" name="group[]" value="<?php print $group['id'] ?>" id="group_<?php print $group['id'] ?>"<?php print (in_array($group['id'],$values['group'])? ' checked="checked"' : '') ?> />
+		<label for="group_<?php print $group['id'] ?>"><?php print $group['name'] ?></label><br />
+		<?php
+			}
+		}
+		?>
+		</p>
+
+		<p><input type="submit" name="submit" value="<?php print $this->text('userform:'.ADD_OR_EDIT.'button'); ?>" /></p>
+	</fieldset>
 </form>
