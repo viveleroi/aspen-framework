@@ -210,7 +210,7 @@ class Error {
 					user_agent, error_type, error_file, error_line, error_message)
 				VALUES ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")',
 					mysql_real_escape_string($this->APP->config('application_name')),
-					VERSION . ' Framework Rev:' . FRAMEWORK_REV,
+					VERSION_COMPLETE,
 					date("Y-m-d H:i:s"),
 					$this->getServerValue('REMOTE_ADDR'),
 					$this->getServerValue('HTTP_REFERER'),
@@ -239,7 +239,7 @@ class Error {
 			$this->APP->mail->FromName  = $this->APP->config('error_email_sender_name');
 			$this->APP->mail->Mailer    = "mail";
 
-			$errorBody = VERSION . "
+			$errorBody = VERSION_COMPLETE . "
 			DATE: " . date("Y-m-d h:i:s") . "
 			VISITOR IP: " . $this->getServerValue('REMOTE_ADDR') . "
 			REFERRER URL: " . $this->getServerValue('HTTP_REFERER') . "

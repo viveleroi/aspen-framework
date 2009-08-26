@@ -606,14 +606,16 @@ class User {
 
 		$default = $this->APP->config('default_module');
 
-		if($user_id = $this->APP->params->session->getInt('user_id')){
-			$groups = array_keys( $this->usersGroups($user_id) );
+		if($this->APP->isInstalled()){
+			if($user_id = $this->APP->params->session->getInt('user_id')){
+				$groups = array_keys( $this->usersGroups($user_id) );
 
-			$ug_defs = $this->APP->config('usergroup_default_modules');
+				$ug_defs = $this->APP->config('usergroup_default_modules');
 
-			foreach($groups as $group){
-				if(array_key_exists($group, $ug_defs)){
-					return $ug_defs[$group];
+				foreach($groups as $group){
+					if(array_key_exists($group, $ug_defs)){
+						return $ug_defs[$group];
+					}
 				}
 			}
 		}

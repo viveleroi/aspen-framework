@@ -18,6 +18,9 @@
 	
 	// application version
 	$config['application_version'] = '';
+
+	// application build
+	$config['application_build'] = '';
 	
 	// require user authentication for admin subdirectory application
 	DEFINE('USER_AUTH_ADMIN', true);

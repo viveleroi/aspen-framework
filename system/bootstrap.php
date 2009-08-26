@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', true);
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 
 /**
@@ -284,8 +284,7 @@ class Bootstrap extends Base {
 			$this->router->_selected_method = $this->config('default_method');
 		}
 
-		// update app version
-		define('VERSION', $this->formatVersionNumber($this->config('application_version')));
+		$this->setVersionConstants();
 
 		// set monetary locale
 		setlocale(LC_MONETARY, $this->config('currency_locale'));
@@ -356,6 +355,27 @@ class Bootstrap extends Base {
 				session_id($sess_id);
 			}
 		}
+	}
+
+
+	/**
+	 * @abstract Sets some constants based off our version/build info
+	 * @access private
+	 */
+	private function setVersionConstants(){
+
+		// update app version
+		define('VERSION', $this->formatVersionNumber($this->config('application_version')));
+
+		// update app build, if used
+		define('BUILD', $this->formatVersionNumber($this->config('application_build')));
+
+		// update app build, if used
+		define('VERSION_COMPLETE',
+				'v'.$this->formatVersionNumber($this->config('application_version')).' '.
+				'b'.$this->formatVersionNumber($this->config('application_build')).' '.
+				'Aspen-'.FRAMEWORK_REV
+		);
 	}
 
 
