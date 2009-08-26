@@ -219,6 +219,7 @@ class Log {
 
 			$this->section('Session Data');
 			$session = $this->APP->params->getRawSource('session');
+			$this->write('Session_id: ' . session_id());
 			foreach($session as $key => $value){
 				$this->write('$_SESSION[\''.$key.'\'] = ' . $this->logValue($value));
 			}

@@ -99,6 +99,9 @@
 	// default module if none specific in URL
 	$config['default_module'] = 'Index' . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
 
+	// default modules for specific user groups (overrides default_module)
+	$config['usergroup_default_modules'] = array();
+
 	// default module if no user config exists
 	$config['default_module_no_config'] = 'Install_Admin';
 
@@ -264,6 +267,9 @@
 
 	// max file size of upload, in bytes
 	$config['upload_max_file_size'] = 2000000;
+
+	// allow sessions to be loaded when id is in query string
+	$config['allow_session_id_from_query'] = false;
 
 
 /**

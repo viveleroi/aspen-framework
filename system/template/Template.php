@@ -876,6 +876,17 @@ class Template {
 
 
 	/**
+	 * @abstract Hides values using html comments
+	 * @param mixed $val
+	 * @return string
+	 * @access public
+	 */
+	public function htmlHide($val = false){
+		return '<!--' . $val . '-->' . "\n";
+	}
+
+
+	/**
 	 * @abstract Return an array of US states
 	 * @return array
 	 * @access public

@@ -1062,6 +1062,8 @@ class Model {
 	 */
 	public function match($search, $fields = false, $match = 'AND'){
 
+		$search = $this->APP->security->dbescape($search);
+
 		if(!$fields){
 
 			$fields = array();

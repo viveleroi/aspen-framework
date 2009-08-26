@@ -134,6 +134,8 @@ class Router {
 	 */
 	public function identifyModuleForLoad(){
 
+		$default = $this->APP->user->getUserDefaultModule();
+
 		if(strtolower(get_class($this->APP)) == "app"){
 
 			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account'){
@@ -145,7 +147,7 @@ class Router {
 					// we need to create our own auth check, as the user module is not loaded at this point
 					if($this->APP->user->isLoggedIn()){
 
-						$default = $this->map['module'] ? $this->map['module'] : $this->APP->config('default_module');
+						$default = $this->map['module'] ? $this->map['module'] : $default;
 
 					} else {
 
@@ -154,7 +156,7 @@ class Router {
 					}
 				} else {
 
-					$default = $this->map['module'] ? $this->map['module'] : $this->APP->config('default_module');
+					$default = $this->map['module'] ? $this->map['module'] : $default;
 
 				}
 			} else {

@@ -268,6 +268,7 @@ class Bootstrap extends Base {
 		}
 
 		// start the session
+		$this->setSessionId();
 		session_start();
 
 		// load all plugins
@@ -338,6 +339,22 @@ class Bootstrap extends Base {
 			$this->loadCurrentModule();
 		} else {
 			$this->log->write('Skipping loading Application Interface module, INCLUDE_ONLY is true.');
+		}
+	}
+
+
+	/**
+	 * @abstract Allows sessions to be loaded by the session_id in the query string
+	 * @access private
+	 */
+	private function setSessionId(){
+		if($this->config('allow_session_id_from_query')){
+			$sess_name = ini_get('session.name');
+			$sess_id = isset($_GET[$sess_name]) ? $_GET[$sess_name] : false;
+			$sess_id = trim(preg_replace('/[^A-Za-z0-9]/', '', $sess_id));
+			if(!empty($sess_id)){
+				session_id($sess_id);
+			}
 		}
 	}
 

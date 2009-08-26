@@ -541,8 +541,8 @@ class User {
 			$groups = $model->results();
 
 			if($groups['RECORDS']){
-				foreach($groups['RECORDS'] as $group){
-					$ingroups[] = $group['name'];
+				foreach($groups['RECORDS'] as $id => $group){
+					$ingroups[$id] = $group['name'];
 				}
 			}
 		}
@@ -597,6 +597,30 @@ class User {
 		}
 	}
 
+
+	/**
+	 * @abstract Returns the default module for a specific user group
+	 * @access public
+	 */
+	 public function getUserDefaultModule(){
+
+		$default = $this->APP->config('default_module');
+
+		if($user_id = $this->APP->params->session->getInt('user_id')){
+			$groups = array_keys( $this->usersGroups($user_id) );
+
+			$ug_defs = $this->APP->config('usergroup_default_modules');
+
+			foreach($groups as $group){
+				if(array_key_exists($group, $ug_defs)){
+					return $ug_defs[$group];
+				}
+			}
+		}
+
+		return $default;
+	}
+	 
 
 	/**
 	 * @abstract Generates new random password
