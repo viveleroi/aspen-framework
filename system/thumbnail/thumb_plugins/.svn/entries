@@ -1,0 +1,40 @@
+8
+
+dir
+256
+http://svn.trellisdevelopment.com/aspenmsm/trunk/system/thumbnail/thumb_plugins
+http://svn.trellisdevelopment.com/aspenmsm
+
+
+
+2009-08-18T17:02:36.630485Z
+238
+jverburg
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+117fb856-c67d-4b14-a176-476e92c4cdc7
+
+gd_reflection.inc.php
+file
+
+
+
+
+2009-08-19T17:31:51.000000Z
+2749d8547e3bf84bb8c77cab1273624f
+2009-08-18T17:02:36.630485Z
+238
+jverburg
+

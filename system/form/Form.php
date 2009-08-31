@@ -502,8 +502,48 @@ class Form {
 	 * @return array
 	 * @access public
 	 */
-	public function getErrors(){
-		return $this->_form_errors;
+	public function getErrors($custom_sort = false){
+
+		// if no custom sort provided, we need to sort the errors
+		// according to their schema position
+		if(!$custom_sort){
+			$custom_sort = array();
+			$model = $this->APP->model->open($this->table);
+			foreach($model->getSchema() as $field){
+				$custom_sort[$field->name] = false;
+			}
+		} else {
+			// currently, custom sort defined as vals not keys so we must flip
+			$custom_sort = array_flip($custom_sort);
+		}
+
+		$diff = array_diff_key($this->_form_errors, $custom_sort);
+		$custom_sort = array_merge($custom_sort, $diff);
+
+		// sort errors for known fields
+		$final_errors = array();
+		foreach($custom_sort as $field => $val){
+			$errors = $this->getFieldErrors($field);
+			if($errors){
+				$final_errors[$field] = $errors;
+			}
+		}
+
+		return $final_errors;
+
+	}
+
+
+	/**
+	 * @abstract Returns an array of errors for a specific field
+	 * @param string $field
+	 * @return mixed
+	 */
+	public function getFieldErrors($field = false){
+		if($field && array_key_exists($field, $this->_form_errors)){
+			return $this->_form_errors[$field];
+		}
+		return false;
 	}
 	
 	
@@ -511,12 +551,12 @@ class Form {
 	 * @abstract Prints out form error messages using html wrapping defined in config
 	 * @access public
 	 */
-	public function printErrors(){
+	public function printErrors($custom_sort = false){
 
 		$lines = '';
 
 		if($this->error()){
-			foreach($this->APP->form->getErrors() as $errors){
+			foreach($this->APP->form->getErrors($custom_sort) as $errors){
 				foreach($errors as $field => $error){
 					$lines .= sprintf($this->APP->config('form_error_line_html'), $error);
 				}

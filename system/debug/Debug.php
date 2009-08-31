@@ -69,7 +69,7 @@ class DebugBase {
 		print $this->line_end;
 
 	}
-	
+
 
 	/**
 	 *
@@ -117,6 +117,66 @@ class DebugBase {
 	public function v(){
 		$this->print_type = 'var_dump';
 		$this->dump();
+	}
+
+
+	/**
+	 *
+	 * @param <type> $data
+	 * @param <type> $caption
+	 * @return <type>
+	 */
+	public function table(){
+
+		$this->line_end = "<br />";
+
+		$is_multi = $this->is_md_array($this->val);
+		$html = '<strong>'.($this->name ? $this->name : $this->print_type ).'</strong>: '.$this->line_end;
+
+		if(is_array($this->val)){
+
+			$heads = $is_multi ? array_keys($is_multi) : array_keys($this->val);
+
+			$html .= '<table>' . "\n";
+			$html .= '<thead>' . "\n";
+
+			if($this->name){
+				$html .= '<caption>'.$this->name.'</caption>' . "\n";
+			}
+
+			$html .= '<th>' . implode("</th>\n<th>", $heads) . '</th>';
+			$html .= '</thead>' . "\n";
+			$html .= '<tbody>' . "\n";
+
+			// Append table rows
+			if($is_multi){
+				foreach($this->val as $row){
+					$html .= '<tr><td>' . implode("</td>\n<td>", $row) . '</td></tr>' . "\n";
+				}
+			} else {
+				$html .= '<tr><td>' . implode("</td>\n<td>", $this->val) . '</td></tr>' . "\n";
+			}
+
+			$html .= '</tbody>' . "\n";
+			$html .= '</table>' . "\n";
+
+		}
+
+		print $html;
+
+	}
+
+
+	/**
+	 *
+	 * @param <type> $a
+	 * @return <type>
+	 */
+	private function is_md_array($a) {
+		foreach ($a as $v) {
+			if (is_array($v)) return $v;
+		}
+		return false;
 	}
 }
 
