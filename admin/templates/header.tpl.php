@@ -8,9 +8,9 @@
 		<meta name="description" content="aspen framework" />
 		<meta name="keywords" content="aspen framework" />
 
-		<link rel="stylesheet" href="<?php print $this->APP->router->getInterfaceUrl() ?>/css/screen.css" type="text/css" media="screen, projection" />
-		<link rel="stylesheet" href="<?php print $this->APP->router->getInterfaceUrl() ?>/css/print.css" type="text/css" media="print" />
-	  	<!--[if IE]><link rel="stylesheet" href="<?php print $this->APP->router->getInterfaceUrl() ?>/css/ie.css" type="text/css" media="screen, projection" /><![endif]-->
+		<?php $this->addCss( array('file'=>'screen.css','mediatype'=>'screen, projection','from'=>'i')); ?>
+		<?php $this->addCss( array('file'=>'print.css','mediatype'=>'print','from'=>'i')); ?>
+		<?php $this->addCss( array('file'=>'ie.css','cdtnl_cmt'=>'if IE','from'=>'i')); ?>
 	  	
 	  	<?php $this->loadModuleHeader(); ?>
 

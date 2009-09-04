@@ -37,7 +37,7 @@ class Template {
 	 * @access private
 	 */
 	private $template_dir;
-	
+
 	/**
 	 * @var array $lang Holds the current language values
 	 * @access private
@@ -57,8 +57,8 @@ class Template {
 	 * @access private
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
-	
-	
+
+
 	/**
 	 * @abstract Returns the template directory
 	 * @return string
@@ -68,7 +68,7 @@ class Template {
 		return INTERFACE_PATH . DS . 'templates';
 	}
 
-	
+
 	/**
 	 * @abstract Returns the template directory for our module
 	 * @return string
@@ -99,10 +99,21 @@ class Template {
 		// append any css files for loading
 		if(!empty($this->_load_css)){
 
-			$css_html_elm = '<link rel="stylesheet" href="%s" type="text/css" media="%s" />'."\n";
+			$css_html_elm = '<link rel="stylesheet" href="%s" type="text/css" media="%s" />';
+			$cdtnl_cmt = '<!--[%s]>%s<![endif]-->';
 
 			foreach($this->_load_css as $css){
-				printf($css_html_elm, $css['file'], $css['type']);
+				$file = $this->getStaticContentUrl($css);
+				$link = sprintf($css_html_elm, $file, $css['mediatype']);
+
+				if(!empty($css['cdtnl_cmt'])){
+					printf($cdtnl_cmt, $css['cdtnl_cmt'], $link);
+				} else {
+					print $link;
+				}
+
+				print "\n";
+
 			}
 		}
 
@@ -112,7 +123,8 @@ class Template {
 			$js_html_elm = '<script type="text/javascript" src="%s"></script>'."\n";
 
 			foreach($this->_load_js as $js){
-				printf($js_html_elm, $js['file']);
+				$file = $this->getStaticContentUrl($js);
+				printf($js_html_elm, $file);
 			}
 		}
 	}
@@ -121,32 +133,76 @@ class Template {
 	/**
 	 * CSS2 Supported types are: all, braille, embossed, handheld, print, projection, screen, speech, tty, tv
 	 * http://www.w3.org/TR/CSS2/media.html
-	 * @param <type> $filename
-	 * @param <type> $basepath
-	 * @param <type> $type
+	 * @param array $args
+	 * @access public
+	 * @return string
 	 */
-	public function addCss($filename = false, $basepath = false, $type = false){
-		$type = $type ? $type : 'all';
-		$filename = $filename ? $filename : 'style.css';
-		$basepath = $basepath ? $basepath : $this->APP->router->getModuleUrl() . '/css';
-		$file = $basepath . '/' . $filename;
-		$this->_load_css[] = array('type'=>$type,'file'=>$file);
+	public function addCss($args){
+
+		$base = array(
+					'file' => false,
+					'from' => 'm',
+					'mediatype' => 'all',
+					'cdtnl_cmt' => '',
+					'basepath' => false,
+					'ext' => 'css'
+				);
+
+		// merge any incoming args and append the load array
+		$this->_load_css[] = (is_array($args) ? array_merge($base, $args) : $base);
+
 	}
 
 
 	/**
-	 *
-	 * @param <type> $filename
-	 * @param <type> $basepath
+	 * @abstract Adds a javascript include to the header, from either the header template or the current module
+	 * @param string $filename
+	 * @param string $type
+	 * @param string $basepath
+	 * @access public
+	 * @return string
 	 */
-	public function addJs($filename = false, $basepath = false){
-		$filename = $filename ? $filename : strtolower($this->APP->router->getSelectedMethod()).'.js';
-		$basepath = $basepath ? $basepath : $this->APP->router->getModuleUrl() . '/js';
-		$file = $basepath . '/' . $filename;
-		$this->_load_js[] = array('file'=>$file);
+	public function addJs($args){
+
+		$base = array(
+					'file' => false,
+					'from' => 'm',
+					'cdtnl_cmt' => '',
+					'basepath' => false,
+					'ext' => 'js'
+				);
+
+		// merge any incoming args and append the load array
+		$this->_load_js[] = (is_array($args) ? array_merge($base, $args) : $base);
+
 	}
-	
-	
+
+
+	/**
+	 * @abstract Base static url build for the addJs/addCss methods
+	 * @param array $args
+	 * @return string
+	 * @access private
+	 */
+	private function getStaticContentUrl($args){
+
+		$basepath = $filename = '';
+
+		if($args['from'] == 'm'){
+			$filename = $args['file'] ? $args['file'] : strtolower($this->APP->router->getSelectedMethod()).'.'.$args['ext'];
+			$basepath = $args['basepath'] ? $args['basepath'] : $this->APP->router->getModuleUrl() . '/'.$args['ext'];
+		}
+
+		if($args['from'] == 'i'){
+			$filename = $args['file'] ? $args['file'] : strtolower(LS).'.'.$args['ext'];
+			$basepath = $args['basepath'] ? $args['basepath'] : $this->APP->router->getInterfaceUrl() . '/'.$args['ext'];
+		}
+
+		return $file = $basepath . '/' . $filename;
+
+	}
+
+
 	/**
 	 * @abstract Sets the language text array from the router
 	 * @param array $terms
@@ -155,8 +211,8 @@ class Template {
 	public function loadLanguageTerms($terms = false){
 		$this->terms = $terms;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the text value for a key from the selected language
 	 * @param string $key
@@ -175,59 +231,59 @@ class Template {
 	 */
 	public function display($data = false){
 		if(is_array($this->_load_templates)){
-			
+
 			// if token auth on, we need to generate a token
 			if($this->APP->config('require_form_token_auth')){
 				$token = $this->APP->security->generateFormToken();
 			}
-			
+
 			$cache = false;
-			
+
 			// if cache of template enabled
 			if($this->APP->config('enable_cache') && $this->APP->config('cache_template_output')){
-						
+
 				// if we can find any existing cache of this page
 				if($cache = $this->APP->cache->getData($this->createSelfUrl())){
 					$this->APP->log->write('Returning templates from cache.');
 					print $cache;
 				} else {
-					
+
 					$this->APP->log->write('Beginning output buffering, to capture template html for cache.');
-				
+
 					// begin collecting output
 					ob_start();
-					
+
 				}
 			}
-			
+
 			// if no cache enabled or found, display the templates
 			if(!$cache){
 				foreach($this->_load_templates as $template){
 					if(file_exists($template) && strpos($template, APPLICATION_PATH) !== false){
-	
+
 						// pass through variables
 						if(is_array($data)){
 							foreach($data as $var => $value){
 								$$var = $value;
 							}
 						}
-	
+
 						$this->APP->log->write('Including template ' . $template);
 						include($template);
 
-						
+
 					}
 				}
 			}
 
 			// if cache enabled and cache file not found, save it
 			if($this->APP->config('enable_cache') && $this->APP->config('cache_template_output') && !$cache){
-				
+
 				$this->APP->cache->put($this->createSelfUrl(), ob_get_contents());
 				ob_end_flush();
-				
+
 				$this->APP->log->write('Saved output contents to cache, and stopped output buffering.');
-				
+
 			}
 		}
 
@@ -299,7 +355,7 @@ class Template {
 		}
 
 		return $link;
-		
+
 	}
 
 
@@ -312,7 +368,7 @@ class Template {
 	 * @access public
 	 */
 	public function createUrl($method = false, $bits = false, $module = false, $interface = false){
-	
+
 		// begin url with absolute url to this app
 		$interface = strtolower( $interface ? $interface : (LOADING_SECTION != '' ? LOADING_SECTION : '') );
 		$url = $this->APP->router->getInterfaceUrl($interface);
@@ -320,12 +376,12 @@ class Template {
 		$method = $method ? $method : $this->APP->router->getSelectedMethod();
 		$module = $module ? $module : $this->APP->router->getSelectedModule();
 		$module = str_replace('_'.$interface, '', strtolower($module));
-		
+
 		// if mod rewrite/clean urls are off
 		if(!$this->APP->config('enable_mod_rewrite')){
 
 			$url .= sprintf('/index.php?module=%s&method=%s', $module, $method);
-	
+
 			if(is_array($bits)){
 				foreach($bits as $bit => $value){
 					if(is_array($value)){
@@ -338,10 +394,10 @@ class Template {
 				}
 			}
 		} else {
-			
+
 			$url .= sprintf('/%s', $module);
 			$url .= $method != $this->APP->config('default_method') || is_array($bits) ? sprintf('/%s', $method) : '';
-	
+
 			if(is_array($bits)){
 				foreach($bits as $bit => $value){
 					if(is_array($value)){
@@ -353,7 +409,7 @@ class Template {
 					}
 				}
 			}
-			
+
 		}
 
 		return $url;
@@ -372,7 +428,7 @@ class Template {
 		return $this->encodeTextEntities($this->createUrl($method, $bits, $module, $interface));
 	}
 
-	
+
 	/**
 	 * @abstract Encodes entities that appear in text only, not html
 	 * @param string $string
@@ -382,8 +438,8 @@ class Template {
 	public function encodeTextEntities($string){
 		return str_replace("&", "&#38;", $string);
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns a properly-encoded URL using a method
 	 * @param string $method
@@ -397,8 +453,8 @@ class Template {
 		}
 		return $this->createXhtmlValidUrl($method, $bits);
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns a properly-encoded URL using a module and method
 	 * @param string $module
@@ -438,8 +494,8 @@ class Template {
 		return $this->createLink($text, false, $new_params, $method);
 
 	}
-	
-	
+
+
 	/**
 	 * @abstract Creates an xhtml valid url to the current page with params, replacing any existing params
 	 * @param array $params
@@ -461,8 +517,8 @@ class Template {
 		return $this->createXhtmlValidUrl($method, $new_params);
 
 	}
-	
-	
+
+
 	/**
 	 * @abstract Creates a url to the current page with params, replacing any existing params
 	 * @param array $params
@@ -520,8 +576,8 @@ class Template {
 		return $html;
 
 	}
-	
-	
+
+
 	/**
 	 * @abstract Generate a basic LI set of pagination links
 	 * @param integer $current_page
@@ -530,19 +586,19 @@ class Template {
 	 * @return string
 	 */
 	public function paginateLinks($current_page, $per_page, $total){
-		
+
 		$html = '';
-	
+
 		$pages = $total / $per_page;
 		for($i = 1; $i <= ceil($pages); $i++){
 			$html .= '<li'.($current_page == $i ? ' class="at"' : '').'>' . $this->createLink($i, false, array('page'=>$i)) . '</li>' . "\n";
 		}
 
 		return $html;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns a body id of the module/method
 	 * @return string
@@ -603,8 +659,8 @@ class Template {
 		return $string;
 
 	}
-	
-	
+
+
 	/**
 	 * @abstract Truncates a filename leaving extension intact
 	 * @param string $fileame
@@ -616,8 +672,8 @@ class Template {
 		$filext = strrchr($fileame, '.');
 		return substr(str_replace($filext, '', $fileame), 0, $char_length) . $separator.$filext;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns replacement text if a value is empty (i.e. "N/A")
 	 * @param mixed $value
@@ -643,9 +699,9 @@ class Template {
 		if($this->APP->params->get->getRaw('filter')){
 			$filters = $this->APP->params->get->getRaw('filter');
 		} else {
-			
+
 			$sess_filters = $this->APP->params->session->getRaw('filter');
-			
+
 			if(isset($sess_filters[$this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod()])){
 				$filters = $sess_filters[$this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod()];
 			}
@@ -791,7 +847,7 @@ class Template {
 					} else {
 						$record_array = array('key'=>$getArrayRow[$selectField], $selectField=>$getArrayRow[$selectField]);
 					}
-					
+
 					array_push($return_select_array, $record_array);
 
 				}
@@ -801,8 +857,8 @@ class Template {
 		return $return_select_array;
 
 	}
-	
-	
+
+
 	/**
 	 * @abstract Prints out select box options using grabSelectArray
 	 * @param array $grabSelectArray
@@ -813,21 +869,21 @@ class Template {
 	 * @access public
 	 */
 	public function getSelectOptions($grabSelectArray = false, $match_value = false, $prepend_blank = false, $blank_text = false){
-		
+
 		print $prepend_blank ? '<option value="">'.$blank_text.'</option>' . "\n" : '';
-		
+
 		if(is_array($grabSelectArray)){
 			foreach($grabSelectArray as $option){
-				
+
 				// if it's an array, we have values from DISTINCT
 				if(is_array($option)){
-					
+
 					// get array keys
 					$keys = array_keys($option);
-					
+
 					// if array has value different from text or not
 					$value = empty($option[$keys[0]]) ? $option[$keys[1]] : $option[$keys[0]];
-					
+
 					printf('<option value="%s"%s>%s</option>' . "\n",
 								$this->encodeTextEntities($value),
 								($value == $match_value ? ' selected="selected"' : ''),
@@ -838,26 +894,26 @@ class Template {
 								$this->encodeTextEntities($option),
 								($option == $match_value ? ' selected="selected"' : ''),
 								$this->encodeTextEntities($option));
-					
+
 				}
-				
+
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * @abstract Formats a US address
 	 * @access public
 	 */
 	public function formatAddress($add_1 = '', $add_2 = '', $city = '', $state = '', $zip = '', $country = ''){
-		
+
 		$address = '';
-		
+
 		$address .= empty($add_1) ? '' : $add_1 . "<br />";
 		$address .= empty($add_2) ? '' : $add_2 . "<br />";
 		$address .= empty($city) ? '' : $city;
-		
+
 		if(!empty($city) && !empty($state)){
 			$address .= ", ";
 		} else {
@@ -865,13 +921,13 @@ class Template {
 				$address .= "<br />";
 			}
 		}
-		
+
 		$address .= empty($state) ? '' : $state . "<br />";
 		$address .= empty($zip) ? '' : $zip . "<br />";
 		$address .= empty($country) ? '' : $country . "<br />";
-		
+
 		return $this->na($address);
-		
+
 	}
 
 
