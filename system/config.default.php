@@ -118,6 +118,20 @@
 	// set only if different from interface url
 	$config['static_content_path'] = false;
 
+	// Define custom URL path handling, called 'routes'. We can map custom
+	// url handlers to modules->methods(args). Routing can be applied using
+	// either exact matches or regex patterns.
+	//
+	// Examples include:
+	//  /about-us can be mapped to Index->about();
+	//  array('/about-us' => array('module'=>'Index', 'method'=>'about'));
+	//
+	//  /edit/a/person/with/the/id/of/1 can be mapped to Users->edit(1);
+	//  array('/\/(?<name>\w+)\/a\/person\/with\/the\/id\/of\/(?<digit>\d)/' => array('regex'=>true,'module'=>'Users', 'method'=>'$1'));
+	$config['routes'] = array(
+						'/\/(?<name>\w+)\/a\/person\/with\/the\/id\/of\/(?<digit>\d)/' => array('regex'=>true,'module'=>'Users', 'method'=>'$1')
+						);
+
 
 /**
  * SYSTEM-TO-PUBLIC EMAIL SETTINGS

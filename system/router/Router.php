@@ -36,7 +36,7 @@ class Router {
 	 * @var array $map Holds our array of mapped URL routes
 	 * @access private
 	 */
-	private $map;
+	private $map = array('module'=>false,'method'=>false,'bits'=>false);
 
 	/**
 	 * @var object $APP Holds our original application
@@ -87,15 +87,21 @@ class Router {
 			if($this->getPath() != '/'){
 				$replace[] = $this->getPath();
 			}
-			$uri = str_replace($replace, '', $this->getDomainUrl() . $this->APP->params->server->getRaw('REQUEST_URI'));
+			$uri = $to_map = str_replace($replace, '', $this->getDomainUrl() . $this->APP->params->server->getRaw('REQUEST_URI'));
 			$uri = explode('/', $uri);
 
-			$this->map['module'] = isset($uri[1]) ? preg_replace('/\?(.*)/', '', $uri[1]) : false;
-			$this->map['method'] = isset($uri[2]) ? preg_replace('/\?(.*)/', '', $uri[2]) : false;
+			// If route mapping fails, then we need to parse the url for the default config
+			if(!$this->applyRouteMap($to_map)){
+				$this->map['module'] = isset($uri[1]) ? preg_replace('/\?(.*)/', '', $uri[1]) : false;
+				$this->map['method'] = isset($uri[2]) ? preg_replace('/\?(.*)/', '', $uri[2]) : false;
+			}
 
 			// loop additional bits to pass to our arguments
-			for($i = 3; $i < count($uri); $i++){
-				$bits[] = preg_replace('/\?(.*)/', '', $uri[$i]);
+			if(!$this->map['bits']){
+				for($i = 3; $i < count($uri); $i++){
+					$bits[] = preg_replace('/\?(.*)/', '', $uri[$i]);
+				}
+				$this->map['bits'] = $bits;
 			}
 		} else {
 
@@ -111,19 +117,92 @@ class Router {
 						$bits[$key] = preg_replace('/\?(.*)/', '', $this->APP->params->get->getRaw($key));
 					}
 				}
+				$this->map['bits'] = $bits;
 			}
 		}
 
 		// we need to remove any left over query string from malformed mod_rewrite query
 		$this->map['method'] = preg_replace('/\?(.*)/', '', $this->map['method']);
 
-		// append any function arguments
-		$this->map['bits'] = $bits;
-
-		// appen interface to module
+		// append interface to module
 		if(!empty($this->map['module'])){
 			$this->map['module'] .= (LOADING_SECTION != '' ? '_'.LOADING_SECTION : '');
 		}
+	}
+
+
+	/**
+	 * @abstract Applies custom mapping routes to URLs. If a match is found, default is not applied.
+	 * @param string $path
+	 * @access private
+	 * @return boolean
+	 */
+	private function applyRouteMap($path){
+		
+		$routes			= $this->APP->config('routes');
+		$map			= false;
+		$matched_keys	= array();
+		$matches		= array();
+
+		if(!empty($path) && is_array($routes)){
+			foreach($routes as $route => $map_to){
+				if(isset($map_to['regex']) && $map_to['regex']){
+					preg_match_all($route, $path, $matches);
+
+					if(is_array($matches) && !empty($matches)){
+
+						// Check for any variable matches to append
+						for($a = 1; $a <= (count($matches)-1); $a++){
+
+							// replace any placeholders in the map_to array
+							foreach($map_to as $key => $ph){
+								if($ph === '$'.$a){
+									$matched_keys[] = $a;
+									if(count($matches[$a]) == 1){
+										$map_to[$key] = $matches[$a][0];
+									} else {
+										// we have an array of matches
+										// @todo improve support for arrays: bug 1476
+										$map_to[$key] = $matches[$a][0];
+									}
+								}
+							}
+
+							// append any remaining matches as bits
+							for($a = 1; $a <= (count($matches)-1); $a++){
+								if(!in_array($a, $matched_keys)){
+									if(!empty($matches[$a][0])){
+										// @todo improve support for arrays: bug 1476
+										$this->map['bits'][] = $matches[$a][0];
+									}
+								}
+							}
+						}
+
+						$map = $map_to;
+						break;
+					}
+				} else {
+					if($path === $route){
+						$map = $routes[$path];
+					}
+				}
+
+				$this->APP->log->section('Routes Mapping');
+				$this->APP->log->write($matches);
+
+			}
+
+			// proper map was found, set the information and return
+			if(is_array($map)){
+				$this->map['module'] =  isset($map['module']) ? $map['module'] : false;
+				$this->map['method'] =  isset($map['method']) ? $map['method'] : false;
+				return true;
+			}
+		}
+
+		return false;
+
 	}
 
 
