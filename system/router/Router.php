@@ -85,6 +85,9 @@ class Router {
 			// and we don't want to remove both, just one
 			$replace = array($this->getApplicationUrl() . (LS != '' ? '/'.LS : '' ));
 			if($this->getPath() != '/'){
+				// try also to replace with app path minus the LS. If someone is masking the LS
+				// then it may not be seen in the uri.
+				$replace[] = $this->getApplicationUrl();
 				$replace[] = $this->getPath();
 			}
 			$uri = $to_map = str_replace($replace, '', $this->getDomainUrl() . $this->APP->params->server->getRaw('REQUEST_URI'));
@@ -149,7 +152,7 @@ class Router {
 				if(isset($map_to['regex']) && $map_to['regex']){
 					preg_match_all($route, $path, $matches);
 
-					if(is_array($matches) && !empty($matches)){
+					if(is_array($matches) && isset($matches[0]) && !empty($matches[0])){
 
 						// Check for any variable matches to append
 						for($a = 1; $a <= (count($matches)-1); $a++){
@@ -163,7 +166,9 @@ class Router {
 									} else {
 										// we have an array of matches
 										// @todo improve support for arrays: bug 1476
-										$map_to[$key] = $matches[$a][0];
+										if(isset($matches[$a][0])){
+											$map_to[$key] = $matches[$a][0];
+										}
 									}
 								}
 							}

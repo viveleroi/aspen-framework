@@ -65,7 +65,7 @@ class Template {
 	 * @access public
 	 */
 	public function getTemplateDir(){
-		return INTERFACE_PATH . DS . 'templates';
+		return INTERFACE_PATH . DS. 'templates';
 	}
 
 
