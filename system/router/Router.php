@@ -63,8 +63,7 @@ class Router {
 
 		// map the url elements and then identify the module/method to load
 		$this->mapRequest();
-		$this->identifyModuleForLoad();
-		$this->identifyMethodForLoad();
+		$this->loadRequestedPagePath();
 
 	}
 
@@ -212,13 +211,62 @@ class Router {
 
 
 	/**
+	 * @abstract First checks for what path has been requested. Then, it
+	 * checks for approval for that request (permissions, install, etc).
+	 * @access private
+	 */
+	private function loadRequestedPagePath(){
+
+		// requested
+		$req_module = $this->identifyRequestedModuleForLoad();
+		$req_method = $this->identifyRequestedMethodForLoad();
+
+		$acc_module = false;
+		$acc_method = false;
+
+		// Check if anonymous access is allowed
+		if(!$this->APP->user->allowAnonymous($req_module, $req_method, LS)){
+			$acc_module = $this->identifyAcceptedModuleForLoad();
+			$acc_method = $this->identifyAcceptedMethodForLoad();
+		}
+
+		// Override if access to requested path not allowed
+		$acc_module = $acc_module ? $acc_module : $req_module;
+		$acc_method = $acc_method ? $acc_method : $req_method;
+
+		$this->_selected_module['NAME'] = ucfirst($acc_module);
+		$this->_selected_method = $acc_method;
+
+	}
+
+
+	/**
+	 * @abstract Identifies the module that has been requested, but not yet approved
+	 * @return string
+	 * @access private
+	 */
+	private function identifyRequestedModuleForLoad(){
+		return $this->map['module'] ? $this->map['module'] : $this->APP->user->getUserDefaultModule();
+	}
+
+
+	/**
+	 * @abstract Identifies the method that has been requested, but not yet approved
+	 * @return string
+	 * @access private
+	 */
+	private function identifyRequestedMethodForLoad(){
+		return $this->map['method'] ? $this->map['method'] : $this->APP->config('default_method');
+	}
+
+
+	/**
 	 * @abstract Identifies which module needs to be loaded
 	 * @return string
 	 * @access public
+	 * @todo clean this up now that loadRequestedPagePath exists
 	 */
-	public function identifyModuleForLoad(){
-
-		$default = $this->APP->user->getUserDefaultModule();
+	private function identifyAcceptedModuleForLoad(){
 
 		if(strtolower(get_class($this->APP)) == "app"){
 
@@ -254,7 +302,7 @@ class Router {
 
 		}
 
-		$this->_selected_module['NAME'] = ucfirst($default);
+		return $default;
 
 	}
 
@@ -264,8 +312,9 @@ class Router {
 	 * @param string $default
 	 * @return string
 	 * @access private
+	 * @todo clean this up now that loadRequestedPagePath exists
 	 */
-	private function identifyMethodForLoad(){
+	private function identifyAcceptedMethodForLoad(){
 
 		// check if a login is required
 		if($this->APP->requireLogin()){
@@ -282,7 +331,6 @@ class Router {
 				$default = $this->map['method'];
 
 			} else {
-
 				if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account'){
 					$default = 'login';
 				} else {
@@ -298,7 +346,7 @@ class Router {
 
 		}
 
-		$this->_selected_method = $default;
+		return $default;
 
 	}
 

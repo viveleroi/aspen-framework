@@ -28,5 +28,12 @@ class Index_Admin extends Module {
 		$this->APP->template->display();
 		
 	}
+
+
+	public function signup(){
+
+		print 'it worked';
+
+	}
 }
 ?>

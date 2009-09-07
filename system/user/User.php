@@ -375,6 +375,9 @@ class User {
 		$interface 		= $interface ? $interface : LOADING_SECTION;
 		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
 
+		Debug::dump( $this->APP->router->getSelectedModule() )->pre();
+//		allowAnonymous
+
 		if($this->userHasGlobalAccess()){
 
 			$authenticated = true;
@@ -440,9 +443,8 @@ class User {
 		if(
 			$this->userHasGlobalAccess() ||
 			!$this->APP->requireLogin($interface) ||
-			($module == 'Users' &&
-					($method == 'login' || $method == 'authenticate' || $method == 'logout' || $method == 'forgot') ||
-				$module == 'Install')){
+			$this->allowAnonymous($module, $method, $interface)
+			){
 
 			return true;
 
@@ -482,6 +484,30 @@ class User {
 		}
 
 		return $authenticated;
+
+	}
+
+
+	/**
+	 * @abstract Checks whether or not anonymous access is allowed for the current page.
+	 * @param string $module
+	 * @param string $method
+	 * @param string $interface
+	 * @return boolean
+	 * @access public
+	 */
+	public function allowAnonymous($module = false, $method = false, $interface = false){
+
+		$module = ucwords(str_replace('_'.$interface, '', strtolower($module)));
+		$interface = ucwords(strtolower($interface));
+
+		$sql = sprintf('
+				SELECT * FROM permissions
+				WHERE (interface = "%s" OR interface = "*") AND (module = "%s" OR module = "*") AND (method="%s" OR method = "*") AND user_id IS NULL AND group_id IS NULL',
+					$interface, $module, $method);
+
+		$access = $this->APP->model->query($sql);
+		return $access->RecordCount() ? true : false;
 
 	}
 
