@@ -234,7 +234,7 @@ class Router {
 		$acc_module = $acc_module ? $acc_module : $req_module;
 		$acc_method = $acc_method ? $acc_method : $req_method;
 
-		$this->_selected_module['NAME'] = ucfirst($acc_module);
+		$this->_selected_module = ucfirst($acc_module);
 		$this->_selected_method = $acc_method;
 
 	}
@@ -340,7 +340,7 @@ class Router {
 	 * @access public
 	 */
 	public function getSelectedModule(){
-		return $this->_selected_module['NAME'];
+		return $this->_selected_module;
 	}
 
 

@@ -159,19 +159,11 @@ INSERT INTO `modules` (`id`, `guid`, `sort_order`) VALUES
 
 ";
 
-	
-$sql[] = "
-
-INSERT INTO `permissions` (`id`, `user_id`, `group_id`, `interface`, `module`, `method`) VALUES
-(1, NULL, 1, '*', '*', '*');
-	
-";
-
 
 $sql[] = "
 
 INSERT INTO `permissions` (`id`, `user_id`, `group_id`, `interface`, `module`, `method`) VALUES
-(1, NULL, NULL, '', '*', '*');
+(1, NULL, NULL, '', '*', '*'),
 (2, NULL, NULL, '*', 'Users', 'login'),
 (3, NULL, NULL, '*', 'Users', 'authenticate'),
 (4, NULL, NULL, '*', 'Users', 'logout'),

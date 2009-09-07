@@ -485,16 +485,23 @@ class User {
 	 */
 	public function allowAnonymous($module = false, $method = false, $interface = false){
 
-		$module = ucwords(str_replace('_'.$interface, '', strtolower($module)));
-		$interface = ucwords(strtolower($interface));
+		if($this->APP->isInstalled()){
+			$module = ucwords(str_replace('_'.$interface, '', strtolower($module)));
+			$interface = ucwords(strtolower($interface));
 
-		$sql = sprintf('
-				SELECT * FROM permissions
-				WHERE (interface = "%s" OR interface = "*") AND (module = "%s" OR module = "*") AND (method="%s" OR method = "*") AND user_id IS NULL AND group_id IS NULL',
-					$interface, $module, $method);
+			$sql = sprintf('
+					SELECT * FROM permissions
+					WHERE (interface = "%s" OR interface = "*") AND (module = "%s" OR module = "*") AND (method="%s" OR method = "*") AND user_id IS NULL AND group_id IS NULL',
+						$interface, $module, $method);
 
-		$access = $this->APP->model->query($sql);
-		return $access->RecordCount() ? true : false;
+			$access = $this->APP->model->query($sql);
+			return $access->RecordCount() ? true : false;
+		} else {
+			if($module == 'Install' &&  $interface == 'Admin'){
+				return true;
+			}
+		}
+		return false;
 
 	}
 
