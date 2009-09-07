@@ -52,17 +52,12 @@ class App extends Bootstrap {
 		if($this->params->session->getInt('user_id')){
 			$this->prefs->loadUserPreferences();
 		}
-		
-		// if logging required, set some defines
-		if($this->requireLogin()){
 
-			// determine if the current user is an admin
-			define('IS_ADMIN', $this->user->userHasGlobalAccess());
-	
-			// determine if this a one-user system or not
-			define('MULTIPLE_USERS', $this->user->userAccountCount() == 1 ? false : true);
-			
-		}
+		// determine if the current user is an admin
+		define('IS_ADMIN', $this->user->userHasGlobalAccess());
+
+		// determine if this a one-user system or not
+		define('MULTIPLE_USERS', $this->user->userAccountCount() == 1 ? false : true);
 
 		// set the referring page unless we're POSTing
 		$post_set = $this->params->getRawSource('post');

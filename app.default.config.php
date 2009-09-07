@@ -21,8 +21,5 @@
 
 	// application build
 	$config['application_build'] = '';
-	
-	// require user authentication for admin subdirectory application
-	define('USER_AUTH_ADMIN', true);
 
 ?>

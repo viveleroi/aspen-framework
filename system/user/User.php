@@ -367,16 +367,9 @@ class User {
 	 */
 	public function userHasInterfaceAccess($interface = false, $user_id = false){
 
-		if(!$this->APP->requireLogin()){
-			return true;
-		}
-
 		$authenticated 	= false;
 		$interface 		= $interface ? $interface : LOADING_SECTION;
 		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
-
-		Debug::dump( $this->APP->router->getSelectedModule() )->pre();
-//		allowAnonymous
 
 		if($this->userHasGlobalAccess()){
 
@@ -440,14 +433,8 @@ class User {
 		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
 
-		if(
-			$this->userHasGlobalAccess() ||
-			!$this->APP->requireLogin($interface) ||
-			$this->allowAnonymous($module, $method, $interface)
-			){
-
+		if($this->userHasGlobalAccess() || $this->allowAnonymous($module, $method, $interface)){
 			return true;
-
 		} else {
 
 			if($this->isLoggedIn() && $method != 'logout'){

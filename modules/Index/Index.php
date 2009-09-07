@@ -1,10 +1,17 @@
 <?php
 
 /**
- * @abstract Holds functions used by public pages
+ * @package 	Aspen_Framework
+ * @subpackage 	Modules.Base
+ * @author 		Michael Botsko
+ * @copyright 	2009 Trellis Development, LLC
+ * @since 		1.0
+ */
+
+/**
+ * @abstract Displays the front-end welcome page.
  * @package Aspen_Framework
- * @author Michael Botsko
- * @copyright 2008 Trellis Development, LLC
+ * @uses Bootstrap
  */
 class Index extends Bootstrap {
 	

@@ -547,22 +547,6 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns whether or not login is required for the current interface application.
-	 * @param string $interface Name of the interface application. If empty, current is used
-	 * @access public
-	 * @return boolean
-	 */
-	public function requireLogin($interface = false){
-		$interface = $interface ? $interface : LOADING_SECTION;
-		if($interface != '' && defined('USER_AUTH_' . strtoupper($interface))){
-			return constant('USER_AUTH_' . strtoupper($interface));
-		} else {
-			return false;
-		}
-	}
-
-
-	/**
 	 * @abstract Loads the core classes needed for AspenMSM
 	 * @return bool
 	 * @access private

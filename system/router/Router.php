@@ -272,23 +272,15 @@ class Router {
 
 			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account'){
 
-				// if user must be logged in
-				if($this->APP->requireLogin()){
+				// do a quick check to see if the user is logged in or not
+				// we need to create our own auth check, as the user module is not loaded at this point
+				if($this->APP->user->isLoggedIn()){
 
-					// do a quick check to see if the user is logged in or not
-					// we need to create our own auth check, as the user module is not loaded at this point
-					if($this->APP->user->isLoggedIn()){
+					$default = $this->map['module'] ? $this->map['module'] : false;
 
-						$default = $this->map['module'] ? $this->map['module'] : $default;
-
-					} else {
-
-						$default = 'Users' . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
-
-					}
 				} else {
 
-					$default = $this->map['module'] ? $this->map['module'] : $default;
+					$default = 'Users' . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
 
 				}
 			} else {
@@ -316,34 +308,25 @@ class Router {
 	 */
 	private function identifyAcceptedMethodForLoad(){
 
-		// check if a login is required
-		if($this->APP->requireLogin()){
-
-			// do a basic login check as user module is not loaded at this point
-			if($this->APP->user->isLoggedIn()){
-
-				$default = $this->map['method'];
-				$default = $default ? $default : $this->APP->config('default_method');
-
-			}
-			elseif($this->map['method'] == 'authenticate' || $this->map['method'] == 'forgot'){
-
-				$default = $this->map['method'];
-
-			} else {
-				if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account'){
-					$default = 'login';
-				} else {
-					if($this->getSelectedModule() == "Install_Admin"){
-						$default = $this->map['method'] ? $this->map['method'] : 'view';
-					}
-				}
-			}
-		} else {
+		// do a basic login check as user module is not loaded at this point
+		if($this->APP->user->isLoggedIn()){
 
 			$default = $this->map['method'];
 			$default = $default ? $default : $this->APP->config('default_method');
 
+		}
+		elseif($this->map['method'] == 'authenticate' || $this->map['method'] == 'forgot'){
+
+			$default = $this->map['method'];
+
+		} else {
+			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account'){
+				$default = 'login';
+			} else {
+				if($this->getSelectedModule() == "Install_Admin"){
+					$default = $this->map['method'] ? $this->map['method'] : 'view';
+				}
+			}
 		}
 
 		return $default;

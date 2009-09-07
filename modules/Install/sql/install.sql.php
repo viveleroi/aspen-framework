@@ -171,10 +171,17 @@ INSERT INTO `permissions` (`id`, `user_id`, `group_id`, `interface`, `module`, `
 $sql[] = "
 
 INSERT INTO `permissions` (`id`, `user_id`, `group_id`, `interface`, `module`, `method`) VALUES
-(2, NULL, 2, '*', 'Index', '*'),
-(3, NULL, 2, '*', 'Settings', '*'),
-(4, NULL, 2, '*', 'Users', 'my_account');
-	
+(1, NULL, NULL, '', '*', '*');
+(2, NULL, NULL, '*', 'Users', 'login'),
+(3, NULL, NULL, '*', 'Users', 'authenticate'),
+(4, NULL, NULL, '*', 'Users', 'logout'),
+(5, NULL, NULL, '*', 'Users', 'forgot'),
+(6, NULL, NULL, 'Admin', 'Install', '*'),
+(7, NULL, 1, '*', '*', '*'),
+(8, NULL, 2, '*', 'Index', '*'),
+(9, NULL, 2, '*', 'Settings', '*'),
+(10, NULL, 2, '*', 'Users', 'my_account');
+
 ";
 
 

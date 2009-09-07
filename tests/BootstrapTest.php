@@ -180,14 +180,6 @@ class BootstrapTest extends TestHelper {
 	}
 	
 	/**
-	 * Tests Bootstrap->requireLogin()
-	 */
-	public function testRequireLogin() {
-		$this->assertEquals(false, $this->sharedFixture->requireLogin());
-	
-	}
-	
-	/**
 	 * Tests Bootstrap->setConfig()
 	 */
 	public function testSetConfig() {

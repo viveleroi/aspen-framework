@@ -3,8 +3,6 @@
 <?php print $this->APP->form->printErrors(); ?>
 <?php print $this->APP->sml->printMessage(); ?>
 
-<?php print $this->createLink('Signup for an account', 'signup', false, 'Index_Admin'); ?>
-
 <form action="<?php print $this->createXhtmlValidUrl('authenticate'); ?>" method="post">
 	<fieldset>
 	
