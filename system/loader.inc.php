@@ -31,7 +31,6 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 	function load_module($module = false){
 	
 		define('LOADING_SECTION', '');
-		define('INTERFACE_PATH', APPLICATION_PATH);
 		define('INCLUDE_ONLY', true);
 		
 		if($module){
@@ -72,7 +71,6 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 	function load_framework($interface = false){
 	
 		define('LOADING_SECTION', ucwords($interface));
-		define('INTERFACE_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . strtolower(LOADING_SECTION));
 
 		$config = Bootstrap::loadAllConfigs();
 		return new Bootstrap($config);

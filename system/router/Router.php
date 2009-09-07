@@ -652,8 +652,21 @@ class Router {
 	 * @access public
 	 */
 	public function getStaticContentUrl(){
-		return ($this->APP->config('static_content_path') ? $this->APP->config('static_content_path') :
-																					$this->getInterfaceUrl());
+
+		if($this->APP->config('static_content_url')){
+			return $this->APP->config('static_content_url');
+		} else {
+
+			$interface = LS;
+			if(is_array($this->APP->config('interface_global_folder_replace'))){
+				$replace = $this->APP->config('interface_global_folder_replace');
+				if(array_key_exists(LS, $replace)){
+					$interface = $replace[LS];
+				}
+			}
+
+			return $this->getInterfaceUrl($interface);
+		}
 	}
 
 

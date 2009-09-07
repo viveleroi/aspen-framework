@@ -33,12 +33,6 @@ class Template {
 	private $_load_templates;
 
 	/**
-	 * @var string $template_dir Holds the templates directory
-	 * @access private
-	 */
-	private $template_dir;
-
-	/**
 	 * @var array $lang Holds the current language values
 	 * @access private
 	 */
@@ -195,7 +189,7 @@ class Template {
 
 		if($args['from'] == 'i'){
 			$filename = $args['file'] ? $args['file'] : strtolower(LS).'.'.$args['ext'];
-			$basepath = $args['basepath'] ? $args['basepath'] : $this->APP->router->getInterfaceUrl() . '/'.$args['ext'];
+			$basepath = $args['basepath'] ? $args['basepath'] : $this->APP->router->getStaticContentUrl() . '/'.$args['ext'];
 		}
 
 		return $file = $basepath . '/' . $filename;

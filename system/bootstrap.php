@@ -260,9 +260,19 @@ class Bootstrap extends Base {
 		}
 
 		// set a few constants
-		DEFINE('LS', strtolower(LOADING_SECTION));
-		DEFINE('DS', DIRECTORY_SEPARATOR);
-		DEFINE('REQUEST_START', date("YmdHis"));
+		define('LS', strtolower(LOADING_SECTION));
+		define('DS', DIRECTORY_SEPARATOR);
+		define('REQUEST_START', date("YmdHis"));
+
+		$interface = LS;
+		if(is_array($this->config('interface_global_folder_replace'))){
+			$replace = $this->config('interface_global_folder_replace');
+			if(array_key_exists(LS, $replace)){
+				$interface = $replace[LS];
+			}
+		}
+		define('INTERFACE_PATH', APPLICATION_PATH . DS . strtolower($interface));
+
 		if(!defined('INCLUDE_ONLY')){
 			define('INCLUDE_ONLY', false);
 		}
@@ -443,7 +453,7 @@ class Bootstrap extends Base {
 
 			// set user config file location, using config prefix if set by server
 			// (allows multiple "instances" of single install)
-			if(!defined('CONFIG_PREFIX')){ DEFINE('CONFIG_PREFIX', ''); }
+			if(!defined('CONFIG_PREFIX')){ define('CONFIG_PREFIX', ''); }
 			$config_path = APPLICATION_PATH . DIRECTORY_SEPARATOR . CONFIG_PREFIX . 'config.php';
 
 		}

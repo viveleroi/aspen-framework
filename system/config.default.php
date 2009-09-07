@@ -116,7 +116,17 @@
 
 	// Path to static content (css, js, images, etc)
 	// set only if different from interface url
-	$config['static_content_path'] = false;
+	$config['static_content_url'] = false;
+
+	// Interface support files folder.
+	// Any files that are global to the interface (images, js, css, templates)
+	// may be stored in a different folder than the interface. If so,
+	// define that folder here and it will be used in place of the actual interface app name.
+	// This folder change will not impact any anchors within it.
+	//
+	// In an array, define the actual name of the interface and then it's replacement folder.
+	// example: $config['interface_global_folder_replace'] = array(''=>'frontend');
+	$config['interface_global_folder_replace'] = array();
 
 	// Define custom URL path handling, called 'routes'. We can map custom
 	// url handlers to modules->methods(args). Routing can be applied using

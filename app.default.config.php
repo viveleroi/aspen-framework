@@ -23,6 +23,6 @@
 	$config['application_build'] = '';
 	
 	// require user authentication for admin subdirectory application
-	DEFINE('USER_AUTH_ADMIN', true);
+	define('USER_AUTH_ADMIN', true);
 
 ?>
