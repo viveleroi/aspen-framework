@@ -98,6 +98,44 @@ class Users_Admin extends Module {
 			$this->APP->router->redirect('view');
 		}
 	}
+
+
+	/**
+	 * @abstract Displays the user login page
+	 * @access public
+	 */
+	public function login(){
+
+		$this->APP->user->login();
+
+		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
+		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
+		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
+		$this->APP->template->display();
+	}
+
+
+	/**
+	 * @abstract Displays and processes the forgotten password reset form
+	 * @access public
+	 */
+	public function forgot(){
+
+		if($this->APP->user->forgot() == 1){
+			$this->APP->sml->addNewMessage('Your password has been reset. Please check your email.');
+			$this->APP->router->redirect('login');
+		}
+		elseif($this->APP->user->forgot() == -1){
+			$this->APP->sml->addNewMessage('We were unable to find any accounts matching that username.');
+			$this->APP->router->redirect('forgot');
+		}
+
+		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
+		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'forgot.tpl.php');
+		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
+		$this->APP->template->display();
+
+	}
 	
 	
 	/**
@@ -131,48 +169,10 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function denied(){
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'denied.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/footer.tpl.php');
-		$this->APP->template->display();
-	}
-	
-
-	/**
-	 * @abstract Displays the user login page
-	 * @access public
-	 */
-	public function login(){
-		
-		$this->APP->user->login();
-		
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/footer.tpl.php');
-		$this->APP->template->display();
-	}
-
-	
-	/**
-	 * @abstract Displays and processes the forgotten password reset form
-	 * @access public
-	 */
-	public function forgot(){
-
-		if($this->APP->user->forgot() == 1){
-			$this->APP->sml->addNewMessage('Your password has been reset. Please check your email.');
-			$this->APP->router->redirect('login');
-		}
-		elseif($this->APP->user->forgot() == -1){
-			$this->APP->sml->addNewMessage('We were unable to find any accounts matching that username.');
-			$this->APP->router->redirect('forgot');
-		}
-
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'forgot.tpl.php');
+		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'denied.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
 		$this->APP->template->display();
-
 	}
 }
 ?>

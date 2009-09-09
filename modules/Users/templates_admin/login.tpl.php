@@ -3,7 +3,7 @@
 <?php print $this->APP->form->printErrors(); ?>
 <?php print $this->APP->sml->printMessage(); ?>
 
-<form action="<?php print $this->createXhtmlValidUrl('authenticate'); ?>" method="post">
+<form action="<?php print $this->createFormAction('authenticate'); ?>" method="post">
 	<fieldset>
 	
 		<p>
