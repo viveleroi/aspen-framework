@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `user_group_link` (
 $sql[] = "
 
 ALTER TABLE `config`
-  ADD CONSTRAINT `config_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `config_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE;
 
 ";
 
@@ -123,8 +123,8 @@ ALTER TABLE `config`
 $sql[] = "
 
 ALTER TABLE `permissions`
-  ADD CONSTRAINT `permissions_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `kiwi_trunk`.`groups` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `permissions_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE;
 
 ";
 
@@ -132,10 +132,10 @@ ALTER TABLE `permissions`
 $sql[] = "
 
 ALTER TABLE `user_group_link`
-  ADD CONSTRAINT `user_group_link_ibfk_4` FOREIGN KEY (`group_id`) REFERENCES `kiwi_trunk`.`groups` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `user_group_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `user_group_link_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `user_group_link_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `kiwi_trunk`.`authentication` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `user_group_link_ibfk_4` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `user_group_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `user_group_link_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `user_group_link_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE;
 
 ";
 

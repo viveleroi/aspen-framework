@@ -299,23 +299,17 @@ class Bootstrap extends Base {
 		// set monetary locale
 		setlocale(LC_MONETARY, $this->config('currency_locale'));
 
+		// load all of the module registry files into a local var
+		$this->_module_registry = $this->parseModuleRegistries();
+
 		// load in system libraries / classes
 		$this->loadSystemLibraries();
 
 		// generate a list of all available (installed) modules
 		$this->listModules();
 
-		// load all of the module registry files into a local var
-		$this->_module_registry = $this->parseModuleRegistries();
-
-		// identify all model libraries
-		$this->_module_libraries = $this->listModelLibraries();
-
 		// identify all model extensions
 		$this->_model_extensions = $this->listModelExtensions();
-
-		// load any model extensions
-		$this->loadSystemModelLibraries();
 
 		// load any model extensions
 		$this->loadSystemModelExtensions();
@@ -595,17 +589,27 @@ class Bootstrap extends Base {
 		$base_classes 	= $this->config('load_core_class');
 		$add_classes 	= $this->config('load_add_core_class');
 		$custom_classes = $this->config('custom_classes');
+		$module_classes = $this->listModelLibraries();
 
-		// if add classes is an array, append to base
-		if(is_array($add_classes)){
+		// Merge user custom classes from config into base classes
+		if(is_array($base_classes) && is_array($add_classes)){
 			$base_classes = array_merge($base_classes, $add_classes);
 		}
 
-		foreach($base_classes as $class){
-			$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
-			$all_classes[$class['classname']] = $class;
+		// Merge module classes from register.xml into base classes
+		if(is_array($base_classes) && is_array($module_classes)){
+			$base_classes = array_merge($base_classes, $module_classes);
 		}
-		
+
+		// Load all base system classes (defined in config.default.php
+		if(is_array($base_classes)){
+			foreach($base_classes as $class){
+				$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
+				$all_classes[$class['classname']] = $class;
+			}
+		}
+
+		// Load all custom classes
 		if(is_array($custom_classes)){
 			foreach($custom_classes as $class){
 				$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
@@ -723,7 +727,7 @@ class Bootstrap extends Base {
 					}
 
 					// if class included but no instance, load instance
-					if($autoload){
+					if($autoload && !empty($var)){
                         $this->{$var} = false;
                         if(class_exists($library['classname']) && !is_object($this->{$var})){
                             $this->{$var} = new $library['classname'];
@@ -809,15 +813,18 @@ class Bootstrap extends Base {
 
 		// pull in any models defined in register.xml files
 		$modules = $this->getModuleRegistry();
-		foreach($modules as $module){
-			if(isset($module->library) && is_object($module->library)){
-				foreach($module->library as $lib){
-					$libs[(string)$lib->classname] = array(
-														'classname'=>(string)$lib->classname,
-														'root' => MODULES_PATH.DS.$module->folder,
-														'folder' => 'lib',
-														'autoload' => (isset($lib->autoload) && $lib->autoload ? true : false)
-													 );
+		if(is_array($modules)){
+			foreach($modules as $module){
+				if(isset($module->library) && is_object($module->library)){
+					foreach($module->library as $lib){
+						$libs[(string)$lib->classname] = array(
+															'classname'=>(string)$lib->classname,
+															'root' => MODULES_PATH.DS.$module->folder,
+															'folder' => 'lib',
+															'autoload' => (isset($lib->autoload) && $lib->autoload ? true : false),
+															'extends' => (isset($lib->extends) && $lib->extends ? (string)$lib->extends : false)
+														 );
+					}
 				}
 			}
 		}
@@ -890,16 +897,6 @@ class Bootstrap extends Base {
 	 */
 	public function getChildForeignKeys(){
 		return $this->_child_foreign_keys;
-	}
-
-
-	/**
-	 * @abstract Loads additional support libs for modules
-	 * @return boolean
-	 * @access private
-	 */
-	public function loadSystemModelLibraries(){
-		return $this->loadSystemLibraryArray($this->_module_libraries);
 	}
 
 
@@ -1004,10 +1001,6 @@ class Bootstrap extends Base {
 				if(file_exists($registry_path)){
 					$module_registry[$file] = simplexml_load_file($registry_path);
 					$module_registry[$file]->folder = $file;
-					$this->log->write('Found Module: '
-										. $module_registry[$file]->classname
-										.' guid: ' . $module_registry[$file]->guid);
-
 				}
 			}
 		}
