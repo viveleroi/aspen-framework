@@ -36,6 +36,17 @@ class Sml {
 
 
 	/**
+	 * @abstract Alias for addNewMessage
+	 * @param string $msg The message
+	 * @param boolean $hidden Display to the user or not
+	 * @access public
+	 */
+	public function say($msg, $hidden = false){
+		return $this->addNewMessage($msg, $hidden);
+	}
+
+
+	/**
 	 * @abstract Adds a new message to the session log
 	 * @param string $msg The message
 	 * @param boolean $hidden Display to the user or not
@@ -52,7 +63,7 @@ class Sml {
 		/* serialize the array and save it to the session */
 		$_SESSION['message_log'] = serialize($this->sessionMessageArray);
 		$_SESSION['unread_message_flag'] = $hidden ? false : true;
-		
+
 		return true;
 	}
 

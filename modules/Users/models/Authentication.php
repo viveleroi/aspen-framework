@@ -17,6 +17,7 @@ class AuthenticationModel extends Model {
 	/**
 	 * @abstract We must allow the parent constructor to run properly
 	 * @param string $table
+	 * @access public
 	 */
 	public function __construct($table = false){ parent::__construct($table); }
 
@@ -26,6 +27,7 @@ class AuthenticationModel extends Model {
 	 * @param array $fields
 	 * @param string $primary_key
 	 * @return boolean
+	 * @access public
 	 */
 	public function validate($fields = false, $primary_key = false){
 
@@ -59,13 +61,16 @@ class AuthenticationModel extends Model {
 
 	/**
 	 * @abstract Runs additional logic on the insert query
-	 * @param <type> $fields
-	 * @return <type>
+	 * @param array $fields
+	 * @return mixed
+	 * @access public
 	 */
 	public function insert($fields = false){
 
 		// enforce a sha1 on the password
-		$fields['password'] = sha1($fields['password']);
+		if(array_key_exists('password', $fields) && !empty($fields['password'])){
+			$fields['password'] = $this->encode_password($fields['password']);
+		}
 
 		// insert
 		return parent::insert($fields);
@@ -75,19 +80,34 @@ class AuthenticationModel extends Model {
 
 	/**
 	 * @abstract Runs additional logic on the update query
-	 * @param <type> $fields
-	 * @return <type>
+	 * @param array $fields
+	 * @return mixed
+	 * @access public
 	 */
 	public function update($fields = false, $where_value = false, $where_field = false ){
 
-		// if the password provided =, sha1 it - otherwise, remove
+		// if the password provided =, encode it - otherwise, remove
 		if(!empty($fields['password'])){
-			$fields['password'] = sha1($fields['password']);
+			$fields['password'] = $this->encode_password($fields['password']);
 		} else {
 			unset($fields['password']);
 		}
 
 		return parent::update($fields, $where_value, $where_field);
+	}
+
+
+	/**
+	 * @abstract Defines an encoding type for the password.
+	 * @param string $pass
+	 * @return string
+	 * @access
+	 * private
+	 */
+	protected function encode_password($pass = false){
+		if(!empty($pass)){
+			return sha1($pass);
+		}
 	}
 }
 ?>

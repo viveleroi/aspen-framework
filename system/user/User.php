@@ -216,8 +216,8 @@ class User {
 	 * @access public
 	 */
 	public function login_failed(){
-		$this->APP->form->addError('user', 'Your username and password did not match. Please try again.');
-		$this->APP->Users_Admin->login();
+		$this->APP->sml->say('Your username and password did not match. Please try again.');
+		$this->APP->router->redirect('login',false,'Users');
 	}
 
 
