@@ -118,6 +118,10 @@
 	// set only if different from interface url
 	$config['static_content_url'] = false;
 
+	// Print some javascript variables like url
+	// when any js files included.
+	$config['print_js_variables'] = true;
+
 	// Interface support files folder.
 	// Any files that are global to the interface (images, js, css, templates)
 	// may be stored in a different folder than the interface. If so,
@@ -236,7 +240,7 @@
 	$config['require_form_token_auth'] = false;
 
 	// session message wrapping html
-	$config['sml_message_html'] = '<p class="notice">%s</p>';
+	$config['sml_message_html'] = '<p class="%2$s">%1$s</p>';
 
 	// form error message wrapping (wraps area of possibly multiple errors)
 	$config['form_error_wrapping_html'] = '<ul class="error">%s</ul>';

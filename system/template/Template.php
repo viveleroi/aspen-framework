@@ -114,6 +114,21 @@ class Template {
 		// append any js files for loading
 		if(!empty($this->_load_js)){
 
+			// print some js globals
+			if($this->APP->config('print_js_variables')){
+				print '<script type="text/javascript">'."\n";
+				print 'var INTERFACE_URL = "'.$this->APP->router->getInterfaceUrl().'";'."\n";
+				print '</script>'."\n";
+			}
+
+			// re-arrange to ensure all modules are second
+			$m = array();
+			$i = array();
+			foreach($this->_load_js as $js){
+				${$js['from']}[] = $js;
+			}
+			$this->_load_js = array_merge($i, $m);
+
 			$js_html_elm = '<script type="text/javascript" src="%s"></script>'."\n";
 
 			foreach($this->_load_js as $js){

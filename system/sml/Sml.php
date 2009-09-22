@@ -38,31 +38,40 @@ class Sml {
 	/**
 	 * @abstract Alias for addNewMessage
 	 * @param string $msg The message
-	 * @param boolean $hidden Display to the user or not
+	 * @param string $class CSS Class for display
 	 * @access public
 	 */
-	public function say($msg, $hidden = false){
-		return $this->addNewMessage($msg, $hidden);
+	public function say($msg, $class = 'notice'){
+		return $this->addNewMessage($msg, $class);
 	}
 
 
 	/**
 	 * @abstract Adds a new message to the session log
 	 * @param string $msg The message
-	 * @param boolean $hidden Display to the user or not
+	 * @param string $class CSS Class for display
 	 * @access public
 	 */
-	public function addNewMessage($msg, $hidden = false){
+	public function addNewMessage($msg, $class = 'notice'){
+
+		// Interpret boolean values
+		if($class === 0 || $class === false){
+			$class = 'error';
+		}
+
+		if($class === 1 || $class === true){
+			$class = 'success';
+		}
 
 		/* pull the session if it exists */
 		$this->getMessageLog();
 
 		/* add the message */
-		$this->sessionMessageArray[] = $msg;
+		$this->sessionMessageArray[] = array('message'=>$msg, 'class'=>$class);
 
 		/* serialize the array and save it to the session */
 		$_SESSION['message_log'] = serialize($this->sessionMessageArray);
-		$_SESSION['unread_message_flag'] = $hidden ? false : true;
+		$_SESSION['unread_message_flag'] = true;
 
 		return true;
 	}
@@ -75,8 +84,7 @@ class Sml {
 	 */
 	public function getMostRecentMessage(){
 		$this->getMessageLog();
-		$_recentMsg = array_pop($this->sessionMessageArray);
-		return $_recentMsg;
+		return array_pop($this->sessionMessageArray);
 	}
 
 
@@ -98,7 +106,8 @@ class Sml {
      */
 	public function printMessage(){
 		if($this->APP->params->session->getRaw('unread_message_flag')){
-			print sprintf($this->APP->config('sml_message_html'), $this->getMostRecentMessage());
+			$message = $this->getMostRecentMessage();
+			printf($this->APP->config('sml_message_html'), $message['message'], $message['class']);
 			$_SESSION['unread_message_flag'] = false;
 		}
 	}
