@@ -749,6 +749,28 @@ class Model {
 
 
 	/**
+	 * @abstract Adds a WHERE ... IS NULL condition
+	 * @param string $field
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereIsNull($field = false, $match = 'AND'){
+		$this->base_where('%s %s IS NULL', $field, $match);
+	}
+
+
+	/**
+	 * @abstract Adds a WHERE ... IS  NOT NULL condition
+	 * @param string $field
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereIsNotNull($field = false, $match = 'AND'){
+		$this->base_where('%s %s IS NOT NULL', $field, $match);
+	}
+
+
+	/**
 	 * @abstract Adds a standard where like %% condition
 	 * @param string $field
 	 * @param mixed $value
@@ -822,6 +844,18 @@ class Model {
 
 
 	/**
+	 * @abstract Finds timestamps equal to today
+	 * @param string $field
+	 * @param boolean $include_today
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereToday($field, $match = 'AND'){
+		$this->base_where('%s TO_DAYS(%s) = TO_DAYS(NOW())', $field, false, $match);
+	}
+
+
+	/**
 	 * @abstract Finds timestamps prior to today
 	 * @param string $field
 	 * @param boolean $include_today
@@ -880,6 +914,28 @@ class Model {
 		$this->base_where('%s TO_DAYS(NOW()) - TO_DAYS(%s) <= ' . $day_count, $field, false, $match);
 	}
 
+
+	/**
+	 * @abstract Adds a WHERE ... IS NULL condition
+	 * @param string $field
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereIsNull($field = false, $match = 'AND'){
+		$this->base_where('%s %s IS NULL', $field, $match);
+	}
+
+
+	/**
+	 * @abstract Adds a WHERE ... IS  NOT NULL condition
+	 * @param string $field
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereIsNotNull($field = false, $match = 'AND'){
+		$this->base_where('%s %s IS NOT NULL', $field, $match);
+	}
+	
 
 //+-----------------------------------------------------------------------+
 //| AUTO-FILTER (auto-condition) FUNCTIONS

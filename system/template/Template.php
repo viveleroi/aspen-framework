@@ -404,24 +404,41 @@ class Template {
 			}
 		} else {
 
-			$url .= sprintf('/%s', $module);
-			$url .= $method != $this->APP->config('default_method') || is_array($bits) ? sprintf('/%s', $method) : '';
+			// Determine if there are any routes that need to be used instead
+			$routes = $this->APP->config('routes');
 
-			if(is_array($bits)){
-				foreach($bits as $bit => $value){
-					if(is_array($value)){
-						foreach($value as $key => $val){
-							$url .= '/' . $bit . '[' . $key . ']=' . urlencode($val);
-						}
-					} else {
-						$url .= '/' . urlencode($value);
+			$route_mask = false;
+			if(is_array($routes)){
+				foreach($routes as $mask => $route){
+					if(strtolower($route['module']) == $module && $route['method'] == $method){
+						$route_mask = $mask;
+						$url .= $mask;
 					}
 				}
 			}
 
+			// Otherwise, just built it as normal
+			if(!$route_mask){
+
+				$url .= sprintf('/%s', $module);
+				$url .= $method != $this->APP->config('default_method') || is_array($bits) ? sprintf('/%s', $method) : '';
+
+				if(is_array($bits)){
+					foreach($bits as $bit => $value){
+						if(is_array($value)){
+							foreach($value as $key => $val){
+								$url .= '/' . $bit . '[' . $key . ']=' . urlencode($val);
+							}
+						} else {
+							$url .= '/' . urlencode($value);
+						}
+					}
+				}
+			}
 		}
 
 		return $url;
+		
 	}
 
 
