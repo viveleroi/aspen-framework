@@ -624,7 +624,7 @@ class Router {
             // if no mod_rewrite, we need to handle the paths appropriately
             if($this->APP->config('enable_mod_rewrite') && strpos($this->APP->params->server->getRaw('REQUEST_URI'), '.php?') === false){
 
-                $redirected = $this->APP->params->get->getRaw('redirected');
+                $redirected = stripslashes($this->APP->params->get->getRaw('redirected'));
                 $interface = LS ? LS : '';
 
                 $replace = array();
@@ -635,7 +635,8 @@ class Router {
                     $replace[] = '/'.$redirected;
                 }
 
-                $uri = str_replace($replace, '', $this->APP->params->server->getRaw('REQUEST_URI'));
+                $uri = str_replace($replace, '', urldecode($this->APP->params->server->getRaw('REQUEST_URI')));
+				
             } else {
 
                 $no_qs_url = str_replace('?' . $this->APP->params->server->getRaw('QUERY_STRING'), '', $this->APP->params->server->getRaw('REQUEST_URI'));
