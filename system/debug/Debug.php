@@ -49,7 +49,7 @@ class DebugBase {
 		$this->val = $val;
 		$this->name = $name;
 		$this->print_type = $print_type ? $print_type : 'var_dump';
-		$this->line_end = $line_end ? $line_end : '\n';
+		$this->line_end = $line_end;
 	}
 
 
@@ -94,11 +94,11 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function html(){
-		print '<!--';
-		$this->line_end = "<br />";
+	public function html($hide = false){
+		print $hide ? '<!--' : '';
+		$this->line_end = $hide ? "\n" : "<br />";
 		$this->dump();
-		print '-->';
+		print $hide ? '-->' : '';
 	}
 
 
@@ -206,8 +206,8 @@ class Debug {
 	 * @param <type> $print_type
 	 * @return DebugBase
 	 */
-	static public function dump($val, $name = false, $print_type = false){
-		return new DebugBase($val, $name, $print_type);
+	static public function dump($val, $name = false, $print_type = false, $line_end = false){
+		return new DebugBase($val, $name, $print_type, $line_end);
 	}
 
 

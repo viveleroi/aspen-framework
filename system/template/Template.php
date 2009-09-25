@@ -882,7 +882,7 @@ class Template {
 		print $prepend_blank ? '<option value="">'.$blank_text.'</option>' . "\n" : '';
 
 		if(is_array($grabSelectArray)){
-			foreach($grabSelectArray as $option){
+			foreach($grabSelectArray as $key => $option){
 
 				// if it's an array, we have values from DISTINCT
 				if(is_array($option)){
@@ -899,9 +899,11 @@ class Template {
 								$this->encodeTextEntities($option[$keys[1]]));
 				} else {
 
+					$value = is_string($key) ? $key : $option;
+
 					printf('<option value="%s"%s>%s</option>' . "\n",
-								$this->encodeTextEntities($option),
-								($option == $match_value ? ' selected="selected"' : ''),
+								$this->encodeTextEntities($value),
+								($value == $match_value ? ' selected="selected"' : ''),
 								$this->encodeTextEntities($option));
 
 				}

@@ -761,6 +761,24 @@ class Model {
 
 
 	/**
+	 * @abstract Adds a series of WHERE LIKE values that mimic a search query for multiple fields
+	 * @param array $fields
+	 * @param mixed $value
+	 * @access public
+	 */
+	public function whereLikeSearch($fields, $value, $match = 'AND'){
+		$this->parenthStart();
+		if(is_array($fields)){
+			foreach($fields as $field){
+				$this->base_where('%s %s LIKE "%%%s%%"', $field, $value, $match);
+				$match = 'OR';
+			}
+		}
+		$this->parenthEnd();
+	}
+
+
+	/**
 	 * @abstract Searches for values between $start and $end
 	 * @param string $field
 	 * @param mixed $start
