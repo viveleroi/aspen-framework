@@ -11,7 +11,7 @@ fi
 rm -rf aspen-framework
 
 # checkout the latest code from trunk
-git clone ssh://mbotsko@69.168.53.4/git/repos/aspen-framework.git
+git clone git://github.com/botskonet/aspen-framework.git
 cd aspen-framework
 
 # checkout the proper branch
