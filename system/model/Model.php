@@ -965,28 +965,6 @@ class Model {
 	public function inPastXDays($field, $day_count = 7, $include_range = true, $match = 'AND'){
 		$this->base_where('%s TO_DAYS(NOW()) - TO_DAYS(%s) '.($include_range ? '<' : '').'= ' . $day_count, $field, false, $match);
 	}
-
-
-	/**
-	 * @abstract Adds a WHERE ... IS NULL condition
-	 * @param string $field
-	 * @param string $match
-	 * @access public
-	 */
-	public function whereIsNull($field = false, $match = 'AND'){
-		$this->base_where('%s %s IS NULL', $field, $match);
-	}
-
-
-	/**
-	 * @abstract Adds a WHERE ... IS  NOT NULL condition
-	 * @param string $field
-	 * @param string $match
-	 * @access public
-	 */
-	public function whereIsNotNull($field = false, $match = 'AND'){
-		$this->base_where('%s %s IS NOT NULL', $field, $match);
-	}
 	
 
 //+-----------------------------------------------------------------------+
