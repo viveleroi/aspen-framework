@@ -31,48 +31,51 @@ class Settings {
 	/**
 	 * @abstract Returns a configuration value from the db
 	 * @param string $key
+	 * @param integer $user_id
 	 * @return mixed
 	 * @access public
 	 */
-	public function getConfig($key){
-
-		$value = false;
-
+	public function getConfig($key, $user_id = NULL){
 		if($this->APP->checkDbConnection()){
-
-			$cfg_model = $this->APP->model->open('config');
-
-			$cfg_model->where('config_key', $key);
-			$config = $cfg_model->results();
-
-			if($config['RECORDS']){
-				foreach($config['RECORDS'] as $setting){
-					$value = $setting['current_value'] == '' ? $setting['default_value'] : $setting['current_value'];
-				}
+			$cfg = $this->configRecord($key, $user_id);
+			if(is_array($cfg)){
+				return $cfg['current_value'] === '' ? $cfg['default_value'] : $cfg['current_value'];
 			} else {
-				$value = $this->APP->config($key);
+				return $this->APP->config($key);
 			}
 		}
-
-		return $value;
-
+		return NULL;
 	}
 
 
 	/**
-	 * @abstract Sets a configuration value
+	 * @abstract Sets a configuration value - updates if it exists otherwise insert.
 	 * @param string $key
 	 * @param string $value
+	 * @param integer $user_id
 	 */
-	public function setConfig($key = false, $value = false){
+	public function setConfig($key = false, $value = false, $user_id = NULL){
+
+		$new_rc = array('current_value'=>$value,'config_key'=>$key,'user_id'=>$user_id);
 
 		$cfg_model	= $this->APP->model->open('config');
-		$rec		= $cfg_model->quickSelectSingle($key, 'config_key');
+		$cfg = $this->configRecord($key, $user_id);
+		return is_array($cfg) ? $cfg_model->update($new_rc, $cfg['id']) : $cfg_model->insert($new_rc);
+	}
 
-		// update the record
-		$new_rc = array('current_value'=>$value,'config_key'=>$key);
-		return is_array($rec) ? $cfg_model->update($new_rc, $key, 'config_key') : $cfg_model->insert($new_rc);
 
+	/**
+	 * @abstract Loads the core config record
+	 * @param string $key
+	 * @param integer $user_id
+	 * @return array
+	 * @access private
+	 */
+	private function configRecord($key, $user_id = NULL){
+		$cfg_model	= $this->APP->model->openSingle('config');
+		$cfg_model->where('config_key', $key);
+		$cfg_model->where('user_id', $user_id);
+		return $cfg_model->results();
 	}
 }
 ?>

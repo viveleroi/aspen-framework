@@ -73,6 +73,9 @@ class Sml {
 		$_SESSION['message_log'] = serialize($this->sessionMessageArray);
 		$_SESSION['unread_message_flag'] = true;
 
+		/* refresh the session cage */
+		$this->APP->params->refreshCage('session');
+
 		return true;
 	}
 

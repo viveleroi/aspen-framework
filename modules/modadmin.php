@@ -7,7 +7,6 @@ define('INCLUDE_ONLY', true);
 // define our application paths
 define('APPLICATION_PATH', str_replace(DIRECTORY_SEPARATOR . "modules", '', dirname(__FILE__)));
 define('SYSTEM_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'system');
-define('INTERFACE_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . strtolower(LOADING_SECTION));
 define('MODULES_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'modules');
 define('PLUGINS_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'plugins');
 
@@ -28,70 +27,70 @@ $_SERVER = $APP->params->getRawSource('server');
 	 * Verify and process arguments passed to script
 	 */
 	if (array_key_exists('argv', $_SERVER)){
-		
+
 		// allowed: add, remove
 		$allowed_actions = array('add', 'remove');
-			
+
 		// verify the first argument
 		if(array_key_exists(1,$_SERVER['argv'])) {
-			
+
 			$action = $_SERVER['argv'][1];
-			
+
 			if(!in_array($action, $allowed_actions)){
 				die("Invalid action. Use ".implode(", ", $allowed_actions).".\n");
 			}
-			
+
 		} else {
 			die("Missing required action to perform.\n");
 		}
-		
-		
+
+
 		// verify second argument, which is module name
 		if(array_key_exists(2,$_SERVER['argv'])) {
-			
+
 			$module = ucwords($_SERVER['argv'][2]);
-			
+
 			// validate module name is acceptable
 			if(empty($module) || !ctype_alnum($module)){
 				die("Invalid module name: ".$module.".\n");
 			}
-			
+
 		} else {
 			die("Missing required name of new module.\n");
 		}
-		
-		
+
+
 		// verify third argument, which is interface name (not required)
 		$interface = '';
 		if(array_key_exists(3,$_SERVER['argv'])) {
-			
+
 			$interface = $_SERVER['argv'][3];
-			
+
 			// validate module name is acceptable
 			if(empty($interface) || !ctype_alnum($interface)){
 				die("Invalid interface name: ".$interface.".\n");
 			} else {
 				$interface = '_' . ucwords($interface);
 			}
-			
+
 		}
-		
+
 	} else {
 		die("Missing arguments, please check documentation on use.\n");
 	}
-	
+
 	// append the interface name
 	$classname = $module . $interface;
-	
-	
+
+
 	// verify the config file loaded - if not, error out
 	$config = array();
 	require(str_replace("modules", "", dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'config.php');
-	
+
 	// open a database connection
 	$conn = mysql_connect($config['db_hostname'], $config['db_username'], $config['db_password']);
 	mysql_select_db($config['db_database']);
-	
+
 	// pusee if we have a matching table for this module
 	$table_exists = false;
 	$table_name = false;
@@ -102,16 +101,16 @@ $_SERVER = $APP->params->getRawSource('server');
 			$table_name = strtolower($module);
 		}
 	}
-	
-	
+
+
 	/**
 	 * ADD A NEW MODULE
 	 */
 	if($action == 'add'){
-		
+
 		// debug ONLY
 		shell_exec('rm -rf ' . $module);
-			
+
 		/**
 		 * @abstract Generates a new GUID for a module
 		 * @return string
@@ -128,15 +127,15 @@ $_SERVER = $APP->params->getRawSource('server');
 		    return strtolower($guidText);
 		}
 		$guid  = NewGuid();
-			
-	
-		
+
+
+
 		// make our directories
 		shell_exec('mkdir ' . dirname(__FILE__) . DIRECTORY_SEPARATOR . $module);
 		shell_exec('mkdir ' . dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'templates' . strtolower($interface));
-		
-		
-		
+
+
+
 	// CREATE THE MODULE CLASS
 $class_output = "<?php
 
@@ -144,39 +143,26 @@ $class_output = "<?php
  * @abstract ".$classname." class
  * @author Aspen Framework modadmin
  */
-class ".$classname." {
+class ".$classname." extends Module {
 
-	/**
-	 * @var object \$APP Holds a reference to our application
-	 * @access private
-	 */
-	private \$APP;
 
-	
-	/**
-	 * @abstract Constructor, initializes the module
-	 * @access public
-	 */
-	public function __construct(){ \$this->APP = get_instance(); }
-	
-	
 	/**
 	 * @abstract Displays the default template for this module.
 	 * @access public
 	 */
 	public function view(){";
-	
+
 	if($table_exists){
-		
+
 	$class_output .= "
-	
+
 		\$data = array();
- 
+
 		\$model = $this->APP->model->open('".$table_name."');
 		\$model->select();
 		\$data['".$table_name."'] = \$model->results();";
 	}
-		
+
 	$class_output .= "
 
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
@@ -185,8 +171,8 @@ class ".$classname." {
 		\$this->APP->template->display(".($table_name ? "\$data" : "").");
 
 	}";
-		
-		
+
+
 if($table_exists){
 
 $class_output .= "
@@ -197,30 +183,30 @@ $class_output .= "
 	 * @access public
 	 */
 	public function add(){
- 
+
 		\$this->APP->form->load('".$table_name."');
- 
+
 		// if form has been submitted
 		if(\$this->APP->form->isSubmitted()){
- 
+
 			// insert a new record with available data
 			if(\$this->APP->form->save()){
 				// if successful insert, redirect to the list
 				\$this->APP->router->redirect('view');
 			}
 		}
- 
+
 		// make sure the template has access to all current values
 		\$data['values'] = \$this->APP->form->getCurrentValues();
- 
+
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getModuleTemplateDir().DS . 'add.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
 		\$this->APP->template->display(\$data);
- 
+
 	}
-	
-	
+
+
 	/**
 	 * @abstract Displays and processes the edit ".$table_name." form
 	 * @param integer \$id
@@ -229,28 +215,28 @@ $class_output .= "
 	public function edit(\$id = false){
 
 		\$this->APP->form->load('".$table_name."', \$id);
- 
+
 		// if form has been submitted
 		if(\$this->APP->form->isSubmitted()){
- 
+
 			// insert a new record with available data
 			if(\$this->APP->form->save(\$id)){
 				// if successful insert, redirect to the list
 				\$this->APP->router->redirect('view');
 			}
 		}
- 
+
 		// make sure the template has access to all current values
 		\$data['values'] = \$this->APP->form->getCurrentValues();
- 
+
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
 		\$this->APP->template->display(\$data);
- 
+
 	}
-	
-	
+
+
 	/**
 	 * @abstract Deletes a single ".$table_name." record
 	 * @param integer \$id
@@ -267,13 +253,13 @@ $class_output .= "
 $class_output .= "
 }
 ?>";
-		
+
 		touch(dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . $classname . '.php');
 		$file = fopen(dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . $classname . '.php', 'w');
 		fwrite($file, $class_output);
 		fclose($file);
-		
-		
+
+
 	// CREATE THE INDEX TEMPLATE
 	if($table_exists){
 		$template_output = $APP->scaffold->view_php($table_name);
@@ -285,42 +271,42 @@ $class_output .= "
 		$template_output .= "<li><a href=\"http://docs.aspen-framework.org\">Main Documentation</a></li>\n";
 		$template_output .= "</ul>\n";
 	}
-		
+
 	$file_path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'templates' . strtolower($interface) . DIRECTORY_SEPARATOR . 'index.tpl.php';
 	touch($file_path);
 	$file = fopen($file_path, 'w');
 	fwrite($file, $template_output);
 	fclose($file);
-	
-	
+
+
 	// CREATE THE ADD FORM TEMPLATE
 	if($table_exists){
-	
+
 		$template_output = $APP->scaffold->recordForm($table_name, 'Add', false, true);
-		
+
 		$file_path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'templates' . strtolower($interface) . DIRECTORY_SEPARATOR . 'add.tpl.php';
 		touch($file_path);
 		$file = fopen($file_path, 'w');
 		fwrite($file, $template_output);
 		fclose($file);
-			
+
 	}
-	
-	
+
+
 	// CREATE THE EDIT FORM TEMPLATE
 	if($table_exists){
-	
+
 		$template_output = $APP->scaffold->recordForm($table_name, 'Edit', false, true);
-		
+
 		$file_path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'templates' . strtolower($interface) . DIRECTORY_SEPARATOR . 'edit.tpl.php';
 		touch($file_path);
 		$file = fopen($file_path, 'w');
 		fwrite($file, $template_output);
 		fclose($file);
-			
+
 	}
-	
-		
+
+
 	// CREATE THE REGISTER.XML FILE
 
   		$xml = '<?xml version="1.0"?>';
@@ -330,43 +316,43 @@ $class_output .= "
   		$xml .= sprintf('	<classname>%s</classname>', $module) . "\n";
   		$xml .= sprintf('	<name>%s</name>', $module) . "\n";
   		$xml .= '</package>';
-	
+
 		touch(dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'register.xml');
 		$file = fopen(dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'register.xml', 'w');
 		fwrite($file, $xml);
 		fclose($file);
-		
-		
+
+
 		// save new module to database
 		$query = sprintf('INSERT INTO modules (guid) VALUES ("%s")', $guid);
 		mysql_query($query);
-		
+
 		// if query fails, print out the guid with db save instructions
-	  
+
 		fwrite(STDOUT, 'A new module called "'.$module.'" has been created successfully.' . "\n");
-	
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * REMOVE A MODULE
 	 */
 	if($action == 'remove'){
-		
-		
+
+
 		// grab xml guid from register.xml file
 		$raw_xml = simplexml_load_file(dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . '/register.xml');
 		$guid = isset($raw_xml->guid) ? (string)$raw_xml->guid : false;
-		
+
 		// remove guid from db
 		mysql_query(sprintf('DELETE FROM modules WHERE guid = "%s"', $guid));
-		
+
 		// remove module folder
 		shell_exec('rm -rf ' . $module);
-		
+
 		fwrite(STDOUT, '"'.$module.'" has been removed successfully.' . "\n");
-		
+
 	}
 
 ?>

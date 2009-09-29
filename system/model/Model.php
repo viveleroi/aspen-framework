@@ -637,6 +637,17 @@ class Model {
 
 
 	/**
+	 * @abstract Adds an additional select field
+	 * @param string $field
+	 * @access public
+	 */
+	public function count($field = false, $as = false){
+		$field = $field ? $field : $this->getPrimaryKey();
+		$this->sql['FIELDS'] = sprintf('COUNT(%s)%s', $field, ($as ? 'AS '.$as : '' ) );
+	}
+
+
+	/**
 	 * @abstract Generates a left join
 	 * @param string $table
 	 * @param string $key
@@ -676,6 +687,25 @@ class Model {
 	}
 
 
+	/**
+	 * @abstract
+	 * @param string $table
+	 * @return object
+	 * @access public
+	 */
+	 public function selectSubquery_begin($table){
+	 	$model = $this->open($table);
+		return $model;
+	}
+
+
+
+	public function selectSubquery_end($model, $as){
+		$sq = '('.$model->getBuildQuery().') AS ' . $as;
+		$this->addSelectField($sq);
+	}
+
+
 //+-----------------------------------------------------------------------+
 //| CONDITION GENERATING FUNCTIONS
 //+-----------------------------------------------------------------------+
@@ -712,6 +742,7 @@ class Model {
 	protected function base_where($sprint_string = false, $field = false, $value = false, $match = 'AND'){
 
 		$field = $field ? $field : $this->getPrimaryKey();
+		$match = $match ? $match : 'AND';
 		$match = $this->parenth_start ? $match.' (' : $match;
 		$this->parenth_start = false;
 
@@ -731,8 +762,9 @@ class Model {
 	 * @param string $match
 	 * @access public
 	 */
-	public function where($field = false, $value = false, $match = 'AND'){
-		$this->base_where('%s %s = "%s"', $field, $value, $match);
+	public function where($field = false, $value = false, $match = 'AND', $val_is_column_name = false){
+		$str = $val_is_column_name ? '%s %s = %s' : '%s %s = "%s"';
+		$this->base_where($str, $field, $value, $match);
 	}
 
 
@@ -743,8 +775,9 @@ class Model {
 	 * @param string $match
 	 * @access public
 	 */
-	public function whereNot($field, $value, $match = 'AND'){
-		$this->base_where('%s %s != "%s"', $field, $value, $match);
+	public function whereNot($field, $value, $match = 'AND', $val_is_column_name = false){
+		$str = $val_is_column_name ? '%s %s != %s' : '%s %s != "%s"';
+		$this->base_where($str, $field, $value, $match);
 	}
 
 
@@ -925,11 +958,12 @@ class Model {
 	 * @abstract Finds timestamps in the last $day_count days
 	 * @param string $field
 	 * @param string $day_count
+	 * @param boolean $include_range
 	 * @param string $match
 	 * @access public
 	 */
-	public function inPastXDays($field, $day_count = 7, $match = 'AND'){
-		$this->base_where('%s TO_DAYS(NOW()) - TO_DAYS(%s) <= ' . $day_count, $field, false, $match);
+	public function inPastXDays($field, $day_count = 7, $include_range = true, $match = 'AND'){
+		$this->base_where('%s TO_DAYS(NOW()) - TO_DAYS(%s) '.($include_range ? '<' : '').'= ' . $day_count, $field, false, $match);
 	}
 
 
