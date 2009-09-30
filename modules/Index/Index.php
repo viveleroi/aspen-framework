@@ -9,14 +9,14 @@
  */
 
 /**
- * @abstract Displays the front-end welcome page.
+ * Displays the front-end welcome page.
  * @package Aspen_Framework
  * @uses Bootstrap
  */
 class Index extends Bootstrap {
 	
 	/**
-	 * @abstract Constructor, initializes the module
+	 * Constructor, initializes the module
 	 * @return Index
 	 * @param array $config Configuration settings passed through loader
 	 * @access public
@@ -25,7 +25,7 @@ class Index extends Bootstrap {
 	
 	
 	/**
-	 * @abstract Redirects user to installation process if not installed
+	 * Redirects user to installation process if not installed
 	 * @access public
 	 */
 	public function redirectOnInstall(){

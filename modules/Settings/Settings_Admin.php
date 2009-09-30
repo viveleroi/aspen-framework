@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Handles forms for user preferences & settings
+ * Handles forms for user preferences & settings
  * @package Aspen_Framework
  * @uses Module
  */
@@ -17,7 +17,7 @@ class Settings_Admin extends Module {
 
 
 	/**
-	 * @abstract Displays the settings page, including change password fields, etc
+	 * Displays the settings page, including change password fields, etc
 	 * @access public
 	 */
 	public function view(){

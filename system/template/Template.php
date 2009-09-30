@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract This class manages our templates and loads them for display
+ * This class manages our templates and loads them for display
  * @package Aspen_Framework
  */
 class Template {
@@ -46,7 +46,7 @@ class Template {
 
 
 	/**
-	 * @abstract Contrucor, obtains an instance of the original app
+	 * Contrucor, obtains an instance of the original app
 	 * @return Template
 	 * @access private
 	 */
@@ -54,7 +54,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns the template directory
+	 * Returns the template directory
 	 * @return string
 	 * @access public
 	 */
@@ -64,7 +64,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns the template directory for our module
+	 * Returns the template directory for our module
 	 * @return string
 	 * @access public
 	 */
@@ -76,7 +76,7 @@ class Template {
 
 
 	/**
-	 * @abstract Loads a header file for the currently loaded module, if that file exists
+	 * Loads a header file for the currently loaded module, if that file exists
 	 * @access public
 	 */
 	public function loadModuleHeader(){
@@ -164,7 +164,7 @@ class Template {
 
 
 	/**
-	 * @abstract Adds a javascript include to the header, from either the header template or the current module
+	 * Adds a javascript include to the header, from either the header template or the current module
 	 * @param string $filename
 	 * @param string $type
 	 * @param string $basepath
@@ -188,7 +188,7 @@ class Template {
 
 
 	/**
-	 * @abstract Base static url build for the addJs/addCss methods
+	 * Base static url build for the addJs/addCss methods
 	 * @param array $args
 	 * @return string
 	 * @access private
@@ -213,7 +213,7 @@ class Template {
 
 
 	/**
-	 * @abstract Sets the language text array from the router
+	 * Sets the language text array from the router
 	 * @param array $terms
 	 * @access private
 	 */
@@ -223,7 +223,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns the text value for a key from the selected language
+	 * Returns the text value for a key from the selected language
 	 * @param string $key
 	 * @return string
 	 * @access public
@@ -234,7 +234,7 @@ class Template {
 
 
 	/**
-	 * @abstract Display all templates that have been primed for output
+	 * Display all templates that have been primed for output
 	 * @param $data Array of data to be passed
 	 * @access public
 	 */
@@ -302,7 +302,7 @@ class Template {
 
 
 	/**
-	 * @abstract Adds a template to the display stack, so when the display
+	 * Adds a template to the display stack, so when the display
 	 * function is called, the templates will be output in the
 	 * order they were added.
 	 * @param string $template
@@ -314,7 +314,7 @@ class Template {
 
 
 	/**
-	 * @abstract Resets the template queue
+	 * Resets the template queue
 	 * @access public
 	 */
 	public function resetTemplateQueue(){
@@ -325,7 +325,7 @@ class Template {
 
 
 	/**
-	 * @abstract Adds a new link
+	 * Adds a new link
 	 * @param string $title
 	 * @param string $module
 	 * @param string $method
@@ -369,7 +369,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns a URL using a module and method
+	 * Returns a URL using a module and method
 	 * @param string $module
 	 * @param array $bits Additional arguments to pass through the url
 	 * @param string $method
@@ -443,7 +443,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns a properly-encoded URL using a module and method
+	 * Returns a properly-encoded URL using a module and method
 	 * @param string $module
 	 * @param array $bits Additional arguments to pass through the url
 	 * @param string $method
@@ -456,7 +456,7 @@ class Template {
 
 
 	/**
-	 * @abstract Encodes entities that appear in text only, not html
+	 * Encodes entities that appear in text only, not html
 	 * @param string $string
 	 * @return string
 	 * @access public
@@ -467,7 +467,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns a properly-encoded URL using a method
+	 * Returns a properly-encoded URL using a method
 	 * @param string $method
 	 * @return string
 	 * @access public
@@ -482,7 +482,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns a properly-encoded URL using a module and method
+	 * Returns a properly-encoded URL using a module and method
 	 * @param string $module
 	 * @param array $bits Additional arguments to pass through the url
 	 * @param string $method
@@ -499,7 +499,7 @@ class Template {
 
 
 	/**
-	 * @abstract Creates a link to the current page with params, replacing any existing params
+	 * Creates a link to the current page with params, replacing any existing params
 	 * @param array $bits
 	 * @param string $method
 	 * @param string $method
@@ -523,7 +523,7 @@ class Template {
 
 
 	/**
-	 * @abstract Creates an xhtml valid url to the current page with params, replacing any existing params
+	 * Creates an xhtml valid url to the current page with params, replacing any existing params
 	 * @param array $params
 	 * @param string $method
 	 * @return string
@@ -546,7 +546,7 @@ class Template {
 
 
 	/**
-	 * @abstract Creates a url to the current page with params, replacing any existing params
+	 * Creates a url to the current page with params, replacing any existing params
 	 * @param array $params
 	 * @param string $method
 	 * @return string
@@ -569,7 +569,7 @@ class Template {
 
 
 	/**
-	 * @abstract Creates a link for sorting a result set
+	 * Creates a link for sorting a result set
 	 * @param string $title
 	 * @param string $location
 	 * @param string $sort_by
@@ -605,7 +605,7 @@ class Template {
 
 
 	/**
-	 * @abstract Generate a basic LI set of pagination links
+	 * Generate a basic LI set of pagination links
 	 * @param integer $current_page
 	 * @param integer $per_page
 	 * @param integer $total
@@ -626,7 +626,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns a body id of the module/method
+	 * Returns a body id of the module/method
 	 * @return string
 	 * @access public
 	 */
@@ -640,7 +640,7 @@ class Template {
 //+-----------------------------------------------------------------------+
 
 	/**
-	 * @abstract Truncates a text block and adds a read more link
+	 * Truncates a text block and adds a read more link
 	 * @param string $phrase
 	 * @param integer $blurb_word_length
 	 * @param string $more_link
@@ -665,7 +665,7 @@ class Template {
 
 
 	/**
-	 * @abstract Truncates a string to $char_length caracters, and appends an elipse
+	 * Truncates a string to $char_length caracters, and appends an elipse
 	 * @param string $string
 	 * @param integer $char_length
 	 * @return string
@@ -688,7 +688,7 @@ class Template {
 
 
 	/**
-	 * @abstract Truncates a filename leaving extension intact
+	 * Truncates a filename leaving extension intact
 	 * @param string $fileame
 	 * @param integer $char_length
 	 * @param string $separator
@@ -701,7 +701,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns replacement text if a value is empty (i.e. "N/A")
+	 * Returns replacement text if a value is empty (i.e. "N/A")
 	 * @param mixed $value
 	 * @param string $replace
 	 * @return string
@@ -713,7 +713,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns a specific filter value from the GET params
+	 * Returns a specific filter value from the GET params
 	 * @param  string $key The key of the filter value you want
 	 * @return mixed
 	 * @access public
@@ -739,7 +739,7 @@ class Template {
 
 
 	/**
-	 * @abstract Prints a nicer date display
+	 * Prints a nicer date display
 	 * @param string $date
 	 * @param string $date_format_string The format to print the date, if needed
 	 * @param mixed $empty_string What to print if the data is empty
@@ -805,7 +805,7 @@ class Template {
 
 
 	/**
-	 * @abstract Returns a count of days between two dates
+	 * Returns a count of days between two dates
 	 * @param datetime $start
 	 * @param datetime $end
 	 * @return float
@@ -818,7 +818,7 @@ class Template {
 
 
 	/**
-	 * @abstract Generate an html SELECT element with values from a database
+	 * Generate an html SELECT element with values from a database
 	 * @param string $selectTable
 	 * @param string $selectField
 	 * @param string $method
@@ -886,7 +886,7 @@ class Template {
 
 
 	/**
-	 * @abstract Prints out select box options using grabSelectArray
+	 * Prints out select box options using grabSelectArray
 	 * @param array $grabSelectArray
 	 * @param mixed $match_value
 	 * @param boolean $prepend_blank
@@ -931,7 +931,7 @@ class Template {
 
 
 	/**
-	 * @abstract Formats a US address
+	 * Formats a US address
 	 * @access public
 	 */
 	public function formatAddress($add_1 = '', $add_2 = '', $city = '', $state = '', $zip = '', $country = ''){
@@ -960,7 +960,7 @@ class Template {
 
 
 	/**
-	 * @abstract Hides values using html comments
+	 * Hides values using html comments
 	 * @param mixed $val
 	 * @return string
 	 * @access public
@@ -971,7 +971,7 @@ class Template {
 
 
 	/**
-	 * @abstract Return an array of US states
+	 * Return an array of US states
 	 * @return array
 	 * @access public
 	 */

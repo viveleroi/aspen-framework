@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Runs the interface application. Loads the appropriate controllers for each module.
+ * Runs the interface application. Loads the appropriate controllers for each module.
  * @package Aspen_Framework
  * @uses Bootstrap
  */
@@ -29,7 +29,7 @@ class App extends Bootstrap {
 
 
 	/**
-	 * @abstract Initializes the entire admin app
+	 * Initializes the entire admin app
 	 * @access public
 	 */
 	public function __construct($config){
@@ -75,7 +75,7 @@ class App extends Bootstrap {
 
 	
 	/**
-	 * @abstract Generates an unordered list nav admin menu based off of all links currently in the array.
+	 * Generates an unordered list nav admin menu based off of all links currently in the array.
 	 * @param boolean $display_ul Whether or not to print out the UL element wrapper
 	 * @return string
 	 * @access public
@@ -111,7 +111,7 @@ class App extends Bootstrap {
 	
 	
 	/**
-	 * @abstract Generates menu items for non-base modules
+	 * Generates menu items for non-base modules
 	 * @return string
 	 * @access public
 	 */
@@ -145,7 +145,7 @@ class App extends Bootstrap {
 	
 
 	/**
-	 * @abstract Scans the modules installed on the server that are awaiting install
+	 * Scans the modules installed on the server that are awaiting install
 	 * @access private
 	 */
 	private function listModulesAwaitingInstall(){
@@ -166,7 +166,7 @@ class App extends Bootstrap {
 
 
 	/**
-	 * @abstract Returns an array of all modules awaiting install
+	 * Returns an array of all modules awaiting install
 	 * @return array
 	 * @access public
 	 */
@@ -176,7 +176,7 @@ class App extends Bootstrap {
 
 
 	/**
-	 * @abstract Displays a box listing the modules awaiting installation, with links
+	 * Displays a box listing the modules awaiting installation, with links
 	 * @access public
 	 */
 	public function modulesAwaitingInstallBox(){
@@ -209,7 +209,7 @@ class App extends Bootstrap {
 	
 	
 	/**
-	 * @abstract Displays a box listing the modules awaiting installation, with links
+	 * Displays a box listing the modules awaiting installation, with links
 	 * @access public
 	 */
 	public function modulesAwaitingInstallAlert(){
@@ -233,7 +233,7 @@ class App extends Bootstrap {
 	
 	
 	/**
-	 * @abstract Displays a box listing the modules awaiting installation, with links
+	 * Displays a box listing the modules awaiting installation, with links
 	 * @access public
 	 */
 	public function moduleControls(){
@@ -282,7 +282,7 @@ class App extends Bootstrap {
 	
 	
 	/**
-	 * @abstract Displays a box listing all non-base modules that are either awaiting install or that may be uninstalled, with links to perform the actions.
+	 * Displays a box listing all non-base modules that are either awaiting install or that may be uninstalled, with links to perform the actions.
 	 * @access public
 	 */
 	public function modulesControlBox(){

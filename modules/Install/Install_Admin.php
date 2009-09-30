@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Handles installtion of our application.
+ * Handles installtion of our application.
  * @package Aspen_Framework
  * @uses Module
  */
@@ -17,7 +17,7 @@ class Install_Admin extends Module {
 
 
 	/**
-	 * @abstract Runs prerequisites check, if good sends user to config setup
+	 * Runs prerequisites check, if good sends user to config setup
 	 * @access public
 	 */
 	public function view(){
@@ -26,7 +26,7 @@ class Install_Admin extends Module {
 	
 	
 	/**
-	 * @abstract Runs prerequisites check, if good sends user to config setup
+	 * Runs prerequisites check, if good sends user to config setup
 	 * @access public
 	 */
 	public function prereq(){
@@ -35,7 +35,7 @@ class Install_Admin extends Module {
 
 
 	/**
-	 * @abstract Users sets up their database / config file here
+	 * Users sets up their database / config file here
 	 * @access public
 	 */
 	public function setup($retry = false){
@@ -44,7 +44,7 @@ class Install_Admin extends Module {
 	
 	
 	/**
-	 * @abstract Display config contents for creating files
+	 * Display config contents for creating files
 	 * @access public
 	 */
 	public function paste_config($config){
@@ -53,7 +53,7 @@ class Install_Admin extends Module {
 
 
 	/**
-	 * @abstract User creates the basic account at this point
+	 * User creates the basic account at this point
 	 * @access public
 	 */
 	public function account(){
@@ -62,7 +62,7 @@ class Install_Admin extends Module {
 	
 	
 	/**
-	 * @abstract Displays our installation success page
+	 * Displays our installation success page
 	 * @access public
 	 */
 	public function success(){
@@ -71,7 +71,7 @@ class Install_Admin extends Module {
 	
 	
 	/**
-	 * @abstract Displays a message that a database update is required
+	 * Displays a message that a database update is required
 	 * @access public
 	 */
 	public function upgrade(){
@@ -80,7 +80,7 @@ class Install_Admin extends Module {
 	
 	
 	/**
-	 * @abstract Processes the actual database upgrade
+	 * Processes the actual database upgrade
 	 * @access public
 	 */
 	public function run_upgrade(){
@@ -89,7 +89,7 @@ class Install_Admin extends Module {
 	
 	
 	/**
-	 * @abstract Registers a module (inserts a modules guid into the modules table)
+	 * Registers a module (inserts a modules guid into the modules table)
 	 * @param string $guid
 	 */
 	public function install_module($guid = false){
@@ -98,7 +98,7 @@ class Install_Admin extends Module {
 	
 	
 	/**
-	 * @abstract Uninstalls a module (inserts a modules guid into the modules table)
+	 * Uninstalls a module (inserts a modules guid into the modules table)
 	 * @param string $guid
 	 */
 	public function uninstall_module($guid = false){

@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Handles forms for user accounts
+ * Handles forms for user accounts
  * @package Aspen_Framework
  * @uses Module
  */
@@ -17,7 +17,7 @@ class Users_Admin extends Module {
 
 	
 	/**
-	 * @abstract Displays the list of users
+	 * Displays the list of users
 	 * @access public
 	 */
 	public function view(){
@@ -35,7 +35,7 @@ class Users_Admin extends Module {
 
 
 	/**
-	 * @abstract Displays and processes the add a new user form
+	 * Displays and processes the add a new user form
 	 * @access public
 	 */
 	public function add(){
@@ -44,7 +44,7 @@ class Users_Admin extends Module {
 	
 
 	/**
-	 * @abstract Displays and processes the edit user form
+	 * Displays and processes the edit user form
 	 * @access public
 	 * @param $id The id of the user record
 	 */
@@ -67,7 +67,7 @@ class Users_Admin extends Module {
 	
 	
 	/**
-	 * @abstract Displays and processes the my account form
+	 * Displays and processes the my account form
 	 * @access public
 	 */
 	public function my_account(){
@@ -88,7 +88,7 @@ class Users_Admin extends Module {
 
 
 	/**
-	 * @abstract Deletes a user record
+	 * Deletes a user record
 	 * @param integer $id The record id of the user
 	 * @access public
 	 */
@@ -101,7 +101,7 @@ class Users_Admin extends Module {
 
 
 	/**
-	 * @abstract Displays the user login page
+	 * Displays the user login page
 	 * @access public
 	 */
 	public function login(){
@@ -116,7 +116,7 @@ class Users_Admin extends Module {
 
 
 	/**
-	 * @abstract Displays and processes the forgotten password reset form
+	 * Displays and processes the forgotten password reset form
 	 * @access public
 	 */
 	public function forgot(){
@@ -139,7 +139,7 @@ class Users_Admin extends Module {
 	
 	
 	/**
-	 * @abstract Runs the authentication process on the login form data
+	 * Runs the authentication process on the login form data
 	 * @access public
 	 */
 	public function authenticate(){
@@ -155,7 +155,7 @@ class Users_Admin extends Module {
 
 	
 	/**
-	 * @abstract Processes a logout
+	 * Processes a logout
 	 * @access public
 	 */
 	public function logout(){
@@ -165,7 +165,7 @@ class Users_Admin extends Module {
 
 
 	/**
-	 * @abstract Displays a permission denied error message
+	 * Displays a permission denied error message
 	 * @access public
 	 */
 	public function denied(){

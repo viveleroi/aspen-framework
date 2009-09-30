@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Allows messages to be logged to the session and a log of those messages is maintained.
+ * Allows messages to be logged to the session and a log of those messages is maintained.
  * @package Aspen_Framework
  */
 class Sml {
@@ -28,7 +28,7 @@ class Sml {
 
 
  	/**
-	 * @abstract Contrucor
+	 * Contrucor
 	 * @return Sml
 	 * @access private
 	 */
@@ -36,7 +36,7 @@ class Sml {
 
 
 	/**
-	 * @abstract Alias for addNewMessage
+	 * Alias for addNewMessage
 	 * @param string $msg The message
 	 * @param string $class CSS Class for display
 	 * @access public
@@ -47,7 +47,7 @@ class Sml {
 
 
 	/**
-	 * @abstract Adds a new message to the session log
+	 * Adds a new message to the session log
 	 * @param string $msg The message
 	 * @param string $class CSS Class for display
 	 * @access public
@@ -81,7 +81,7 @@ class Sml {
 
 
 	/**
-	 * @abstract Returns the most recent message from the log
+	 * Returns the most recent message from the log
 	 * @return mixed
 	 * @access public
 	 */
@@ -92,7 +92,7 @@ class Sml {
 
 
     /**
-     * @abstract Returns the array from the session
+     * Returns the array from the session
      * @return array
      * @access public
      */
@@ -104,7 +104,7 @@ class Sml {
 
 
     /**
-     * @abstract Prints the messages
+     * Prints the messages
      * @access public
      */
 	public function printMessage(){

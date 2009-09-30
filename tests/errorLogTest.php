@@ -8,7 +8,7 @@ require_once('testHelper.php');
 class errorLogTest extends TestHelper {
 	
 	/**
-	 * @abstract
+	 *
 	 */
 	public function testNoErrors() {
 		

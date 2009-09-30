@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Manages modules, registries, etc
+ * Manages modules, registries, etc
  * @package Aspen_Framework
  */
 class Modules {
@@ -22,7 +22,7 @@ class Modules {
 
 
 	/**
-	 * @abstract Constructor
+	 * Constructor
 	 * @return Modules
 	 * @access private
 	 */
@@ -30,7 +30,7 @@ class Modules {
 
 
 	/**
-	 * @abstract Loads any modules that are hooked to current module
+	 * Loads any modules that are hooked to current module
 	 * @param string $guid
 	 * @access public
 	 */
@@ -62,7 +62,7 @@ class Modules {
 
 
 	/**
-	 * @abstract Returns an array of installed module GUIDs that are not part of the standard install
+	 * Returns an array of installed module GUIDs that are not part of the standard install
 	 * @return array
 	 */
 	public function getNonBaseModules(){
@@ -92,7 +92,7 @@ class Modules {
 
 
 	/**
-	 * @abstract Returns an array of ALL module GUIDs that are not part of the standard install, whether they're installed or not
+	 * Returns an array of ALL module GUIDs that are not part of the standard install, whether they're installed or not
 	 * @return array
 	 */
 	public function getAllNonBaseModules(){

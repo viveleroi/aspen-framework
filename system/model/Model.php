@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract This class manages our mysql sql query generation
+ * This class manages our mysql sql query generation
  * @package Aspen_Framework
  */
 class Model {
@@ -39,7 +39,7 @@ class Model {
 	private $errors = array();
 
 	/**
-	 * @abstract Flags a validation error
+	 * Flags a validation error
 	 * @var boolean $error
 	 * @access private
 	 */
@@ -125,7 +125,7 @@ class Model {
 
 
 	/**
-	 * @abstract Contrucor, obtains an instance of the original app
+	 * Contrucor, obtains an instance of the original app
 	 * @return Model
 	 * @access private
 	 */
@@ -141,7 +141,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns a model object or its child.
+	 * Returns a model object or its child.
 	 * @param string $table
 	 * @return object
 	 * @access public
@@ -181,7 +181,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns a model object or its child, and begins a basic SELECT (single) statement.
+	 * Returns a model object or its child, and begins a basic SELECT (single) statement.
 	 * @param string $table
 	 * @return object
 	 * @access public
@@ -196,7 +196,7 @@ class Model {
 
 
 	/**
-	 * @abstract Sets the current table and loads the table schema
+	 * Sets the current table and loads the table schema
 	 * @param string $table
 	 * @access private
 	 * @return mixed
@@ -213,7 +213,7 @@ class Model {
 
 
 	/**
-	 * @abstract Validates data is appropriate for the table before saving.
+	 * Validates data is appropriate for the table before saving.
 	 * @param array $fields
 	 * @param mixed $primary_key
 	 * @return object
@@ -352,7 +352,7 @@ class Model {
 
 
 	/**
-	 * @abstract Sets the default value if a field was not set or is empty
+	 * Sets the default value if a field was not set or is empty
 	 * @param <type> $field
 	 * @param <type> $value
 	 */
@@ -362,7 +362,7 @@ class Model {
 
 
 	/**
-	 * @abstract Loads the current table schema.
+	 * Loads the current table schema.
 	 * @access private
 	 * @return array
 	 */
@@ -372,7 +372,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns raw schema for the current table
+	 * Returns raw schema for the current table
 	 * @return array
 	 * @access public
 	 */
@@ -382,7 +382,7 @@ class Model {
 
 
 	/**
-	 * @abstract Verifies that a field is present in the current db schema
+	 * Verifies that a field is present in the current db schema
 	 * @param string $field
 	 * @access public
 	 */
@@ -392,7 +392,7 @@ class Model {
 
 
 	/**
-	 * @abstract Loads the current table foreign key mappings.
+	 * Loads the current table foreign key mappings.
 	 * @access private
 	 * @return array
 	 */
@@ -425,7 +425,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns raw schema for the current table
+	 * Returns raw schema for the current table
 	 * @return array
 	 * @access public
 	 */
@@ -435,7 +435,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns the field marked as primary key for current table
+	 * Returns the field marked as primary key for current table
 	 * @return mixed
 	 */
 	final public function getPrimaryKey(){
@@ -454,7 +454,7 @@ class Model {
 
 
 	/**
-	 * @abstract Sets the pagination toggle to true
+	 * Sets the pagination toggle to true
 	 * @access public
 	 */
 	public function enablePagination(){
@@ -463,7 +463,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns the table status info
+	 * Returns the table status info
 	 * @param string $table
 	 * @return array
 	 */
@@ -484,7 +484,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns the last run query
+	 * Returns the last run query
 	 * @return string
 	 * @access public
 	 */
@@ -494,7 +494,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns the last run query - aliases getLastQuery
+	 * Returns the last run query - aliases getLastQuery
 	 * @return string
 	 * @access public
 	 */
@@ -503,7 +503,7 @@ class Model {
 	}
 
 	/**
-	 * @abstract Returns the query currently being built
+	 * Returns the query currently being built
 	 * @return string
 	 * @access public
 	 */
@@ -519,7 +519,7 @@ class Model {
 
 
 	/**
-	 * @abstract Sets a security rule for data coming into a specific field
+	 * Sets a security rule for data coming into a specific field
 	 * @param string $field
 	 * @param string $key
 	 * @param string $value
@@ -533,7 +533,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns the security rule for a field and key
+	 * Returns the security rule for a field and key
 	 * @param string $field
 	 * @param string $key
 	 * @return mixed
@@ -558,7 +558,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a new select statement to our query
+	 * Adds a new select statement to our query
 	 * @param array $fields
 	 * @param boolean $distinct
 	 * @access private
@@ -585,7 +585,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a new select statement to our query
+	 * Adds a new select statement to our query
 	 * @param array $fields
 	 * @param boolean $distinct
 	 * @access public
@@ -597,7 +597,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a new select statement to our query, but also forces a single result returned
+	 * Adds a new select statement to our query, but also forces a single result returned
 	 *  outside of the RECORDS array
 	 * @param array $fields
 	 * @param boolean $distinct
@@ -610,7 +610,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a child table to inclusion in the results
+	 * Adds a child table to inclusion in the results
 	 * @param string $child_table
 	 * @return boolean
 	 * @access public
@@ -627,7 +627,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds an additional select field
+	 * Adds an additional select field
 	 * @param string $field
 	 * @access public
 	 */
@@ -637,7 +637,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds an additional select field
+	 * Adds an additional select field
 	 * @param string $field
 	 * @access public
 	 */
@@ -648,7 +648,7 @@ class Model {
 
 
 	/**
-	 * @abstract Generates a left join
+	 * Generates a left join
 	 * @param string $table
 	 * @param string $key
 	 * @param string $foreign_key
@@ -688,7 +688,7 @@ class Model {
 
 
 	/**
-	 * @abstract
+	 *
 	 * @param string $table
 	 * @return object
 	 * @access public
@@ -712,7 +712,7 @@ class Model {
 
 
 	/**
-	 * @abstract undocumented function
+	 * undocumented function
 	 * @return void
 	 * @access private
 	 **/
@@ -722,7 +722,7 @@ class Model {
 
 
 	/**
-	 * @abstract undocumented function
+	 * undocumented function
 	 * @return void
 	 * @access private
 	 **/
@@ -732,7 +732,7 @@ class Model {
 
 
 	/**
-	 * @abstract Forms the basis of the where clauses
+	 * Forms the basis of the where clauses
 	 * @param string $sprint_string
 	 * @param string $field
 	 * @param string $value
@@ -756,7 +756,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a standard where condition
+	 * Adds a standard where condition
 	 * @param string $field
 	 * @param mixed $value
 	 * @param string $match
@@ -769,7 +769,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a standard where not condition
+	 * Adds a standard where not condition
 	 * @param string $field
 	 * @param mixed $value
 	 * @param string $match
@@ -782,7 +782,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a WHERE ... IS NULL condition
+	 * Adds a WHERE ... IS NULL condition
 	 * @param string $field
 	 * @param string $match
 	 * @access public
@@ -793,7 +793,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a WHERE ... IS  NOT NULL condition
+	 * Adds a WHERE ... IS  NOT NULL condition
 	 * @param string $field
 	 * @param string $match
 	 * @access public
@@ -804,7 +804,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a standard where like %% condition
+	 * Adds a standard where like %% condition
 	 * @param string $field
 	 * @param mixed $value
 	 * @param string $match
@@ -816,7 +816,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a series of WHERE LIKE values that mimic a search query for multiple fields
+	 * Adds a series of WHERE LIKE values that mimic a search query for multiple fields
 	 * @param array $fields
 	 * @param mixed $value
 	 * @access public
@@ -834,7 +834,7 @@ class Model {
 
 
 	/**
-	 * @abstract Searches for values between $start and $end
+	 * Searches for values between $start and $end
 	 * @param string $field
 	 * @param mixed $start
 	 * @param string $end
@@ -847,7 +847,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a standard where greater than condition
+	 * Adds a standard where greater than condition
 	 * @param string $field
 	 * @param mixed $value
 	 * @param string $match
@@ -859,7 +859,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a standard where greater than or is equal to condition
+	 * Adds a standard where greater than or is equal to condition
 	 * @param string $field
 	 * @param mixed $value
 	 * @param string $match
@@ -871,7 +871,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a standard where less than condition
+	 * Adds a standard where less than condition
 	 * @param string $field
 	 * @param mixed $value
 	 * @param string $match
@@ -883,7 +883,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a standard where less than or is equal to condition
+	 * Adds a standard where less than or is equal to condition
 	 * @param string $field
 	 * @param mixed $value
 	 * @param string $match
@@ -895,7 +895,7 @@ class Model {
 
 
 	/**
-	 * @abstract Finds timestamps equal to today
+	 * Finds timestamps equal to today
 	 * @param string $field
 	 * @param boolean $include_today
 	 * @param string $match
@@ -907,7 +907,7 @@ class Model {
 
 
 	/**
-	 * @abstract Finds timestamps prior to today
+	 * Finds timestamps prior to today
 	 * @param string $field
 	 * @param boolean $include_today
 	 * @param string $match
@@ -919,7 +919,7 @@ class Model {
 
 
 	/**
-	 * @abstract Finds timestamps before the current moment
+	 * Finds timestamps before the current moment
 	 * @param string $field
 	 * @param boolean $include_today
 	 * @param string $match
@@ -931,7 +931,7 @@ class Model {
 
 
 	/**
-	 * @abstract Finds timestamps after today
+	 * Finds timestamps after today
 	 * @param string $field
 	 * @param boolean $include_today
 	 * @param string $match
@@ -943,7 +943,7 @@ class Model {
 
 
 	/**
-	 * @abstract Finds timestamps after the current moment
+	 * Finds timestamps after the current moment
 	 * @param string $field
 	 * @param boolean $include_today
 	 * @param string $match
@@ -955,7 +955,7 @@ class Model {
 
 
 	/**
-	 * @abstract Finds timestamps in the last $day_count days
+	 * Finds timestamps in the last $day_count days
 	 * @param string $field
 	 * @param string $day_count
 	 * @param boolean $include_range
@@ -973,7 +973,7 @@ class Model {
 
 
 	/**
-	 * @abstract Handles incoming filter params in url to add automated conditions to query
+	 * Handles incoming filter params in url to add automated conditions to query
 	 * @param array $filters
 	 * @param array $allowed_filter_keys
 	 * @param array $disabled_filters
@@ -1072,7 +1072,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a sort order, optionally pulls from saved prefs
+	 * Adds a sort order, optionally pulls from saved prefs
 	 * @param string $field
 	 * @param string $dir
 	 * @param string $sort_location
@@ -1128,7 +1128,7 @@ class Model {
 
 
 	/**
-	 * @abstract Limits the results returned
+	 * Limits the results returned
 	 * @param integer $start
 	 * @param integer $limit
 	 * @access public
@@ -1140,7 +1140,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a fulltext index match function
+	 * Adds a fulltext index match function
 	 * @param string $search
 	 * @param array $fields
 	 * @param string $match
@@ -1169,7 +1169,7 @@ class Model {
 
 
 	/**
-	 * @abstract Sets the limit for pagination page numbers
+	 * Sets the limit for pagination page numbers
 	 * @param integer $current_page
 	 * @param integer $per_page
 	 * @access public
@@ -1185,7 +1185,7 @@ class Model {
 
 
 	/**
-	 * @abstract Sets a group by
+	 * Sets a group by
 	 * @param string $field
 	 * @access public
 	 */
@@ -1200,7 +1200,7 @@ class Model {
 
 
 	/**
-	 * @abstract Builds the query we've designed from the above functions
+	 * Builds the query we've designed from the above functions
 	 * @return string
 	 * @access private
 	 */
@@ -1263,7 +1263,7 @@ class Model {
 
 
 	/**
-	 * @abstract A wrapper for running a query directly to the db, and provided the results directly to the caller
+	 * A wrapper for running a query directly to the db, and provided the results directly to the caller
 	 * @param string $query
 	 * @return object
 	 * @access public
@@ -1299,7 +1299,7 @@ class Model {
 
 
 	/**
-	 * @abstract Runs the generated query and appends any additional info we've selected
+	 * Runs the generated query and appends any additional info we've selected
 	 * @param string $key_field Field value to use for array element key values
 	 * @param string $sql Optional sql query replacing any generated
 	 * @return array
@@ -1409,7 +1409,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns a single field, single-record value from a query
+	 * Returns a single field, single-record value from a query
 	 * @param string $sql
 	 * @param string $return_field
 	 * @return mixed
@@ -1427,7 +1427,7 @@ class Model {
 
 
 	/**
-	 * @abstract Clears any generated queries
+	 * Clears any generated queries
 	 * @access public
 	 */
 	final public function reset(){
@@ -1443,7 +1443,7 @@ class Model {
 
 
 	/**
-	 * @abstract Generates a quick select statement for a single record
+	 * Generates a quick select statement for a single record
 	 * @param integer $id
 	 * @param string $field
 	 * @return array
@@ -1458,7 +1458,7 @@ class Model {
 
 
 	/**
-	 * @abstract Generates a quick select statement for a single record and returns the result as xml
+	 * Generates a quick select statement for a single record and returns the result as xml
 	 * @param integer $id
 	 * @return string
 	 * @access public
@@ -1469,7 +1469,7 @@ class Model {
 
 
 	/**
-	 * @abstract Generates and executes a select query
+	 * Generates and executes a select query
 	 * @param integer $id
 	 * @param string $field_name
 	 * @return boolean
@@ -1486,7 +1486,7 @@ class Model {
 
 
 	/**
-	 * @abstract Drops a table completely
+	 * Drops a table completely
 	 * @param string $table
 	 * @return boolean
 	 * @access public
@@ -1500,7 +1500,7 @@ class Model {
 
 
 	/**
-	 * @abstract Duplicates records using INSERT... SELECT...
+	 * Duplicates records using INSERT... SELECT...
 	 * @param mixed $id
 	 * @param string $field_name
 	 * @param string $select_table
@@ -1541,7 +1541,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a field calculation to db results
+	 * Adds a field calculation to db results
 	 * @param string $field
 	 * @param string $type
 	 * @access public
@@ -1552,7 +1552,7 @@ class Model {
 
 
 	/**
-	 * @abstract Calculates the total for a field in the resultset
+	 * Calculates the total for a field in the resultset
 	 * @param array $records
 	 * @param string $field
 	 * @return float
@@ -1574,7 +1574,7 @@ class Model {
 
 
 	/**
-	 * @abstract Creates a basic table with the results
+	 * Creates a basic table with the results
 	 * @param array $row_names
 	 * @param array $ignore_fields
 	 * @return string
@@ -1611,7 +1611,7 @@ class Model {
 
 
 	/**
-	 * @abstract Generates an INSERT query and auto-executes it
+	 * Generates an INSERT query and auto-executes it
 	 * @param array $fields
 	 * @return integer
 	 * @access public
@@ -1660,7 +1660,7 @@ class Model {
 
 
 	/**
-	 * @abstract Auto-generates and executes an UPDATE query
+	 * Auto-generates and executes an UPDATE query
 	 * @param array $fields
 	 * @param mixed $where_value
 	 * @param string $where_field
@@ -1734,7 +1734,7 @@ class Model {
 
 
 	/**
-	 * @abstract Adds a new field validation error to the error queue
+	 * Adds a new field validation error to the error queue
 	 * @param string $field
 	 * @param string $message
 	 */
@@ -1751,7 +1751,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns an array of current form errors
+	 * Returns an array of current form errors
 	 * @return array
 	 * @access public
 	 */
@@ -1761,7 +1761,7 @@ class Model {
 
 
 	/**
-	 * @abstract Returns a boolean whether there is a field validation error or not
+	 * Returns a boolean whether there is a field validation error or not
 	 * @return boolean
 	 * @access public
 	 */

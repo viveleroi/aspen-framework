@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Displays the default dashboard/welcome screens
+ * Displays the default dashboard/welcome screens
  * @package Aspen_Framework
  * @uses Module
  */
@@ -17,7 +17,7 @@ class Index_Admin extends Module {
 
 
 	/**
-	 * @abstract Loads our default dashboard screen
+	 * Loads our default dashboard screen
 	 * @access public
 	 */
 	public function view(){

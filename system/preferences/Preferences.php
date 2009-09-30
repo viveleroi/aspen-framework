@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Manages user preferences
+ * Manages user preferences
  * @package Aspen_Framework
  */
 class Preferences {
@@ -22,14 +22,14 @@ class Preferences {
 
 
 	/**
-	 * @abstract Constructor
+	 * Constructor
 	 * @access private
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
 
 
 	/**
-	 * @abstract Loads user preferences into their session
+	 * Loads user preferences into their session
 	 * @access private
 	 */
 	public function loadUserPreferences(){
@@ -59,7 +59,7 @@ class Preferences {
 
 
 	/**
-	 * @abstract Adds a new sort preference
+	 * Adds a new sort preference
 	 * @param string $location
 	 * @param string $field
 	 * @param string $dir
@@ -90,7 +90,7 @@ class Preferences {
 
 
 	/**
-	 * @abstract Returns a sort preference
+	 * Returns a sort preference
 	 * @param string $location
 	 * @param string $field
 	 * @param string $default

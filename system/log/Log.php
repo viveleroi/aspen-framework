@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Provides a method of writing to a log file.
+ * Provides a method of writing to a log file.
  * @package Aspen_Framework
  */
 class Log {
@@ -40,7 +40,7 @@ class Log {
 
 
 	/**
-	 * @abstract Constructor
+	 * Constructor
 	 * @return Log
 	 * @access private
 	 */
@@ -48,7 +48,7 @@ class Log {
 
 
 	/**
-	 * @abstract Sets up the directories and files as necessary
+	 * Sets up the directories and files as necessary
 	 * @access public
 	 */
 	public function enable(){
@@ -93,7 +93,7 @@ class Log {
 
 
 	/**
-	 * @abstract Checks for a valid directory, attempts to create
+	 * Checks for a valid directory, attempts to create
 	 * @return boolean
 	 * @access private
 	 */
@@ -115,7 +115,7 @@ class Log {
 
 
 	/**
-	 * @abstract Uses or creates new log files
+	 * Uses or creates new log files
 	 * @return boolean
 	 * @access private
 	 */
@@ -139,7 +139,7 @@ class Log {
 
 
 	/**
-	 * @abstract Writes a new message to the log file
+	 * Writes a new message to the log file
 	 * @param string $message
 	 * @access public
 	 */
@@ -157,7 +157,7 @@ class Log {
 
 
 	/**
-	 * @abstract Writes a breaking line
+	 * Writes a breaking line
 	 * @access public
 	 */
 	public function hr(){
@@ -165,7 +165,7 @@ class Log {
 	}
 
 	/**
-	 * @abstract Writes a new section header
+	 * Writes a new section header
 	 * @access public
 	 */
 	public function section($title = 'Section'){
@@ -177,7 +177,7 @@ class Log {
 
 
 	/**
-	 * @abstract Sets the proper print string for a var
+	 * Sets the proper print string for a var
 	 * @param mixed $value
 	 * @return string
 	 * @access private
@@ -191,7 +191,7 @@ class Log {
 
 
 	/**
-	 * @abstract Logs all core aspen framework data to the logfile
+	 * Logs all core aspen framework data to the logfile
 	 * @access private
 	 */
 	private function logCoreInfo(){

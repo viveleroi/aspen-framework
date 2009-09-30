@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Managers user accounts
+ * Managers user accounts
  * @package Aspen_Framework
  */
 class User {
@@ -22,7 +22,7 @@ class User {
 
 
 	/**
-	 * @abstract Constructor, initializes the module
+	 * Constructor, initializes the module
 	 * @return User
 	 * @access private
 	 */
@@ -30,7 +30,7 @@ class User {
 
 
 	/**
-	 * @abstract Displays and processes the add/edit user form
+	 * Displays and processes the add/edit user form
 	 * @access public
 	 * @param integer $id
 	 */
@@ -110,7 +110,7 @@ class User {
 
 
 	/**
-	 * @abstract Displays and processes the add/edit user form
+	 * Displays and processes the add/edit user form
 	 * @access public
 	 * @param integer $id
 	 */
@@ -124,7 +124,7 @@ class User {
 
 
 	/**
-	 * @abstract Deletes a user record
+	 * Deletes a user record
 	 * @param integer $id
 	 * @access public
 	 */
@@ -138,7 +138,7 @@ class User {
 
 
 	/**
-	 * @abstract Allows a user to change their own password
+	 * Allows a user to change their own password
 	 * @access public
 	 */
 	public function my_account(){
@@ -173,7 +173,7 @@ class User {
 
 
 	/**
-	 * @abstract Deletes a user record
+	 * Deletes a user record
 	 * @param integer $id
 	 * @access public
 	 */
@@ -187,7 +187,7 @@ class User {
 
 
 	/**
-	 * @abstract Displays the login page
+	 * Displays the login page
 	 * @param string $module_path
 	 * @access public
 	 */
@@ -212,7 +212,7 @@ class User {
 
 
 	/**
-	 * @abstract Displays the login failed message and returns to login
+	 * Displays the login failed message and returns to login
 	 * @access public
 	 */
 	public function login_failed(){
@@ -222,7 +222,7 @@ class User {
 
 
 	/**
-	 * @abstract Displays and processes the forgotten password system
+	 * Displays and processes the forgotten password system
 	 * @access public
 	 */
 	public function forgot(){
@@ -272,7 +272,7 @@ class User {
 
 
 	/**
-	 * @abstract Returns a string used for specific domain/application id
+	 * Returns a string used for specific domain/application id
 	 * @return string
 	 * @access private
 	 */
@@ -284,7 +284,7 @@ class User {
 
 
 	/**
-	 * @abstract Handles authenticating the user
+	 * Handles authenticating the user
 	 * @access public
 	 */
 	public function authenticate(){
@@ -333,7 +333,7 @@ class User {
 
 
 	/**
-	 * @abstract Returns whether or not the user is logged in
+	 * Returns whether or not the user is logged in
 	 * @return boolean
 	 * @access public
 	 */
@@ -359,7 +359,7 @@ class User {
 
 
 	/**
-	 * @abstract Checks if user has permissions to access an entire interface
+	 * Checks if user has permissions to access an entire interface
 	 * @param string $interface
 	 * @param integer $user_id
 	 * @return boolean
@@ -416,7 +416,7 @@ class User {
 
 
 	/**
-	 * @abstract Checks if user has permissions to access a page
+	 * Checks if user has permissions to access a page
 	 * @param string $module
 	 * @param string $method
 	 * @param string $interface
@@ -476,7 +476,7 @@ class User {
 
 
 	/**
-	 * @abstract Checks whether or not anonymous access is allowed for the current page.
+	 * Checks whether or not anonymous access is allowed for the current page.
 	 * @param string $module
 	 * @param string $method
 	 * @param string $interface
@@ -507,7 +507,7 @@ class User {
 
 
 	/**
-	 * @abstract Logs a user out
+	 * Logs a user out
 	 * @access public
 	 */
 	public function logout(){
@@ -517,7 +517,7 @@ class User {
 
 
 	/**
-	 * @abstract Returns whether a user is in a group
+	 * Returns whether a user is in a group
 	 * @param string $group_name
 	 * @param integer $user_id
 	 * @return boolean
@@ -544,7 +544,7 @@ class User {
 
 
 	/**
-	 * @abstract Returns an array of groups the user is in
+	 * Returns an array of groups the user is in
 	 * @param integer $user_id
 	 * @return boolean
 	 * @access public
@@ -573,7 +573,7 @@ class User {
 
 
 	/**
-	 * @abstract Returns whether or not user has global access (admin/superuser)
+	 * Returns whether or not user has global access (admin/superuser)
 	 * @return boolean
 	 * @access public
 	 */
@@ -598,7 +598,7 @@ class User {
 
 
 	/**
-	 * @abstract Counts the number of user accounts
+	 * Counts the number of user accounts
 	 * @return integer
 	 * @access public
 	 */
@@ -619,7 +619,7 @@ class User {
 
 
 	/**
-	 * @abstract Returns the default module for a specific user group
+	 * Returns the default module for a specific user group
 	 * @access public
 	 */
 	 public function getUserDefaultModule(){
@@ -645,7 +645,7 @@ class User {
 	 
 
 	/**
-	 * @abstract Generates new random password
+	 * Generates new random password
 	 * @param integer $length
 	 * @return string
 	 * @access public
@@ -675,7 +675,7 @@ class User {
 
 
 	/**
-	 * @abstract Returns a list of groups
+	 * Returns a list of groups
 	 * @return array
 	 * @access public
 	 */

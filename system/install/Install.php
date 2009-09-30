@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Handles application and module installation
+ * Handles application and module installation
  * @package Aspen_Framework
  */
 class Install {
@@ -28,7 +28,7 @@ class Install {
 	
 
 	/**
-	 * @abstract Constructor, initializes the module
+	 * Constructor, initializes the module
 	 * @return Install
 	 * @access public
 	 */
@@ -39,7 +39,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Runs a quick system prerequisite/versions check.
+	 * Runs a quick system prerequisite/versions check.
 	 * @access private
 	 */
 	private function checkSystemCompatibility(){
@@ -53,7 +53,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Returns whether or not the system prereq check passed
+	 * Returns whether or not the system prereq check passed
 	 * @return public
 	 */
 	public function isSupported(){
@@ -62,7 +62,7 @@ class Install {
 
 	
 	/**
-	 * @abstract Runs prerequisites check, if good sends user to config setup or account creation
+	 * Runs prerequisites check, if good sends user to config setup or account creation
 	 * @access public
 	 */
 	public function prereq(){
@@ -76,7 +76,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Runs prerequisites check, if good sends user to config setup or account creation
+	 * Runs prerequisites check, if good sends user to config setup or account creation
 	 * @access public
 	 */
 	public function beginInstallProcess(){
@@ -104,7 +104,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Users sets up their database / config file here
+	 * Users sets up their database / config file here
 	 * @access public
 	 */
 	public function setup($retry = false){
@@ -176,7 +176,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Display config contents for creating files
+	 * Display config contents for creating files
 	 * @access public
 	 */
 	public function paste_config($config){
@@ -194,7 +194,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract User creates the basic account at this point
+	 * User creates the basic account at this point
 	 * @access public
 	 */
 	public function account(){
@@ -275,7 +275,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Displays our installation success page
+	 * Displays our installation success page
 	 * @access public
 	 */
 	public function success(){
@@ -289,7 +289,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Runs the sql needed for installation of the basic app
+	 * Runs the sql needed for installation of the basic app
 	 * @access private
 	 */
 	private function installBaseTables(){
@@ -318,7 +318,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Records the current build in the upgrade history table
+	 * Records the current build in the upgrade history table
 	 * @access private
 	 */
 	private function recordCurrentBuild(){
@@ -327,7 +327,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Displays a message that a database update is required
+	 * Displays a message that a database update is required
 	 * @access public
 	 */
 	public function upgrade(){
@@ -341,7 +341,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Processes the actual database upgrade
+	 * Processes the actual database upgrade
 	 * @access public
 	 */
 	public function run_upgrade(){
@@ -390,7 +390,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Registers a module (inserts a modules guid into the modules table)
+	 * Registers a module (inserts a modules guid into the modules table)
 	 * @param string $guid
 	 * @access public
 	 */
@@ -433,7 +433,7 @@ class Install {
 	
 	
 	/**
-	 * @abstract Used to run uninstallation code from module
+	 * Used to run uninstallation code from module
 	 * @param string $guid
 	 * @access public
 	 */

@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Validates and handles form data.
+ * Validates and handles form data.
  * @package Aspen_Framework
  */
 class Form {
@@ -27,7 +27,7 @@ class Form {
 	private $_form_errors = array();
 
 	/**
-	 * @abstract Flags a validation error
+	 * Flags a validation error
 	 * @var boolean $_error
 	 * @access private
 	 */
@@ -59,7 +59,7 @@ class Form {
 
 
 	/**
-	 * @abstract Contrucor, obtains an instance of the original app
+	 * Contrucor, obtains an instance of the original app
 	 * @return Form_validator
 	 * @access private
 	 */
@@ -67,7 +67,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Loads a single record - field names and values
+	 * Loads a single record - field names and values
 	 * @param string $table
 	 * @param integer $id
 	 * @param string $field
@@ -87,7 +87,7 @@ class Form {
 
 
 	/**
-	 * @abstract Loads a table's fields and it's schema
+	 * Loads a table's fields and it's schema
 	 * @param string $table
 	 * @access private
 	 */
@@ -111,7 +111,7 @@ class Form {
 
 
 	/**
-	 * @abstract Loads a single record - field names and values
+	 * Loads a single record - field names and values
 	 * @param string $table
 	 * @param integer $id
 	 * @param string $field
@@ -148,7 +148,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Initiates the insert/update queries on form data
+	 * Initiates the insert/update queries on form data
 	 * @param integer $id
 	 * @return integer
 	 * @access public
@@ -192,7 +192,7 @@ class Form {
 
 	
 	/**
-	 * @abstract Determines whether or not a form has been submitted
+	 * Determines whether or not a form has been submitted
 	 * @param string $method
 	 * @param strong $field
 	 * @return boolean
@@ -239,7 +239,7 @@ class Form {
 	
 
 	/**
-	 * @abstract Adds a new field to our form schema
+	 * Adds a new field to our form schema
 	 * @param string $name
 	 * @param mixed $default_value
 	 * @param mixed $current_value
@@ -256,7 +256,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Adds each item in an array as a field
+	 * Adds each item in an array as a field
 	 * @param array $fields
 	 * @access public
 	 */
@@ -270,7 +270,7 @@ class Form {
 
 
 	/**
-	 * @abstract Sets a default value of a form field
+	 * Sets a default value of a form field
 	 * @param string $field
 	 * @param mixed $value
 	 * @access public
@@ -284,7 +284,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Returns the default value for a field
+	 * Returns the default value for a field
 	 * @param string $field
 	 * @param boolean $escape
 	 * @return mixed
@@ -305,7 +305,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Resets all form fields to their default values
+	 * Resets all form fields to their default values
 	 * @access public
 	 */
 	public function resetDefaults(){
@@ -318,7 +318,7 @@ class Form {
 
 
 	/**
-	 * @abstract Sets the current value of a form field
+	 * Sets the current value of a form field
 	 * @param string $field
 	 * @param mixed $value
 	 * @access public
@@ -332,7 +332,7 @@ class Form {
 
 	
 	/**
-	 * @abstract Returns the current value for a field
+	 * Returns the current value for a field
 	 * @param string $field
 	 * @param boolean $escape
 	 * @return mixed
@@ -344,7 +344,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Returns the current value for a field
+	 * Returns the current value for a field
 	 * @param string $field
 	 * @param boolean $escape
 	 * @return mixed
@@ -366,7 +366,7 @@ class Form {
 	
 
 	/**
-	 * @abstract Returns an array of all fields and their current values
+	 * Returns an array of all fields and their current values
 	 * @return array
 	 * @access public
 	 */
@@ -387,7 +387,7 @@ class Form {
 
 
 	/**
-	 * @abstract Imports all values for current fields from POST data
+	 * Imports all values for current fields from POST data
 	 * @access private
 	 */
 	public function loadPOST(){
@@ -396,7 +396,7 @@ class Form {
 
 
 	/**
-	 * @abstract Imports all values for current fields from GET data
+	 * Imports all values for current fields from GET data
 	 * @access private
 	 */
 	public function loadGET(){
@@ -405,7 +405,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Imports all values for current fields from incoming GET/POST data
+	 * Imports all values for current fields from incoming GET/POST data
 	 * @access private
 	 */
 	public function loadIncomingValues($method = 'post'){
@@ -460,7 +460,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Loads in values straight from get/post from an array of field names
+	 * Loads in values straight from get/post from an array of field names
 	 * @return array
 	 * @access public
 	 */
@@ -480,7 +480,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Triggers a validation error message
+	 * Triggers a validation error message
 	 * @param string $field
 	 * @param string $message
 	 * @access public
@@ -498,7 +498,7 @@ class Form {
 
 
 	/**
-	 * @abstract Returns an array of current form errors
+	 * Returns an array of current form errors
 	 * @return array
 	 * @access public
 	 */
@@ -535,7 +535,7 @@ class Form {
 
 
 	/**
-	 * @abstract Returns an array of errors for a specific field
+	 * Returns an array of errors for a specific field
 	 * @param string $field
 	 * @return mixed
 	 */
@@ -548,7 +548,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Prints out form error messages using html wrapping defined in config
+	 * Prints out form error messages using html wrapping defined in config
 	 * @access public
 	 */
 	public function printErrors($custom_sort = false){
@@ -568,7 +568,7 @@ class Form {
 
 
 	/**
-	 * @abstract Returns a boolean whether there is an error or not
+	 * Returns a boolean whether there is an error or not
 	 * @return boolean
 	 * @access public
 	 */
@@ -583,7 +583,7 @@ class Form {
 //+-----------------------------------------------------------------------+
 
 	/**
-	 * @abstract Checks a form field for content
+	 * Checks a form field for content
 	 * @param string $field
 	 * @return boolean
 	 * @access public
@@ -595,7 +595,7 @@ class Form {
 
 
 	/**
-	 * @abstract Compares two field values
+	 * Compares two field values
 	 * @param string $field_1
 	 * @param string $field_2
 	 * @return boolean
@@ -607,7 +607,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Checks for an integer
+	 * Checks for an integer
 	 * @param string $field
 	 * @return boolean
 	 * @access public
@@ -618,7 +618,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Checks for a float value
+	 * Checks for a float value
 	 * @param string $field
 	 * @return boolean
 	 * @access public
@@ -629,7 +629,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Checks for an alphanumeric string
+	 * Checks for an alphanumeric string
 	 * @param string $field
 	 * @return boolean
 	 * @access public
@@ -640,7 +640,7 @@ class Form {
 
 	
 	/**
-	 * @abstract Checks for an alpha string
+	 * Checks for an alpha string
 	 * @param string $field
 	 * @return boolean
 	 * @access public
@@ -651,7 +651,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Checks for an IP address
+	 * Checks for an IP address
 	 * @param string $field
 	 * @return boolean
 	 * @access public
@@ -662,7 +662,7 @@ class Form {
 	
 
 	/**
-	 * @abstract Checks whether or not the string is a credit card number
+	 * Checks whether or not the string is a credit card number
 	 * @param string $field
 	 * @param string $type
 	 * @return boolean
@@ -674,7 +674,7 @@ class Form {
 	
 	
 	/**
-	 * @abstract Checks whether or not the string is a valid date
+	 * Checks whether or not the string is a valid date
 	 * @param string $field
 	 * @param string $type
 	 * @return boolean
@@ -686,7 +686,7 @@ class Form {
 
 
 	/**
-	 * @abstract Checks for a valid email format
+	 * Checks for a valid email format
 	 * @param string $field
 	 * @return boolean
 	 * @access public
@@ -697,7 +697,7 @@ class Form {
 
 	
 	/**
-	 * @abstract Checks for a valid float/digit
+	 * Checks for a valid float/digit
 	 * @param feild $field
 	 * @return boolean
 	 * @access public
@@ -709,7 +709,7 @@ class Form {
 	
 
 	/**
-	 * @abstract Checks for a valid phone number
+	 * Checks for a valid phone number
 	 * @param string $phonenumber
 	 * @param string $country
 	 * @return boolean

@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Manages urls and relation to our application
+ * Manages urls and relation to our application
  * @package Aspen_Framework
  */
 class Router {
@@ -46,7 +46,7 @@ class Router {
 
 
 	/**
-	 * @abstract Constructor
+	 * Constructor
 	 * @return Router
 	 * @access private
 	 */
@@ -68,7 +68,7 @@ class Router {
 
 
 	/**
-	 * @abstract Maps URI elements to an internal array - either GET or clean urls
+	 * Maps URI elements to an internal array - either GET or clean urls
 	 * @access private
 	 */
 	private function mapRequest(){
@@ -133,7 +133,7 @@ class Router {
 
 
 	/**
-	 * @abstract Applies custom mapping routes to URLs. If a match is found, default is not applied.
+	 * Applies custom mapping routes to URLs. If a match is found, default is not applied.
 	 * @param string $path
 	 * @access private
 	 * @return boolean
@@ -210,7 +210,7 @@ class Router {
 
 
 	/**
-	 * @abstract First checks for what path has been requested. Then, it
+	 * First checks for what path has been requested. Then, it
 	 * checks for approval for that request (permissions, install, etc).
 	 * @access private
 	 */
@@ -240,7 +240,7 @@ class Router {
 
 
 	/**
-	 * @abstract Identifies the module that has been requested, but not yet approved
+	 * Identifies the module that has been requested, but not yet approved
 	 * @return string
 	 * @access private
 	 */
@@ -250,7 +250,7 @@ class Router {
 
 
 	/**
-	 * @abstract Identifies the method that has been requested, but not yet approved
+	 * Identifies the method that has been requested, but not yet approved
 	 * @return string
 	 * @access private
 	 */
@@ -260,7 +260,7 @@ class Router {
 
 
 	/**
-	 * @abstract Identifies which module needs to be loaded
+	 * Identifies which module needs to be loaded
 	 * @return string
 	 * @access public
 	 * @todo clean this up now that loadRequestedPagePath exists
@@ -299,7 +299,7 @@ class Router {
 
 
 	/**
-	 * @abstract Identifies which method needs to be loaded
+	 * Identifies which method needs to be loaded
 	 * @param string $default
 	 * @return string
 	 * @access private
@@ -334,7 +334,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns the currently selected module
+	 * Returns the currently selected module
 	 * @return string
 	 * @access public
 	 */
@@ -344,7 +344,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns the currently selected method
+	 * Returns the currently selected method
 	 * @return string
 	 * @access public
 	 */
@@ -354,7 +354,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns all current method arguments
+	 * Returns all current method arguments
 	 * @return string
 	 * @access private
 	 */
@@ -364,7 +364,7 @@ class Router {
 
 
 	/**
-	 * @abstract Determines the parent of the current module, mainly for navigation purposes.
+	 * Determines the parent of the current module, mainly for navigation purposes.
 	 * @return string
 	 * @access public
 	 */
@@ -382,7 +382,7 @@ class Router {
 
 
 	/**
-	 * @abstract Loads the lanuage file for the current module
+	 * Loads the lanuage file for the current module
 	 * @access private
 	 */
 	private function loadModuleLanguage($module = false, $interface = false){
@@ -416,7 +416,7 @@ class Router {
 
 
 	/**
-	 * @abstract Calls the module/method with arguments from the url
+	 * Calls the module/method with arguments from the url
 	 * @access public
 	 */
 	public function loadFromUrl(){
@@ -518,7 +518,7 @@ class Router {
 
 
 	/**
-	 * @abstract Check for an argument index
+	 * Check for an argument index
 	 * @param integer $index
 	 * @return mixed
 	 * @access private
@@ -529,7 +529,7 @@ class Router {
 
 
 	/**
-	 * @abstract Return an array of current arguments
+	 * Return an array of current arguments
 	 * @return array
 	 * @access public
 	 */
@@ -539,7 +539,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns a full URL path for the current page, query string and all
+	 * Returns a full URL path for the current page, query string and all
 	 * @return string
 	 * @access public
 	 */
@@ -554,7 +554,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns the absolute url to the aspen installation path.
+	 * Returns the absolute url to the aspen installation path.
 	 * @access public
 	 * @return string
 	 */
@@ -568,7 +568,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns the current port number
+	 * Returns the current port number
 	 * @return integer
 	 * @access public
 	 */
@@ -578,7 +578,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns the protocol / domain name only
+	 * Returns the protocol / domain name only
 	 * @access public
 	 * @return string
 	 */
@@ -597,7 +597,7 @@ class Router {
 
 
     /**
-     * @abstract Attempts to return the post-domain name path to our application (minus interface)
+     * Attempts to return the post-domain name path to our application (minus interface)
      * @return string
      * @access public
      */
@@ -652,7 +652,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns an absolute url to the current interface application.
+	 * Returns an absolute url to the current interface application.
 	 * @param string $interface
 	 * @return string
 	 * @access public
@@ -664,7 +664,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns the url to the file upoads directory
+	 * Returns the url to the file upoads directory
 	 * @return string
 	 * @access public
 	 */
@@ -678,7 +678,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns the static content path if set in config, otherwise just interfaceUrl
+	 * Returns the static content path if set in config, otherwise just interfaceUrl
 	 * @return string
 	 * @access public
 	 */
@@ -702,7 +702,7 @@ class Router {
 
 
     /**
-	 * @abstract Returns an absolute URL to the module folder
+	 * Returns an absolute URL to the module folder
 	 * @param string $module_name
 	 * @return string
 	 * @access public
@@ -715,7 +715,7 @@ class Router {
 
 
 	/**
-	 * @abstract Encodes a string for use in the url
+	 * Encodes a string for use in the url
 	 * @param string $var
 	 * @access public
 	 * @return string
@@ -731,7 +731,7 @@ class Router {
 
 
 	/**
-	 * @abstract Decodes a string for use in the url
+	 * Decodes a string for use in the url
 	 * @param string $var
 	 * @access public
 	 * @return string
@@ -747,7 +747,7 @@ class Router {
 
 
 	/**
-	 * @abstract Returns the server path to our module
+	 * Returns the server path to our module
 	 * @return string
 	 * @access public
 	 */
@@ -764,7 +764,7 @@ class Router {
 
 
 	/**
-	 * @abstract Answers whether or not the user is in a specific location
+	 * Answers whether or not the user is in a specific location
 	 * @param string $module
 	 * @param string $method
 	 * @return boolean
@@ -801,7 +801,7 @@ class Router {
 
 
 	/**
-	 * @abstract Sets the referring page for future reference
+	 * Sets the referring page for future reference
 	 * @access public
 	 */
 	public function setReturnToReferrer(){

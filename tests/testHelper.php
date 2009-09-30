@@ -7,7 +7,7 @@ class TestHelper extends PHPUnit_Framework_TestCase {
 
 	
 	/**
-	 * @abstract Mocks a form post for test purposes
+	 * Mocks a form post for test purposes
 	 * @param array $post
 	 */
 	public function mockFormPost($post) {
@@ -18,7 +18,7 @@ class TestHelper extends PHPUnit_Framework_TestCase {
 	
 	
 	/**
-	 * @abstract Mocks a get request for test purposes
+	 * Mocks a get request for test purposes
 	 * @param array $post
 	 */
 	public function mockGet($get) {

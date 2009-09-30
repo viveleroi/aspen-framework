@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Stores and retrieves cached data
+ * Stores and retrieves cached data
  * @package Aspen_Framework
  */
 class Cache {
@@ -34,7 +34,7 @@ class Cache {
 
 
 	/**
-	 * @abstract Contrucor, obtains an instance of the original app
+	 * Contrucor, obtains an instance of the original app
 	 * @return Form_validator
 	 * @access private
 	 */
@@ -55,7 +55,7 @@ class Cache {
 	
 	
 	/**
-	 * @abstract Initialized the cache functions, checks dirs, etc
+	 * Initialized the cache functions, checks dirs, etc
 	 * @access public
 	 */
 	public function enable(){
@@ -70,7 +70,7 @@ class Cache {
 	
 	
 	/**
-	 * @abstract Checks for a valid directory, attempts to create
+	 * Checks for a valid directory, attempts to create
 	 * @return boolean
 	 * @access private
 	 */
@@ -92,7 +92,7 @@ class Cache {
 	
 	
 	/**
-	 * @abstract Checks for a file for this current data
+	 * Checks for a file for this current data
 	 * @param string $key
 	 * @param boolean $create
 	 * @return boolean
@@ -117,7 +117,7 @@ class Cache {
 	
 	
 	/**
-	 * @abstract Stores new data in the cache
+	 * Stores new data in the cache
 	 * @param string $key
 	 * @param mixed $data
 	 * @param string $expiration
@@ -155,7 +155,7 @@ class Cache {
 	
 	
 	/**
-	 * @abstract Returns the stored value
+	 * Returns the stored value
 	 * @param string $key
 	 * @return mixed
 	 * @access public

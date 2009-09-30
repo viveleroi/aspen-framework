@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract File/directory handling class loosely based off of original concept by Antoine Bouet.
+ * File/directory handling class loosely based off of original concept by Antoine Bouet.
  * @package Aspen_Framework
  * @author Antoine Bouet
  */
@@ -89,7 +89,7 @@ class File {
 
 	
 	/**
-	 * @abstract Contrucor, obtains an instance of the original app
+	 * Contrucor, obtains an instance of the original app
 	 * @return Form_validator
 	 * @access private
 	 */
@@ -102,7 +102,7 @@ class File {
 
 	
 	/**
-	 * @abstract List files found in a directory
+	 * List files found in a directory
 	 * @param string $directory
 	 * @return array
 	 * @access public
@@ -137,7 +137,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Creates a new directory
+	 * Creates a new directory
 	 * @param string $path
 	 * @return boolean
 	 * @access public
@@ -159,7 +159,7 @@ class File {
 	
 
 	/**
-	 * @abstract Initiates the class for use with a file
+	 * Initiates the class for use with a file
 	 * @param string $filepath
 	 * @access public
 	 */
@@ -171,7 +171,7 @@ class File {
 	
 
 	/**
-	 * @abstract Opens file and returns contents
+	 * Opens file and returns contents
 	 * @param string $file
 	 * @return string
 	 * @access public
@@ -187,7 +187,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Writes content to the file
+	 * Writes content to the file
 	 * @param string $content
 	 * @param string $mode File editing mode w=write, a=append
 	 * @return boolean
@@ -206,7 +206,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Deletes the file with command appropriate for OS
+	 * Deletes the file with command appropriate for OS
 	 * @param string $file
 	 * @return boolean
 	 * @access public
@@ -234,7 +234,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Checks the file against allowed types
+	 * Checks the file against allowed types
 	 * @return boolean
 	 * @access private
 	 */
@@ -244,7 +244,7 @@ class File {
 	
 
 	/**
-	 * @abstract Initiates a download of a file
+	 * Initiates a download of a file
 	 * @access public
 	 */
 	public function download(){
@@ -262,7 +262,7 @@ class File {
 
 	
 	/**
-	 * @abstract Uploads a file to $config['upload_server_path'] from $_FILES array
+	 * Uploads a file to $config['upload_server_path'] from $_FILES array
 	 * @param string $form_field Name of form FILE input field
 	 * @param boolean $overwrite Allow overwriting existing files
 	 * @param boolean $timestamp Whether or not to timestamp uploaded file
@@ -283,7 +283,7 @@ class File {
 
 
 	/**
-	 * @abstract Sets and configures the upload directory
+	 * Sets and configures the upload directory
 	 * @return boolean
 	 * @access private
 	 */
@@ -311,7 +311,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Uploads an array of / or single files
+	 * Uploads an array of / or single files
 	 * @param string $form_field Name of form FILE input field
 	 * @param string $rename New name for upload file
 	 * @param boolean $overwrite Allow overwriting existing files
@@ -363,7 +363,7 @@ class File {
 
 
 	/**
-	 * @abstract Uploads a file
+	 * Uploads a file
 	 * @param string $file An array of the file information
 	 * @param string $rename New name for upload file
 	 * @param boolean $overwrite Allow overwriting existing files
@@ -459,7 +459,7 @@ class File {
 
 	
 	/**
-	 * @abstract Attempts to set the owner of a file
+	 * Attempts to set the owner of a file
 	 * @param string $_owner
 	 * @access public
 	 */
@@ -469,7 +469,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Returns the owner of a file
+	 * Returns the owner of a file
 	 * @return string
 	 * @access public
 	 */
@@ -480,7 +480,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Attempts to set the owning group of a file
+	 * Attempts to set the owning group of a file
 	 * @param string $_grp
 	 * @access public
 	 */
@@ -490,7 +490,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Returns the owning group of a file
+	 * Returns the owning group of a file
 	 * @return string
 	 * @access public
 	 */
@@ -501,7 +501,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Returns the size of the file
+	 * Returns the size of the file
 	 * @return integer
 	 * @access public
 	 */
@@ -514,7 +514,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Returns the extension of the file
+	 * Returns the extension of the file
 	 * @return string
 	 * @access public
 	 */
@@ -526,7 +526,7 @@ class File {
 	
 	
 	/**
-	 * @abstract Returns file type
+	 * Returns file type
 	 * @return string
 	 * @access public
 	 */

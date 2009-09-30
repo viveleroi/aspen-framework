@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Manages application settings
+ * Manages application settings
  * @package Aspen_Framework
  */
 class Settings {
@@ -22,14 +22,14 @@ class Settings {
 
 
 	/**
-	 * @abstract Constructor
+	 * Constructor
 	 * @access private
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
 
 
 	/**
-	 * @abstract Returns a configuration value from the db
+	 * Returns a configuration value from the db
 	 * @param string $key
 	 * @param integer $user_id
 	 * @return mixed
@@ -49,7 +49,7 @@ class Settings {
 
 
 	/**
-	 * @abstract Sets a configuration value - updates if it exists otherwise insert.
+	 * Sets a configuration value - updates if it exists otherwise insert.
 	 * @param string $key
 	 * @param string $value
 	 * @param integer $user_id
@@ -65,7 +65,7 @@ class Settings {
 
 
 	/**
-	 * @abstract Loads the core config record
+	 * Loads the core config record
 	 * @param string $key
 	 * @param integer $user_id
 	 * @return array

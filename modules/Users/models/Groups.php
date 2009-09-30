@@ -9,20 +9,20 @@
  */
 
 /**
- * @abstract This class manages our mysql sql query generation
+ * This class manages our mysql sql query generation
  * @package Aspen_Framework
  */
 class GroupsModel extends Model {
 
 	/**
-	 * @abstract We must allow the parent constructor to run properly
+	 * We must allow the parent constructor to run properly
 	 * @param string $table
 	 */
 	public function __construct($table = false){ parent::__construct($table); }
 
 
 	/**
-	 * @abstract Validates the database table input
+	 * Validates the database table input
 	 * @param array $fields
 	 * @param string $primary_key
 	 * @return boolean

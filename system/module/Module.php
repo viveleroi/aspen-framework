@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Base parent class for application modules, sets up app reference
+ * Base parent class for application modules, sets up app reference
  * @package Aspen_Framework
  */
 class Module {
@@ -22,7 +22,7 @@ class Module {
 
 
 	/**
-	 * @abstract Constructor, initializes the module
+	 * Constructor, initializes the module
 	 * @return Index_Admin
 	 * @access public
 	 */

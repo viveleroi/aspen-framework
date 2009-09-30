@@ -72,14 +72,14 @@ class Error {
 
 
 	/**
-	 * @abstract Handles our error logging/display
+	 * Handles our error logging/display
 	 * @return ErrorHandler
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
 
 
 	/**
-	 * @abstract Returns the error number
+	 * Returns the error number
 	 * @return string
 	 * @access public
 	 */
@@ -89,7 +89,7 @@ class Error {
 
 
 	/**
-	 * @abstract Returns the error message
+	 * Returns the error message
 	 * @return string
 	 * @access public
 	 */
@@ -99,7 +99,7 @@ class Error {
 
 
 	/**
-	 * @abstract Returns the error type
+	 * Returns the error type
 	 * @return string
 	 * @access public
 	 */
@@ -109,7 +109,7 @@ class Error {
 
 
 	/**
-	 * @abstract Returns the error line
+	 * Returns the error line
 	 * @return string
 	 * @access public
 	 */
@@ -119,7 +119,7 @@ class Error {
 
 
 	/**
-	 * @abstract Returns the error file
+	 * Returns the error file
 	 * @return string
 	 * @access public
 	 */
@@ -129,7 +129,7 @@ class Error {
 
 
 	/**
-	 * @abstract Returns the error information array
+	 * Returns the error information array
 	 * @return array
 	 * @access public
 	 */
@@ -139,7 +139,7 @@ class Error {
 
 
 	/**
-	 * @abstract Returns the error trace
+	 * Returns the error trace
 	 * @return array
 	 * @access public
 	 */
@@ -149,7 +149,7 @@ class Error {
 
 
 	/**
-	 * @abstract Raises a new error message
+	 * Raises a new error message
 	 * @param integer $errNo
 	 * @param string $errMsg
 	 * @param string $file
@@ -311,7 +311,7 @@ class Error {
 
 
 	/**
-	 * @abstract Returns a server value, uses params class if loaded
+	 * Returns a server value, uses params class if loaded
 	 * @param string $key
 	 * @param string $default
 	 * @return string

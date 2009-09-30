@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract This class manages our templates and loads them for display
+ * This class manages our templates and loads them for display
  * @package Aspen_Framework
  */
 class Scaffold {
@@ -22,7 +22,7 @@ class Scaffold {
 
 
 	/**
-	 * @abstract Constructor
+	 * Constructor
 	 * @return Router
 	 * @access private
 	 */
@@ -30,7 +30,7 @@ class Scaffold {
 
 
 	/**
-	 * @abstract Converts text into a proper English field name
+	 * Converts text into a proper English field name
 	 * @param string $name
 	 * @return string
 	 * @access private
@@ -41,7 +41,7 @@ class Scaffold {
 
 
 	/**
-	 * @abstract Creates the basic list view scaffold
+	 * Creates the basic list view scaffold
 	 * @param string $table
 	 * @access public
 	 */
@@ -56,7 +56,7 @@ class Scaffold {
 
 
 	/**
-	 * @abstract Creates the basic list view scaffold
+	 * Creates the basic list view scaffold
 	 * @param string $table
 	 * @access private
 	 */
@@ -118,7 +118,7 @@ class Scaffold {
 
 
 	/**
-	 * @abstract Creates the basic list view scaffold
+	 * Creates the basic list view scaffold
 	 * @param string $table
 	 * @access private
 	 */
@@ -189,7 +189,7 @@ $tbody .= "		</tr>\n
 
 
 	/**
-	 * @abstract Generates an add/edit form field with name and value
+	 * Generates an add/edit form field with name and value
 	 * @param string $name
 	 * @param string $type
 	 * @param string $value
@@ -228,7 +228,7 @@ $tbody .= "		</tr>\n
 
 
 	/**
-	 * @abstract Creates a basic add record form scaffold
+	 * Creates a basic add record form scaffold
 	 * @param string $table
 	 * @access public
 	 */
@@ -238,7 +238,7 @@ $tbody .= "		</tr>\n
 
 
 	/**
-	 * @abstract Creates a basic edit record form scaffold
+	 * Creates a basic edit record form scaffold
 	 * @param string $table
 	 * @param integer $id
 	 * @access public
@@ -249,7 +249,7 @@ $tbody .= "		</tr>\n
 
 
 	/**
-	 * @abstract Generates the add and edit form
+	 * Generates the add and edit form
 	 * @param string $table
 	 * @param mixed $id
 	 * @access private
@@ -318,7 +318,7 @@ $tbody .= "		</tr>\n
 
 
 	/**
-	 * @abstract Creates a basic delete record form scaffold
+	 * Creates a basic delete record form scaffold
 	 * @param string $table
 	 * @param integer $id
 	 * @access public

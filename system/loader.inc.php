@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Define information required in bootstrap, application
+ * Define information required in bootstrap, application
  */
 // define our application paths
 define('SYSTEM_PATH', dirname(__FILE__));
@@ -24,7 +24,7 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 	require(SYSTEM_PATH.DIRECTORY_SEPARATOR.'bootstrap.php');
 	
 	/**
-	 * @abstract Verifies and loads a module, and returns it as an object.
+	 * Verifies and loads a module, and returns it as an object.
 	 * @param text $module Name of a module to load
 	 * @return mixed
 	 */
@@ -65,7 +65,7 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 	
 	
 	/**
-	 * @abstract Returns the pure bootstrap application
+	 * Returns the pure bootstrap application
 	 * @return mixed
 	 */
 	function load_framework($interface = false){

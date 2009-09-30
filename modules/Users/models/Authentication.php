@@ -9,13 +9,13 @@
  */
 
 /**
- * @abstract This class manages our mysql sql query generation
+ * This class manages our mysql sql query generation
  * @package Aspen_Framework
  */
 class AuthenticationModel extends Model {
 
 	/**
-	 * @abstract We must allow the parent constructor to run properly
+	 * We must allow the parent constructor to run properly
 	 * @param string $table
 	 * @access public
 	 */
@@ -23,7 +23,7 @@ class AuthenticationModel extends Model {
 
 
 	/**
-	 * @abstract Validates the database table input
+	 * Validates the database table input
 	 * @param array $fields
 	 * @param string $primary_key
 	 * @return boolean
@@ -60,7 +60,7 @@ class AuthenticationModel extends Model {
 
 
 	/**
-	 * @abstract Runs additional logic on the insert query
+	 * Runs additional logic on the insert query
 	 * @param array $fields
 	 * @return mixed
 	 * @access public
@@ -79,7 +79,7 @@ class AuthenticationModel extends Model {
 
 
 	/**
-	 * @abstract Runs additional logic on the update query
+	 * Runs additional logic on the update query
 	 * @param array $fields
 	 * @return mixed
 	 * @access public
@@ -98,7 +98,7 @@ class AuthenticationModel extends Model {
 
 
 	/**
-	 * @abstract Defines an encoding type for the password.
+	 * Defines an encoding type for the password.
 	 * @param string $pass
 	 * @return string
 	 * @access

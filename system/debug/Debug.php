@@ -8,7 +8,7 @@
  */
 
 /**
- * @abstract Provides the base object returned for printing
+ * Provides the base object returned for printing
  * @package Aspen_Framework
  */
 class DebugBase {
@@ -182,7 +182,7 @@ class DebugBase {
 
 
 /**
- * @abstract Provides helper methods for debugging
+ * Provides helper methods for debugging
  * @package Aspen_Framework
  */
 class Debug {

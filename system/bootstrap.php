@@ -13,7 +13,7 @@ ini_set('display_errors', true);
 error_reporting(E_ALL);
 
 /**
- * @abstract define the framework revision
+ * define the framework revision
  * upon AF release, we set this during
  * the build process. We request you do not
  * change this value, so you can always
@@ -24,7 +24,7 @@ define('FRAMEWORK_REV', '');
 
 
 /**
- * @abstract This base class provides a method allowing subclasses access to the higher object through reference.
+ * This base class provides a method allowing subclasses access to the higher object through reference.
  * @package Aspen_Framework
  * @access private
  */
@@ -36,7 +36,7 @@ class Base {
 
 
 /**
- * @abstract Returns an instance of our original app
+ * Returns an instance of our original app
  * @return object
  */
 function &get_instance(){
@@ -53,7 +53,7 @@ function &get_instance(){
 
 
 /**
- * @abstract Bootstrap, loads all of our configurations and required classes.
+ * Bootstrap, loads all of our configurations and required classes.
  * @package Aspen_Framework
  */
 class Bootstrap extends Base {
@@ -347,7 +347,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Allows sessions to be loaded by the session_id in the query string
+	 * Allows sessions to be loaded by the session_id in the query string
 	 * @access private
 	 */
 	private function setSessionId(){
@@ -363,7 +363,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Sets some constants based off our version/build info
+	 * Sets some constants based off our version/build info
 	 * @access private
 	 */
 	private function setVersionConstants(){
@@ -384,7 +384,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Determines whether or not the app has been installed
+	 * Determines whether or not the app has been installed
 	 * @return boolean
 	 * @access public
 	 */
@@ -412,7 +412,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Loads the default config file
+	 * Loads the default config file
 	 * @return array
 	 * @access private
 	 */
@@ -436,7 +436,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Verifies whether or not the user config file exists
+	 * Verifies whether or not the user config file exists
 	 * @param string $config_path Path to configuration location
 	 * @return boolean
 	 * @access public
@@ -458,7 +458,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Loads all config files
+	 * Loads all config files
 	 * @return array
 	 * @access private
 	 */
@@ -487,7 +487,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Forces values for config options if they conflict with environment settings
+	 * Forces values for config options if they conflict with environment settings
 	 * @access private
 	 */
 	private function forceConfigValues(){
@@ -506,7 +506,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns a configuration value from config files
+	 * Returns a configuration value from config files
 	 * @param string $key
 	 * @return mixed
 	 * @access public
@@ -520,7 +520,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns the configuration array
+	 * Returns the configuration array
 	 * @return array
 	 * @access public
 	 */
@@ -530,7 +530,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Sets a config value
+	 * Sets a config value
 	 * @param string $key
 	 * @param mixed $value
 	 * @access public
@@ -541,7 +541,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Loads the core classes needed for AspenMSM
+	 * Loads the core classes needed for AspenMSM
 	 * @return bool
 	 * @access private
 	 */
@@ -687,7 +687,7 @@ class Bootstrap extends Base {
 	 * 'root' => '/full/path/to/root/of/class',
 	 * 'extends' => 'Settings'
 	 *
-	 * @abstract Accepts an array of system libraries to load
+	 * Accepts an array of system libraries to load
 	 * @param array $library_array
 	 * @return boolean
 	 * @access private
@@ -743,7 +743,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns the array of loaded system classes
+	 * Returns the array of loaded system classes
 	 * @return array
 	 * @access public
 	 */
@@ -753,7 +753,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns whether or not a library is loaded
+	 * Returns whether or not a library is loaded
 	 * @param string $library
 	 * @return boolean
 	 * @access public
@@ -769,7 +769,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns the list of model extensions
+	 * Returns the list of model extensions
 	 * @return array
 	 */
 	public function getModelExtensions(){
@@ -778,7 +778,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Generates a complete list of model extensions
+	 * Generates a complete list of model extensions
 	 * @return array
 	 * @access private
 	 */
@@ -803,7 +803,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Generates a complete list of model extensions
+	 * Generates a complete list of model extensions
 	 * @return array
 	 * @access private
 	 */
@@ -835,7 +835,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Attempts to map foreign keys to their parent table
+	 * Attempts to map foreign keys to their parent table
 	 * @return <type>
 	 */
 	private function mapChildForeignKeys(){
@@ -891,7 +891,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns the child key mappings
+	 * Returns the child key mappings
 	 * @return array
 	 * @access public
 	 */
@@ -907,7 +907,7 @@ class Bootstrap extends Base {
 	 * 'filename' => false,
 	 * 'root' => '/full/path/to/root/of/class'
 	 *
-	 * @abstract Accepts an array of models to load
+	 * Accepts an array of models to load
 	 * @return boolean
 	 * @access private
 	 */
@@ -946,7 +946,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns whether or not our db connection was made, and tables exist
+	 * Returns whether or not our db connection was made, and tables exist
 	 * @return boolean
 	 * @access public
 	 */
@@ -962,7 +962,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Scans the modules loaded on the server and loads their xml registration data
+	 * Scans the modules loaded on the server and loads their xml registration data
 	 * @access private
 	 */
 	private function parseModuleRegistries(){
@@ -1011,7 +1011,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Scans the file system for any plugins
+	 * Scans the file system for any plugins
 	 * @access private
 	 */
 	public function parsePluginRegistries(){
@@ -1067,7 +1067,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Calls plugins registered for any hooks
+	 * Calls plugins registered for any hooks
 	 * @param string $hook_to_call
 	 * @param array $plugins
 	 * @access public
@@ -1112,7 +1112,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns a specific registry object for a selected module
+	 * Returns a specific registry object for a selected module
 	 * @param string $guid
 	 * @param string $name
 	 * @param string $interface
@@ -1154,7 +1154,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns the module registry (xml object)
+	 * Returns the module registry (xml object)
 	 * @access public
 	 */
 	public function getModuleRegistry(){
@@ -1163,7 +1163,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Gathers a list of installed modules from db, stores it in local array.
+	 * Gathers a list of installed modules from db, stores it in local array.
 	 * @return boolean
 	 * @access private
 	 */
@@ -1184,7 +1184,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns the module list as an array
+	 * Returns the module list as an array
 	 * @return array
 	 * @access private
 	 */
@@ -1203,7 +1203,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Identifies the current module and it's prereqs to load
+	 * Identifies the current module and it's prereqs to load
 	 * @access private
 	 */
 	private function loadCurrentModule(){
@@ -1232,7 +1232,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Loads a module
+	 * Loads a module
 	 * @param string $module GUID of module to load
 	 * @access private
 	 * @return boolean
@@ -1308,7 +1308,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Compares revision numbers to make sure target apps match
+	 * Compares revision numbers to make sure target apps match
 	 * @param string $min
 	 * @param string $max
 	 * @return boolean
@@ -1331,7 +1331,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Determines whether or not the database is awaiting an auto-upgrade
+	 * Determines whether or not the database is awaiting an auto-upgrade
 	 * @access public
 	 */
 	public function awaitingUpgrade(){
@@ -1363,7 +1363,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Compared two version strings for similarity
+	 * Compared two version strings for similarity
 	 * @param string $build
 	 * @param string $match
 	 * @return string
@@ -1405,7 +1405,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract formats a version number to match a 1.2.3.456 or similar type format
+	 * formats a version number to match a 1.2.3.456 or similar type format
 	 * @param string $build
 	 * @return string
 	 * @access private
@@ -1428,7 +1428,7 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * @abstract Returns the latest build number from the database
+	 * Returns the latest build number from the database
 	 * @return mixed
 	 * @access private
 	 */

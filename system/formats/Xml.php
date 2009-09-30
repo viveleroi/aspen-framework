@@ -9,14 +9,14 @@
  */
 
 /**
- * @abstract DOMDocument extension xml functions.
+ * DOMDocument extension xml functions.
  * @package Aspen_Framework
  */
 class Xml extends DOMDocument {
 
 
 	/**
-	 * @abstract Encodes strings for xml. This is essentially depracated with DOMDocument
+	 * Encodes strings for xml. This is essentially depracated with DOMDocument
 	 * @param string $string
 	 * @return string
 	 */
@@ -35,7 +35,7 @@ class Xml extends DOMDocument {
 
 
 	/**
-	 * @abstract Converts a multi-dimensional array to XML
+	 * Converts a multi-dimensional array to XML
 	 * @param array $arr
 	 * @param string $root_element
 	 * @return string

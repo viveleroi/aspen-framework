@@ -112,7 +112,7 @@ $_SERVER = $APP->params->getRawSource('server');
 		shell_exec('rm -rf ' . $module);
 
 		/**
-		 * @abstract Generates a new GUID for a module
+		 * Generates a new GUID for a module
 		 * @return string
 		 * @access private
 		 */
@@ -140,14 +140,14 @@ $_SERVER = $APP->params->getRawSource('server');
 $class_output = "<?php
 
 /**
- * @abstract ".$classname." class
+ * ".$classname." class
  * @author Aspen Framework modadmin
  */
 class ".$classname." extends Module {
 
 
 	/**
-	 * @abstract Displays the default template for this module.
+	 * Displays the default template for this module.
 	 * @access public
 	 */
 	public function view(){";
@@ -179,7 +179,7 @@ $class_output .= "
 
 
 	/**
-	 * @abstract Displays and processes the add ".$table_name." form
+	 * Displays and processes the add ".$table_name." form
 	 * @access public
 	 */
 	public function add(){
@@ -208,7 +208,7 @@ $class_output .= "
 
 
 	/**
-	 * @abstract Displays and processes the edit ".$table_name." form
+	 * Displays and processes the edit ".$table_name." form
 	 * @param integer \$id
 	 * @access public
 	 */
@@ -238,7 +238,7 @@ $class_output .= "
 
 
 	/**
-	 * @abstract Deletes a single ".$table_name." record
+	 * Deletes a single ".$table_name." record
 	 * @param integer \$id
 	 * @access public
 	 */

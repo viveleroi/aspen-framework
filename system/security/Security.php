@@ -9,7 +9,7 @@
  */
 
 /**
- * @abstract Provides data cleaning and escaping functions.
+ * Provides data cleaning and escaping functions.
  * @package Aspen_Framework
  */
 class Security {
@@ -22,7 +22,7 @@ class Security {
 
 
 	/**
-	 * @abstract Security constructor
+	 * Security constructor
 	 * @return Security
 	 * @access private
 	 */
@@ -30,7 +30,7 @@ class Security {
 
 
 	/**
-	 * @abstract Handles escaping data for entry into the database.
+	 * Handles escaping data for entry into the database.
 	 * @param mixed $data
 	 * @param boolean $allow_html Whether or not to allow html
 	 * @return mixed
@@ -48,7 +48,7 @@ class Security {
 
 
 	/**
-	 * @abstract Strips slashes from string or array
+	 * Strips slashes from string or array
 	 * @param mixed $data
 	 * @return mixed
 	 * @access public
@@ -73,7 +73,7 @@ class Security {
 
 
 	/**
-	 * @abstract Adds escaping for database input
+	 * Adds escaping for database input
 	 * @param mixed $var
 	 * @param boolean $allow_html
 	 * @return mixed
@@ -108,7 +108,7 @@ class Security {
 	
 	
 	/**
-	 * @abstract Generates a form token
+	 * Generates a form token
 	 * @access public
 	 */
 	public function generateFormToken(){
@@ -121,7 +121,7 @@ class Security {
 	
 	
 	/**
-	 * @abstract Cleans the html if filter class available
+	 * Cleans the html if filter class available
 	 * @param string $value
 	 * @return string
 	 * @access private
