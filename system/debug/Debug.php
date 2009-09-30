@@ -226,7 +226,8 @@ class Debug {
 
 		foreach($db as $pos => $caller){
 			if($pos > 0){
-				$clean 	= Inspekt_Cage::Factory($caller);
+				$per = Peregrine;
+				$clean 	= $per->sanitize($caller);
 				if($ignore_phpunit && strpos(strtolower($clean->getRaw('file')), 'phpunit') !== false){
 					continue;
 				}

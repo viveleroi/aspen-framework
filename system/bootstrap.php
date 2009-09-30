@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', false);
+ini_set('display_errors', true);
 error_reporting(E_ALL);
 
 /**
@@ -629,8 +629,8 @@ class Bootstrap extends Base {
 		$this->error = new Error;
     	set_error_handler(array(&$this->error, 'raise'));
 
-    	// assign Inspekt supercage
-    	$this->params = Inspekt::makeSuperCage();
+    	// assign supercage
+    	$this->params->init();
 
     	// router has been used already, so we need to force it to load
     	$this->router = new Router;

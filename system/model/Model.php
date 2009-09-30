@@ -240,7 +240,7 @@ class Model {
 			}
 
 			// make an inspekt cage so we can verify data
-			$clean 	= Inspekt_Cage::Factory($fields);
+			$clean 	= $this->APP->params->sanitize($fields);
 			$schema = $this->getSchema();
 
 			foreach($schema as $column){
