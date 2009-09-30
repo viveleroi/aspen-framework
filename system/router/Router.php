@@ -57,8 +57,7 @@ class Router {
 
 		// force use of ssl if required
 		if($this->APP->config('force_https')){
-			header("Location: " . str_replace(array("https", "http"), "https", $this->getFullUrl()));
-			exit;
+			$this->redirectToUrl(str_replace(array("https", "http"), "https", $this->getFullUrl()));
 		}
 
 		// map the url elements and then identify the module/method to load
@@ -815,30 +814,99 @@ class Router {
 
 
 	/**
-	 * @abstract Returns the user to the referring page when called
+	 * Returns the user to the referring page when called
 	 * @access public
 	 */
 	public function returnToReferrer(){
 		$location = $this->APP->params->session->getRaw('referring_page', $this->APP->template->createUrl('view'));
 		if(!empty($location)){
-			header('Location: ' . $location);
-			exit;
+			$this->redirectToUrl($location);
 		}
 	}
 
 
 	/**
-	 * @abstract Redirects user to an inner-application module/method address.
+	 * Redirects user to an inner-application module/method address.
 	 * @param string $method
 	 * @param array $bits
 	 * @param string $module
 	 * @access public
 	 */
-	public function redirect($method = false, $bits = false, $module = false){
-
-        header("Location: " . $this->APP->template->createUrl($method, $bits, $module));
-        exit;
-
+	public function redirect($method = false, $bits = false, $module = false, $interface = false){
+		$this->redirectToUrl( $this->APP->template->createUrl($method, $bits, $module, $interface), false, true);
     }
+
+
+	/**
+	 * Redirects a user to any complete/absolute URL. Optionally, you may also
+	 * provide status codes for an HTTP response as well as an exit, which discontinues
+	 * executing following php code.
+	 *
+	 * @param string $url
+	 * @param int $status
+	 * @param boolean $exit
+	 */
+	public function redirectToUrl($url = false, $status = false, $exit = true){
+
+		$tmp_ar = array('url'=>$url,'status'=>$status);
+		$redirect = $this->APP->params->sanitize( $tmp_ar );
+
+		if($redirect->isUri('url')){
+
+			header("Location: ".$redirect->getRaw('url'));
+
+			$codes = array(
+					100 => 'Continue',
+					101 => 'Switching Protocols',
+					200 => 'OK',
+					201 => 'Created',
+					202 => 'Accepted',
+					203 => 'Non-Authoritative Information',
+					204 => 'No Content',
+					205 => 'Reset Content',
+					206 => 'Partial Content',
+					300 => 'Multiple Choices',
+					301 => 'Moved Permanently',
+					302 => 'Found',
+					303 => 'See Other',
+					304 => 'Not Modified',
+					305 => 'Use Proxy',
+					307 => 'Temporary Redirect',
+					400 => 'Bad Request',
+					401 => 'Unauthorized',
+					402 => 'Payment Required',
+					403 => 'Forbidden',
+					404 => 'Not Found',
+					405 => 'Method Not Allowed',
+					406 => 'Not Acceptable',
+					407 => 'Proxy Authentication Required',
+					408 => 'Request Time-out',
+					409 => 'Conflict',
+					410 => 'Gone',
+					411 => 'Length Required',
+					412 => 'Precondition Failed',
+					413 => 'Request Entity Too Large',
+					414 => 'Request-URI Too Large',
+					415 => 'Unsupported Media Type',
+					416 => 'Requested range not satisfiable',
+					417 => 'Expectation Failed',
+					500 => 'Internal Server Error',
+					501 => 'Not Implemented',
+					502 => 'Bad Gateway',
+					503 => 'Service Unavailable',
+					504 => 'Gateway Time-out'
+				);
+
+			$status = $redirect->getDigits('status');
+			if ($status && isset($codes[$status]) && ($status >= 300 && $status < 400)) {
+				$header = sprinf("HTTP/1.1 %s %s", $status, $codes[$status]);
+				header($header);
+			}
+
+			if($exit){
+				exit;
+			}
+		}
+	}
 }
 ?>

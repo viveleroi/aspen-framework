@@ -30,8 +30,9 @@ class Index extends Bootstrap {
 	 */
 	public function redirectOnInstall(){
 		if(!$this->isInstalled()){
-			header("Location: admin/");
-			exit;
+			$this->router->redirectToUrl( $this->router->getInterfaceUrl('admin') );
+			// or
+			// $this->router->redirect(false, false, 'admin');
 		}
 	}
 }

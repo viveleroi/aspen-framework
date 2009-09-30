@@ -39,6 +39,19 @@ class Cache {
 	 * @access private
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
+
+
+	/**
+	 * Prevents the browser from caching the current output.
+	 * @access public
+	 */
+	public function noCache() {
+		header("Expires: Mon, 1 Jan 2000 08:00:00 GMT");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+	}
 	
 	
 	/**
