@@ -263,7 +263,7 @@ class Model {
 						if(!$clean->getInt( $column->name )){
 							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' should be an integer.');
 						} else {
-							if($column->unsigned && !$clean->testGreaterThan( $column->name, -1 )){
+							if($column->unsigned && !$clean->isGreaterThan( $column->name, -1 )){
 								$this->addError($column->name, 'Invalid db value. ' . $column->name . ' may not be negative.');
 							}
 						}
@@ -277,7 +277,7 @@ class Model {
 						if(!$clean->getFloat( $column->name )){
 							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' should be a decimal or float.');
 						} else {
-							if($column->unsigned && !$clean->testGreaterThan( $column->name, -1 )){
+							if($column->unsigned && !$clean->isGreaterThan( $column->name, -1 )){
 								$this->addError($column->name, 'Invalid db value. ' . $column->name . ' may not be negative.');
 							}
 						}
@@ -288,7 +288,7 @@ class Model {
 					 * Validate DATEs
 					 */
 					if(in_array($column->type, $this->APP->config('mysql_field_group_date'))){
-						//if(!$clean->testDate( $date )){
+						//if(!$clean->isDate( $date )){
 							//$this->addError($column->name, 'Invalid db value. ' . $column->name . ' must be a date.');
 						//}
 					}
@@ -970,7 +970,7 @@ class Model {
 	public function inPastXDays($field, $day_count = 7, $include_range = true, $match = 'AND'){
 		$this->base_where('%s TO_DAYS(NOW()) - TO_DAYS(%s) '.($include_range ? '<' : '').'= ' . $day_count, $field, false, $match);
 	}
-	
+
 
 //+-----------------------------------------------------------------------+
 //| AUTO-FILTER (auto-condition) FUNCTIONS
@@ -1616,6 +1616,30 @@ class Model {
 
 
 	/**
+	 * Allows instructions to be written prior to INSERT query in custom
+	 * model libraries.
+	 *
+	 * @param array $fields
+	 * @return array
+	 */
+	public function before_insert($fields){
+		return $fields;
+	}
+
+
+	/**
+	 * Allows instructions to be written after an INSERT query in custom
+	 * model libraries.
+	 *
+	 * @param integer $result
+	 * @return integer
+	 */
+	public function after_insert($result){
+		return $result;
+	}
+
+
+	/**
 	 * Generates an INSERT query and auto-executes it
 	 * @param array $fields
 	 * @return integer
@@ -1625,6 +1649,9 @@ class Model {
 
 		// set default values if prompted from extension install / update funcs
 		$fields = $this->getDefaults($fields);
+
+		// Pass through the before_insert function
+		$fields = $this->before_insert($fields);
 
 		if($this->validate($fields)){
 
@@ -1655,12 +1682,38 @@ class Model {
 
 			}
 
-			return $this->results();
+			// Pass through the after_insert function
+			$result = $this->results();
+			return $this->after_insert($result);
 
 		}
 
 		return false;
 
+	}
+
+
+	/**
+	 * Allows instructions to be written prior to UPDATE query in custom
+	 * model libraries.
+	 *
+	 * @param array $fields
+	 * @return array
+	 */
+	public function before_update($fields){
+		return $fields;
+	}
+
+
+	/**
+	 * Allows instructions to be written after an UPDATE query in custom
+	 * model libraries.
+	 *
+	 * @param integer $result
+	 * @return integer
+	 */
+	public function after_update($result, $where_value, $where_field){
+		return $result;
 	}
 
 
@@ -1676,6 +1729,9 @@ class Model {
 
 		// set default values if prompted from extension install / update funcs
 		$fields = $this->getDefaults($fields);
+
+		// Pass value through to the before update function
+		$fields = $this->before_update($fields);
 
 		// if where_value is our primary key, we should load the record first
 		// so that we can use those existing values to pass validation more quickly
@@ -1709,7 +1765,9 @@ class Model {
 
 			}
 
-			return $this->results();
+			// Pass result to after update
+			$result = $this->results();
+			return $this->after_update($result, $where_value, $where_field);
 
 		}
 
