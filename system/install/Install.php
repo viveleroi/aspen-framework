@@ -225,45 +225,22 @@ class Install {
 			
 			}
 		}
-		
-		
-		$this->APP->form->addFields(array('email', 'nice_name', 'password_1', 'password_2'));
+
+		$this->APP->form->load('authentication');
+		$this->APP->form->addField('password_2');
 
 		// process the form if submitted
 		if($this->APP->form->isSubmitted('post', 'submit')){
-
-			// validation
-			if(!$this->APP->form->isEmail('email')){
-				$this->APP->form->addError('email', 'You must enter a valid email address.');
-			}
-			
-			if(!$this->APP->form->isFilled('password_1')){
-				$this->APP->form->addError('password_1', 'You must enter a password.');
-			}
 			
 			if(!$this->APP->form->fieldsMatch('password_1', 'password_2')){
 				$this->APP->form->addError('password_1', 'Your passwords must match.');
 			}
 
-			if(!$this->APP->form->error()){
-
-				// create account
-				$account_sql_tmpl = 'INSERT INTO authentication (username, nice_name, password) VALUES ("%s", "%s", "%s")';
-				$account_sql = sprintf($account_sql_tmpl,
-											$this->APP->form->cv('email'),
-											$this->APP->form->cv('nice_name'),
-											sha1($this->APP->form->cv('password_1')));
-			
-				if($this->APP->model->query($account_sql)){
-				
-					$this->APP->router->redirect('success');
-				
-				} else {
-
-					$this->APP->sml->addNewMessage('We were unable to create your account. Please try again.');
-				
-				}
+			if($this->APP->form->save()){
+				$this->APP->router->redirect('success');
 			}
+//			var_dump($this->APP->template->terms);
+//				exit;
 		}
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');

@@ -65,15 +65,14 @@ class AuthenticationModel extends Model {
 	 * @return mixed
 	 * @access public
 	 */
-	public function insert($fields = false){
+	public function before_insert($fields = false){
 
 		// enforce a sha1 on the password
 		if(array_key_exists('password', $fields) && !empty($fields['password'])){
 			$fields['password'] = $this->encode_password($fields['password']);
 		}
 
-		// insert
-		return parent::insert($fields);
+		return $fields;
 
 	}
 
@@ -84,7 +83,7 @@ class AuthenticationModel extends Model {
 	 * @return mixed
 	 * @access public
 	 */
-	public function update($fields = false, $where_value = false, $where_field = false ){
+	public function before_update($fields = false){
 
 		// if the password provided =, encode it - otherwise, remove
 		if(!empty($fields['password'])){
@@ -93,7 +92,7 @@ class AuthenticationModel extends Model {
 			unset($fields['password']);
 		}
 
-		return parent::update($fields, $where_value, $where_field);
+		return $fields;
 	}
 
 

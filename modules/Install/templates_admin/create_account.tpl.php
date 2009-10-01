@@ -9,7 +9,7 @@
 
 	<p>
 		<label><?php print $this->text('s2:email'); ?>:</label><br />
-		<input type="text" name="email" id="email" class="text" />
+		<input type="text" name="username" id="username" class="text" />
 	</p>
 
 	<p>

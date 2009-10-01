@@ -506,7 +506,7 @@ class Form {
 
 		// if no custom sort provided, we need to sort the errors
 		// according to their schema position
-		if(!$custom_sort){
+		if(!$custom_sort && $this->APP->isInstalled() && $this->table){
 			$custom_sort = array();
 			$model = $this->APP->model->open($this->table);
 			foreach($model->getSchema() as $field){
@@ -514,19 +514,25 @@ class Form {
 			}
 		} else {
 			// currently, custom sort defined as vals not keys so we must flip
-			$custom_sort = array_flip($custom_sort);
+			if(is_array($custom_sort)){
+				$custom_sort = array_flip($custom_sort);
+			}
 		}
 
-		$diff = array_diff_key($this->_form_errors, $custom_sort);
-		$custom_sort = array_merge($custom_sort, $diff);
+		if(is_array($custom_sort)){
+			$diff = array_diff_key($this->_form_errors, $custom_sort);
+			$custom_sort = array_merge($custom_sort, $diff);
 
-		// sort errors for known fields
-		$final_errors = array();
-		foreach($custom_sort as $field => $val){
-			$errors = $this->getFieldErrors($field);
-			if($errors){
-				$final_errors[$field] = $errors;
+			// sort errors for known fields
+			$final_errors = array();
+			foreach($custom_sort as $field => $val){
+				$errors = $this->getFieldErrors($field);
+				if($errors){
+					$final_errors[$field] = $errors;
+				}
 			}
+		} else {
+			$final_errors = $this->_form_errors;
 		}
 
 		return $final_errors;
@@ -607,96 +613,6 @@ class Form {
 	
 	
 	/**
-	 * Checks for an integer
-	 * @param string $field
-	 * @return boolean
-	 * @access public
-	 */
-	public function isInt($field){
-		return $this->APP->params->{$this->param_type}->testInt($field);
-	}
-	
-	
-	/**
-	 * Checks for a float value
-	 * @param string $field
-	 * @return boolean
-	 * @access public
-	 */
-	public function isFloat($field){
-		return $this->APP->params->{$this->param_type}->testFloat($field);
-	}
-	
-	
-	/**
-	 * Checks for an alphanumeric string
-	 * @param string $field
-	 * @return boolean
-	 * @access public
-	 */
-	public function isAlnum($field){
-		return $this->APP->params->{$this->param_type}->testAlnum($field);
-	}
-
-	
-	/**
-	 * Checks for an alpha string
-	 * @param string $field
-	 * @return boolean
-	 * @access public
-	 */
-	public function isAlpha($field){
-		return $this->APP->params->{$this->param_type}->testAlpha($field);
-	}
-	
-	
-	/**
-	 * Checks for an IP address
-	 * @param string $field
-	 * @return boolean
-	 * @access public
-	 */
-	public function isIp($field){
-		return $this->APP->params->{$this->param_type}->testIp($field);
-	}
-	
-
-	/**
-	 * Checks whether or not the string is a credit card number
-	 * @param string $field
-	 * @param string $type
-	 * @return boolean
-	 * @access public
-	 */
-	public function isCreditCard($field, $type){
-		return $this->APP->params->{$this->param_type}->testCcnum($field, $type);
-	}
-	
-	
-	/**
-	 * Checks whether or not the string is a valid date
-	 * @param string $field
-	 * @param string $type
-	 * @return boolean
-	 * @access public
-	 */
-	public function isDate($field){
-		return $this->APP->params->{$this->param_type}->testDate($field);
-	}
-
-
-	/**
-	 * Checks for a valid email format
-	 * @param string $field
-	 * @return boolean
-	 * @access public
-	 */
-	public function isEmail($field){
-		return $this->APP->params->{$this->param_type}->testEmail($field);
-	}
-
-	
-	/**
 	 * Checks for a valid float/digit
 	 * @param feild $field
 	 * @return boolean
@@ -705,18 +621,6 @@ class Form {
 	public function isCurrency($field){
 		$cleaned_var = str_replace(array('$', ',', '.'), "", $this->cv($field));
 		return ctype_digit($cleaned_var);
-	}
-	
-
-	/**
-	 * Checks for a valid phone number
-	 * @param string $phonenumber
-	 * @param string $country
-	 * @return boolean
-	 * @access public
-	 */
-	public function isPhoneNumber($field, $country = 'US'){
-		return $this->APP->params->{$this->param_type}->testPhone($field, $country);
 	}
 }
 ?>

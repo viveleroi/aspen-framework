@@ -485,6 +485,10 @@ class User {
 	 */
 	public function allowAnonymous($module = false, $method = false, $interface = false){
 
+		if($module == 'Install' &&  $interface == 'Admin'){
+			return true;
+		}
+
 		if($this->APP->isInstalled()){
 			$module = ucwords(str_replace('_'.$interface, '', strtolower($module)));
 			$interface = ucwords(strtolower($interface));
@@ -496,10 +500,6 @@ class User {
 
 			$access = $this->APP->model->query($sql);
 			return $access->RecordCount() ? true : false;
-		} else {
-			if($module == 'Install' &&  $interface == 'Admin'){
-				return true;
-			}
 		}
 		return false;
 
