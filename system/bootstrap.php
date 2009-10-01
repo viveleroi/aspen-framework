@@ -588,7 +588,6 @@ class Bootstrap extends Base {
 		$all_classes 	= array();
 		$base_classes 	= $this->config('load_core_class');
 		$add_classes 	= $this->config('load_add_core_class');
-		$custom_classes = $this->config('custom_classes');
 		$module_classes = $this->listModelLibraries();
 
 		// Merge user custom classes from config into base classes
@@ -604,14 +603,6 @@ class Bootstrap extends Base {
 		// Load all base system classes (defined in config.default.php
 		if(is_array($base_classes)){
 			foreach($base_classes as $class){
-				$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
-				$all_classes[$class['classname']] = $class;
-			}
-		}
-
-		// Load all custom classes
-		if(is_array($custom_classes)){
-			foreach($custom_classes as $class){
 				$class['root'] = isset($class['root']) ? $class['root'] : SYSTEM_PATH;
 				$all_classes[$class['classname']] = $class;
 			}
@@ -820,7 +811,7 @@ class Bootstrap extends Base {
 						$libs[(string)$lib->classname] = array(
 															'classname'=>(string)$lib->classname,
 															'root' => MODULES_PATH.DS.$module->folder,
-															'folder' => 'lib',
+															'folder' => 'libs',
 															'autoload' => (isset($lib->autoload) && $lib->autoload ? true : false),
 															'extends' => (isset($lib->extends) && $lib->extends ? (string)$lib->extends : false)
 														 );

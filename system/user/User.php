@@ -318,7 +318,7 @@ class User {
 
 					// update last login date
 					$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
-					$model = $this->APP->model->open('authentication', $upd, $account['id']);
+					$model = $this->APP->model->open('authentication');
 					$model->update($upd, $account['id']);
 
 					$auth = true;

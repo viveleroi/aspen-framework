@@ -428,15 +428,16 @@
 /**
  * LOADING CUSTOM CLASSES
  *
- * You may create custom classes that exist outside of the system folder.
+ * You may create custom classes that exist outside of the system folder, and simply
+ * load them using the same config structure as above.
  */
 	/*
 
 	// Creating a custom class that we keep in the Index module
-	$config['custom_classes'][] = array('classname' => 'Myclass', 'root'=>MODULES_PATH.DIRECTORY_SEPARATOR.'Index');
+	$config['load_add_core_class'][] = array('classname' => 'Myclass', 'root'=>'/path/to/lib');
 
 	// Extending an existing system class, but keeping the file in a folder called custom
-	$config['custom_classes'][] = array('classname' => 'Myclass', 'root'=>APPLICATION_PATH.DIRECTORY_SEPARATOR.'custom');
+	$config['load_add_core_class'][] = array('classname' => 'Myclass');
 
 	*/
 
