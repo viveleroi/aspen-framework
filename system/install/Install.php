@@ -232,15 +232,17 @@ class Install {
 		// process the form if submitted
 		if($this->APP->form->isSubmitted('post', 'submit')){
 			
-			if(!$this->APP->form->fieldsMatch('password_1', 'password_2')){
-				$this->APP->form->addError('password_1', 'Your passwords must match.');
+			if(!$this->APP->form->fieldsMatch('password', 'password_2')){
+				$this->APP->form->addError('password', 'Your passwords must match.');
 			}
 
 			if($this->APP->form->save()){
+
+				$group_link = $this->APP->model->open('user_group_link');
+				$group_link->insert( array('group_id'=>1,'user_id'=>1) );
+
 				$this->APP->router->redirect('success');
 			}
-//			var_dump($this->APP->template->terms);
-//				exit;
 		}
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');

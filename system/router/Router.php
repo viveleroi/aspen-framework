@@ -382,32 +382,45 @@ class Router {
 
 
 	/**
-	 * Loads the lanuage file for the current module
+	 * Loads the lanuage file for the current interface
 	 * @access private
 	 */
-	private function loadModuleLanguage($module = false, $interface = false){
+	public function loadInterfaceLanguage($interface = false){
 
 		$lang 			= array();
 		$lang_setting 	= $this->APP->config('language');
 
 		// load the interface language library
-		$lang_path		= INTERFACE_PATH . DS . 'language' . DS . $lang_setting . '.php';
-		define('LANG_PATH', $lang_path);
-
-		$this->APP->log->write('Seeking interface language library ' . LANG_PATH);
-		if(file_exists(LANG_PATH)){
-			include(LANG_PATH);
-			$this->APP->log->write('Including interface language library ' . LANG_PATH);
+		$lang_path	= INTERFACE_PATH . DS . 'language' . DS . $lang_setting . '.php';
+		$this->APP->log->write('Seeking interface language library ' . $lang_path);
+		if(file_exists($lang_path)){
+			include($lang_path);
+			$this->APP->log->write('Including interface language library ' . $lang_path);
+			$lang = $lang[LS];
 		}
 
-		// load the module-specific language library
-		$module_lang_path = $this->getModulePath($module, $interface).DS. 'language' . DS . $lang_setting.'.php';
-		define('MODULE_LANG_PATH', $module_lang_path);
+		$this->APP->template->loadLanguageTerms($lang);
 
-		$this->APP->log->write('Seeking module language library ' . MODULE_LANG_PATH);
-		if(file_exists(MODULE_LANG_PATH)){
-			include(MODULE_LANG_PATH);
-			$this->APP->log->write('Including module language library ' . MODULE_LANG_PATH);
+	}
+
+
+	/**
+	 * Loads the lanuage file for the current module
+	 * @access private
+	 */
+	public function loadModuleLanguage($module = false, $interface = false){
+
+		$lang 			= array();
+		$lang_setting 	= $this->APP->config('language');
+
+		// load the module-specific language library
+		$module = $this->cleanModule($module);
+		$module_lang_path = $this->getModulePath($module, $interface).DS. 'language' . DS . $lang_setting.'.php';
+		$this->APP->log->write('Seeking module language library ' . $module_lang_path);
+		if(file_exists($module_lang_path)){
+			include($module_lang_path);
+			$this->APP->log->write('Including module language library ' . $module_lang_path);
+			$lang = $lang[LS];
 		}
 
 		$this->APP->template->loadLanguageTerms($lang);
@@ -440,6 +453,7 @@ class Router {
 
 			// load the module language file
 			if($this->APP->config('enable_languages')){
+				$this->loadInterfaceLanguage();
 				$this->loadModuleLanguage();
 			}
 
@@ -507,9 +521,9 @@ class Router {
 				exit;
 			}
 		} else { // not authorized
-			$this->loadModuleLanguage('Users_Admin', 'Admin');
+			$this->loadModuleLanguage('Users', 'Admin');
 			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-			$this->APP->template->addView($this->APP->template->getModuleTemplateDir('Users_Admin', 'Admin').DS . 'denied.tpl.php');
+			$this->APP->template->addView($this->APP->template->getModuleTemplateDir('Users', 'Admin').DS . 'denied.tpl.php');
 			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
 			$this->APP->template->display();
 			exit;
@@ -708,8 +722,8 @@ class Router {
 	 * @access public
 	 */
 	public function getModuleUrl($module_name = false){
-		$module_name = $module_name ? $module_name : $this->getSelectedModule();
-		$registry = $this->APP->moduleRegistry(false, $module_name);
+		$module = $this->cleanModule($module);
+		$registry = $this->APP->moduleRegistry(false, $module);
 		return isset($registry->folder) ? $this->getApplicationUrl() . '/modules/' . $registry->folder : false;
 	}
 
@@ -753,7 +767,7 @@ class Router {
 	 */
 	public function getModulePath($module = false, $interface = false){
 
-		$module = $module ? $module : $this->getSelectedModule();
+		$module = $this->cleanModule($module);
 		$registry = $this->APP->moduleRegistry(false, $module, $interface);
 
 		if(isset($registry->folder)){
@@ -764,17 +778,37 @@ class Router {
 
 
 	/**
+	 * Returns the module name without the interface in case it was provided
+	 * that way.
+	 * 
+	 * @param string $module
+	 * @param string $interface
+	 * @return string
+	 */
+	public function cleanModule($module = false, $interface = false){
+
+		$module = $module ? $module : $this->getSelectedModule();
+		$interface = $interface ? $interface : LOADING_SECTION;
+		return str_replace('_'.ucwords($interface), '', $module);
+
+	}
+
+
+	/**
 	 * Answers whether or not the user is in a specific location
 	 * @param string $module
 	 * @param string $method
 	 * @return boolean
 	 * @access public
 	 */
-	public function here($module = false, $method = false){
+	public function here($module = false, $method = false, $interface = false){
 
 		$here = false;
 
 		$selected_module = $this->getSelectedModule();
+		$interface = $interface ? $interface : LOADING_SECTION;
+		$module = $this->cleanModule($module);
+		$module = $module . ($interface ? '_' . $interface  : false);
 
 		if(isset($this->APP->{$this->getSelectedModule()})){
 			if(method_exists($this->APP->{$this->getSelectedModule()}, 'whosYourDaddy')){

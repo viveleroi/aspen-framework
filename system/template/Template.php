@@ -71,6 +71,7 @@ class Template {
 	public function getModuleTemplateDir($module = false, $interface = false){
 		$orig_interface = $interface;
 		$interface = $interface ? strtolower($interface) : LS;
+		$module = $this->APP->router->cleanModule($module);
         return $this->APP->router->getModulePath($module, $orig_interface) . DS . 'templates' . ($interface == '' ? false : '_' . $interface);
     }
 
@@ -218,7 +219,11 @@ class Template {
 	 * @access private
 	 */
 	public function loadLanguageTerms($terms = false){
-		$this->terms = $terms;
+		if(is_array($this->terms)){
+			$this->terms = array_merge($this->terms, $terms);
+		} else {
+			$this->terms = $terms;
+		}
 	}
 
 
@@ -229,7 +234,7 @@ class Template {
 	 * @access public
 	 */
 	public function text($key){
-		return isset($this->terms[LS][$key]) ? $this->terms[LS][$key] : '';
+		return isset($this->terms[$key]) ? $this->terms[$key] : '';
 	}
 
 
@@ -335,7 +340,7 @@ class Template {
 
 		// set values, or use default if false.
 		$method = $method ? $method : $this->APP->router->getSelectedMethod();
-		$module = $module ? $module : $this->APP->router->getSelectedModule();
+		$module = $this->APP->router->cleanModule($module);
 		$interface = $interface ? $interface : LOADING_SECTION;
 		$interface = empty($interface) ? false : $interface;
 		$title = $title ? $title : $text;
@@ -383,8 +388,7 @@ class Template {
 		$url = $this->APP->router->getInterfaceUrl($interface);
 
 		$method = $method ? $method : $this->APP->router->getSelectedMethod();
-		$module = $module ? $module : $this->APP->router->getSelectedModule();
-		$module = str_replace('_'.$interface, '', strtolower($module));
+		$module = $this->APP->router->cleanModule($module);
 
 		// if mod rewrite/clean urls are off
 		if(!$this->APP->config('enable_mod_rewrite')){

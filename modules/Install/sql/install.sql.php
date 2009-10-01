@@ -122,15 +122,6 @@ ALTER TABLE `config`
 
 $sql[] = "
 
-ALTER TABLE `permissions`
-  ADD CONSTRAINT `permissions_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE;
-
-";
-
-
-$sql[] = "
-
 ALTER TABLE `user_group_link`
   ADD CONSTRAINT `user_group_link_ibfk_4` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_group_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE,
@@ -173,14 +164,6 @@ INSERT INTO `permissions` (`id`, `user_id`, `group_id`, `interface`, `module`, `
 (8, NULL, 2, '*', 'Index', '*'),
 (9, NULL, 2, '*', 'Settings', '*'),
 (10, NULL, 2, '*', 'Users', 'my_account');
-
-";
-
-
-$sql[] = "
-
-INSERT INTO `user_group_link` (`id`, `user_id`, `group_id`) VALUES
-(1, 1, 1);
 
 ";
 

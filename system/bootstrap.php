@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', true);
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 
 /**
@@ -1132,9 +1132,9 @@ class Bootstrap extends Base {
 			// if name provided
 			if($name){
 
-				$interface = $interface ? $interface : LOADING_SECTION;
-				$classname = (string)$module->classname . ($interface ? '_' . $interface  : false);
-
+				$interface	= $interface ? $interface : LOADING_SECTION;
+				$classname	= (string)$module->classname;
+				$name		= $this->router->cleanModule($name);
 				if($classname == $name){
 					return $module;
 				}

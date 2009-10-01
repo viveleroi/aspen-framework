@@ -153,16 +153,23 @@ class Model {
 	 	if($table){
 
 		 	$class = 'Model';
+			$lang_module = false;
 
 			// identify available model extensions
 			$exts = $this->APP->getModelExtensions();
 			if(is_array($exts)){
 				if(array_key_exists($table, $exts)){
 					$class = ucwords($table).'Model';
+					if(isset($exts[$table]['module'])){
+						$lang_module = $exts[$table]['module'];
+					}
 				}
 			}
 
 			if(class_exists($class)){
+				if($lang_module){
+					$this->APP->router->loadModuleLanguage($lang_module);
+				}
 				$final_obj = new $class($table);
 			} else {
 				$this->APP->error->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);

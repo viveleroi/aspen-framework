@@ -8,22 +8,22 @@
 <form action="<?php print $this->createUrl('account') ?>" method="post">
 
 	<p>
-		<label><?php print $this->text('s2:email'); ?>:</label><br />
+		<label for="username"><?php print $this->text('s2:email'); ?>:</label><br />
 		<input type="text" name="username" id="username" class="text" />
 	</p>
 
 	<p>
-		<label><?php print $this->text('s2:name'); ?>:</label><br />
+		<label for="nice_name"><?php print $this->text('s2:name'); ?>:</label><br />
 		<input type="text" name="nice_name" id="nice_name" class="text" />
 	</p>
 	
 	<p>
-		<label><?php print $this->text('s2:password'); ?>:</label><br />
-		<input type="password" name="password_1" id="password_1" class="text" />
+		<label for="password"><?php print $this->text('s2:password'); ?>:</label><br />
+		<input type="password" name="password" id="password" class="text" />
 	</p>
 
 	<p>
-		<label><?php print $this->text('s2:confirm'); ?>:</label><br />
+		<label for="password_2"><?php print $this->text('s2:confirm'); ?>:</label><br />
 		<input type="password" name="password_2" id="password_2" class="text" />
 	</p>
 
