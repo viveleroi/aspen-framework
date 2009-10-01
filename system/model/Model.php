@@ -146,7 +146,7 @@ class Model {
 	 * @return object
 	 * @access public
 	 */
-	 final public function open($table){
+	 final public function open($table, $id = false){
 
 		$final_obj = false;
 
@@ -171,6 +171,11 @@ class Model {
 
 			if(is_object($final_obj)){
 				$final_obj->select();
+			}
+
+			if($id){
+				 // If a record id is set, let's just return the single record
+				$final_obj = $final_obj->quickSelectSingle($id);
 			}
 
 		}

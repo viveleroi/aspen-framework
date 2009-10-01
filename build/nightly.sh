@@ -19,7 +19,7 @@ if [ $1 != "head" ]; then
 	git checkout --track -b $1$2 origin/$1$2
 fi
 
-# get the svn revision number and create a RELEASE file
+# get the svn revision number
 gitvers=`git describe`
 
 # add in revision to app.default.config.php
