@@ -1,7 +1,8 @@
 config.php
 .DS_Store
-*.DS_Store
 *.tmproj
 nbproject
-nbproject/*
 build/aspen-framework
+.buildpath
+.settings
+.project
