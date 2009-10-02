@@ -396,7 +396,9 @@ class Router {
 		if(file_exists($lang_path)){
 			include($lang_path);
 			$this->APP->log->write('Including interface language library ' . $lang_path);
-			$lang = $lang[LS];
+			if(isset($lang[LS])){
+				$lang = $lang[LS];
+			}
 		}
 
 		$this->APP->template->loadLanguageTerms($lang);
@@ -420,7 +422,9 @@ class Router {
 		if(file_exists($module_lang_path)){
 			include($module_lang_path);
 			$this->APP->log->write('Including module language library ' . $module_lang_path);
-			$lang = $lang[LS];
+			if(isset($lang[LS])){
+				$lang = $lang[LS];
+			}
 		}
 
 		$this->APP->template->loadLanguageTerms($lang);

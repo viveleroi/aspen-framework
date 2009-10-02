@@ -175,7 +175,7 @@ class UserTest extends TestHelper {
 	 */
 	public function testUsersGroups() {
 		$grps = $this->sharedFixture->user->usersGroups(1);
-		$this->assertEquals('Administrator', $grps[0]);
+		$this->assertEquals('Administrator', $grps[1]);
 	}
 
 }

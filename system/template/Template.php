@@ -219,7 +219,7 @@ class Template {
 	 * @access private
 	 */
 	public function loadLanguageTerms($terms = false){
-		if(is_array($this->terms)){
+		if(is_array($this->terms) && is_array($terms)){
 			$this->terms = array_merge($this->terms, $terms);
 		} else {
 			$this->terms = $terms;
