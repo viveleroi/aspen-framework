@@ -610,17 +610,5 @@ class Form {
 	public function fieldsMatch($field_1, $field_2){
 		return $this->cv($field_1) == $this->cv($field_2);
 	}
-	
-	
-	/**
-	 * Checks for a valid float/digit
-	 * @param feild $field
-	 * @return boolean
-	 * @access public
-	 */
-	public function isCurrency($field){
-		$cleaned_var = str_replace(array('$', ',', '.'), "", $this->cv($field));
-		return ctype_digit($cleaned_var);
-	}
 }
 ?>
