@@ -615,13 +615,82 @@ class Template {
 	 * @param integer $total
 	 * @return string
 	 */
-	public function paginateLinks($current_page, $per_page, $total){
+	public function paginateLinks($current_page, $per_page, $total_pages){
 
+		$url = $this->APP->router->getCurrentUrl(array('/(\?|&)page=[0-9]+/'));
+		$url .= '?';
+
+		// build the html list item
 		$html = '';
+		$html .= sprintf('<li>Page %s of %s</li>', $current_page, $total_pages);
 
-		$pages = $total / $per_page;
-		for($i = 1; $i <= ceil($pages); $i++){
-			$html .= '<li'.($current_page == $i ? ' class="at"' : '').'>' . $this->createLink($i, false, array('page'=>$i)) . '</li>' . "\n";
+		if($total_pages > 1){
+
+            $link_limit = 10;
+            $limit_balance = ceil(($link_limit / 2));
+
+			// previous icon
+			if($current_page > 1){
+				$html .= sprintf('<li><a href="%spage=%d" class="prev">&laquo;</a></li>', $url, ($current_page-1));
+			}
+
+            // add in the first page
+            $selected = $current_page == 1 ? ' class="at"' : '';
+			$html .= sprintf('<li%s><a href="%spage=%d">%d</a></li>', $selected, $url, 1, 1);
+
+
+            // if more than 15 results, show 15 page numbers closest to our current page
+            $p      = 2;
+            $limit  = $total_pages;
+            if($total_pages > $link_limit){
+
+                $p = $current_page;
+
+                // start loop at 7 pages prior to current, if possible
+                if($p > 7){
+                    $tmp_start = $p - $limit_balance;
+                    if($tmp_start > 0){
+                        $p = $tmp_start;
+                    }
+
+                    if($current_page >= ($total_pages - $limit_balance)){
+                        $p = $total_pages - $link_limit;
+                    }
+                } else {
+                    $p = 2;
+                }
+
+                $p      = $p == 1 ? 2 : $p;
+                $limit  = $p + $link_limit;
+            }
+
+            // add elipse if > 15 pages
+            if($total_pages > $link_limit && $current_page > ($limit_balance+2)){
+                $html .= '<li>...</li>';
+            }
+
+			// add in the numeric links
+			while($p < $limit){
+				$selected = $current_page == $p ? ' class="at"' : '';
+				$html .= sprintf('<li%s><a href="%spage=%d">%d</a></li>', $selected, $url, $p, $p);
+                $p++;
+			}
+
+            // add elipse if > 15 pages
+            if($total_pages > $link_limit && $current_page < ($total_pages - $limit_balance)){
+                $html .= '<li>...</li>';
+            }
+
+            // add in the last page
+            $p = $total_pages;
+            $selected = $current_page == $p ? ' class="at"' : '';
+			$html .= sprintf('<li%s><a href="%spage=%d">%d</a></li>', $selected, $url, $p, $p);
+
+			// next icon
+			if($current_page < $total_pages){
+				$html .= sprintf('<li><a href="%spage=%d" class="next">&raquo;</a></li>', $url, ($current_page+1));
+			}
+
 		}
 
 		return $html;

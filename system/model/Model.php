@@ -1186,7 +1186,7 @@ class Model {
 	 * @param integer $per_page
 	 * @access public
 	 */
-	public function paginate($current_page = false,$per_page = 25){
+	public function paginate($per_page = 25,$current_page = false){
 
 		$this->current_page = $current_page ? $current_page : 1;
 		$this->per_page = $per_page;
