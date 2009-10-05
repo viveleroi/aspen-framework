@@ -176,7 +176,7 @@ class Router {
 								if(!in_array($a, $matched_keys)){
 									if(!empty($matches[$a][0])){
 										// @todo improve support for arrays: bug 1476
-										$this->map['bits'][] = $matches[$a][0];
+										$map_to['bits'][] = $matches[$a][0];
 									}
 								}
 							}
@@ -198,8 +198,9 @@ class Router {
 
 			// proper map was found, set the information and return
 			if(is_array($map)){
-				$this->map['module'] =  isset($map['module']) ? $map['module'] : false;
-				$this->map['method'] =  isset($map['method']) ? $map['method'] : false;
+				$this->map['module']	=  isset($map['module']) ? $map['module'] : false;
+				$this->map['method']	=  isset($map['method']) ? $map['method'] : false;
+				$this->map['bits']		=  isset($map['bits']) ? $map['bits'] : false;
 				return true;
 			}
 		}

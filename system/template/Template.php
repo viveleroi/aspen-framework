@@ -91,11 +91,12 @@ class Template {
 			define('MODULE_HEADER_TPL_PATH', '');
 		}
 
+		$cdtnl_cmt = '<!--[%s]>%s<![endif]-->';
+
 		// append any css files for loading
 		if(!empty($this->_load_css)){
 
 			$css_html_elm = '<link rel="stylesheet" href="%s" type="text/css" media="%s" />';
-			$cdtnl_cmt = '<!--[%s]>%s<![endif]-->';
 
 			foreach($this->_load_css as $css){
 				$file = $this->getStaticContentUrl($css);
@@ -134,7 +135,13 @@ class Template {
 
 			foreach($this->_load_js as $js){
 				$file = $this->getStaticContentUrl($js);
-				printf($js_html_elm, $file);
+				$link = sprintf($js_html_elm, $file);
+
+				if(!empty($js['cdtnl_cmt'])){
+					printf($cdtnl_cmt, $js['cdtnl_cmt'], $link);
+				} else {
+					print $link;
+				}
 			}
 		}
 	}
@@ -414,7 +421,7 @@ class Template {
 			$route_mask = false;
 			if(is_array($routes)){
 				foreach($routes as $mask => $route){
-					if(strtolower($route['module']) == $module && $route['method'] == $method){
+					if(strtolower($route['module']) == strtolower($module) && strtolower($route['method']) == strtolower($method)){
 						$route_mask = $mask;
 						$url .= $mask;
 					}
@@ -697,6 +704,20 @@ class Template {
 
 	}
 
+
+	/**
+	 * Generates an html-safe element id using a string
+	 * @param string $text
+	 * @return string
+	 * @access protected
+	 */
+	public function elemId($text){
+		if(is_string($text)){
+			return strtolower( preg_replace("/[^A-Za-z0-9_]/", "", str_replace(" ", "_", $text) ) );
+		}
+		return false;
+	}
+	
 
 	/**
 	 * Returns a body id of the module/method
