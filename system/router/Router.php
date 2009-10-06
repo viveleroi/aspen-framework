@@ -93,14 +93,14 @@ class Router {
 
 			// If route mapping fails, then we need to parse the url for the default config
 			if(!$this->applyRouteMap($to_map)){
-				$this->map['module'] = isset($uri[1]) ? preg_replace('/\?(.*)/', '', $uri[1]) : false;
-				$this->map['method'] = isset($uri[2]) ? preg_replace('/\?(.*)/', '', $uri[2]) : false;
+				$this->map['module'] = isset($uri[1]) ? $this->stripQuery($uri[1]) : false;
+				$this->map['method'] = isset($uri[2]) ? $this->stripQuery($uri[2]) : false;
 			}
 
 			// loop additional bits to pass to our arguments
 			if(!$this->map['bits']){
 				for($i = 3; $i < count($uri); $i++){
-					$bits[] = preg_replace('/\?(.*)/', '', $uri[$i]);
+					$bits[] = $this->stripQuery($uri[$i]);
 				}
 				$this->map['bits'] = $bits;
 			}
@@ -115,7 +115,7 @@ class Router {
 			if(is_array($get)){
 				foreach($get as $key => $value){
 					if($key != 'module' && $key != 'method'){
-						$bits[$key] = preg_replace('/\?(.*)/', '', $this->APP->params->get->getRaw($key));
+						$bits[$key] = $this->stripQuery($this->APP->params->get->getRaw($key));
 					}
 				}
 				$this->map['bits'] = $bits;
@@ -123,12 +123,22 @@ class Router {
 		}
 
 		// we need to remove any left over query string from malformed mod_rewrite query
-		$this->map['method'] = preg_replace('/\?(.*)/', '', $this->map['method']);
+		$this->map['method'] = $this->stripQuery($this->map['method']);
 
 		// append interface to module
 		if(!empty($this->map['module'])){
 			$this->map['module'] .= (LOADING_SECTION != '' ? '_'.LOADING_SECTION : '');
 		}
+	}
+
+
+	/**
+	 * Removes any remaining query string from manual URI processing.
+	 * @param string $str
+	 * @return string
+	 */
+	private function stripQuery($str){
+		return preg_replace('/\?(.*)/', '', $str);
 	}
 
 
@@ -139,7 +149,8 @@ class Router {
 	 * @return boolean
 	 */
 	private function applyRouteMap($path){
-		
+
+		$path			= $this->stripQuery($path);
 		$routes			= $this->APP->config('routes');
 		$map			= false;
 		$matched_keys	= array();
@@ -654,7 +665,7 @@ class Router {
                 }
 
                 $uri = str_replace($replace, '', urldecode($this->APP->params->server->getRaw('REQUEST_URI')));
-				
+
             } else {
 
                 $no_qs_url = str_replace('?' . $this->APP->params->server->getRaw('QUERY_STRING'), '', $this->APP->params->server->getRaw('REQUEST_URI'));
@@ -785,7 +796,7 @@ class Router {
 	/**
 	 * Returns the module name without the interface in case it was provided
 	 * that way.
-	 * 
+	 *
 	 * @param string $module
 	 * @param string $interface
 	 * @return string
