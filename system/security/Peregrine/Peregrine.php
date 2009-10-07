@@ -11,11 +11,10 @@
  *
  * This class was partially inspired by Inspekt by Ed Finkler and Chris Shifflet,
  * two folks who have contributed greatly to the php community. In order to meet
- * some custom needs for both single projects and for the Aspen Framework.
+ * some custom needs for both single projects and for the Aspen Framework, this
+ * class was created to make structural and use improvements.
  */
 
-// @todo getDate
-// @todo get name: allow alpha, space, hyphen
 
 /**
  * @package Peregrine
@@ -31,7 +30,7 @@ class CageBase {
 
 	/**
 	 * Loads the incoming source array to the raw private variable.
-	 * 
+	 *
 	 * @param array $arr
 	 * @access public
 	 */
@@ -117,7 +116,6 @@ class CageBase {
 	 * you use this, as it does not allow you to use the class
 	 * filtering functions.
 	 *
-	 * @param string $var
 	 * @return array
 	 */
 	public function getRawSource(){
@@ -177,6 +175,26 @@ class CageBase {
 	public function isSetAndNotEmpty($key){
 		if ($this->keyExists($key)) {
 			return !$this->isEmpty($key);
+		}
+		return false;
+	}
+
+
+
+	/**
+	 * Compare two values
+	 *
+	 * @param string $key_1
+	 * @param string $key_2
+	 * @return boolean
+	 */
+	public function match($key_1, $key_2, $strict = false){
+		if ($this->keyExists($key_1) && $this->keyExists($key_2)) {
+			if($strict){
+				return $this->getRaw($key_1) === $this->getRaw($key_2);
+			} else {
+				return $this->getRaw($key_1) == $this->getRaw($key_2);
+			}
 		}
 		return false;
 	}
@@ -249,7 +267,7 @@ class CageBase {
 
 	/**
 	 * Determines whether or not a string is a valid IP address.
-	 * 
+	 *
 	 * @param string $key
 	 * @return boolean
 	 */
@@ -279,7 +297,7 @@ class CageBase {
 	/**
 	 * Determines if the value is a valid phone number. Currently, only US
 	 * phone numbers are supported.
-	 * 
+	 *
 	 * @param string $key
 	 * @param string $country
 	 * @return boolean
@@ -354,7 +372,7 @@ class CageBase {
 	 *
 	 * @param string $key
 	 * @param <type> $type
-	 * @return <type> 
+	 * @return <type>
 	 */
 	public function isCreditCard($key, $type = NULL){
 
@@ -378,7 +396,7 @@ class CageBase {
 
 		return ($mod == $value[$length - 1]);
 	}
-	
+
 
 	/**
 	 * Determines if the string is a valid web address.
@@ -402,7 +420,7 @@ class CageBase {
 		$regex .= '(\?[^#]*)?';							// query
 		$regex .= '(#([-a-z0-9_]*))?';					// anchor (fragment)
 		$regex .= '$&i';
-			
+
 		$res = preg_match($regex, $this->getRaw($key), $matches);
 		return (bool) $res;
 
@@ -416,7 +434,7 @@ class CageBase {
 
 	/**
 	 * Returns a string of only alphabetical characters.
-	 * 
+	 *
 	 * @param string $key
 	 * @param string $default
 	 * @return string
@@ -427,7 +445,7 @@ class CageBase {
 		}
 		return $default;
 	}
-	
+
 
 	/**
 	 * Returns a string of alphanumeric characters.
@@ -439,6 +457,37 @@ class CageBase {
 	public function getAlnum($key = false, $default = false){
 		if($this->keyExists($key)){
 			return preg_replace('/[^[:alnum:]]/', '', $this->getKey($key));
+		}
+		return $default;
+	}
+
+
+	/**
+	 * Returns a string of alphanumeric characters, allowing spaces, apostrophes, periods.
+	 *
+	 * @param string $key
+	 * @param string $default
+	 * @return string
+	 */
+	public function getName($key = false, $default = false){
+		if($this->keyExists($key)){
+			return preg_replace('/[^a-zA-Z-[:space:]\.\']/', '', $this->getKey($key));
+		}
+		return $default;
+	}
+
+
+	/**
+	 * Returns an acceptable clean url / HTML element id string
+	 *
+	 * @param string $key
+	 * @param string $default
+	 * @return string
+	 */
+	public function getElemId($key = false, $default = false){
+		if($this->keyExists($key)){
+			$val = str_replace(array(' '), '_', strtolower($this->getKey($key)));
+			return preg_replace('/[^a-zA-Z0-9-_\.]/', '', $val);
 		}
 		return $default;
 	}
@@ -502,6 +551,44 @@ class CageBase {
 
 
 	/**
+	 * Returns a valid US Currency string or float. Accepts decimal point,
+	 * comma, and US dollar sign.
+	 *
+	 * @param string $key
+	 * @param string $default
+	 * @return mixed
+	 */
+	public function getCurrency($key = false, $default = false){
+		if($this->keyExists($key)){
+			// We need to mimic the type back to the user that they gave us
+			$type = gettype($this->getKey($key));
+			$clean = preg_replace('/[^\d\.,\$]/', '', $this->getKey($key));
+			settype($clean, $type);
+			return $clean;
+		}
+		return $default;
+	}
+
+
+	/**
+	 * Checks for a valid date.
+	 * @param string $key
+	 * @param string $format
+	 * @param mixed $default
+	 * @return <type>
+	 */
+	public function getDate($key = false, $format = false, $default = false){
+		if($this->keyExists($key)){
+			$format = $format ? $format : DATE_RFC822;
+			if($time = strtotime($this->getRaw($key))){
+				return date($format, $time);
+			}
+		}
+		return $default;
+	}
+
+
+	/**
 	 * Returns a US postal code. In the form of either five digits, or nine
 	 * with a hyphen.
 	 *
@@ -522,7 +609,7 @@ class CageBase {
 
 
 /**
- * 
+ *
  */
 class Peregrine {
 
@@ -664,7 +751,7 @@ class Peregrine {
 		$GLOBALS['HTTP_COOKIE_VARS'] = NULL;
 		$this->cookie = $tmp;
 	}
-	
+
 
 	/**
 	 * Cages for the $_SERVER superglobal.
