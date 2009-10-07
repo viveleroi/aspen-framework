@@ -381,6 +381,18 @@ class Template {
 
 
 	/**
+	 * Returns class attribute if the user is at the selected location
+	 * @param string $module
+	 * @param string $method
+	 * @param string $interface
+	 * @return string
+	 */
+	public function at($module = false, $method = false, $interface = false){
+		return ($this->APP->router->here($module, $method, $interface) ? ' class="at"' : '');
+	}
+	
+
+	/**
 	 * Returns a URL using a module and method
 	 * @param string $module
 	 * @param array $bits Additional arguments to pass through the url

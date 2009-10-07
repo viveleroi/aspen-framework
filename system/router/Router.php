@@ -455,8 +455,8 @@ class Router {
 				$this->getSelectedMethod() != 'login' && $this->getSelectedMethod() != 'autehenticate'
 			){
 			if(!$this->APP->user->userHasInterfaceAccess()){
-			$this->APP->user->logout();
-			$this->redirect('login', false, 'Users');
+				$this->APP->user->logout();
+				$this->redirect('login', false, 'Users');
 			}
 		}
 
@@ -738,7 +738,7 @@ class Router {
 	 * @access public
 	 */
 	public function getModuleUrl($module_name = false){
-		$module = $this->cleanModule($module);
+		$module = $this->cleanModule($module_name);
 		$registry = $this->APP->moduleRegistry(false, $module);
 		return isset($registry->folder) ? $this->getApplicationUrl() . '/modules/' . $registry->folder : false;
 	}
