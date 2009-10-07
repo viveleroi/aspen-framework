@@ -114,6 +114,9 @@
 	// Allow forwarding to original url after login
 	$config['post_login_redirect'] = true;
 
+	// force generated urls to be lowercase
+	$config['lowercase_urls'] = true;
+
 	// Path to static content (css, js, images, etc)
 	// set only if different from interface url
 	$config['static_content_url'] = false;

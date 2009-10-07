@@ -460,7 +460,7 @@ class Template {
 			}
 		}
 
-		return $url;
+		return $this->APP->config('lowercase_urls') ? strtolower($url) : $url;
 		
 	}
 

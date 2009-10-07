@@ -956,6 +956,8 @@ class Router {
 			if($exit){
 				exit;
 			}
+		} else {
+			$this->APP->error->raise(1, 'URL for redirect appears to an invalid resource: '. $url, __FILE__, __LINE__);
 		}
 	}
 }

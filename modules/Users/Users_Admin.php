@@ -144,9 +144,7 @@ class Users_Admin extends Module {
 	 */
 	public function authenticate(){
 		if($this->APP->user->authenticate()){
-			$redirect = $this->APP->params->session->getRaw('post-login_redirect');
-			$redirect = empty($redirect) ? $this->APP->router->getInterfaceUrl() : $redirect;
-			header("Location: " . $redirect);
+			$this->APP->router->redirectToUrl($this->APP->user->postLoginRedirect());
 			exit;
 		} else {
 			$this->APP->user->login_failed();
@@ -160,7 +158,7 @@ class Users_Admin extends Module {
 	 */
 	public function logout(){
 		$this->APP->user->logout();
-		$this->APP->router->redirect('view', false, 'Index');
+		$this->APP->router->redirectToUrl($this->APP->router->getInterfaceUrl());
 	}
 
 

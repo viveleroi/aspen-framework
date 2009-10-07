@@ -333,6 +333,27 @@ class User {
 
 
 	/**
+	 * Returns the post-login redirect URL if it's been set.
+	 * @access public
+	 */
+	public function postLoginRedirect(){
+
+		$redirect = false;
+		if($this->APP->params->session->isPath('post-login_redirect')){
+			$redirect = $this->APP->router->getDomainUrl();
+			$redirect .= $this->APP->params->session->getPath('post-login_redirect');
+			$lred = strtolower($redirect);
+			if(strpos($lred, 'users/login') !== false || strpos($lred, 'users/authenticate') !== false){
+				$redirect = false;
+			}
+		}
+
+		return empty($redirect) ? $this->APP->router->getInterfaceUrl() : $redirect;
+
+	}
+
+
+	/**
 	 * Returns whether or not the user is logged in
 	 * @return boolean
 	 * @access public
