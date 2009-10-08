@@ -82,15 +82,6 @@ class Template {
 	 */
 	public function loadModuleHeader(){
 
-		$path = $this->getModuleTemplateDir().DS . 'header.tpl.php';
-
-		if(file_exists($path)){
-			define('MODULE_HEADER_TPL_PATH', $path);
-			include(MODULE_HEADER_TPL_PATH);
-		} else {
-			define('MODULE_HEADER_TPL_PATH', '');
-		}
-
 		$cdtnl_cmt = '<!--[%s]>%s<![endif]-->';
 
 		// append any css files for loading
@@ -143,6 +134,16 @@ class Template {
 					print $link;
 				}
 			}
+		}
+
+		// include any header templates (header.tpl.php)
+		$path = $this->getModuleTemplateDir().DS . 'header.tpl.php';
+
+		if(file_exists($path)){
+			define('MODULE_HEADER_TPL_PATH', $path);
+			include(MODULE_HEADER_TPL_PATH);
+		} else {
+			define('MODULE_HEADER_TPL_PATH', '');
 		}
 	}
 
@@ -211,8 +212,9 @@ class Template {
 		}
 
 		if($args['from'] == 'i'){
+			$interface = isset($args['interface']) ? $args['interface'] : false;
 			$filename = $args['file'] ? $args['file'] : strtolower(LS).'.'.$args['ext'];
-			$basepath = $args['basepath'] ? $args['basepath'] : $this->APP->router->getStaticContentUrl() . '/'.$args['ext'];
+			$basepath = $args['basepath'] ? $args['basepath'] : $this->APP->router->getStaticContentUrl($interface) . '/'.$args['ext'];
 		}
 
 		return $file = $basepath . '/' . $filename;
@@ -433,7 +435,11 @@ class Template {
 			$route_mask = false;
 			if(is_array($routes)){
 				foreach($routes as $mask => $route){
-					if(strtolower($route['module']) == strtolower($module) && strtolower($route['method']) == strtolower($method)){
+					if(
+						strtolower($route['module']) == strtolower($module) &&
+						strtolower($route['method']) == strtolower($method) &&
+					    (isset($route['interface']) && strtolower($route['interface']) == strtolower($interface))
+					 ){
 						$route_mask = $mask;
 						$url .= $mask;
 					}

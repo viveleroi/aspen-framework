@@ -712,17 +712,17 @@ class Router {
 	 * @return string
 	 * @access public
 	 */
-	public function getStaticContentUrl(){
+	public function getStaticContentUrl($interface = false){
 
 		if($this->APP->config('static_content_url')){
 			return $this->APP->config('static_content_url');
 		} else {
 
-			$interface = LS;
+			$interface = $interface !== false ? $interface : LS;
 			if(is_array($this->APP->config('interface_global_folder_replace'))){
 				$replace = $this->APP->config('interface_global_folder_replace');
-				if(array_key_exists(LS, $replace)){
-					$interface = $replace[LS];
+				if(array_key_exists($interface, $replace)){
+					$interface = $replace[$interface];
 				}
 			}
 
