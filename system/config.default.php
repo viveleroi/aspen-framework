@@ -251,6 +251,10 @@
 	// form error message wrapping (wraps each message inside of holder)
 	$config['form_error_line_html'] = "<li>%s</li>\n";
 
+	// Toggle the display of other page numbers in pagination.
+	// If off, only the current page will display with prev/next links
+	$config['show_other_page_numbers'] = false;
+
 	// html purifier settings (must be array, as passed to $config->set('Namespace', 'Directive', $value);
 	// All configuration settings available here: http://htmlpurifier.org/live/configdoc/plain.html
 	$config['html_purifier_settings'] = array();
