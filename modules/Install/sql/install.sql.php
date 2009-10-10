@@ -16,8 +16,9 @@ CREATE TABLE IF NOT EXISTS `authentication` (
   `latest_login` datetime NOT NULL default '0000-00-00 00:00:00',
   `last_login` datetime NOT NULL default '0000-00-00 00:00:00',
   `allow_login` tinyint(1) NOT NULL default '1',
+  `date_created` datetime NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 ";
 

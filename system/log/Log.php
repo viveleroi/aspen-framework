@@ -150,7 +150,7 @@ class Log {
 			if(is_array($message) || is_object($message)){
 				$this->APP->file->write( print_r($message, true) . "\n", $mode);
 			} else {
-				$this->APP->file->write($message . "\n", $mode);
+				$this->APP->file->write( preg_replace('/[\t]+/', '', trim($message)) . "\n", $mode);
 			}
 		}
 	}

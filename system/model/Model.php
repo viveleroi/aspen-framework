@@ -500,8 +500,8 @@ class Model {
 	 * @return string
 	 * @access public
 	 */
-	public function getLastQuery(){
-		return $this->last_query;
+	public function getLastQuery($output = false){
+		return $this->cleanQuery($this->last_query, $output);
 	}
 
 
@@ -510,19 +510,45 @@ class Model {
 	 * @return string
 	 * @access public
 	 */
-	public function lq(){
-		return $this->getLastQuery();
+	public function lq($output = false){
+		return $this->getLastQuery($output);
 	}
+
 
 	/**
 	 * Returns the query currently being built
 	 * @return string
 	 * @access public
 	 */
-	public function getBuildQuery(){
-		return $this->writeSql();
+	public function getBuildQuery($output = false){
+		return $this->cleanQuery($this->writeSql(), $output);
 	}
 
+
+	/**
+	 * Cleans the query for improved readability
+	 * @param string $sql
+	 * @return string
+	 * @access private
+	 */
+	protected function cleanQuery($sql, $output = false){
+
+		switch($output){
+			case 'html':
+				$sep = "<br>";
+				break;
+			default:
+				$sep = "\n";
+				break;
+		}
+
+		$break_words = array('WHERE','AND','OR','LIMIT','ORDER BY','GROUP BY','LEFT JOIN','RIGHT JOIN','UNION');
+		foreach($break_words as $word){
+			$sql = str_replace($word. ' ', $sep.$word.' ', $sql);
+		}
+
+		return $sql;
+	}
 
 
 //+-----------------------------------------------------------------------+

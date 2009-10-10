@@ -87,6 +87,14 @@ class Template {
 		// append any css files for loading
 		if(!empty($this->_load_css)){
 
+			// re-arrange to ensure all modules are second
+			$m = array();
+			$i = array();
+			foreach($this->_load_css as $css){
+				${$css['from']}[] = $css;
+			}
+			$this->_load_css = array_merge($i, $m);
+
 			$css_html_elm = '<link rel="stylesheet" href="%s" type="text/css" media="%s" />';
 
 			foreach($this->_load_css as $css){

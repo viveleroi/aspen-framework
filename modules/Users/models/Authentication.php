@@ -72,6 +72,9 @@ class AuthenticationModel extends Model {
 			$fields['password'] = $this->encode_password($fields['password']);
 		}
 
+		// set date created
+		$fields['date_created'] = date('Y-m-d H:i:s');
+
 		return $fields;
 
 	}

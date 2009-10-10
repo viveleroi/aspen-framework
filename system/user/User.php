@@ -216,7 +216,7 @@ class User {
 	 * @access public
 	 */
 	public function login_failed(){
-		$this->APP->sml->say('Your username and password did not match. Please try again.');
+		$this->APP->sml->say('Your username and password did not match. Please try again.', false);
 		$this->APP->router->redirect('login',false,'Users');
 	}
 
@@ -308,7 +308,7 @@ class User {
 					$auth = true;
 
 					$_SESSION['authenticated']		= true;
-					$_SESSION['authentication_key'] = sha1($account['username'] . $account['id']);
+					$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['username'], $account['id']);
 					$_SESSION['domain_key'] 		= sha1($this->getDomainKeyValue());
 					$_SESSION['username'] 			= $account['username'];
 					$_SESSION['nice_name'] 			= $account['nice_name'];
@@ -329,6 +329,17 @@ class User {
 
 		return $auth;
 
+	}
+
+
+	/**
+	 * Generates a unique authentication key.
+	 * @param string $username
+	 * @param string $user_id
+	 * @return string
+	 */
+	public function getAuthenticationKey($username, $user_id){
+		return sha1($username . $user_id);
 	}
 
 

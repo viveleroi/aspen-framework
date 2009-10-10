@@ -51,7 +51,7 @@ class Users_Admin extends Module {
 	public function edit($id = false){
 
 		if($this->APP->user->edit($id)){
-			$this->APP->sml->addNewMessage('User account changes have been saved successfully.');
+			$this->APP->sml->addNewMessage('User account changes have been saved successfully.', true);
 			$this->APP->router->redirect('view');
 		}
 		
@@ -73,7 +73,7 @@ class Users_Admin extends Module {
 	public function my_account(){
 
 		if($this->APP->user->my_account()){
-			$this->APP->sml->addNewMessage('Your account has been updated successfully.');
+			$this->APP->sml->addNewMessage('Your account has been updated successfully.', true);
 			$this->APP->router->redirect('view', false, 'Index');
 		}
 
@@ -94,7 +94,7 @@ class Users_Admin extends Module {
 	 */
 	public function delete($id = false){
 		if($this->APP->user->delete($id)){
-			$this->APP->sml->addNewMessage('User account has been deleted successfully.');
+			$this->APP->sml->addNewMessage('User account has been deleted successfully.', true);
 			$this->APP->router->redirect('view');
 		}
 	}
@@ -122,11 +122,11 @@ class Users_Admin extends Module {
 	public function forgot(){
 
 		if($this->APP->user->forgot() == 1){
-			$this->APP->sml->addNewMessage('Your password has been reset. Please check your email.');
+			$this->APP->sml->addNewMessage('Your password has been reset. Please check your email.', true);
 			$this->APP->router->redirect('login');
 		}
 		elseif($this->APP->user->forgot() == -1){
-			$this->APP->sml->addNewMessage('We were unable to find any accounts matching that username.');
+			$this->APP->sml->addNewMessage('We were unable to find any accounts matching that username.', false);
 			$this->APP->router->redirect('forgot');
 		}
 
