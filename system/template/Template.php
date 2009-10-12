@@ -1041,17 +1041,33 @@ class Template {
 					// if array has value different from text or not
 					$value = empty($option[$keys[0]]) ? $option[$keys[1]] : $option[$keys[0]];
 
+					// match
+					$match = '';
+					if(is_array($match_value)){
+						$match = (in_array($value, $match_value) ? ' selected="selected"' : '');
+					} else {
+						$match = ($value == $match_value ? ' selected="selected"' : '');
+					}
+
 					printf('<option value="%s"%s>%s</option>' . "\n",
 								$this->encodeTextEntities($value),
-								($value == $match_value ? ' selected="selected"' : ''),
+								$match,
 								$this->encodeTextEntities($option[$keys[1]]));
 				} else {
 
 					$value = is_string($key) ? $key : $option;
 
+					// match
+					$match = '';
+					if(is_array($match_value)){
+						$match = (in_array($value, $match_value) ? ' selected="selected"' : '');
+					} else {
+						$match = ($value == $match_value ? ' selected="selected"' : '');
+					}
+
 					printf('<option value="%s"%s>%s</option>' . "\n",
 								$this->encodeTextEntities($value),
-								($value == $match_value ? ' selected="selected"' : ''),
+								$match,
 								$this->encodeTextEntities($option));
 
 				}

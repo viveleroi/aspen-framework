@@ -782,13 +782,14 @@ class Model {
 		$field = $field ? $field : $this->getPrimaryKey();
 		$match = $match ? $match : 'AND';
 		$match = $this->parenth_start ? $match.' (' : $match;
-		$this->parenth_start = false;
 
 		$this->sql['WHERE'][] = sprintf($sprint_string,
-											(isset($this->sql['WHERE']) ? $match : 'WHERE'),
+											(isset($this->sql['WHERE']) ? $match : 'WHERE'.($this->parenth_start ? ' (' : '') ),
 											$field,
 											$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
 										);
+
+		$this->parenth_start = false;
 
 	}
 
@@ -1020,6 +1021,11 @@ class Model {
 	 */
 	public function addFilters($filters = false, $allowed_filter_keys = false, $disabled_filters = false){
 
+		$table_base_fields = array();
+		$table_schema = array_keys($this->getSchema());
+		foreach($table_schema as $key){
+			$table_base_fields[strtolower($key)] = false;
+		}
 
 		$location_id			= $this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod();
 		$disabled_filters		= $disabled_filters ? $disabled_filters : array();
@@ -1028,11 +1034,17 @@ class Model {
 		// check GET or SESSION for any filter overrides
 		if($this->APP->params->get->getRaw('filter')){
 			$filters = $this->APP->params->get->getRaw('filter');
+		}
+		elseif($this->APP->params->post->getRaw('filter')){
+			$filters = $this->APP->params->post->getRaw('filter');
 		} else {
 			if($sess_filters = $this->APP->params->session->getRaw('filters')){
 				$filters = $sess_filters[$location_id];
 			}
 		}
+
+		// over-write the table keys with filters
+		$filters = array_merge($table_base_fields, $filters);
 
 		// set base allowed filters if not set
 		if(empty($allowed_filter_keys) && is_array($filters)){
@@ -1051,42 +1063,56 @@ class Model {
 
 					$value_array = false;
 
-					if(strpos($value, ' and ') > 0){
-						$value_array = explode(" and ", $value);
-					}
-					elseif(strpos($value, ' & ') > 0){
-						$value_array = explode(" & ", $value);
-					}
-					elseif(strpos($value, ',') > 0){
-						$value_array = explode(",", $value);
-					}
-					elseif(strpos($value, ' or ') > 0){
-						$value_array = explode(" or ", $value);
+					// If the value is an array
+					if(is_array($value)){
+						$value_array = $value;
+					} else {
+
+						// Looks for string chars the simulate an array
+						if(strpos($value, ' and ') > 0){
+							$value_array = explode(" and ", $value);
+						}
+						elseif(strpos($value, ' & ') > 0){
+							$value_array = explode(" & ", $value);
+						}
+						elseif(strpos($value, ',') > 0){
+							$value_array = explode(",", $value);
+						}
+						elseif(strpos($value, ' or ') > 0){
+							$value_array = explode(" or ", $value);
+						} else {
+							$value_array = array($value);
+						}
 					}
 
 					if(is_array($value_array)){
 						$count = 1;
+						$this->parenthStart();
 						foreach($value_array as $match){
-							$this->whereLike($field, trim($match), ($count == 1 ? 'AND' : 'OR'));
+
+							// Match operators inside the filter
+							if(substr($match, 0, 1) == "!"){
+								$this->whereNot($field, str_replace("!", "", $match));
+							}
+							elseif(substr($match, 0, 1) == ">"){
+								$this->whereGreaterThan($field, str_replace(">", "", $match));
+							}
+							elseif(substr($match, 0, 2) == ">="){
+								$this->whereGreaterThanEqualTo($field, str_replace(">=", "", $match));
+							}
+							elseif(substr($match, 0, 1) == "<"){
+								$this->whereLessThanEqualTo($field, str_replace("<", "", $match));
+							}
+							elseif(substr($match, 0, 2) == "<="){
+								$this->whereLessThanEqualTo($field, str_replace("<=", "", $match));
+							} else {
+								$this->whereLike($field, trim($match), ($count == 1 ? 'AND' : 'OR'));
+							}
+
 							$count++;
 
 						}
-					} else {
-
-						if(substr($value, 0, 1) == ">"){
-							$this->whereGreaterThan($field, str_replace(">", "", $value));
-						}
-						elseif(substr($value, 0, 2) == ">="){
-							$this->whereGreaterThanEqualTo($field, str_replace(">=", "", $value));
-						}
-						elseif(substr($value, 0, 1) == "<"){
-							$this->whereLessThanEqualTo($field, str_replace("<", "", $value));
-						}
-						elseif(substr($value, 0, 2) == "<="){
-							$this->whereLessThanEqualTo($field, str_replace("<=", "", $value));
-						} else {
-							$this->whereLike($field, $value);
-						}
+						$this->parenthEnd();
 					}
 				}
 
