@@ -566,7 +566,9 @@ class Model {
 	final public function setSecurityRule($field, $key, $value){
 		if($this->inSchema($field)){
 			$this->field_security_rules[$field][$key] = $value;
+			return;
 		}
+		return false;
 	}
 
 
@@ -576,7 +578,7 @@ class Model {
 	 * @param string $key
 	 * @return mixed
 	 */
-	final private function getSecurityRule($field, $key){
+	final public function getSecurityRule($field, $key){
 
 		$rule_result = false;
 
@@ -765,7 +767,10 @@ class Model {
 	 * @access private
 	 **/
 	public function parenthEnd(){
-		$this->sql['WHERE'][ (count($this->sql['WHERE'])-1) ] .= ')';
+		if(isset($this->sql['WHERE']) ){
+			$this->sql['WHERE'][ (count($this->sql['WHERE'])-1) ] .= ')';
+		}
+		$this->parenth_start = false;
 	}
 
 
@@ -1021,6 +1026,8 @@ class Model {
 	 */
 	public function addFilters($filters = false, $allowed_filter_keys = false, $disabled_filters = false){
 
+		$using_filters = false;
+
 		$table_base_fields = array();
 		$table_schema = array_keys($this->getSchema());
 		foreach($table_schema as $key){
@@ -1089,27 +1096,32 @@ class Model {
 						$count = 1;
 						$this->parenthStart();
 						foreach($value_array as $match){
+							if(!empty($match)){
 
-							// Match operators inside the filter
-							if(substr($match, 0, 1) == "!"){
-								$this->whereNot($field, str_replace("!", "", $match));
-							}
-							elseif(substr($match, 0, 1) == ">"){
-								$this->whereGreaterThan($field, str_replace(">", "", $match));
-							}
-							elseif(substr($match, 0, 2) == ">="){
-								$this->whereGreaterThanEqualTo($field, str_replace(">=", "", $match));
-							}
-							elseif(substr($match, 0, 1) == "<"){
-								$this->whereLessThanEqualTo($field, str_replace("<", "", $match));
-							}
-							elseif(substr($match, 0, 2) == "<="){
-								$this->whereLessThanEqualTo($field, str_replace("<=", "", $match));
-							} else {
-								$this->whereLike($field, trim($match), ($count == 1 ? 'AND' : 'OR'));
-							}
+								$using_filters = true;
 
-							$count++;
+								// Match operators inside the filter
+								if(substr($match, 0, 1) == "!"){
+									$this->whereNot($field, str_replace("!", "", $match));
+								}
+								elseif(substr($match, 0, 1) == ">"){
+									$this->whereGreaterThan($field, str_replace(">", "", $match));
+								}
+								elseif(substr($match, 0, 2) == ">="){
+									$this->whereGreaterThanEqualTo($field, str_replace(">=", "", $match));
+								}
+								elseif(substr($match, 0, 1) == "<"){
+									$this->whereLessThanEqualTo($field, str_replace("<", "", $match));
+								}
+								elseif(substr($match, 0, 2) == "<="){
+									$this->whereLessThanEqualTo($field, str_replace("<=", "", $match));
+								} else {
+									$this->whereLike($field, trim($match), ($count == 1 ? 'AND' : 'OR'));
+								}
+
+								$count++;
+
+							}
 
 						}
 						$this->parenthEnd();
@@ -1124,6 +1136,8 @@ class Model {
 
 		// save the filters to the session
 		$_SESSION['filters'][$location_id] = $filters;
+
+		define('MODEL_FILTER_IN_USE', $using_filters);
 
 		return $filters;
 
