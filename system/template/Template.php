@@ -614,6 +614,7 @@ class Template {
 	 */
 	public function sortLink($title, $location, $sort_by){
 
+		$base = $this->createXhtmlValidSelfUrl();
 		$sort = $this->APP->prefs->getSort($location, $sort_by);
 
 		// determine the sort direction
@@ -625,16 +626,19 @@ class Template {
 			$class = strtolower($new_direction);
 		}
 
-		// create the link
-		$html = sprintf('<a href="%s" title="%s" class="%s">%s</a>',
-								$this->createXhtmlValidSelfUrl(array(
+		// build proper url
+		$url = $base.'?'.http_build_query(array(
 									'sort_location'=>$location,
 									'sort_by'=>$sort_by,
-									'sort_direction'=>$new_direction)),
-									'Sort ' . $this->encodeTextEntities($title) . ' column ' . ($new_direction == 'ASC' ? 'ascending' : 'descending'),
-									$class,
-									$this->encodeTextEntities($title)
-								);
+									'sort_direction'=>$new_direction));
+
+		// create the link
+		$html = sprintf('<a href="%s" title="%s" class="%s">%s</a>',
+								$url,
+								'Sort ' . $this->encodeTextEntities($title) . ' column ' . ($new_direction == 'ASC' ? 'ascending' : 'descending'),
+								$class,
+								$this->encodeTextEntities($title)
+							);
 
 		return $html;
 

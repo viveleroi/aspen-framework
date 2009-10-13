@@ -564,7 +564,7 @@ class Model {
 	 * @access public
 	 */
 	final public function setSecurityRule($field, $key, $value){
-		if($this->inSchema($field_name)){
+		if($this->inSchema($field)){
 			$this->field_security_rules[$field][$key] = $value;
 		}
 	}

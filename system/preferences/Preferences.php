@@ -36,22 +36,20 @@ class Preferences {
 
 		$_SESSION['settings'] =  array();
 
-//		if($this->APP->params->session->getInt('user_id', false) && $this->APP->checkDbConnection()){
-//
-//			// load sort settings
-//			$pref_model = $this->APP->model->open('preferences_sorts');
-//			$pref_model->where('user_id', $this->APP->params->session->getInt('user_id'));
-//			$sorts = $pref_model->results();
-//
-//			if($sorts['RECORDS']){
-//				foreach($sorts['RECORDS'] as $sort){
-//
-//					$sort_pref = array('sort_by' => $sort['sort_by'], 'sort_direction' => $sort['direction']);
-//					$_SESSION['settings']['sorts'][$sort['location']] = $sort_pref;
-//
-//				}
-//			}
-//		}
+		if($user_id = $this->APP->params->session->getInt('user_id') && $this->APP->checkDbConnection()){
+
+			// load sort field
+			$pref_model = $this->APP->model->open('config');
+			$pref_model->where('user_id', $user_id);
+			$pref_model->where('LEFT(config_key, 4)', 'sort');
+			$sorts = $pref_model->results();
+
+			if($sorts['RECORDS']){
+				foreach($sorts['RECORDS'] as $sort){
+					$_SESSION['settings']['sorts'][$sort['config_key']] = $sort;
+				}
+			}
+		}
 
 		$this->APP->params->refreshCage('session');
 
@@ -67,25 +65,24 @@ class Preferences {
 	 */
 	public function addSort($location = false, $field = false, $dir = 'ASC'){
 
-//		if($this->APP->params->session->getInt('user_id', false)){
-//
-//			$pref_model = $this->APP->model->open('preferences_sorts');
-//
-//			// remove any old entry for this location
-//			$sql = sprintf('DELETE FROM preferences_sorts WHERE user_id = "%s" AND location = "%s"',
-//														$this->APP->params->session->getInt('user_id'), $location);
-//			$this->APP->model->query($sql);
-//
-//			// add in a new entry
-//			$settings = array(
-//							'user_id' => $this->APP->params->session->getInt('user_id'),
-//							'location' => $location,
-//							'sort_by' => $sort,
-//							'direction' => $dir
-//						);
-//			$pref_model->insert($settings);
-//
-//		}
+		if($user_id = $this->APP->params->session->getInt('user_id')){
+
+			$pref_model = $this->APP->model->open('config');
+
+			// remove any old entry for this location
+			$sql = sprintf('
+						DELETE FROM config
+						WHERE user_id = "%s"
+						AND (config_key = "sort.%s.field"
+						OR config_key = "sort.%2$s.dir" )',
+						$user_id, $location);
+			$pref_model->query($sql);
+
+			// add in a new entry
+			$pref_model->insert(array('user_id' => $user_id, 'config_key' => 'sort.'.$location.'.field', 'current_value' => $field));
+			$pref_model->insert(array('user_id' => $user_id, 'config_key' => 'sort.'.$location.'.dir', 'current_value' => $dir));
+
+		}
 	}
 
 
@@ -100,17 +97,21 @@ class Preferences {
 	 */
 	public function getSort($location, $field = false, $default = 'id', $dir = 'ASC'){
 
-		$sort = array('sort_by'=>$default,'sort_direction'=>$dir,'is_default'=>true);
+		$sort = array('sort_by'=>$default,'sort_direction'=>strtoupper($dir));
 
 		if($this->APP->params->session->getInt('user_id', false) && $this->APP->params->session->getRaw('settings', false)){
 
 			$settings = $this->APP->params->session->getRaw('settings');
 
-			if(isset($settings['sorts'][$location])){
-				if($field){
-					$sort = $settings['sorts'][$location]['sort_by'] == $field ? $settings['sorts'][$location] : false;
-				} else {
-					$sort = $settings['sorts'][$location];
+			$loc_key = 'sort.'.$location;
+			if(isset($settings['sorts'][$loc_key.'.field'])){
+
+				$sort['sort_by']		= $settings['sorts'][$loc_key.'.field']['current_value'];
+				$sort['sort_direction']	= strtoupper($settings['sorts'][$loc_key.'.dir']['current_value']);
+
+				//If the field arg not matched, don't return anything
+				if($field && $sort['sort_by'] != $field){
+					$sort = false;
 				}
 			}
 		}
