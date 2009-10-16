@@ -1024,34 +1024,61 @@ class Model {
 	 * @return array
 	 * @access public
 	 */
-	public function addFilters($filters = false, $allowed_filter_keys = false, $disabled_filters = false){
+	public function addFilters($filters = false, $location_key = false, $allowed_filter_keys = false, $disabled_filters = false){
 
-		$using_filters = false;
-
-		$table_base_fields = array();
+		// Create a base array of the current schema
+		$table_base_fields = array('keyword_search'=>false);
 		$table_schema = array_keys($this->getSchema());
 		foreach($table_schema as $key){
 			$table_base_fields[strtolower($key)] = false;
 		}
 
-		$location_id			= $this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod();
+
+		$user_id				= $this->APP->params->session->getInt('user_id', NULL);
+		$using_filters			= false;
+		$location_key			= $location_key ? $location_key : ($this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod());
 		$disabled_filters		= $disabled_filters ? $disabled_filters : array();
 		$allowed_filter_keys	= $allowed_filter_keys ? $allowed_filter_keys : array();
 
-		// check GET or SESSION for any filter overrides
+		// check GET or POST for any filter overrides
+		// otherwise, check the config table
 		if($this->APP->params->get->getRaw('filter')){
 			$filters = $this->APP->params->get->getRaw('filter');
 		}
 		elseif($this->APP->params->post->getRaw('filter')){
 			$filters = $this->APP->params->post->getRaw('filter');
-		} else {
-			if($sess_filters = $this->APP->params->session->getRaw('filters')){
-				$filters = $sess_filters[$location_id];
+
+			// get the source url to associate this filter with
+			if($this->APP->params->server->isUri('HTTP_REFERER')){
+				$filters['applied_uri'] = $this->APP->params->server->getRaw('HTTP_REFERER');
+//				var_dump($filters['applied_uri']);
 			}
+		}
+		elseif($named = $this->APP->params->get->getRaw('named-filter')){
+			$named = $this->APP->router->decodeForRewriteUrl($named);
+			$filters = $this->APP->settings->getConfig('filter.named.'.$named, $user_id);
+			$filters = unserialize($filters);
+		} else {
+			$filters = $this->APP->settings->getConfig('filter.'.$location_key, $user_id);
+			$filters = unserialize($filters);
+		}
+
+		// look for a save-as named variable
+		// if it's set, we'll store this as a named filter
+		$filter_name = false;
+		if($this->APP->params->get->getRaw('filter-save-as')){
+			$filter_name = $this->APP->params->get->getRaw('filter-save-as');
+		}
+		elseif($this->APP->params->post->getRaw('filter-save-as')){
+			$filter_name = $this->APP->params->post->getRaw('filter-save-as');
 		}
 
 		// over-write the table keys with filters
-		$filters = array_merge($table_base_fields, $filters);
+		if(is_array($filters)){
+			$filters = array_merge($table_base_fields, $filters);
+		} else {
+			$filters = $table_base_fields;
+		}
 
 		// set base allowed filters if not set
 		if(empty($allowed_filter_keys) && is_array($filters)){
@@ -1065,7 +1092,7 @@ class Model {
 					$value != '' &&
 					in_array($field, $allowed_filter_keys) &&
 					!in_array($field, $disabled_filters) &&
-					(array_key_exists(strtoupper($field), $this->getSchema()) || strpos($this->sql['FIELDS'], $field))
+					(array_key_exists(strtoupper($field), $this->getSchema()) || strpos($this->sql['FIELDS'], $field) || $field == 'keyword_search')
 					){
 
 					$value_array = false;
@@ -1100,8 +1127,13 @@ class Model {
 
 								$using_filters = true;
 
+								// if keyword search
+								if($field == 'keyword_search'){
+									$this->match($match);
+								}
+
 								// Match operators inside the filter
-								if(substr($match, 0, 1) == "!"){
+								elseif(substr($match, 0, 1) == "!"){
 									$this->whereNot($field, str_replace("!", "", $match));
 								}
 								elseif(substr($match, 0, 1) == ">"){
@@ -1134,8 +1166,13 @@ class Model {
 			}
 		}
 
-		// save the filters to the session
-		$_SESSION['filters'][$location_id] = $filters;
+		// save the filters to the config table
+		$this->APP->settings->setConfig('filter.'.$location_key, serialize($filters), $user_id);
+
+		// if a save-as name is set, store that filter too
+		if($filter_name){
+			$this->APP->settings->setConfig('filter.named.'.$filter_name, serialize($filters), $user_id);
+		}
 
 		define('MODEL_FILTER_IN_USE', $using_filters);
 
@@ -1240,7 +1277,7 @@ class Model {
 		}
 
 		if(is_array($fields) && count($fields)){
-			$this->sql['WHERE'][] = sprintf('%s MATCH(%s) AGAINST ("%s" IN BOOLEAN MODE)', (isset($this->sql['WHERE']) ? $match : 'WHERE'), implode(",", $fields), $search);
+			$this->sql['WHERE'][] = sprintf('%s MATCH(%s) AGAINST ("%s" IN BOOLEAN MODE)', (isset($this->sql['WHERE']) ? $match : 'WHERE'.($this->parenth_start ? ' (' : '') ), implode(",", $fields), $search);
 			$this->addSelectField( sprintf('MATCH(%s) AGAINST ("%s" IN BOOLEAN MODE) as match_relevance', implode(",", $fields), $search) );
 		}
 	}

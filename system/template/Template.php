@@ -95,11 +95,11 @@ class Template {
 			}
 			$this->_load_css = array_merge($i, $m);
 
-			$css_html_elm = '<link rel="stylesheet" href="%s" type="text/css" media="%s" />';
+			$css_html_elm = '<link rel="%s" href="%s" type="text/css" media="%s"%s />';
 
 			foreach($this->_load_css as $css){
 				$file = $this->getStaticContentUrl($css);
-				$link = sprintf($css_html_elm, $file, $css['mediatype']);
+				$link = sprintf($css_html_elm, $css['rel'], $file, $css['mediatype'], ($css['title'] ? ' title="'.$css['title'].'"' : ''));
 
 				if(!empty($css['cdtnl_cmt'])){
 					printf($cdtnl_cmt, $css['cdtnl_cmt'], $link);
@@ -167,6 +167,8 @@ class Template {
 
 		$base = array(
 					'file' => false,
+					'rel' => 'stylesheet',
+					'title' => false,
 					'from' => 'm',
 					'mediatype' => 'all',
 					'cdtnl_cmt' => '',
@@ -506,15 +508,16 @@ class Template {
 	/**
 	 * Returns a properly-encoded URL using a method
 	 * @param string $method
+	 * @param string $module
 	 * @return string
 	 * @access public
 	 */
-	public function createFormAction($method = false){
+	public function createFormAction($method = false, $module = false){
 		$bits = false;
 		if($this->APP->router->arg(1)){
 			$bits = array('id' => $this->APP->router->arg(1));
 		}
-		return $this->createXhtmlValidUrl($method, $bits);
+		return $this->createXhtmlValidUrl($method, $bits, $module);
 	}
 
 
