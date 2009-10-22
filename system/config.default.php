@@ -144,10 +144,9 @@
 	//  array('/about-us' => array('module'=>'Index', 'method'=>'about'));
 	//
 	//  /edit/a/person/with/the/id/of/1 can be mapped to Users->edit(1);
-	//  array('/\/(?<name>\w+)\/a\/person\/with\/the\/id\/of\/(?<digit>\d)/' => array('regex'=>true,'module'=>'Users', 'method'=>'$1'));
-	$config['routes'] = array(
-						'/\/(?<name>\w+)\/a\/person\/with\/the\/id\/of\/(?<digit>\d)/' => array('regex'=>true,'module'=>'Users', 'method'=>'$1')
-						);
+//	$config['routes'] = array(
+//						'/\/(?<name>\w+)\/a\/person\/with\/the\/id\/of\/(?<digit>\d)/' => array('regex'=>true,'module'=>'Users', 'method'=>'$1')
+//						);
 
 
 /**
@@ -218,6 +217,9 @@
 	// default timezone
 	$config['timezone'] = "America/Los_Angeles";
 
+	// default date format
+	$config['date_format'] = 'H:i:s d-M-Y T';
+
 	// currency format
 	// see http://us.php.net/money_format for more information
 	$config['currency_format'] = '%n';
@@ -254,6 +256,13 @@
 	// Toggle the display of other page numbers in pagination.
 	// If off, only the current page will display with prev/next links
 	$config['show_other_page_numbers'] = false;
+
+	// list any tables the activity log needs to be watching
+	// Note, you must enable the activity log by including the class.
+	$config['activity_watch_tables'] = array('authentication');
+
+	// preference config_keys to load for preference editing function
+	$config['preference_configs_to_edit'] = array();
 
 	// html purifier settings (must be array, as passed to $config->set('Namespace', 'Directive', $value);
 	// All configuration settings available here: http://htmlpurifier.org/live/configdoc/plain.html
@@ -369,8 +378,11 @@
  * http://docs.aspen-framework.org/wiki/Aspen:Extending_System_Classes
  */
 
+	$config['load_core_class'][] = array('classname' => 'Library', 'autoload' => false);
+
 	$config['load_core_class'][] = array('classname' => 'Peregrine', 'folder' => 'security/Peregrine', 'var'=>'params');
 	$config['load_core_class'][] = array('classname' => 'Security');
+	$config['load_core_class'][] = array('classname' => 'Date');
 	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'Template');
@@ -429,6 +441,10 @@
 
     // Debugging functionality
 	$config['load_add_core_class'][] = array('classname' => 'Debug');
+
+	// Activity logging functionality
+	$config['load_add_core_class'][] = array('classname' => 'Activity');
+	$config['models']['activity'] = array('root'=>SYSTEM_PATH.DIRECTORY_SEPARATOR.'activity');
 
 	*/
 

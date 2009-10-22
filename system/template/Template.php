@@ -877,6 +877,18 @@ class Template {
 
 
 	/**
+	 *
+	 * @param <type> $gmdate
+	 * @param <type> $format
+	 * @param <type> $timezone
+	 * @return <type>
+	 */
+	public function pref_date($gmdate, $format = false, $timezone = false){
+		return $this->APP->date->pref_date($gmdate, $format, $timezone);
+	}
+
+
+	/**
 	 * Prints a nicer date display
 	 * @param string $date
 	 * @param string $date_format_string The format to print the date, if needed

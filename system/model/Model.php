@@ -46,6 +46,12 @@ class Model {
 	private $error = false;
 
 	/**
+	 * Holds an existing record for change detection
+	 * @var array
+	 */
+	private $existing_record = false;
+
+	/**
 	 * @var array
 	 * @access private
 	 */
@@ -241,14 +247,13 @@ class Model {
 			// if primary key has been set, we need to load an existing record
 			if($primary_key && count($fields)){
 
-				$record = $this->quickSelectSingle($primary_key);
+				$this->existing_record = $record = $this->quickSelectSingle($primary_key);
 
 				// merge the record with the incoming fields array
 				// - any key in fields array overrides record
 				if(is_array($record)){
 					$fields = array_merge($record, $fields);
 				}
-
 			}
 
 			// make an inspekt cage so we can verify data
@@ -1098,7 +1103,7 @@ class Model {
 					$value_array = false;
 
 					// If the value is an array
-					if(is_array($value)){
+					if(is_array($value) && count($value)){
 						$value_array = $value;
 					} else {
 
@@ -1119,7 +1124,7 @@ class Model {
 						}
 					}
 
-					if(is_array($value_array)){
+					if(is_array($value_array) && count($value_array) && !empty($value_array[0])){
 						$count = 1;
 						$this->parenthStart();
 						foreach($value_array as $match){
@@ -1594,7 +1599,11 @@ class Model {
 		$field_name = $field_name ? $field_name : $this->getPrimaryKey();
 		if($this->inSchema($field_name)){
 			$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
-			return (bool)$this->query($this->sql['DELETE']);
+			$result = (bool)$this->query($this->sql['DELETE']);
+			if($result){
+				$this->activity_detect_changes('delete', $id, false);
+				return $result;
+			}
 		}
 		return false;
 	}
@@ -1740,11 +1749,12 @@ class Model {
 	/**
 	 * Allows instructions to be written after an INSERT query in custom
 	 * model libraries.
-	 *
-	 * @param integer $result
-	 * @return integer
+	 * 
+	 * @param <type> $result
+	 * @param <type> $values
+	 * @return <type>
 	 */
-	public function after_insert($result){
+	public function after_insert($result, $values){
 		return $result;
 	}
 
@@ -1794,7 +1804,15 @@ class Model {
 
 			// Pass through the after_insert function
 			$result = $this->results();
-			return $this->after_insert($result);
+
+			// run the activity log
+			if($result){
+				$this->activity_detect_changes('insert', $result, $fields);
+			}
+
+			$this->after_insert($result, $fields);
+
+			return $result;
 
 		}
 
@@ -1818,11 +1836,15 @@ class Model {
 	/**
 	 * Allows instructions to be written after an UPDATE query in custom
 	 * model libraries.
-	 *
-	 * @param integer $result
-	 * @return integer
+	 * 
+	 * @param <type> $result
+	 * @param <type> $where_value
+	 * @param <type> $where_field
+	 * @param <type> $values
+	 * @param <type> $old_values
+	 * @return <type>
 	 */
-	public function after_update($result, $where_value, $where_field){
+	public function after_update($result, $where_value, $where_field, $values, $old_values){
 		return $result;
 	}
 
@@ -1877,7 +1899,15 @@ class Model {
 
 			// Pass result to after update
 			$result = $this->results();
-			return $this->after_update($result, $where_value, $where_field);
+
+			// run the activity log
+			if($result){
+				$this->activity_detect_changes('update', $where_value, $fields, $this->existing_record);
+			}
+
+			$this->after_update($result, $where_value, $where_field, $fields, $this->existing_record);
+
+			return $result;
 
 		}
 
@@ -1900,6 +1930,60 @@ class Model {
 		return $fields;
 	}
 
+
+//+-----------------------------------------------------------------------+
+//| ACTIVITY FUNCTIONS
+//+-----------------------------------------------------------------------+
+
+
+	/**
+	 *
+	 * @param <type> $old_values
+	 * @param <type> $new_values
+	 * @return <type>
+	 */
+	public function activity_detect_changes($type, $record_id, $new_values, $old_values = false){
+		if($this->APP->isLibraryLoaded('Activity') && in_array($this->table, $this->APP->config('activity_watch_tables'))){
+
+			// if old vals is an array, we're running an update
+			if($type == 'update' && is_array($old_values)){
+				foreach($old_values as $old_key => $old_val){
+					if(isset($new_values[$old_key])){
+						if($old_val !== $new_values[$old_key]){
+							$this->activity_log_change($type, $this->table, $record_id, $old_key, $old_val, $new_values[$old_key]);
+						}
+					}
+				}
+			}
+
+			// if we're running an insert
+			if($type == 'insert' && is_array($new_values)){
+				foreach($new_values as $field => $val){
+					$this->activity_log_change($type, $this->table, $record_id, $field, false, $val);
+				}
+			}
+
+			// if we're running an delete
+			if($type == 'delete'){
+				$this->activity_log_change($type, $this->table, $record_id);
+			}
+		}
+		return false;
+	}
+
+
+	/**
+	 *
+	 * @param <type> $field
+	 * @param <type> $old_value
+	 * @param <type> $new_value
+	 */
+	public function activity_log_change($type, $table, $record_id, $field, $old_value, $new_value){
+		if($this->APP->isLibraryLoaded('Activity')){
+			$this->APP->activity->logChange($type, $table, $record_id, $field, $old_value, $new_value);
+		}
+	}
+	
 
 //+-----------------------------------------------------------------------+
 //| FIELD ERROR HANDLING FUNCTIONS

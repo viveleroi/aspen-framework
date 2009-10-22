@@ -149,7 +149,7 @@ class User {
 		$this->APP->form->addField('password_confirm');
 
 		// if form submitted
-		if($this->APP->form->isSubmitted()){
+		if($this->APP->form->isSubmitted('post','user-submit')){
 
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.

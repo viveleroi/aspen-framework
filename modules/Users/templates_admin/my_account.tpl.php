@@ -22,7 +22,7 @@
 			<input type="password" name="password_confirm" id="password_confirm" class="text" />
 		</p>
 		
-		<p><input type="submit" name="submit" value="<?php print $this->text('myaccount:button:submit'); ?>" /></p>
+		<p><input type="submit" name="user-submit" value="<?php print $this->text('myaccount:button:submit'); ?>" /></p>
 	
 	</fieldset>
 </form>
