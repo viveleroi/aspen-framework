@@ -207,6 +207,9 @@
 	// enable firephp support (must have debug class loaded)
 	$config['enable_firephp'] = false;
 
+	// POST the data as JSON object to a Url
+	$config['error_json_post_url'] = false;
+
 
 /**
  * DATA FORMATTING SETTINGS

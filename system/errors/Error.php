@@ -307,6 +307,60 @@ class Error {
         if($this->APP->isLibraryLoaded('Debug') && $this->APP->config('enable_firephp')){
             $this->APP->debug->firephp()->error($this->errMsg . ' Line: ' . $this->line . ' - File: ' . $this->file);
         }
+
+		//
+		if($this->APP->config('error_json_post_url')){
+
+			$trace = array();
+			if (is_array($this->trace)){
+				foreach ($this->trace as $k => $v){
+					$trace[] = array('FILE'=>$v['file'],'LINE'=>$v['line']);
+				}
+			}
+
+			$errors = array(
+						'application' => $this->APP->config('application_name'),
+						'version_complete' => VERSION_COMPLETE,
+						'version' => VERSION,
+						'build' => BUILD,
+						'date' => date("Y-m-d h:i:s"),
+						'gmdate' => gmdate("Y-m-d h:i:s"),
+						'visitor_ip' => $this->getServerValue('REMOTE_ADDR'),
+						'referrer_url' => $this->getServerValue('HTTP_REFERER'),
+						'request_uri' => $this->APP->router->getFullUrl() . $this->getServerValue('REQUEST_URI', ''),
+						'user_agent' => $this->getServerValue('HTTP_USER_AGENT'),
+						'error_type' => $this->errType[$this->errNo],
+						'error_message' => $this->errMsg,
+						'error_no' => $this->errNo,
+						'file' => $this->file,
+						'line' => $this->line,
+						'trace' => (empty($trace) ? false : $trace)
+						);
+
+
+//url-ify the data for the POST
+//foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+//rtrim($fields_string,'&');
+//
+////open connection
+//$ch = curl_init();
+//
+////set the url, number of POST vars, POST data
+//curl_setopt($ch,CURLOPT_URL,$url);
+//curl_setopt($ch,CURLOPT_POST,count($fields));
+//curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
+//
+////execute post
+//$result = curl_exec($ch);
+//
+////close connection
+//curl_close($ch);
+
+//			print $errorBody;
+//			print_r( $errors );
+//			print_r( json_decode(json_encode($errors)) );
+
+		}
 	}
 
 
