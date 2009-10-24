@@ -1038,7 +1038,6 @@ class Model {
 			$table_base_fields[strtolower($key)] = false;
 		}
 
-
 		$user_id				= $this->APP->params->session->getInt('user_id', NULL);
 		$using_filters			= false;
 		$location_key			= $location_key ? $location_key : ($this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod());
@@ -1056,7 +1055,6 @@ class Model {
 			// get the source url to associate this filter with
 			if($this->APP->params->server->isUri('HTTP_REFERER')){
 				$filters['applied_uri'] = $this->APP->params->server->getRaw('HTTP_REFERER');
-//				var_dump($filters['applied_uri']);
 			}
 		}
 		elseif($named = $this->APP->params->get->getRaw('named-filter')){
@@ -1598,11 +1596,20 @@ class Model {
 	public function delete($id = false, $field_name = false){
 		$field_name = $field_name ? $field_name : $this->getPrimaryKey();
 		if($this->inSchema($field_name)){
-			$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
-			$result = (bool)$this->query($this->sql['DELETE']);
-			if($result){
-				$this->activity_detect_changes('delete', $id, false);
-				return $result;
+
+			$this->select();
+			$this->where($field_name, $id);
+			$records = $this->results();
+
+			if($records['RECORDS']){
+				foreach($records['RECORDS'] as $del){
+					$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $this->getPrimaryKey(), $del['id']);
+					$result = (bool)$this->query($this->sql['DELETE']);
+					if($result){
+						$this->activity_detect_changes('delete', $del['id'], false);
+						return $result;
+					}
+				}
 			}
 		}
 		return false;
@@ -1749,10 +1756,9 @@ class Model {
 	/**
 	 * Allows instructions to be written after an INSERT query in custom
 	 * model libraries.
-	 * 
-	 * @param <type> $result
-	 * @param <type> $values
-	 * @return <type>
+	 *
+	 * @param integer $result
+	 * @return integer
 	 */
 	public function after_insert($result, $values){
 		return $result;
@@ -1836,13 +1842,9 @@ class Model {
 	/**
 	 * Allows instructions to be written after an UPDATE query in custom
 	 * model libraries.
-	 * 
-	 * @param <type> $result
-	 * @param <type> $where_value
-	 * @param <type> $where_field
-	 * @param <type> $values
-	 * @param <type> $old_values
-	 * @return <type>
+	 *
+	 * @param integer $result
+	 * @return integer
 	 */
 	public function after_update($result, $where_value, $where_field, $values, $old_values){
 		return $result;
@@ -1897,6 +1899,7 @@ class Model {
 
 			}
 
+
 			// Pass result to after update
 			$result = $this->results();
 
@@ -1931,6 +1934,7 @@ class Model {
 	}
 
 
+
 //+-----------------------------------------------------------------------+
 //| ACTIVITY FUNCTIONS
 //+-----------------------------------------------------------------------+
@@ -1945,12 +1949,15 @@ class Model {
 	public function activity_detect_changes($type, $record_id, $new_values, $old_values = false){
 		if($this->APP->isLibraryLoaded('Activity') && in_array($this->table, $this->APP->config('activity_watch_tables'))){
 
+			// set a hash for this activity so we can group simultaneous changes together
+			$key = sha1($type . $this->table .  $record_id . time());
+
 			// if old vals is an array, we're running an update
 			if($type == 'update' && is_array($old_values)){
 				foreach($old_values as $old_key => $old_val){
 					if(isset($new_values[$old_key])){
 						if($old_val !== $new_values[$old_key]){
-							$this->activity_log_change($type, $this->table, $record_id, $old_key, $old_val, $new_values[$old_key]);
+							$this->activity_log_change($key, $type, $this->table, $record_id, $old_key, $old_val, $new_values[$old_key]);
 						}
 					}
 				}
@@ -1959,13 +1966,13 @@ class Model {
 			// if we're running an insert
 			if($type == 'insert' && is_array($new_values)){
 				foreach($new_values as $field => $val){
-					$this->activity_log_change($type, $this->table, $record_id, $field, false, $val);
+					$this->activity_log_change($key, $type, $this->table, $record_id, $field, false, $val);
 				}
 			}
 
 			// if we're running an delete
 			if($type == 'delete'){
-				$this->activity_log_change($type, $this->table, $record_id);
+				$this->activity_log_change($key, $type, $this->table, $record_id, $this->getPrimaryKey(), false, false);
 			}
 		}
 		return false;
@@ -1978,12 +1985,12 @@ class Model {
 	 * @param <type> $old_value
 	 * @param <type> $new_value
 	 */
-	public function activity_log_change($type, $table, $record_id, $field, $old_value, $new_value){
+	public function activity_log_change($key, $type, $table, $record_id, $field, $old_value, $new_value){
 		if($this->APP->isLibraryLoaded('Activity')){
-			$this->APP->activity->logChange($type, $table, $record_id, $field, $old_value, $new_value);
+			$this->APP->activity->logChange($key, $type, $table, $record_id, $field, $old_value, $new_value);
 		}
 	}
-	
+
 
 //+-----------------------------------------------------------------------+
 //| FIELD ERROR HANDLING FUNCTIONS

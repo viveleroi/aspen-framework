@@ -14,28 +14,28 @@
  */
 class Activity extends Library {
 
-	
+
 	/**
 	 * Logs an activity to the watch table.
+	 * @param string $key
 	 * @param string $table
 	 * @param string $field
 	 * @param string $old_value
 	 * @param string $new_value
 	 * @param string> $message
 	 */
-	public function logChange($type = '', $table = '', $record_id = '', $field = '', $old_value = '', $new_value = '', $message = ''){
+	public function logChange($key = '', $type = '', $table = '', $record_id = '', $field = '', $old_value = '', $new_value = ''){
 
 		$activity = $this->APP->model->open('activity');
-		$activity->insert(array(
+		$res = $activity->insert(array(
+								'changeset_hash'=>$key,
 								'activity_type'=>$type,
 								'table_name'=>$table,
 								'record_id' => $record_id,
 								'field_name'=>$field,
 								'old_value'=>$old_value,
-								'new_value'=>$new_value,
-								'message'=>$message)
+								'new_value'=>$new_value)
 							);
-
 	}
 }
 ?>

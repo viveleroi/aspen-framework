@@ -126,39 +126,24 @@ class Preferences {
 	 */
 	public function edit($user_id = NULL){
 
-		$record = array();
-
 		// Load the prefs we're allowed to edit
 		$edit_prefs = $this->APP->config('preference_configs_to_edit');
 
-		// Pull all configs from the db
-		$config = $this->APP->model->open('config');
-		$config->where('user_id', $user_id);
-		if(is_array($edit_prefs) && count($edit_prefs)){
-			$config->parenthStart();
-			foreach($edit_prefs as $key => $where){
-				$config->where('config_key', $where, ($key == 0 ? 'AND' : 'OR'));
-				$record[$where] = false;
-			}
-			$config->parenthEnd();
-		}
-		$prefs = $config->results();
-
-		// set the existing values if any returned
-		if($prefs['RECORDS']){
-			foreach($prefs['RECORDS'] as $pref){
-				$record[$pref['config_key']] = $pref['current_value'] == '' ? $pref['default_value'] : $pref['current_value'];
-			}
+		// Set the current/default values
+		$record = array();
+		foreach($edit_prefs as $pref){
+			$record[$pref] = $this->APP->settings->getConfig($pref, $user_id);
 		}
 
 		// process the form if submitted
 		if($this->APP->form->isSubmitted('post','preferences-submit')){
+			$config = $this->APP->model->open('config');
 			foreach($record as $field => $existing_value){
 				$record[$field] = $this->APP->params->post->getRaw($field);
-				// @todo good place to use REPLACE?
 				$config->query( sprintf('DELETE FROM config WHERE config_key = "%s" AND user_id = "%s"', $field, $user_id) );
 				$config->insert( array('current_value'=>$record[$field],'config_key'=>$field,'user_id'=>$user_id));
 			}
+			$this->APP->sml->say('Your user preferences have been saved successfully.', true);
 		}
 
 		return $record;

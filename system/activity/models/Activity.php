@@ -13,15 +13,15 @@
  * @package Aspen_Framework
  */
 class ActivityModel extends Model {
-	
-	
+
+
 	/**
 	 * We must allow the parent constructor to run properly
 	 * @param string $table
 	 */
 	public function __construct($table = false){ parent::__construct($table); }
-	
-	
+
+
 	/**
 	 * Ensures that a config key has been set before ANY updates allowed
 	 * @param array $fields
@@ -29,15 +29,15 @@ class ActivityModel extends Model {
 	 * @return boolean
 	 */
 	public function validate($fields = false, $type = false){
-		
+
 		$clean = parent::validate($fields, $type);
-		
+
 //		if($clean->isEmpty('config_key')){
 //			$this->addError('config_key', 'The configuration key may not be empty.');
 //		}
-		
+
 		return !$this->error();
-		
+
 	}
 
 

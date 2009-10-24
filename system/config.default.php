@@ -218,7 +218,7 @@
  */
 
 	// default timezone
-	$config['timezone'] = "America/Los_Angeles";
+	$config['timezone'] = "GMT";
 
 	// default date format
 	$config['date_format'] = 'H:i:s d-M-Y T';
