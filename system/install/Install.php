@@ -12,13 +12,7 @@
  * Handles application and module installation
  * @package Aspen_Framework
  */
-class Install {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
+class Install extends Library {
 	
 	/**
 	 * @var boolean $supported Whether or not the server is supported
@@ -33,7 +27,7 @@ class Install {
 	 * @access public
 	 */
 	public function __construct(){
-		$this->APP = get_instance();
+		parent::__construct();
 		$this->checkSystemCompatibility();
 	}
 	

@@ -12,13 +12,7 @@
  * This class manages our mysql sql query generation
  * @package Aspen_Framework
  */
-class Model {
-
-	/**
-	 * @var object Holds our original application
-	 * @access private
-	 */
-	protected $APP;
+class Model extends Library {
 
 	/**
 	 * @var array Holds an array of calculations we need to perform on the results
@@ -136,7 +130,7 @@ class Model {
 	 * @access private
 	 */
 	public function __construct($table = false){
-		$this->APP = get_instance();
+		parent::__construct();
 		if($table){ $this->openTable($table); }
 	}
 

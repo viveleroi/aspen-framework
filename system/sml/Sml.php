@@ -12,27 +12,13 @@
  * Allows messages to be logged to the session and a log of those messages is maintained.
  * @package Aspen_Framework
  */
-class Sml {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
+class Sml extends Library {
 
 	/**
 	 * @var array $sessionMessageArray Holds the array of session messages
 	 * @access private
 	 */
 	private $sessionMessageArray;
-
-
- 	/**
-	 * Contrucor
-	 * @return Sml
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
 
 
 	/**

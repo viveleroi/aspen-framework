@@ -12,21 +12,7 @@
  * Managers user accounts
  * @package Aspen_Framework
  */
-class User {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Constructor, initializes the module
-	 * @return User
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
+class User extends Library {
 
 
 	/**

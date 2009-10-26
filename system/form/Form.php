@@ -12,7 +12,7 @@
  * Validates and handles form data.
  * @package Aspen_Framework
  */
-class Form {
+class Form extends Library {
 
 	/**
 	 * @var array $_form_fields Holds an array of form fields
@@ -50,20 +50,6 @@ class Form {
 	 * @access private
 	 */
 	private $table = false;
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Contrucor, obtains an instance of the original app
-	 * @return Form_validator
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
 	
 	
 	/**

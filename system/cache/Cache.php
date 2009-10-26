@@ -12,13 +12,7 @@
  * Stores and retrieves cached data
  * @package Aspen_Framework
  */
-class Cache {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
+class Cache extends Library {
 	
 	/**
 	 * @var boolean $dir The directory path to our cache files
@@ -31,14 +25,6 @@ class Cache {
 	 * @access private
 	 */
 	private $full_path;
-
-
-	/**
-	 * Contrucor, obtains an instance of the original app
-	 * @return Form_validator
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
 
 
 	/**

@@ -12,7 +12,7 @@
  * Manages urls and relation to our application
  * @package Aspen_Framework
  */
-class Router {
+class Router extends Library {
 
 	/**
 	 * @var string $_selected_module Lists the currently selected module
@@ -38,12 +38,6 @@ class Router {
 	 */
 	private $map = array('module'=>false,'method'=>false,'bits'=>false);
 
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
 
 	/**
 	 * Constructor
@@ -52,8 +46,7 @@ class Router {
 	 */
 	public function __construct(){
 
-		// get instance of our application
-		$this->APP = get_instance();
+		parent::__construct();
 
 		// force use of ssl if required
 		if($this->APP->config('force_https')){

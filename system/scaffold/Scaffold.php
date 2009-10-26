@@ -12,21 +12,7 @@
  * This class manages our templates and loads them for display
  * @package Aspen_Framework
  */
-class Scaffold {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Constructor
-	 * @return Router
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
+class Scaffold extends Library {
 
 
 	/**

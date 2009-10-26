@@ -12,22 +12,8 @@
  * Manages modules, registries, etc
  * @package Aspen_Framework
  */
-class Modules {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Constructor
-	 * @return Modules
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
-
+class Modules extends Library {
+	
 
 	/**
 	 * Loads any modules that are hooked to current module

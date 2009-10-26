@@ -12,21 +12,7 @@
  * Provides a method of writing to a log file.
  * @package Aspen_Framework
  */
-class Date {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Constructor
-	 * @return Log
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
+class Date extends Library {
 
 
 	/**

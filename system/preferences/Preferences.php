@@ -12,21 +12,8 @@
  * Manages user preferences
  * @package Aspen_Framework
  */
-class Preferences {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Constructor
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
-
+class Preferences extends Library {
+	
 
 	/**
 	 * Loads user preferences into their session

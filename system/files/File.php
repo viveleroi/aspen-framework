@@ -13,7 +13,7 @@
  * @package Aspen_Framework
  * @author Antoine Bouet
  */
-class File {
+class File extends Library {
 
 	/**
 	 * @var string Absolute path to file
@@ -80,20 +80,6 @@ class File {
 	 * @access private
 	 */
 	private $browser_url;
-	
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-	
-	/**
-	 * Contrucor, obtains an instance of the original app
-	 * @return Form_validator
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
 	
 
 //+-----------------------------------------------------------------------+

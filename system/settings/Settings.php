@@ -12,20 +12,7 @@
  * Manages application settings
  * @package Aspen_Framework
  */
-class Settings {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Constructor
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
+class Settings extends Library {
 
 
 	/**

@@ -12,7 +12,7 @@
  * This class manages our templates and loads them for display
  * @package Aspen_Framework
  */
-class Template {
+class Template extends Library {
 
 	/**
 	 * @var array An array of css files queued for loading in the header
@@ -37,20 +37,6 @@ class Template {
 	 * @access private
 	 */
 	private $terms;
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Contrucor, obtains an instance of the original app
-	 * @return Template
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
 
 
 	/**

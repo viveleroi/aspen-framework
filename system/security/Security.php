@@ -12,21 +12,7 @@
  * Provides data cleaning and escaping functions.
  * @package Aspen_Framework
  */
-class Security {
-
-	/**
-	 * @var object $APP Holds an instance of our app
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Security constructor
-	 * @return Security
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
+class Security extends Library {
 
 
 	/**

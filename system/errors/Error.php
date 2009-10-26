@@ -20,7 +20,7 @@
  * @package Aspen_Framework
  * @author Cezary Tomczak
  */
-class Error {
+class Error extends Library {
 
 	/**
 	 * @var integer $errNo Error number
@@ -63,19 +63,6 @@ class Error {
 	 * @access private
 	 */
 	private $trace;
-
-	/**
-	 * @var object $APP Holds an instance of our app
-	 * @access private
-	 */
-	protected $APP;
-
-
-	/**
-	 * Handles our error logging/display
-	 * @return ErrorHandler
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
 
 
 	/**
