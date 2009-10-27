@@ -231,7 +231,7 @@ class Error extends Library {
 			DATE: " . date("Y-m-d h:i:s") . "
 			VISITOR IP: " . $this->getServerValue('REMOTE_ADDR') . "
 			REFERRER URL: " . $this->getServerValue('HTTP_REFERER') . "
-			REQUEST URI: " . $this->APP->router->getFullUrl() . $this->getServerValue('REQUEST_URI', '') . "
+			REQUEST URI: " . $this->APP->router->getFullUrl() . "
 			USER AGENT: " . $this->getServerValue('HTTP_USER_AGENT') . "
 			ERROR TYPE: " . $this->errType[$this->errNo] . "\r";
 
@@ -314,7 +314,7 @@ class Error extends Library {
 						'gmdate' => gmdate("Y-m-d h:i:s"),
 						'visitor_ip' => $this->getServerValue('REMOTE_ADDR'),
 						'referrer_url' => $this->getServerValue('HTTP_REFERER'),
-						'request_uri' => $this->APP->router->getFullUrl() . $this->getServerValue('REQUEST_URI', ''),
+						'request_uri' => $this->APP->router->getFullUrl(),
 						'user_agent' => $this->getServerValue('HTTP_USER_AGENT'),
 						'error_type' => $this->errType[$this->errNo],
 						'error_message' => $this->errMsg,
