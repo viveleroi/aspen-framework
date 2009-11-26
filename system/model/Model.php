@@ -797,6 +797,19 @@ class Model extends Library {
 
 	}
 
+	
+	/**
+	 * Adds a custom condition to the array
+	 * @param string $where
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereCustom($where = false, $match = 'AND'){
+		$prefix = (isset($this->sql['WHERE']) ? $match : 'WHERE'.($this->parenth_start ? ' (' : '') );
+		$this->sql['WHERE'][] =  $prefix.' '.$where;
+		$this->parenth_start = false;
+	}
+
 
 	/**
 	 * Adds a standard where condition
@@ -806,8 +819,12 @@ class Model extends Library {
 	 * @access public
 	 */
 	public function where($field = false, $value = false, $match = 'AND', $val_is_column_name = false){
-		$str = $val_is_column_name ? '%s %s = %s' : '%s %s = "%s"';
-		$this->base_where($str, $field, $value, $match);
+		if($value == NULL){
+			$this->whereIsNull($field, $match);
+		} else {
+			$str = $val_is_column_name ? '%s %s = %s' : '%s %s = "%s"';
+			$this->base_where($str, $field, $value, $match);
+		}
 	}
 
 
@@ -1045,11 +1062,6 @@ class Model extends Library {
 		}
 		elseif($this->APP->params->post->getRaw('filter')){
 			$filters = $this->APP->params->post->getRaw('filter');
-
-			// get the source url to associate this filter with
-			if($this->APP->params->server->isUri('HTTP_REFERER')){
-				$filters['applied_uri'] = $this->APP->params->server->getRaw('HTTP_REFERER');
-			}
 		}
 		elseif($named = $this->APP->params->get->getRaw('named-filter')){
 			$named = $this->APP->router->decodeForRewriteUrl($named);
@@ -1088,8 +1100,7 @@ class Model extends Library {
 				if(
 					$value != '' &&
 					in_array($field, $allowed_filter_keys) &&
-					!in_array($field, $disabled_filters) &&
-					(array_key_exists(strtoupper($field), $this->getSchema()) || strpos($this->sql['FIELDS'], $field) || $field == 'keyword_search')
+					!in_array($field, $disabled_filters)
 					){
 
 					$value_array = false;
@@ -1145,7 +1156,11 @@ class Model extends Library {
 								elseif(substr($match, 0, 2) == "<="){
 									$this->whereLessThanEqualTo($field, str_replace("<=", "", $match));
 								} else {
-									$this->whereLike($field, trim($match), ($count == 1 ? 'AND' : 'OR'));
+									if(is_int((int)$match)){
+										$this->where($field, trim($match), ($count == 1 ? 'AND' : 'OR'));
+									} else {
+										$this->whereLike($field, trim($match), ($count == 1 ? 'AND' : 'OR'));
+									}
 								}
 
 								$count++;
@@ -1950,8 +1965,10 @@ class Model extends Library {
 			if($type == 'update' && is_array($old_values)){
 				foreach($old_values as $old_key => $old_val){
 					if(isset($new_values[$old_key])){
-						if($old_val !== $new_values[$old_key]){
-							$this->activity_log_change($key, $type, $this->table, $record_id, $old_key, $old_val, $new_values[$old_key]);
+						if((!empty($old_val) || !empty($new_values[$old_key]))){
+							if($old_val !== $new_values[$old_key]){
+								$this->activity_log_change($key, $type, $this->table, $record_id, $old_key, $old_val, $new_values[$old_key]);
+							}
 						}
 					}
 				}

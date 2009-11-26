@@ -61,13 +61,7 @@ class Settings extends Library {
 	private function configRecord($key, $user_id = NULL){
 		$cfg_model	= $this->APP->model->openSingle('config');
 		$cfg_model->where('config_key', $key);
-
-		if(is_null($user_id)){
-			$cfg_model->whereIsNull('user_id');
-		} else {
-			$cfg_model->where('user_id', $user_id);
-		}
-
+		$cfg_model->where('user_id', $user_id);
 		return $cfg_model->results();
 	}
 }

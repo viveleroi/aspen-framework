@@ -743,12 +743,13 @@ class Router extends Library {
 	 * @access public
 	 * @return string
 	 */
-	public function encodeForRewriteUrl($var){
+	public function encodeForRewriteUrl($var, $lc = false){
 		$var = str_replace("?", "-question-", $var);
 		$var = str_replace("/", "-slash-", $var);
 		$var = str_replace("&", "-and-", $var);
 		$var = str_replace(" ", "_", $var);
 		$var = urlencode($var);
+		$var = ($lc ? strtolower($var) : $var);
 		return $var;
 	}
 
