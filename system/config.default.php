@@ -447,6 +447,8 @@
 
 	// Activity logging functionality
 	$config['load_add_core_class'][] = array('classname' => 'Activity');
+	$config['load_add_core_class'][] = array('classname' => 'Activityrender', 'autoload' => false, 'folder'=>'activity');
+	$config['load_add_core_class'][] = array('classname' => 'Activityrender_html', 'autoload' => false, 'folder'=>'activity');
 	$config['models']['activity'] = array('root'=>SYSTEM_PATH.DIRECTORY_SEPARATOR.'activity');
 
 	*/

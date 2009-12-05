@@ -37,5 +37,36 @@ class Activity extends Library {
 								'new_value'=>$new_value)
 							);
 	}
+
+
+	/**
+	 * Returns the most recent activity hash for table/id
+	 * @param <type> $table
+	 * @param <type> $id
+	 * @return <type>
+	 */
+	public function getLastActivity($table = false, $id = false){
+		$activity = $this->APP->model->openSingle('activity');
+		$activity->where('table_name', $table);
+		$activity->where('record_id', $id);
+		$activity->orderBy('timestamp', 'DESC');
+		$activity->limit(0,1);
+		return $activity->results();
+	}
+
+
+	/**
+	 * Returns the most recent activity hash for table/id
+	 * @param <type> $table
+	 * @param <type> $id
+	 * @return <type>
+	 */
+	public function getLastActivityToken($table = false, $id = false){
+		$record = $this->getLastActivity($table, $id);
+		if($record){
+			return $record['changeset_hash'];
+		}
+		return false;
+	}
 }
 ?>
