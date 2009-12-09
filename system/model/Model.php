@@ -819,7 +819,7 @@ class Model extends Library {
 	 * @access public
 	 */
 	public function where($field = false, $value = false, $match = 'AND', $val_is_column_name = false){
-		if($value == NULL){
+		if($value === NULL){
 			$this->whereIsNull($field, $match);
 		} else {
 			$str = $val_is_column_name ? '%s %s = %s' : '%s %s = "%s"';

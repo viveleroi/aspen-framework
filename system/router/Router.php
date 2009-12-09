@@ -324,11 +324,12 @@ class Router extends Library {
 			$default = $this->map['method'];
 
 		} else {
-			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account'){
+			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account' && !$this->APP->awaitingUpgrade()){
 				$default = 'login';
 			} else {
 				if($this->getSelectedModule() == "Install_Admin"){
-					$default = $this->map['method'] ? $this->map['method'] : 'view';
+					$method = $this->APP->awaitingUpgrade() ? 'upgrade' : 'view';
+					$default = $this->map['method'] ? $this->map['method'] : $method;
 				}
 			}
 		}
