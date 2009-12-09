@@ -274,7 +274,7 @@ class Router extends Library {
 
 		if(strtolower(get_class($this->APP)) == "app"){
 
-			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account'){
+			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account' && !$this->APP->awaitingUpgrade()){
 
 				// do a quick check to see if the user is logged in or not
 				// we need to create our own auth check, as the user module is not loaded at this point
