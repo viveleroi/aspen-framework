@@ -226,7 +226,7 @@ class Debug {
 
 		foreach($db as $pos => $caller){
 			if($pos > 0){
-				$per = Peregrine;
+				$per = new Peregrine;
 				$clean 	= $per->sanitize($caller);
 				if($ignore_phpunit && strpos(strtolower($clean->getRaw('file')), 'phpunit') !== false){
 					continue;
