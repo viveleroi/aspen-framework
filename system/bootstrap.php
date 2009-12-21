@@ -657,6 +657,10 @@ class Bootstrap extends Base {
 	    	$this->html = new HTMLPurifier($html_config);
     	}
 
+		// call any init functions - "constuct"-like functions but only
+		// called once ALL libraries have been loaded.
+		$this->runLibraryInits();
+
 		// return load status
 		return $complete_load_success;
 
@@ -730,6 +734,25 @@ class Bootstrap extends Base {
 
 		return $load_success;
 
+	}
+
+
+	/**
+	 * Calls any library init functions - "constuct"-like functions but only
+	 * called once ALL libraries have been loaded.
+	 *
+	 * @access private
+	 */
+	private function runLibraryInits(){
+		$libs = $this->getLoadedLibraries();
+		foreach($libs as $lib){
+			$obj_name = strtolower( isset($lib['var']) ? $lib['var'] : $lib['classname'] );
+			if(isset($this->{$obj_name}) && is_object($this->{$obj_name})){
+				if(method_exists($this->{$obj_name}, 'aspen_init')){
+					$this->{$obj_name}->aspen_init();
+				}
+			}
+		}
 	}
 
 
