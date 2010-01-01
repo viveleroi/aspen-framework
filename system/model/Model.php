@@ -398,7 +398,10 @@ class Model extends Library {
 	 * @access public
 	 */
 	final public function inSchema($field){
-		return array_key_exists(strtoupper($field), $this->schema);
+		if(is_array($this->schema)){
+			return array_key_exists(strtoupper($field), $this->schema);
+		}
+		return false;
 	}
 
 

@@ -65,9 +65,15 @@ class User extends Library {
 			$this->APP->form->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
 
 			// save the data as well as the groups
-			if($id = $this->APP->form->save($id)){
+			if($result = $this->APP->form->save($id)){
 
+				$id = is_int($result) ? $result : $id;
+
+				/**
+				 * Add in new groups
+				 */
 				$groups = $this->APP->form->cv('group');
+
 				// if user is admin, we can't permit them to remove the admin group
 				// from themselves
 				if(IS_ADMIN && $id == $this->APP->params->session->getInt('user_id')){
@@ -76,13 +82,11 @@ class User extends Library {
 					}
 				}
 
-				// remove existing groups
-				$this->APP->model->delete('user_group_link', $id, 'user_id');
-
-				// add in new groups
+				// remove existing and add in new groups
 				$group_model = $this->APP->model->open('user_group_link');
-				foreach($this->APP->form->cv('group') as $group){
-					$group_model->insert(array('user_id' => $id, 'group_id' => $group));
+				$group_model->delete($id, 'user_id');
+				foreach($groups as $group){
+					$group_model->insert(array('user_id' => (int)$id, 'group_id' => (int)$group));
 				}
 
 				return true;
