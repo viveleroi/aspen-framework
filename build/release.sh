@@ -50,13 +50,13 @@ rm -f .DS_Store
 
 # make tarball
 tar czvf af-temp.tar.gz *
-mv af-temp.tar.gz ../aspen-$versname.tar.gz
+mv af-temp.tar.gz ../aspen-$gitvers.tar.gz
 cd ..
 rm -rf latest
 mv aspen-framework latest
 
 # get file size
-fsize=$(du -ks aspen-$versname.tar.gz | cut -f1)
+fsize=$(du -ks aspen-$gitvers.tar.gz | cut -f1)
 
 # run phpdoc
 phpdoc/phpdoc -c /BUILD/phpdoc.ini
@@ -64,13 +64,13 @@ phpdoc/phpdoc -c /BUILD/phpdoc.ini
 echo "RELEASE BUILD COMPLETE, LOADING TO AMAZON-S3"
 
 # send file to amazon bucket
-s3cmd put --acl-public aspen-$versname.tar.gz s3://aspen-framework/aspen-$versname.tar.gz
+s3cmd put --acl-public aspen-$gitvers.tar.gz s3://aspen-framework/aspen-$gitvers.tar.gz
 
 # move files
-mv aspen-$versname.tar.gz builds/aspen-$versname.tar.gz
+mv aspen-$versname.tar.gz builds/aspen-$gitvers.tar.gz
 
 echo "LOADED TO S3, ADDING NEW RELEASE INFO TO MySQL"
 
-mysql -uroot -pURQU9UWpVABgS9Zr3RXhIhxno -D aspen -e "INSERT INTO releases (file_name,file_size,version_number,release_type,release_timestamp) VALUES ('aspen-$versname.tar.gz','$fsize','$versname','$3','$(date +"%F %T")');"
+mysql -uroot -pURQU9UWpVABgS9Zr3RXhIhxno -D aspen -e "INSERT INTO releases (file_name,file_size,version_number,release_type,release_timestamp) VALUES ('aspen-$gitvers.tar.gz','$fsize','$gitvers','$3','$(date +"%F %T")');"
 
 echo "RELEASE COMPLETE"

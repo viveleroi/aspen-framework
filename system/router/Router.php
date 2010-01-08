@@ -894,7 +894,7 @@ class Router extends Library {
 	public function redirectToUrl($url = false, $status = false, $exit = true){
 
 		$tmp_ar = array('url'=>$url,'status'=>$status);
-		$redirect = $this->APP->params->sanitize( $tmp_ar );
+		$redirect = Peregrine::sanitize( $tmp_ar );
 
 		if($redirect->isUri('url')){
 

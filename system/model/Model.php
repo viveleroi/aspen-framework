@@ -251,7 +251,7 @@ class Model extends Library {
 			}
 
 			// make an inspekt cage so we can verify data
-			$clean 	= $this->APP->params->sanitize($fields);
+			$clean 	= Peregrine::sanitize($fields);
 			$schema = $this->getSchema();
 
 			foreach($schema as $column){
