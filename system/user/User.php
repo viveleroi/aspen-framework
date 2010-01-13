@@ -183,8 +183,8 @@ class User extends Library {
 	 */
 	public function login(){
 
-		$uri = $this->APP->params->server->getRaw('REQUEST_URI');
-		$uri .= $this->APP->params->server->getRaw('QUERY_STRING');
+		$uri = $this->APP->params->server->getRaw('REQUEST_URI').$this->APP->params->server->getRaw('QUERY_STRING');
+		$uri = strip_tags(urldecode($uri));
 		$uri = preg_replace('/redirected=(.*)/', '', $uri);
 
 		// set the forwarding url if any set pre-login
