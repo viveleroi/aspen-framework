@@ -23,7 +23,7 @@ fi
 gitvers=`git describe`
 
 # add in revision to app.default.config.php
-sed -e "s/application_version'] = ''/application_version'] = '$gitvers'/g" app.default.config.php > adc-new.php
+sed -e "s/application_build'] = ''/application_build'] = '$gitvers'/g" app.default.config.php > adc-new.php
 mv adc-new.php app.default.config.php
 
 # add in revision to bootstrap define
@@ -40,5 +40,9 @@ rm -rf build
 rm -rf .git
 rm -f .gitignore
 rm -f .DS_Store
+
+# make tarball
+tar czvf af-temp.tar.gz *
+mv af-temp.tar.gz ../aspen-$gitvers.tar.gz
 
 echo "DEVELOPMENT BUILD COMPLETE, VERSION: $1"
