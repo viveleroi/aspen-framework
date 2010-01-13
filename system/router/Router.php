@@ -571,6 +571,7 @@ class Router extends Library {
 
 		$url = $this->getDomainUrl();
 		$url .= $this->APP->params->server->getRaw('REQUEST_URI');
+		$url = strip_tags(urldecode($url));
 
 		return $url;
 
