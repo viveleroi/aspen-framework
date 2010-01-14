@@ -372,14 +372,11 @@ class Bootstrap extends Base {
 		define('VERSION', $this->formatVersionNumber($this->config('application_version')));
 
 		// update app build, if used
-		define('BUILD', $this->formatVersionNumber($this->config('application_build')));
+		define('BUILD', $this->formatVersionNumber($this->config('application_build'), true));
 
 		// update app build, if used
-		define('VERSION_COMPLETE',
-				'v'.$this->formatVersionNumber($this->config('application_version')).' '.
-				'b'.$this->formatVersionNumber($this->config('application_build')).' '.
-				'Aspen-'.FRAMEWORK_REV
-		);
+		define('VERSION_COMPLETE', 'v'.VERSION.' b'.BUILD.' Aspen-'.FRAMEWORK_REV);
+		
 	}
 
 
@@ -1424,15 +1421,15 @@ class Bootstrap extends Base {
 	 * @return string
 	 * @access private
 	 */
-	public function formatVersionNumber($build){
+	public function formatVersionNumber($build, $allow_text = false){
 
-		$build = str_replace(array('-', '_'), '.', $build);
+		$build = $allow_text ? $build : preg_replace('/[a-zA-Z ]/', '', $build);
 		$build = explode('.', $build);
 
 		$version = array();
 		foreach($build as $key => $inc){
-			if(!preg_match('/[a-zA-Z]/', $inc) && strlen($inc) > 0){
-				$version[] = (int)$inc;
+			if(strlen($inc) > 0){
+				$version[] = ($allow_text ? $inc : (int)$inc);
 			}
 		}
 
