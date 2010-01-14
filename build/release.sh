@@ -2,15 +2,9 @@
 
 # THIS SCRIPT WAS DESIGNED TO PREPARE ASPEN FRAMEWORK FOR A PRODUCTION RELEASE
 
-if [ $# -ne 3 ]; then
-     echo 1>&2 Usage: 1.0 rc1 Release_Candidate
+if [ $# -lt 1 ]; then
+     echo 1>&2 Usage: 1.0 final, or head
      exit 0
-fi
-
-if [ $2 = "final" ]; then
-     versname=$1
-else 
-     versname=$1$2
 fi
 
 # remove any existing exports
@@ -21,9 +15,11 @@ git clone git://github.com/botskonet/aspen-framework.git
 cd aspen-framework
 
 # checkout the proper branch
-git checkout --track -b $1$2 origin/$1$2
+if [ $1 != "head" ]; then
+	git checkout --track -b $1$2 origin/$1$2
+fi
 
-# get the git revision number 
+# get the svn revision number
 gitvers=`git describe`
 
 # add in revision to app.default.config.php
@@ -36,7 +32,7 @@ sed -e "s/define('FRAMEWORK_REV', '')/define('FRAMEWORK_REV', '$gitvers')/g" boo
 mv bootstrap-new.php bootstrap.php
 cd ..
 
-#remove support dirs
+#remove dirs
 rm -rf tests
 rm -rf build
 
@@ -45,12 +41,16 @@ rm -rf .git
 rm -f .gitignore
 rm -f .DS_Store
 
-# comment this out if pushing a true release
-# exit 0
-
 # make tarball
 tar czvf af-temp.tar.gz *
 mv af-temp.tar.gz ../aspen-$gitvers.tar.gz
+
+
+# OFFICIAL RELEASE STAGE HERE
+
+# comment this out if pushing a true release
+exit 0
+
 cd ..
 rm -rf latest
 mv aspen-framework latest
@@ -69,8 +69,10 @@ s3cmd put --acl-public aspen-$gitvers.tar.gz s3://aspen-framework/aspen-$gitvers
 # move files
 mv aspen-$versname.tar.gz builds/aspen-$gitvers.tar.gz
 
-echo "LOADED TO S3, ADDING NEW RELEASE INFO TO MySQL"
+echo "Loading to Amazon S3"
 
-mysql -uroot -pURQU9UWpVABgS9Zr3RXhIhxno -D aspen -e "INSERT INTO releases (file_name,file_size,version_number,release_type,release_timestamp) VALUES ('aspen-$gitvers.tar.gz','$fsize','$gitvers','$3','$(date +"%F %T")');"
+echo "INSERT INTO releases (file_name,file_size,version_number,release_type,release_timestamp) VALUES ('aspen-$gitvers.tar.gz','$fsize','$gitvers','$2','$(date +"%F %T")');" > release.sql
+
+echo "Please run the release.sql file on the aspen website."
 
 echo "RELEASE COMPLETE"
