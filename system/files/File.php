@@ -383,7 +383,8 @@ class File extends Library {
 				}
 				
 				// replace url-unfriendly characters
-				$new_name = str_replace(array(",","/","&"," "), '_', $new_name);
+				$new_name = str_replace(array("&"," "), '_', $new_name);
+				$new_name = trim(preg_replace('/[^A-Za-z0-9\.-_]/', '', $new_name));
 				$new_name = strtolower(urlencode($new_name));
 				
     			// init the file internally
