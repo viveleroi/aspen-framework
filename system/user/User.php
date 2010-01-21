@@ -22,8 +22,13 @@ class User extends Library {
 	 */
 	public function edit($id = false){
 
-		$this->APP->form->load('authentication', $id);
-		$this->APP->form->addField('password_confirm');
+//		$this->APP->form->load('authentication', $id);
+//		$this->APP->form->addField('password_confirm');
+
+
+		$edit = new Form();
+		$edit->load('authentication', $id);
+		$edit->addField('password_confirm');
 
 		// pull all groups this user is associated with
 		$group_array = array();
@@ -37,42 +42,42 @@ class User extends Library {
 				}
 			}
 		}
-		$this->APP->form->addField('group', $group_array, $group_array);
+		$edit->addField('group', $group_array, $group_array);
 
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted()){
+		if($edit->isSubmitted()){
 
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.
-			if($this->APP->form->isFilled('password')){
-				if(!$this->APP->form->isFilled('password_confirm')){
-					$this->APP->form->addError('password', 'You must confirm your password.');
+			if($edit->isFilled('password')){
+				if(!$edit->isFilled('password_confirm')){
+					$edit->addError('password', 'You must confirm your password.');
 				} else {
-					if(!$this->APP->form->fieldsMatch('password', 'password_confirm')){
-						$this->APP->form->addError('password', 'Your passwords do not match.');
+					if(!$edit->fieldsMatch('password', 'password_confirm')){
+						$edit->addError('password', 'Your passwords do not match.');
 					}
 				}
 			}
 
 			// validate the groups
-			$groups = $this->APP->form->cv('group');
+			$groups = $edit->cv('group');
 			if(empty($groups)){
-				$this->APP->form->addError('group', 'You must select at least one user group.');
+				$edit->addError('group', 'You must select at least one user group.');
 			}
 
 			// if allow_login not present, set to false
-			$this->APP->form->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
+			$edit->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
 
 			// save the data as well as the groups
-			if($result = $this->APP->form->save($id)){
+			if($result = $edit->save($id)){
 
 				$id = is_int($result) ? $result : $id;
 
 				/**
 				 * Add in new groups
 				 */
-				$groups = $this->APP->form->cv('group');
+				$groups = $edit->cv('group');
 
 				// if user is admin, we can't permit them to remove the admin group
 				// from themselves
@@ -89,12 +94,12 @@ class User extends Library {
 					$group_model->insert(array('user_id' => (int)$id, 'group_id' => (int)$group));
 				}
 
-				return true;
+				return $edit;
 
 			}
 		}
 
-		return false;
+		return $edit;
 
 	}
 

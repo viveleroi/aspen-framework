@@ -121,7 +121,7 @@ class Form extends Library {
 			if($records['RECORDS']){
 				foreach($records['RECORDS'] as $record){
 					foreach($record as $field => $value){
-						$this->APP->form->addField($field, $value, $value);
+						$this->addField($field, $value, $value);
 					}
 				}
 			} else {

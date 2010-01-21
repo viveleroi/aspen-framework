@@ -406,7 +406,7 @@
 	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail');
 	$config['load_core_class'][] = array('classname' => 'Settings');
 	$config['load_core_class'][] = array('classname' => 'Sml');
-	$config['load_core_class'][] = array('classname' => 'Form');
+	$config['load_core_class'][] = array('classname' => 'Form', 'autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'Scaffold');
 
 	$config['load_core_class'][] = array('classname' => 'Module', 'autoload' => false);
