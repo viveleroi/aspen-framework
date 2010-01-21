@@ -553,9 +553,9 @@ class Form extends Library {
 					$lines .= sprintf($this->APP->config('form_error_line_html'), $error);
 				}
 			}
-		
-			print sprintf($this->APP->config('form_error_wrapping_html'), $lines);
+			printf($this->APP->config('form_error_wrapping_html'), $lines);
 		}
+		print '';
 	}
 
 

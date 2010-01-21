@@ -94,12 +94,14 @@ class User extends Library {
 					$group_model->insert(array('user_id' => (int)$id, 'group_id' => (int)$group));
 				}
 
-				return $edit;
+				return $result;
 
 			}
 		}
 
-		return $edit;
+		$this->APP->template->set(array('form'=>$edit));
+
+		return false;
 
 	}
 

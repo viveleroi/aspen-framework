@@ -15,6 +15,12 @@
 class Template extends Library {
 
 	/**
+	 * @var array An array of variables to pass through to the object
+	 * @access private
+	 */
+	private $_data = array();
+
+	/**
 	 * @var array An array of css files queued for loading in the header
 	 * @access private
 	 */
@@ -244,11 +250,24 @@ class Template extends Library {
 
 
 	/**
+	 * Assigns an array of data to pass through to the templates
+	 * @param <type> $data
+	 * @access public
+	 */
+	public function set($data){
+		$this->_data = array_merge($this->_data, $data);
+	}
+
+
+	/**
 	 * Display all templates that have been primed for output
 	 * @param $data Array of data to be passed
 	 * @access public
 	 */
 	public function display($data = false){
+
+		$this->set($data);
+
 		if(is_array($this->_load_templates)){
 
 			// if token auth on, we need to generate a token
@@ -281,8 +300,8 @@ class Template extends Library {
 					if(file_exists($template) && strpos($template, APPLICATION_PATH) !== false){
 
 						// pass through variables
-						if(is_array($data)){
-							foreach($data as $var => $value){
+						if(is_array($this->_data)){
+							foreach($this->_data as $var => $value){
 								$$var = $value;
 							}
 						}
@@ -328,6 +347,7 @@ class Template extends Library {
 	 * @access public
 	 */
 	public function resetTemplateQueue(){
+		$this->_data			= array();
 		$this->_load_templates	= array();
 		$this->_load_css		= array();
 		$this->_load_js			= array();
