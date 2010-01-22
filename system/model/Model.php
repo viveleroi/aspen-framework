@@ -1922,7 +1922,8 @@ class Model extends Library {
 
 			$this->after_update($result, $where_value, $where_field, $fields, $this->existing_record);
 
-			return $result;
+			// return the primary record id if it's available, otherwise bool
+			return $update_id ? $update_id : $result;
 
 		}
 

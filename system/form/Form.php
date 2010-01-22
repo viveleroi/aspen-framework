@@ -90,7 +90,7 @@ class Form extends Library {
 			foreach($model->getSchema() as $field){
 
 				$default_val = $field->has_default ? $field->default_value : '';
-				$this->APP->form->addField($field->name, $default_val, $default_val);
+				$this->addField($field->name, $default_val, $default_val);
 
 			}
 		}
@@ -149,7 +149,7 @@ class Form extends Library {
 		$fields = array();
 		foreach($model->getSchema() as $field){
 			if(!$field->primary_key){
-				$fields[$field->name] = $this->APP->form->cv($field->name, false);
+				$fields[$field->name] = $this->cv($field->name, false);
 			}
 		}
 		
@@ -594,7 +594,7 @@ class Form extends Library {
 		$lines = '';
 
 		if($this->error()){
-			foreach($this->APP->form->getErrors($custom_sort) as $errors){
+			foreach($this->getErrors($custom_sort) as $errors){
 				foreach($errors as $field => $error){
 					$lines .= sprintf($this->APP->config('form_error_line_html'), $error);
 				}

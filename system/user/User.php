@@ -45,11 +45,12 @@ class User extends Library {
 
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.
-			if($form->isFilled('password')){
-				if(!$form->isFilled('password_confirm')){
+			$values = Peregrine::sanitize( $form->getCurrentValues() );
+			if($values->isSetAndEmpty('password')){
+				if($values->isSetAndNotEmpty('password_confirm')){
 					$form->addError('password', 'You must confirm your password.');
 				} else {
-					if(!$form->fieldsMatch('password', 'password_confirm')){
+					if(!$values->match('password', 'password_confirm')){
 						$form->addError('password', 'Your passwords do not match.');
 					}
 				}
@@ -66,8 +67,6 @@ class User extends Library {
 
 			// save the data as well as the groups
 			if($result = $form->save($id)){
-
-				$id = is_int($result) ? $result : $id;
 
 				/**
 				 * Add in new groups
