@@ -59,7 +59,8 @@ class Form extends Library {
 	 * @param string $field
 	 * @access public
 	 */
-	public function load($table, $id = false, $field = false){
+	public function __construct($table, $id = false, $field = false){
+		parent::__construct();
 		if($id){
 			define('ADD_OR_EDIT', 'edit');
 			define('IS_EDIT_PAGE', true);
@@ -327,6 +328,51 @@ class Form extends Library {
 	public function cv($field, $escape = false){
 		return $this->getCurrentValue($field, $escape);
 	}
+
+
+	/**
+	 * Returns a selected attributed iif the value matches one provided
+	 * @param string $field
+	 * @param mixed $match
+	 * @return string
+	 * @access public
+	 */
+	public function selected($field, $match){
+		return $this->match_base($field, $match, ' selected="selected"');
+	}
+
+
+	/**
+	 * Returns a checked attributed iif the value matches one provided
+	 * @param string $field
+	 * @param mixed $match
+	 * @return string
+	 * @access public
+	 */
+	public function checked($field, $match = false){
+		return $this->match_base($field, $match, ' checked="checked"');
+	}
+
+
+	/**
+	 * Performs base matching for selected/checked fields
+	 * @param string $field
+	 * @param mixed $match
+	 * @param string $str
+	 * @return string
+	 */
+	protected function match_base($field, $match, $str){
+		$match = $match ? $match : $match;
+		$val = $this->cv($field);
+		if(is_array($val)){
+			return in_array($match, $val) ? $str : '';
+		}
+		elseif(!$match) {
+			return $val ? $str : '';
+		} else {
+			return $val == $match ? $str : '';
+		}
+	}
 	
 	
 	/**
@@ -566,35 +612,6 @@ class Form extends Library {
 	 */
 	public function error(){
 		return $this->_error;
-	}
-
-
-
-//+-----------------------------------------------------------------------+
-//| VALIDATION FUNCTIONS
-//+-----------------------------------------------------------------------+
-
-	/**
-	 * Checks a form field for content
-	 * @param string $field
-	 * @return boolean
-	 * @access public
-	 */
-	public function isFilled($field){
-		$value = $this->cv($field);
-		return !empty($value);
-	}
-
-
-	/**
-	 * Compares two field values
-	 * @param string $field_1
-	 * @param string $field_2
-	 * @return boolean
-	 * @access public
-	 */
-	public function fieldsMatch($field_1, $field_2){
-		return $this->cv($field_1) == $this->cv($field_2);
 	}
 }
 ?>

@@ -22,13 +22,8 @@ class User extends Library {
 	 */
 	public function edit($id = false){
 
-//		$this->APP->form->load('authentication', $id);
-//		$this->APP->form->addField('password_confirm');
-
-
-		$edit = new Form();
-		$edit->load('authentication', $id);
-		$edit->addField('password_confirm');
+		$form = new Form('authentication', $id);
+		$form->addField('password_confirm');
 
 		// pull all groups this user is associated with
 		$group_array = array();
@@ -42,42 +37,42 @@ class User extends Library {
 				}
 			}
 		}
-		$edit->addField('group', $group_array, $group_array);
+		$form->addField('group', $group_array, $group_array);
 
 
 		// process the form if submitted
-		if($edit->isSubmitted()){
+		if($form->isSubmitted()){
 
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.
-			if($edit->isFilled('password')){
-				if(!$edit->isFilled('password_confirm')){
-					$edit->addError('password', 'You must confirm your password.');
+			if($form->isFilled('password')){
+				if(!$form->isFilled('password_confirm')){
+					$form->addError('password', 'You must confirm your password.');
 				} else {
-					if(!$edit->fieldsMatch('password', 'password_confirm')){
-						$edit->addError('password', 'Your passwords do not match.');
+					if(!$form->fieldsMatch('password', 'password_confirm')){
+						$form->addError('password', 'Your passwords do not match.');
 					}
 				}
 			}
 
 			// validate the groups
-			$groups = $edit->cv('group');
+			$groups = $form->cv('group');
 			if(empty($groups)){
-				$edit->addError('group', 'You must select at least one user group.');
+				$form->addError('group', 'You must select at least one user group.');
 			}
 
 			// if allow_login not present, set to false
-			$edit->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
+			$form->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
 
 			// save the data as well as the groups
-			if($result = $edit->save($id)){
+			if($result = $form->save($id)){
 
 				$id = is_int($result) ? $result : $id;
 
 				/**
 				 * Add in new groups
 				 */
-				$groups = $edit->cv('group');
+				$groups = $form->cv('group');
 
 				// if user is admin, we can't permit them to remove the admin group
 				// from themselves
@@ -99,38 +94,10 @@ class User extends Library {
 			}
 		}
 
-		$this->APP->template->set(array('form'=>$edit));
+		$this->APP->template->set(array('form'=>$form));
 
 		return false;
 
-	}
-
-
-	/**
-	 * Displays and processes the add/edit user form
-	 * @access public
-	 * @param integer $id
-	 */
-	public function edit_group($id = false){
-		$this->APP->form->load('groups', $id);
-		if($this->APP->form->isSubmitted()){
-			return $this->APP->form->save($id);
-		}
-		return false;
-	}
-
-
-	/**
-	 * Deletes a user record
-	 * @param integer $id
-	 * @access public
-	 */
-	public function delete_group($id = false){
-		if($id){
-			$del = $this->APP->model->open('groups');
-			return $del->delete($id);
-		}
-		return false;
 	}
 
 
@@ -142,25 +109,25 @@ class User extends Library {
 
 		$id = $this->APP->params->session->getInt('user_id');
 
-		$this->APP->form->load('authentication', $id);
-		$this->APP->form->addField('password_confirm');
+		$form = new Form('authentication', $id);
+		$form->addField('password_confirm');
 
 		// if form submitted
-		if($this->APP->form->isSubmitted('post','user-submit')){
+		if($form->isSubmitted('post','user-submit')){
 
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.
-			if($this->APP->form->isFilled('password')){
-				if(!$this->APP->form->isFilled('password_confirm')){
-					$this->APP->form->addError('password', 'You must confirm your password.');
+			if($form->isFilled('password')){
+				if(!$form->isFilled('password_confirm')){
+					$form->addError('password', 'You must confirm your password.');
 				} else {
-					if(!$this->APP->form->fieldsMatch('password', 'password_confirm')){
-						$this->APP->form->addError('password', 'Your passwords do not match.');
+					if(!$form->fieldsMatch('password', 'password_confirm')){
+						$form->addError('password', 'Your passwords do not match.');
 					}
 				}
 			}
 
-			return $this->APP->form->save($id);
+			return $form->save($id);
 			
 		}
 
@@ -224,17 +191,18 @@ class User extends Library {
 	 */
 	public function forgot(){
 
-		$this->APP->form->addFields(array('user'));
+		$form = new Form();
+		$form->addFields(array('user'));
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted()){
+		if($form->isSubmitted()){
 
 			// generate a new password
 			$new_pass = $this->makePassword();
 
 			// load the account
 			$auth = $this->APP->model->open('authentication');
-			$user = $auth->quickSelectSingle($this->APP->form->cv('user'), 'username');
+			$user = $auth->quickSelectSingle($form->cv('user'), 'username');
 
 			if(is_array($user)){
 
@@ -245,7 +213,7 @@ class User extends Library {
 				if($this->APP->db->Affected_Rows()){
 
 					// SEND THE EMAIL TO THE USER
-					$this->APP->mail->AddAddress($this->APP->form->cv('user'));
+					$this->APP->mail->AddAddress($form->cv('user'));
 					$this->APP->mail->From      	= $this->APP->config('email_sender');
 					$this->APP->mail->FromName  	= $this->APP->config('email_sender_name');
 					$this->APP->mail->Mailer    	= "mail";

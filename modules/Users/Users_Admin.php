@@ -51,12 +51,11 @@ class Users_Admin extends Module {
 	public function edit($id = false){
 
 		if($this->APP->user->edit($id)){
-//			$this->APP->sml->addNewMessage('User account changes have been saved successfully.', true);
-//			$this->APP->router->redirect('view');
+			$this->APP->sml->addNewMessage('User account changes have been saved successfully.', true);
+			$this->APP->router->redirect('view');
 		}
 		
 		$data['groups'] = $this->APP->user->groupList();
-//		$data['values'] = $edit->getCurrentValues();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');

@@ -1,7 +1,3 @@
-
-<?php //var_dump(get_class_methods($form)); exit;
-?>
-
 <h2><?php print $this->text('userform:'.ADD_OR_EDIT.'title'); ?></h2>
 
 <?php $form->printErrors(); ?>
@@ -37,7 +33,7 @@
 	
 		<p>
 		<label for="allow_login">Allow Login:</label>
-		<input id="allow_login" name="allow_login"<?php print $form->cv('allow_login') ? ' checked="checked"' : '' ?> type="checkbox" value="1" />
+		<input id="allow_login" name="allow_login"<?php print $form->checked('allow_login'); ?> type="checkbox" value="1" />
 		</p>
 	</fieldset>
 
@@ -49,7 +45,7 @@
 		if($groups){
 			foreach($groups as $group){
 		?>
-		<input type="checkbox" name="group[]" value="<?php print $group['id'] ?>" id="group_<?php print $group['id'] ?>"<?php print (in_array($group['id'],$form->cv('group'))? ' checked="checked"' : '') ?> />
+		<input type="checkbox" name="group[]" value="<?php print $group['id'] ?>" id="group_<?php print $group['id'] ?>"<?php print $form->checked('group', $group['id']); ?> />
 		<label for="group_<?php print $group['id'] ?>"><?php print $group['name'] ?></label><br />
 		<?php
 			}
