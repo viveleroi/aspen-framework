@@ -106,12 +106,17 @@ class Users_Admin extends Module {
 	 */
 	public function login(){
 
-		$this->APP->user->login();
+		$user = $this->APP->model->open('authentication');
+		$user->select_children();
+		$res = $user->results();
+//		Debug::dump($res)->pre();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+//		$this->APP->user->login();
+//
+//		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
+//		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
+//		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
+//		$this->APP->template->display();
 	}
 
 

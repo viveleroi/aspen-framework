@@ -412,11 +412,41 @@ class Model extends Library {
 	 */
 	private function generateForeignKeys(){
 
+		$db_map = array();
+
+		// pull a list of all tables
+		$tables = $this->APP->db->MetaTables();
+		foreach($tables as $table){
+//			print $table."<br>";
+			$db_map[$table]['schema'] = $this->APP->db->MetaColumns($table, false);
+
+			foreach($db_map[$table]['schema'] as $field){
+				if(!$field->primary_key){
+					// If field name matches a table name
+					if(strpos($field->name, '_id')){
+						$tmp_tbl_name = str_replace('_id', '', $field->name).'s';
+						if(in_array($tmp_tbl_name,$tables)){
+							$db_map[$tmp_tbl_name]['related'][] = $table;
+//							var_dump($field->name . ' ' . $table);
+						}
+					}
+				}
+			}
+		}
+
+		Debug::dump($db_map)->pre();
+
+//		$res = $this->results(false, 'DESCRIBE authentication');
+//		var_dump($res);
+		exit;
+
 		$key_maps = array();
 
 		// find all keys in the current table which connect it
 		// to a key of another table
 		$keys = $this->APP->db->MetaForeignKeys($this->table, false);
+		var_dump($keys);
+		exit;
 		if(is_array($keys)){
 			foreach($keys as $table => $maps){
 				foreach($maps as $table_field => $local_field){
