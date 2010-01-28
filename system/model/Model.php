@@ -58,12 +58,6 @@ class Model extends Library {
 	private $field_security_rules = array();
 
 	/**
-	 * @var array Holds an array of foreign key mappings
-	 * @access private
-	 */
-	private $foreignkeys = array();
-
-	/**
 	 * @var string Holds the last executed query
 	 * @access private
 	 */
@@ -216,7 +210,6 @@ class Model extends Library {
 	private function openTable($table = false){
 		$this->table = $table;
 		$this->generateSchema();
-		$this->generateForeignKeys();
 
 		if(!is_array($this->schema)){
 			$this->APP->error->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
@@ -378,7 +371,30 @@ class Model extends Library {
 	 * @return array
 	 */
 	private function generateSchema(){
-		$this->schema = $this->APP->db->MetaColumns($this->table, false);
+
+		$db_map = array();
+
+		// pull a list of all tables
+		$tables = $this->APP->db->MetaTables();
+		foreach($tables as $table){
+			$db_map[$table]['schema'] = $this->APP->db->MetaColumns($table, false);
+
+			foreach($db_map[$table]['schema'] as $field){
+				if(!$field->primary_key){
+					// If field name matches a table name
+					if(strpos($field->name, '_id')){
+						$tmp_tbl_name = str_replace('_id', '', $field->name).'s';
+						if(in_array($tmp_tbl_name,$tables)){
+							$db_map[$tmp_tbl_name]['parents'][] = $table;
+							$db_map[$table]['children'][] = $tmp_tbl_name;
+						}
+					}
+				}
+			}
+		}
+
+		$this->db_schema = $db_map;
+		$this->schema =  $this->db_schema[$this->table];
 	}
 
 
@@ -402,79 +418,6 @@ class Model extends Library {
 			return array_key_exists(strtoupper($field), $this->schema);
 		}
 		return false;
-	}
-
-
-	/**
-	 * Loads the current table foreign key mappings.
-	 * @access private
-	 * @return array
-	 */
-	private function generateForeignKeys(){
-
-		$db_map = array();
-
-		// pull a list of all tables
-		$tables = $this->APP->db->MetaTables();
-		foreach($tables as $table){
-//			print $table."<br>";
-			$db_map[$table]['schema'] = $this->APP->db->MetaColumns($table, false);
-
-			foreach($db_map[$table]['schema'] as $field){
-				if(!$field->primary_key){
-					// If field name matches a table name
-					if(strpos($field->name, '_id')){
-						$tmp_tbl_name = str_replace('_id', '', $field->name).'s';
-						if(in_array($tmp_tbl_name,$tables)){
-							$db_map[$tmp_tbl_name]['related'][] = $table;
-//							var_dump($field->name . ' ' . $table);
-						}
-					}
-				}
-			}
-		}
-
-		Debug::dump($db_map)->pre();
-
-//		$res = $this->results(false, 'DESCRIBE authentication');
-//		var_dump($res);
-		exit;
-
-		$key_maps = array();
-
-		// find all keys in the current table which connect it
-		// to a key of another table
-		$keys = $this->APP->db->MetaForeignKeys($this->table, false);
-		var_dump($keys);
-		exit;
-		if(is_array($keys)){
-			foreach($keys as $table => $maps){
-				foreach($maps as $table_field => $local_field){
-					$key_maps[$local_field] = array($table => $table_field);
-				}
-			}
-		}
-
-
-		// attempt to find all tables which link to this tables primary key
-		$fks = $this->APP->getChildForeignKeys();
-		if(is_array($fks) && array_key_exists($this->table, $fks)){
-			$children = $fks[$this->table];
-			$key_maps[$this->getPrimaryKey()] = $children;
-		}
-
-		$this->foreignkeys = $key_maps;
-
-	}
-
-
-	/**
-	 * Returns raw schema for the current table
-	 * @return array
-	 * @access public
-	 */
-	final public function getForeignKeys(){
-		return $this->foreignkeys;
 	}
 
 
@@ -665,6 +608,7 @@ class Model extends Library {
 	public function select($fields = false, $distinct = false){
 		$this->return_single = false;
 		$this->select_base($fields, $distinct);
+		$this->select_children();
 	}
 
 
@@ -687,13 +631,24 @@ class Model extends Library {
 	 * @return boolean
 	 * @access public
 	 */
-	public function select_children($child_table){
-		foreach($this->foreignkeys as $field => $map){
-			if(in_array($child_table, array_keys($map))){
-				$this->load_child_tables[$field] = $child_table;
-				return true;
-			}
-		}
+	public function select_children(){
+
+//		foreach($this->db_schema as $table){
+//
+//		}
+
+
+
+
+		
+		Debug::dump($this->db_schema)->pre();
+		exit;
+//		foreach($this->foreignkeys as $field => $map){
+//			if(in_array($child_table, array_keys($map))){
+//				$this->load_child_tables[$field] = $child_table;
+//				return true;
+//			}
+//		}
 		return false;
 	}
 
@@ -1487,12 +1442,12 @@ class Model extends Library {
 							foreach($this->load_child_tables as $key => $child_table){
 
 								// get the foreign key field name
-								$fk_field = $this->foreignkeys[$key][$child_table];
-
-								// run query on child table to find all records
-								$child = $this->open($child_table);
-								$child->where($fk_field, $result[$key]);
-								$result[$child_table] = $child->results();
+//								$fk_field = $this->foreignkeys[$key][$child_table];
+//
+//								// run query on child table to find all records
+//								$child = $this->open($child_table);
+//								$child->where($fk_field, $result[$key]);
+//								$result[$child_table] = $child->results();
 
 							}
 						}
