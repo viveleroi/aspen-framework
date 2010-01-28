@@ -174,6 +174,13 @@ class Error extends Library {
 			8192 => "Deprecated"
 		);
 
+		// determine uri
+		if(is_object($this->APP->router)){
+			$uri = $this->APP->router->getFullUrl();
+		} else {
+			$uri = $this->getServerValue('REQUEST_URI');
+		}
+
 		$this->info = array();
 
 		if (($this->errNo & E_USER_ERROR) && is_array($arr = @unserialize($this->errMsg))) {
@@ -202,7 +209,7 @@ class Error extends Library {
 					date("Y-m-d H:i:s"),
 					$this->getServerValue('REMOTE_ADDR'),
 					$this->getServerValue('HTTP_REFERER'),
-					$this->getServerValue('REQUEST_URI'),
+					$uri,
 					$this->getServerValue('HTTP_USER_AGENT'),
 					isset($this->errType[$this->errNo]) ? $this->errType[$this->errNo] : $this->errNo,
 					$this->file,
@@ -231,7 +238,7 @@ class Error extends Library {
 			DATE: " . date("Y-m-d h:i:s") . "
 			VISITOR IP: " . $this->getServerValue('REMOTE_ADDR') . "
 			REFERRER URL: " . $this->getServerValue('HTTP_REFERER') . "
-			REQUEST URI: " . $this->APP->router->getFullUrl() . "
+			REQUEST URI: " . $uri . "
 			USER AGENT: " . $this->getServerValue('HTTP_USER_AGENT') . "
 			ERROR TYPE: " . $this->errType[$this->errNo] . "\r";
 
@@ -314,7 +321,7 @@ class Error extends Library {
 						'gmdate' => gmdate("Y-m-d h:i:s"),
 						'visitor_ip' => $this->getServerValue('REMOTE_ADDR'),
 						'referrer_url' => $this->getServerValue('HTTP_REFERER'),
-						'request_uri' => $this->APP->router->getFullUrl(),
+						'request_uri' => $uri,
 						'user_agent' => $this->getServerValue('HTTP_USER_AGENT'),
 						'error_type' => $this->errType[$this->errNo],
 						'error_message' => $this->errMsg,

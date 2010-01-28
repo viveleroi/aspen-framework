@@ -247,7 +247,7 @@ class Model extends Library {
 			$clean 	= Peregrine::sanitize($fields);
 			$schema = $this->getSchema();
 
-			foreach($schema as $column){
+			foreach($schema['schema'] as $column){
 
 				// if it's set, and a value is present, we must validate that
 				// value against the database.
@@ -331,8 +331,8 @@ class Model extends Library {
         $found = true;
 
         $enums = false;
-        if(isset($this->schema[strtoupper($field)])){
-            $enums = $this->schema[strtoupper($field)]->enums;
+        if(isset($this->schema['schema'][strtoupper($field)])){
+            $enums = $this->schema['schema'][strtoupper($field)]->enums;
         }
 
         if(is_array($enums)){
@@ -414,8 +414,8 @@ class Model extends Library {
 	 * @access public
 	 */
 	final public function inSchema($field){
-		if(is_array($this->schema)){
-			return array_key_exists(strtoupper($field), $this->schema);
+		if(is_array($this->schema['schema'])){
+			return array_key_exists(strtoupper($field), $this->schema['schema']);
 		}
 		return false;
 	}
@@ -429,8 +429,8 @@ class Model extends Library {
 
 		$schema = $this->getSchema();
 
-		if(is_array($schema)){
-			foreach($schema as $field){
+		if(is_array($schema['schema'])){
+			foreach($schema['schema'] as $field){
 				if($field->primary_key){
 					return $field->name;
 				}
@@ -608,7 +608,6 @@ class Model extends Library {
 	public function select($fields = false, $distinct = false){
 		$this->return_single = false;
 		$this->select_base($fields, $distinct);
-		$this->select_children();
 	}
 
 
@@ -622,34 +621,6 @@ class Model extends Library {
 	public function select_single($fields = false, $distinct = false){
 		$this->return_single = true;
 		$this->select_base($fields, $distinct);
-	}
-
-
-	/**
-	 * Adds a child table to inclusion in the results
-	 * @param string $child_table
-	 * @return boolean
-	 * @access public
-	 */
-	public function select_children(){
-
-//		foreach($this->db_schema as $table){
-//
-//		}
-
-
-
-
-		
-		Debug::dump($this->db_schema)->pre();
-		exit;
-//		foreach($this->foreignkeys as $field => $map){
-//			if(in_array($child_table, array_keys($map))){
-//				$this->load_child_tables[$field] = $child_table;
-//				return true;
-//			}
-//		}
-		return false;
 	}
 
 
@@ -1033,7 +1004,7 @@ class Model extends Library {
 		// Create a base array of the current schema
 		$table_base_fields = array('keyword_search'=>false);
 		$table_schema = array_keys($this->getSchema());
-		foreach($table_schema as $key){
+		foreach($table_schema['schema'] as $key){
 			$table_base_fields[strtolower($key)] = false;
 		}
 
@@ -1235,8 +1206,10 @@ class Model extends Library {
 
 		// verify the field exists, if muliple fields present, skip
 		if(strpos($sort['sort_by'], ',') === false && strpos($sort['sort_by'], 'ASC') === false){
-			$sort['sort_by'] = array_key_exists(strtoupper($field), $this->getSchema()) || strpos($this->sql['FIELDS'], $field) ? $sort['sort_by'] : $this->table.'.'.$this->getPrimaryKey();
+			$schema = $this->getSchema();
+			$sort['sort_by'] = array_key_exists(strtoupper($field), $schema['schema']) || strpos($this->sql['FIELDS'], $field) ? $sort['sort_by'] : $this->table.'.'.$this->getPrimaryKey();
 		}
+
 		$this->sql['ORDER'] = sprintf("ORDER BY %s %s", $sort['sort_by'], $sort['sort_direction']);
 
 	}
@@ -1269,7 +1242,7 @@ class Model extends Library {
 
 			$fields = array();
 
-			foreach($this->schema as $field){
+			foreach($this->schema['schema'] as $field){
 				if(in_array($field->type, $this->APP->config('mysql_field_group_text'))){
 					$fields[] = $field->name;
 				}
@@ -1437,21 +1410,21 @@ class Model extends Library {
 				if($results->RecordCount()){
 					while($result = $results->FetchRow()){
 
-						// Load in data from any selected child tables
-						if(!empty($this->load_child_tables)){
-							foreach($this->load_child_tables as $key => $child_table){
+						$schema = $this->getSchema();
+//Debug::dump($schema)->pre();
 
-								// get the foreign key field name
-//								$fk_field = $this->foreignkeys[$key][$child_table];
-//
-//								// run query on child table to find all records
-//								$child = $this->open($child_table);
-//								$child->where($fk_field, $result[$key]);
-//								$result[$child_table] = $child->results();
-
+						// parents, children
+						if(isset($schema['children'])){
+							foreach($schema['children'] as $child_table){
+								$child = $this->open($child_table);
+								$child->where($fk_field, $result[$key]);
+								$result[$child_table] = $child->results();
 							}
 						}
 
+Debug::dump($sql)->pre(false);
+
+//exit;
 						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
 	                    	$records['RECORDS'][$result[$key]] = $result;
 	                    } else {
@@ -1470,6 +1443,7 @@ class Model extends Library {
 			}
 
 			$this->tmp_records = $records;
+			Debug::dump($records)->pre(false);
 
 			// perform any calcs
 			if($this->calcs){
@@ -1639,7 +1613,7 @@ class Model extends Library {
 
 		$fields = $this->getSchema();
 
-		foreach($fields as $field){
+		foreach($fields['schema'] as $field){
 			if(!$field->auto_increment){
 				$field_names[] = $field->name;
 			}
@@ -1714,7 +1688,7 @@ class Model extends Library {
 
 		$html = '<table>' . "\n";
 
-		foreach($this->schema as $field){
+		foreach($this->schema['schema'] as $field){
 			if(!$field->primary_key && !in_array($field->name, $ignore_fields)){
 
 				$name = isset($row_names[$field->name]) ? $row_names[$field->name] : $field->name;

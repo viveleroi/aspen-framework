@@ -87,10 +87,10 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function pre(){
+	public function pre($trace = true){
 		print '<pre>';
 		$this->line_end = "\n";
-		$this->p();
+		$this->p($trace);
 		print '</pre>';
 	}
 
@@ -98,19 +98,19 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function cli(){
+	public function cli($trace = true){
 		$this->line_end = "\n";
-		$this->dump();
+		$this->dump($trace);
 	}
 
 
 	/**
 	 *
 	 */
-	public function html($hide = false){
+	public function html($hide = false, $trace = true){
 		print $hide ? '<!--' : '';
 		$this->line_end = $hide ? "\n" : "<br />";
-		$this->dump();
+		$this->dump($trace);
 		print $hide ? '-->' : '';
 	}
 
@@ -118,18 +118,18 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function p(){
+	public function p($trace = true){
 		$this->print_type = 'print_r';
-		$this->dump();
+		$this->dump($trace);
 	}
 
 
 	/**
 	 *
 	 */
-	public function v(){
+	public function v($trace = true){
 		$this->print_type = 'var_dump';
-		$this->dump();
+		$this->dump($trace);
 	}
 
 

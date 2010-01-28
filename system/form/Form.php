@@ -85,8 +85,9 @@ class Form extends Library {
 
 			$model = $this->APP->model->open($this->table);
 			$this->_primary_key_field = $model->getPrimaryKey();
+			$schema = $model->getSchema();
 
-			foreach($model->getSchema() as $field){
+			foreach($schema['schema'] as $field){
 
 				$default_val = $field->has_default ? $field->default_value : '';
 				$this->APP->form->addField($field->name, $default_val, $default_val);
@@ -143,10 +144,11 @@ class Form extends Library {
 		
 		$model 		= $this->APP->model->open($this->table);
 		$success 	= false;
+		$schema		= $model->getSchema();
 		
 		// build the array of field/vars
 		$fields = array();
-		foreach($model->getSchema() as $field){
+		foreach($schema['schema'] as $field){
 			if(!$field->primary_key){
 				$fields[$field->name] = $this->APP->form->cv($field->name, false);
 			}
@@ -405,8 +407,8 @@ class Form extends Library {
 
 				// identify field from schema
 				$field_model = false;
-				if(isset($schema[strtoupper($field)])){
-					$field_model = $schema[strtoupper($field)];
+				if(isset($schema['schema'][strtoupper($field)])){
+					$field_model = $schema['schema'][strtoupper($field)];
 				}
 				
 				// determine security method
@@ -495,7 +497,8 @@ class Form extends Library {
 		if(!$custom_sort && $this->APP->isInstalled() && $this->table){
 			$custom_sort = array();
 			$model = $this->APP->model->open($this->table);
-			foreach($model->getSchema() as $field){
+			$schema = $model->getSchema();
+			foreach($schema['schema'] as $field){
 				$custom_sort[$field->name] = false;
 			}
 		} else {
