@@ -13,17 +13,25 @@
  * @package Aspen_Framework
  * @uses Module
  */
-class Users_Admin extends Module {	
+class Users_Admin extends Module {
 
-	
+
 	/**
 	 * Displays the list of users
 	 * @access public
 	 */
 	public function view(){
 
+		$model = $this->APP->model->open('groups');
+		$res = $model->results();
+
+		Debug::dump($res)->pre();
+
+		exit;
+
 		$model = $this->APP->model->open('users');
 		$model->orderBy('username', 'ASC');
+		$model->ignore(array('config'));
 		$data['users'] = $model->results();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
@@ -41,7 +49,7 @@ class Users_Admin extends Module {
 	public function add(){
 		$this->edit();
 	}
-	
+
 
 	/**
 	 * Displays and processes the edit user form
@@ -54,7 +62,7 @@ class Users_Admin extends Module {
 			$this->APP->sml->addNewMessage('User account changes have been saved successfully.', true);
 			$this->APP->router->redirect('view');
 		}
-		
+
 		$data['groups'] = $this->APP->user->groupList();
 		$data['values'] = $this->APP->form->getCurrentValues();
 
@@ -64,8 +72,8 @@ class Users_Admin extends Module {
 		$this->APP->template->display($data);
 
 	}
-	
-	
+
+
 	/**
 	 * Displays and processes the my account form
 	 * @access public
@@ -106,17 +114,12 @@ class Users_Admin extends Module {
 	 */
 	public function login(){
 
-		$user = $this->APP->model->open('users');
-		$res = $user->results();
-		Debug::dump($res)->pre(false);
-//		Debug::dump($user->get_ignore())->pre(false);
+		$this->APP->user->login();
 
-//		$this->APP->user->login();
-//
-//		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-//		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
-//		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-//		$this->APP->template->display();
+		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
+		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
+		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
+		$this->APP->template->display();
 	}
 
 
@@ -141,8 +144,8 @@ class Users_Admin extends Module {
 		$this->APP->template->display();
 
 	}
-	
-	
+
+
 	/**
 	 * Runs the authentication process on the login form data
 	 * @access public
@@ -156,7 +159,7 @@ class Users_Admin extends Module {
 		}
 	}
 
-	
+
 	/**
 	 * Processes a logout
 	 * @access public

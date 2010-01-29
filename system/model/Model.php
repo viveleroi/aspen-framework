@@ -386,16 +386,16 @@ class Model extends Library {
 
 	/**
 	 *
-	 * @return <type> 
+	 * @return <type>
 	 */
 	public function get_ignore(){
 		return $this->ignore_tables;
 	}
-	
-	
+
+
 	/**
 	 *
-	 * @return <type> 
+	 * @return <type>
 	 */
 	public function get_ignore_prev(){
 		return $this->ignore_tables_prev;
@@ -427,6 +427,17 @@ class Model extends Library {
 						}
 					}
 				}
+			}
+		}
+
+		// flag relation-only tables
+		foreach($db_map as $name => $table){
+			$db_map[$name]['relation_only'] = false;
+			if( isset($table['parents']) &&
+				count($table['parents']) == 2 &&
+				count($table['schema']) == 3){
+					$db_map[$name]['relation_only'] = true;
+					$this->ignore($name);
 			}
 		}
 
@@ -793,7 +804,7 @@ class Model extends Library {
 
 	}
 
-	
+
 	/**
 	 * Adds a custom condition to the array
 	 * @param string $where
@@ -1444,23 +1455,14 @@ class Model extends Library {
 
 				$key = $key_field ? $key_field : $this->getPrimaryKey();
 
-				// tmp
-				$laoded_tables = array();
-
 				if($results->RecordCount()){
 					while($result = $results->FetchRow()){
-//Debug::dump($this->get_ignore())->pre(false);
+
 						$schema = $this->getSchema();
-//						$this->ignore_tables = array();
 						$this->ignore($this->table);
+//Debug::dump($sql)->pre(false);
+//						Debug::dump($this->get_ignore())->pre(false);
 
-						if($this->table == 'users'){
-//Debug::dump($this->table)->pre(false);
-//Debug::dump($schema)->pre(false);
-						}
-
-
-						// parents, children
 						if(isset($schema['children'])){
 							foreach($schema['children'] as $child_table){
 								if(!in_array($child_table, $this->ignore_tables)){
@@ -1469,16 +1471,15 @@ class Model extends Library {
 
 									$child = $this->open($child_table);
 									$child->ignore($this->ignore_tables);
-									$child->where($child->getPrimaryKey(), $result[$key]);
-									$result[$child_table] = $child->results();
 
+									$field = rtrim($this->table, 's').'_id';
+									$child->where($field, $result[$key]);
+									$result[$child_table] = $child->results();
+//print $child->lq() . "<Br>";
 									$this->ignore($child->get_ignore_prev());
 								}
 							}
 						}
-
-
-						// parents, children
 						if(isset($schema['parents'])){
 							foreach($schema['parents'] as $child_table){
 								if(!in_array($child_table, $this->ignore_tables)){
@@ -1494,13 +1495,15 @@ class Model extends Library {
 						}
 
 						$this->ignore_tables_prev = $this->ignore_tables;
-						$this->ignore_tables = array();
+						
 
 						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
 	                    	$records['RECORDS'][$result[$key]] = $result;
+							$records['IGNORED'][$result[$key]] = $this->ignore_tables_prev;
 	                    } else {
 	                    	$records['RECORDS'][] = $result;
 	                    }
+						$this->ignore_tables = array();
 					}
 				} else {
 
