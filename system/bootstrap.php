@@ -1346,7 +1346,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function awaitingUpgrade(){
-		if($this->config('watch_pending_db_upgrade')){
+		if($this->config('watch_pending_db_upgrade') && $this->isInstalled()){
 
 			$build = $this->formatVersionNumber($this->config('application_version'));
 			$latest_build = $this->latestVersion();

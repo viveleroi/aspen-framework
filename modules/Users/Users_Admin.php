@@ -22,7 +22,7 @@ class Users_Admin extends Module {
 	 */
 	public function view(){
 
-		$model = $this->APP->model->open('authentication');
+		$model = $this->APP->model->open('users');
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
 
@@ -106,10 +106,9 @@ class Users_Admin extends Module {
 	 */
 	public function login(){
 
-		$user = $this->APP->model->open('authentication');
-		$user->select_children();
+		$user = $this->APP->model->open('users');
 		$res = $user->results();
-//		Debug::dump($res)->pre();
+		Debug::dump($res)->pre(false);
 
 //		$this->APP->user->login();
 //

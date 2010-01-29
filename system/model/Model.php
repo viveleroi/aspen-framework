@@ -385,8 +385,8 @@ class Model extends Library {
 					if(strpos($field->name, '_id')){
 						$tmp_tbl_name = str_replace('_id', '', $field->name).'s';
 						if(in_array($tmp_tbl_name,$tables)){
-							$db_map[$tmp_tbl_name]['parents'][] = $table;
-							$db_map[$table]['children'][] = $tmp_tbl_name;
+							$db_map[$tmp_tbl_name]['children'][] = $table;
+							$db_map[$table]['parents'][] = $tmp_tbl_name;
 						}
 					}
 				}
@@ -1407,11 +1407,18 @@ class Model extends Library {
 
 				$key = $key_field ? $key_field : $this->getPrimaryKey();
 
+				// tmp
+				$laoded_tables = array();
+
 				if($results->RecordCount()){
 					while($result = $results->FetchRow()){
 
 						$schema = $this->getSchema();
-//Debug::dump($schema)->pre();
+
+						if($this->table == 'users'){
+//Debug::dump($this->table)->pre(false);
+//Debug::dump($schema)->pre(false);
+						}
 
 						// parents, children
 						if(isset($schema['children'])){
@@ -1422,9 +1429,17 @@ class Model extends Library {
 							}
 						}
 
-Debug::dump($sql)->pre(false);
-
-//exit;
+//						if(isset($schema['parents'])){
+//							foreach($schema['parents'] as $parent_table){
+//								var_dump($parent_table);
+//								$parent = $this->open($parent_table);
+//								$parent->where($fk_field, $result[$key]);
+//								$result[$parent_table] = $parent->results();
+//							}
+//						}
+						if($this->table == 'users'){
+//Debug::dump($result)->pre(false);
+						}
 						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
 	                    	$records['RECORDS'][$result[$key]] = $result;
 	                    } else {
@@ -1443,7 +1458,7 @@ Debug::dump($sql)->pre(false);
 			}
 
 			$this->tmp_records = $records;
-			Debug::dump($records)->pre(false);
+//			Debug::dump($records)->pre(false);
 
 			// perform any calcs
 			if($this->calcs){

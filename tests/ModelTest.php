@@ -353,11 +353,11 @@ class ModelTest extends TestHelper {
 	 * Tests Model->select()
 	 */
 	public function testSelect() {
-		$model = $this->sharedFixture->model->open('authentication');
+		$model = $this->sharedFixture->model->open('users');
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT authentication.* FROM authentication  ORDER BY authentication.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users  ORDER BY users.id ASC ', $qry);
 	}
 	
 	/**
@@ -377,7 +377,7 @@ class ModelTest extends TestHelper {
 	public function testShowStatus() {
 		$status = $this->sharedFixture->model->showStatus('authentication');
 		
-		$this->assertEquals('authentication', $status['Name']);
+		$this->assertEquals('users', $status['Name']);
 		$this->assertEquals(18, count($status));
 	
 	}
@@ -397,14 +397,14 @@ class ModelTest extends TestHelper {
 	 * Tests Model->where()
 	 */
 	public function testWhere() {
-		$model = $this->sharedFixture->model->open('authentication');
+		$model = $this->sharedFixture->model->open('users');
 		$model->select();
 		$model->where('id', 1);
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT authentication.* FROM authentication WHERE id = "1"  ORDER BY authentication.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE id = "1"  ORDER BY users.id ASC ', $qry);
 	
 	}
 	
@@ -412,28 +412,28 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereAfterToday()
 	 */
 	public function testWhereAfterToday() {
-		$model = $this->sharedFixture->model->open('authentication');
+		$model = $this->sharedFixture->model->open('users');
 		$model->select();
 		$model->whereAfterToday('last_login');
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT authentication.* FROM authentication WHERE TO_DAYS(last_login) > TO_DAYS(NOW())  ORDER BY authentication.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE TO_DAYS(last_login) > TO_DAYS(NOW())  ORDER BY users.id ASC ', $qry);
 	}
 	
 	/**
 	 * Tests Model->whereBeforeToday()
 	 */
 	public function testWhereBeforeToday() {
-		$model = $this->sharedFixture->model->open('authentication');
+		$model = $this->sharedFixture->model->open('users');
 		$model->select();
 		$model->whereBeforeToday('last_login');
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT authentication.* FROM authentication WHERE TO_DAYS(last_login) <= TO_DAYS(NOW())  ORDER BY authentication.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE TO_DAYS(last_login) <= TO_DAYS(NOW())  ORDER BY users.id ASC ', $qry);
 	
 	}
 	
@@ -441,14 +441,14 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereBetween()
 	 */
 	public function testWhereBetween() {
-		$model = $this->sharedFixture->model->open('authentication');
+		$model = $this->sharedFixture->model->open('users');
 		$model->select();
 		$model->whereBetween('allow_login', 0, 3);
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT authentication.* FROM authentication WHERE allow_login BETWEEN "0" AND "3"  ORDER BY authentication.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE allow_login BETWEEN "0" AND "3"  ORDER BY users.id ASC ', $qry);
 	
 	
 	}
@@ -457,14 +457,14 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereGreaterThan()
 	 */
 	public function testWhereGreaterThan() {
-		$model = $this->sharedFixture->model->open('authentication');
+		$model = $this->sharedFixture->model->open('users');
 		$model->select();
 		$model->whereGreaterThan('allow_login', 0);
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT authentication.* FROM authentication WHERE allow_login > "0"  ORDER BY authentication.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE allow_login > "0"  ORDER BY users.id ASC ', $qry);
 	
 	
 	}
@@ -473,14 +473,14 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereLessThan()
 	 */
 	public function testWhereLessThan() {
-		$model = $this->sharedFixture->model->open('authentication');
+		$model = $this->sharedFixture->model->open('users');
 		$model->select();
 		$model->whereLessThan('allow_login', 3);
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT authentication.* FROM authentication WHERE allow_login < "3"  ORDER BY authentication.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE allow_login < "3"  ORDER BY users.id ASC ', $qry);
 	
 	
 	}
@@ -489,14 +489,14 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereLike()
 	 */
 	public function testWhereLike() {
-		$model = $this->sharedFixture->model->open('authentication');
+		$model = $this->sharedFixture->model->open('users');
 		
 		$model->whereLike('nice_name', 'Mike');
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT authentication.* FROM authentication WHERE nice_name LIKE "%Mike%"  ORDER BY authentication.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE nice_name LIKE "%Mike%"  ORDER BY users.id ASC ', $qry);
 	
 	}
 	
@@ -504,14 +504,14 @@ class ModelTest extends TestHelper {
 	 * Tests Model->whereNot()
 	 */
 	public function testWhereNot() {
-		$model = $this->sharedFixture->model->open('authentication');
+		$model = $this->sharedFixture->model->open('users');
 		
 		$model->whereNot('nice_name', 'Bobblehead');
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT authentication.* FROM authentication WHERE nice_name != "Bobblehead"  ORDER BY authentication.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE nice_name != "Bobblehead"  ORDER BY users.id ASC ', $qry);
 	
 	}
 
