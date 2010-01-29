@@ -58,16 +58,22 @@ class Model extends Library {
 	private $field_security_rules = array();
 
 	/**
+	 * @var array Contains an array of tables to ignore when pulling related results
+	 * @access private
+	 */
+	private $ignore_tables = array();
+
+	/**
+	 * @var array Contains an array of tables to ignore when pulling related results
+	 * @access private
+	 */
+	private $ignore_tables_prev = array();
+
+	/**
 	 * @var string Holds the last executed query
 	 * @access private
 	 */
 	private $last_query;
-
-	/**
-	 * @var string An array of tables to load which have a foreign key to current table
-	 * @access private
-	 */
-	private $load_child_tables;
 
 	/**
 	 * @var boolean Toggles the pagination features
@@ -362,6 +368,37 @@ class Model extends Library {
 	 */
 	public function setDefaultIfEmpty($field, $value){
 		$this->field_defaults[$field] = $value;
+	}
+
+
+	/**
+	 *
+	 * @param <type> $tables
+	 */
+	public function ignore($tables){
+		if(is_array($tables)){
+			$this->ignore_tables = array_merge($this->ignore_tables, $tables);
+		} else {
+			$this->ignore_tables[] = $tables;
+		}
+	}
+
+
+	/**
+	 *
+	 * @return <type> 
+	 */
+	public function get_ignore(){
+		return $this->ignore_tables;
+	}
+	
+	
+	/**
+	 *
+	 * @return <type> 
+	 */
+	public function get_ignore_prev(){
+		return $this->ignore_tables_prev;
 	}
 
 
@@ -1412,34 +1449,53 @@ class Model extends Library {
 
 				if($results->RecordCount()){
 					while($result = $results->FetchRow()){
-
+//Debug::dump($this->get_ignore())->pre(false);
 						$schema = $this->getSchema();
+//						$this->ignore_tables = array();
+						$this->ignore($this->table);
 
 						if($this->table == 'users'){
 //Debug::dump($this->table)->pre(false);
 //Debug::dump($schema)->pre(false);
 						}
 
+
 						// parents, children
 						if(isset($schema['children'])){
 							foreach($schema['children'] as $child_table){
-								$child = $this->open($child_table);
-								$child->where($fk_field, $result[$key]);
-								$result[$child_table] = $child->results();
+								if(!in_array($child_table, $this->ignore_tables)){
+
+									$this->ignore($child_table);
+
+									$child = $this->open($child_table);
+									$child->ignore($this->ignore_tables);
+									$child->where($child->getPrimaryKey(), $result[$key]);
+									$result[$child_table] = $child->results();
+
+									$this->ignore($child->get_ignore_prev());
+								}
 							}
 						}
 
-//						if(isset($schema['parents'])){
-//							foreach($schema['parents'] as $parent_table){
-//								var_dump($parent_table);
-//								$parent = $this->open($parent_table);
-//								$parent->where($fk_field, $result[$key]);
-//								$result[$parent_table] = $parent->results();
-//							}
-//						}
-						if($this->table == 'users'){
-//Debug::dump($result)->pre(false);
+
+						// parents, children
+						if(isset($schema['parents'])){
+							foreach($schema['parents'] as $child_table){
+								if(!in_array($child_table, $this->ignore_tables)){
+									$this->ignore($child_table);
+									$child = $this->open($child_table);
+									$child->ignore($this->ignore_tables);
+									$child->where($child->getPrimaryKey(), $result[$key]);
+									$result[$child_table] = $child->results();
+
+									$this->ignore($child->get_ignore_prev());
+								}
+							}
 						}
+
+						$this->ignore_tables_prev = $this->ignore_tables;
+						$this->ignore_tables = array();
+
 						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
 	                    	$records['RECORDS'][$result[$key]] = $result;
 	                    } else {

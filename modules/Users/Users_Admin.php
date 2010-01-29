@@ -109,6 +109,7 @@ class Users_Admin extends Module {
 		$user = $this->APP->model->open('users');
 		$res = $user->results();
 		Debug::dump($res)->pre(false);
+//		Debug::dump($user->get_ignore())->pre(false);
 
 //		$this->APP->user->login();
 //
