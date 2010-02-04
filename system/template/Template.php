@@ -1112,6 +1112,17 @@ class Template extends Library {
 
 
 	/**
+	 *
+	 * @param <type> $text
+	 * @param <type> $default
+	 * @return <type>
+	 */
+	public function na($text, $default = 'N/A'){
+		return empty(trim($text)) ? $default : $text;
+	}
+
+
+	/**
 	 * Hides values using html comments
 	 * @param mixed $val
 	 * @return string

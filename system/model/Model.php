@@ -1476,6 +1476,7 @@ class Model extends Library {
 									$child->where($field, $result[$key]);
 									$result[$child_table] = $child->results();
 //print $child->lq() . "<Br>";
+								
 									$this->ignore($child->get_ignore_prev());
 								}
 							}
@@ -1499,7 +1500,7 @@ class Model extends Library {
 
 						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
 	                    	$records['RECORDS'][$result[$key]] = $result;
-							$records['IGNORED'][$result[$key]] = $this->ignore_tables_prev;
+//							$records['IGNORED'][$result[$key]] = $this->ignore_tables_prev;
 	                    } else {
 	                    	$records['RECORDS'][] = $result;
 	                    }
