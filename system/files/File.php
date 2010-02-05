@@ -427,9 +427,9 @@ class File extends Library {
             		return $return_info;
           		}
         	} else {
-
-          		if($file['error'] != 4){
-            		$this->APP->error->raise(2, "The file upload was unsuccessful.", __FILE__, __LINE__);
+				if($file['error'] != 4){
+					$msg = $this->uploadError($file['error']);
+					$this->APP->error->raise(2, $msg, __FILE__, __LINE__);
             		return "The file upload was unsuccessful.";
           		}
         	}
@@ -437,6 +437,42 @@ class File extends Library {
 			$this->APP->error->raise(2, "Files array was not set properly.", __FILE__, __LINE__);
 		}
 		return false;
+	}
+
+
+	/**
+	 *
+	 * @param <type> $err
+	 * @return <type>
+	 * http://www.php.net/manual/en/features.file-upload.errors.php
+	 */
+	private function uploadError($err){
+		switch($err){
+			case 0:
+				return '';
+				break;
+			case 1:
+				return 'The uploaded file exceeds the server maximum.';
+				break;
+			case 2:
+				return 'The uploaded file exceeds the form/application maximum.';
+				break;
+			case 3:
+				return 'The uploaded file was only partially uploaded.';
+				break;
+			case 4:
+				return 'The file upload failed due to a missing or corrupt temporary directory.';
+				break;
+			case 5:
+				return 'The file upload failed: Failed to write file to disk.';
+				break;
+			case 6:
+				return 'The file upload failed: File upload stopped by extension.';
+				break;
+			default:
+				return '';
+				break;
+		}
 	}
 	
 
