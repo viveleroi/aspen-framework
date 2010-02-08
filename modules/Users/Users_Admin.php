@@ -24,8 +24,9 @@ class Users_Admin extends Module {
 
 		define('MODEL_TEST', true);
 
-//		$model = $this->APP->model->open('groups');
-		$model = $this->APP->model->open('users');
+		$model = $this->APP->model->open('groups');
+//		$model = $this->APP->model->open('users');
+//		$model = $this->APP->model->open('user_group_link');
 		$res = $model->results();
 
 		Debug::dump($res)->pre();

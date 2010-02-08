@@ -1461,67 +1461,37 @@ class Model extends Library {
 
 						$schema = $this->getSchema();
 
-						if(defined('MODEL_TEST') && MODEL_TEST){
-						
+						if(defined('MODEL_TEST') && MODEL_TEST){ // @todo remove
 
-//Debug::dump($schema)->pre(false);
-//Debug::dump($this->db_schema)->pre(false);
 						$this->ignore($this->table);
-//Debug::dump($sql)->pre(false);
-//Debug::dump($this->get_ignore())->pre(false);
 
 						if(isset($schema['children'])){
-//Debug::dump($schema['children'])->pre(false);
 							foreach($schema['children'] as $join_table => $child_table){
-//Debug::dump($this->table . '  ' . $child_table . ' --- ' . $sql)->pre(false);
-//Debug::dump($this->ignore_tables)->v(false);
 
 								if(!in_array($child_table, $this->ignore_tables)){
-//Debug::dump($this->table . '  ' . $child_table . ' --- ' . $sql)->pre(false);
-//									$this->ignore($child_table);
 
-
-									
-//Debug::dump($join_table . '  ' . $child_table . ' --- ' . $sql)->pre(false);
+									$child = $this->open($child_table);
+									$this->ignore($child_table);
+									$this->ignore($join_table);
+									$child->ignore($this->get_ignore());
 
 									if($child_table != $join_table){
-
-
-										$child = $this->open($child_table);
-										$this->ignore($child_table);
-										$this->ignore($join_table);
-										$child->ignore($this->get_ignore());
 
 										$field = rtrim($child_table, 's').'_id';
 										$child->leftJoin($join_table, $field, 'id', array($field));
 
 										$field = rtrim($this->table, 's').'_id';
-//										$child->leftJoin($this->table, 'id', $field, array($field), $join_table);
 										$child->where($join_table.'.'.$field, $result[$key]);
-										$field = rtrim($child_table, 's').'_id';
-//var_dump($child->getBuildQuery());
 										$result[ucwords($child_table)] = $child->results();
-								$this->ignore($child->get_ignore_prev());
+										$this->ignore($child->get_ignore_prev());
 										
 									} else {
 
-
-										$child = $this->open($child_table);
-										$this->ignore($child_table);
-										$child->ignore($this->ignore_tables);
 										$field = rtrim($this->table, 's').'_id';
 										$child->where($field, $result[$key]);
 										$result[ucwords($child_table)] = $child->results();
-	//									print $child->lq('html');
-//										$this->ignore($child->get_ignore_prev());
 
 									}
-			
-//print $child->lq() . "<Br>";
-	
-
-
-
 								}
 							}
 						}
@@ -1544,11 +1514,9 @@ class Model extends Library {
 
 						if(isset($result[$key]) && !isset($records[$result[$key]])){
 	                    	$records[$result[$key]] = $result;
-//							$records['IGNORED'][$result[$key]] = $this->ignore_tables_prev;
 	                    } else {
 	                    	$records[] = $result;
 	                    }
-//						$this->ignore_tables = array();
 					}
 				} else {
 
@@ -1562,7 +1530,6 @@ class Model extends Library {
 			}
 
 			$this->tmp_records = $records;
-//			Debug::dump($records)->pre(false);
 
 			// perform any calcs
 			if($this->calcs){
