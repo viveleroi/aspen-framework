@@ -22,7 +22,10 @@ class Users_Admin extends Module {
 	 */
 	public function view(){
 
+		define('MODEL_TEST', true);
+
 		$model = $this->APP->model->open('groups');
+		var_dump($model->get_ignore());
 		$res = $model->results();
 
 		Debug::dump($res)->pre();

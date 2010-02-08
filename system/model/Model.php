@@ -216,7 +216,6 @@ class Model extends Library {
 	private function openTable($table = false){
 		$this->table = $table;
 		$this->generateSchema();
-
 		if(!is_array($this->schema)){
 			$this->APP->error->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
 		}
@@ -437,7 +436,7 @@ class Model extends Library {
 				count($table['parents']) == 2 &&
 				count($table['schema']) == 3){
 					$db_map[$name]['relation_only'] = true;
-					$this->ignore($name);
+//					$this->ignore($name);
 			}
 		}
 
@@ -1459,17 +1458,27 @@ class Model extends Library {
 					while($result = $results->FetchRow()){
 
 						$schema = $this->getSchema();
+
+						if(defined('MODEL_TEST') && MODEL_TEST){
+						
+
+//Debug::dump($schema)->pre(false);
+//Debug::dump($this->db_schema)->pre(false);
 						$this->ignore($this->table);
 //Debug::dump($sql)->pre(false);
-//						Debug::dump($this->get_ignore())->pre(false);
+//Debug::dump($this->get_ignore())->pre(false);
 
 						if(isset($schema['children'])){
+//Debug::dump($schema['children'])->pre(false);
 							foreach($schema['children'] as $child_table){
+//Debug::dump($this->table . '  ' . $child_table . ' --- ' . $sql)->pre(false);
+//Debug::dump($this->ignore_tables)->v(false);
 								if(!in_array($child_table, $this->ignore_tables)){
 
-									$this->ignore($child_table);
+//									$this->ignore($child_table);
 
 									$child = $this->open($child_table);
+
 									$child->ignore($this->ignore_tables);
 
 									$field = rtrim($this->table, 's').'_id';
@@ -1477,7 +1486,10 @@ class Model extends Library {
 									$result[$child_table] = $child->results();
 //print $child->lq() . "<Br>";
 								
-									$this->ignore($child->get_ignore_prev());
+//									$this->ignore($child->get_ignore_prev());
+
+
+
 								}
 							}
 						}
@@ -1490,13 +1502,13 @@ class Model extends Library {
 									$child->where($child->getPrimaryKey(), $result[$key]);
 									$result[$child_table] = $child->results();
 
-									$this->ignore($child->get_ignore_prev());
+//									$this->ignore($child->get_ignore_prev());
 								}
 							}
 						}
 
 						$this->ignore_tables_prev = $this->ignore_tables;
-						
+						} // end MODEL_TEST
 
 						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
 	                    	$records['RECORDS'][$result[$key]] = $result;
