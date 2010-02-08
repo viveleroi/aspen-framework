@@ -100,8 +100,8 @@ class Activityrender extends Library {
 		$activities = $ac->results();
 
 		$count = 0;
-		if($activities['RECORDS']){
-			foreach($activities['RECORDS'] as $activity){
+		if($activities){
+			foreach($activities as $activity){
 
 				if($count > $this->activity_limit){
 					break;
@@ -122,7 +122,7 @@ class Activityrender extends Library {
 				$this->all_recent_activity[$key][] = $activity;
 			}
 		}
-		return (bool)$activities['RECORDS'];
+		return (bool)$activities;
 	}
 	
 

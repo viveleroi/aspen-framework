@@ -1183,8 +1183,8 @@ class Bootstrap extends Base {
 			$model = $this->model->open('modules');
 			$model->orderBy('sort_order');
 			$modules = $model->results();
-			if($modules['RECORDS']){
-				foreach($modules['RECORDS'] as $module){
+			if($modules){
+				foreach($modules as $module){
 					$this->_modules[] = $module['guid'];
 				}
 				return true;

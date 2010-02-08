@@ -43,7 +43,7 @@ class UsersModel extends Model {
 				$user = $this->open('users');
 				$user->where('username', $clean->getRaw('username'));
 				$unique = $user->results();
-				if($unique['RECORDS']){
+				if($unique){
 					$this->addError('username', $this->APP->template->text('db:error:username-dup'));
 				}
 			}

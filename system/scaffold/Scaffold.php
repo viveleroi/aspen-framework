@@ -65,8 +65,8 @@ class Scaffold extends Library {
 			}
 
 			// loop the results
-			if($results['RECORDS']){
-				foreach($results['RECORDS'] as $result){
+			if($results){
+				foreach($results as $result){
 
 					$tbody .= '<tr>' . "\n";
 
@@ -131,8 +131,8 @@ class Scaffold extends Library {
 
 $tbody .= "
 		<?php
-			if($".$table."['RECORDS']){
-				foreach($".$table."['RECORDS'] as \$record){
+			if($".$table."){
+				foreach($".$table." as \$record){
 		?>
 		<tr>\n";
 

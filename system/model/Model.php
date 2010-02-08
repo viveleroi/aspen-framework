@@ -421,8 +421,8 @@ class Model extends Library {
 					if(strpos($field->name, '_id')){
 						$tmp_tbl_name = str_replace('_id', '', $field->name).'s';
 						if(in_array($tmp_tbl_name,$tables)){
-							$db_map[$tmp_tbl_name]['children'][] = $table;
-							$db_map[$table]['parents'][] = $tmp_tbl_name;
+							$db_map[$tmp_tbl_name]['children'][$table] = $table;
+							$db_map[$table]['parents'][$tmp_tbl_name] = $tmp_tbl_name;
 						}
 					}
 				}
@@ -434,13 +434,17 @@ class Model extends Library {
 			$db_map[$name]['relation_only'] = false;
 			if( isset($table['parents']) &&
 				count($table['parents']) == 2 &&
-				count($table['schema']) == 3){
+				count($table['schema']) <= 3){
 					$db_map[$name]['relation_only'] = true;
-//					$this->ignore($name);
+					$k = array_keys($table['parents']);
+					$db_map[ $k[0] ]['children'][$name] = $k[1];
+					$db_map[ $k[1] ]['children'][$name] = $k[0];
 			}
 		}
 
 		$this->db_schema = $db_map;
+//Debug::dump($this->db_schema)->pre(false);
+//exit;
 		$this->schema =  $this->db_schema[$this->table];
 	}
 
@@ -1448,7 +1452,7 @@ class Model extends Library {
 		if($this->query_type == 'select'){
 
 			$records = array();
-			$records['RECORDS'] = array();
+			$records = array();
 
 			if($results = $this->query($sql)){
 
@@ -1470,23 +1474,52 @@ class Model extends Library {
 
 						if(isset($schema['children'])){
 //Debug::dump($schema['children'])->pre(false);
-							foreach($schema['children'] as $child_table){
+							foreach($schema['children'] as $join_table => $child_table){
 //Debug::dump($this->table . '  ' . $child_table . ' --- ' . $sql)->pre(false);
 //Debug::dump($this->ignore_tables)->v(false);
 								if(!in_array($child_table, $this->ignore_tables)){
 
 //									$this->ignore($child_table);
 
-									$child = $this->open($child_table);
 
-									$child->ignore($this->ignore_tables);
+									
+			
 
-									$field = rtrim($this->table, 's').'_id';
-									$child->where($field, $result[$key]);
-									$result[$child_table] = $child->results();
-//print $child->lq() . "<Br>";
-								
+									if($child_table != $join_table){
+
+
+										$child = $this->open($child_table);
+										$this->ignore($child_table);
+										$this->ignore($join_table);
+										$child->ignore($this->get_ignore());
+
+										$field = rtrim($child_table, 's').'_id';
+										$child->leftJoin($join_table, $field, 'id', array($field));
+
+										$field = rtrim($this->table, 's').'_id';
+//										$child->leftJoin($this->table, 'id', $field, array($field), $join_table);
+										$child->where($join_table.'.'.$field, $result[$key]);
+										$field = rtrim($child_table, 's').'_id';
+//var_dump($child->getBuildQuery());
+										$result[$child_table] = $child->results();
+								$this->ignore($child->get_ignore_prev());
+										
+									} else {
+
+
+//									$child = $this->open($child_table);
+//									$this->ignore($child_table);
+//									$child->ignore($this->ignore_tables);
+//									$field = rtrim($this->table, 's').'_id';
+//									$child->where($field, $result[$key]);
+//									$result[$child_table] = $child->results();
+//									print $child->lq('html');
 //									$this->ignore($child->get_ignore_prev());
+
+									}
+			
+//print $child->lq() . "<Br>";
+	
 
 
 
@@ -1510,22 +1543,22 @@ class Model extends Library {
 						$this->ignore_tables_prev = $this->ignore_tables;
 						} // end MODEL_TEST
 
-						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
-	                    	$records['RECORDS'][$result[$key]] = $result;
+						if(isset($result[$key]) && !isset($records[$result[$key]])){
+	                    	$records[$result[$key]] = $result;
 //							$records['IGNORED'][$result[$key]] = $this->ignore_tables_prev;
 	                    } else {
-	                    	$records['RECORDS'][] = $result;
+	                    	$records[] = $result;
 	                    }
 						$this->ignore_tables = array();
 					}
 				} else {
 
-					$records['RECORDS'] = false;
+					$records = false;
 
 				}
 			} else {
 
-				$records['RECORDS'] = false;
+				$records = false;
 
 			}
 
@@ -1540,19 +1573,20 @@ class Model extends Library {
 			}
 
 			// if any pagination, return found rows
-			if($this->paginate){
-				$results = $this->query('SELECT FOUND_ROWS()');
-				$records['TOTAL_RECORDS_FOUND'] = $results->fields['FOUND_ROWS()'];
-				$records['CURRENT_PAGE'] = $this->current_page;
-				$records['RESULTS_PER_PAGE'] = $this->per_page;
-				$records['TOTAL_PAGE_COUNT'] = ceil($records['TOTAL_RECORDS_FOUND'] / $this->per_page);
-			} else {
-				$records['TOTAL_RECORDS_FOUND'] = ($records['RECORDS'] ? count($records['RECORDS']) : 0);
-			}
+			// // @todo fix this
+//			if($this->paginate){
+//				$results = $this->query('SELECT FOUND_ROWS()');
+//				$records['TOTAL_RECORDS_FOUND'] = $results->fields['FOUND_ROWS()'];
+//				$records['CURRENT_PAGE'] = $this->current_page;
+//				$records['RESULTS_PER_PAGE'] = $this->per_page;
+//				$records['TOTAL_PAGE_COUNT'] = ceil($records['TOTAL_RECORDS_FOUND'] / $this->per_page);
+//			} else {
+//				$records['TOTAL_RECORDS_FOUND'] = ($records ? count($records) : 0);
+//			}
 
 			// If return single set, grab first array item
 			if($this->return_single){
-				$records = $records['RECORDS'] ? array_shift($records['RECORDS']) : false;
+				$records = $records ? array_shift($records) : false;
 			}
 
 			$this->tmp_records = false;
@@ -1659,8 +1693,8 @@ class Model extends Library {
 			$this->where($field_name, $id);
 			$records = $this->results();
 
-			if($records['RECORDS']){
-				foreach($records['RECORDS'] as $del){
+			if($records){
+				foreach($records as $del){
 					$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $this->getPrimaryKey(), $del['id']);
 					$result = (bool)$this->query($this->sql['DELETE']);
 					if($result){
@@ -1751,8 +1785,8 @@ class Model extends Library {
 
 		$total = 0;
 
-		if(is_array($this->tmp_records['RECORDS'])){
-			foreach($this->tmp_records['RECORDS'] as $record){
+		if(is_array($this->tmp_records)){
+			foreach($this->tmp_records as $record){
 				$total += isset($record[$field]) ? $record[$field] : 0;
 			}
 		}

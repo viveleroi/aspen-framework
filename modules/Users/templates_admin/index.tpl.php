@@ -14,8 +14,8 @@
 	</thead>
 	<tbody>
 		<?php
-		if($users['RECORDS']){
-			foreach($users['RECORDS'] as $user){ ?>
+		if($users){
+			foreach($users as $user){ ?>
 		<tr>
 			<td><?php print $this->createLink($user['nice_name'], 'edit', array('id' => $user['id'])) ?></td>
 			<td><?php print $user['username'] ?></td>

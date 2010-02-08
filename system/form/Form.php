@@ -119,8 +119,8 @@ class Form extends Library {
 			$model->where($field, $this->APP->security->dbescape($id));
 			$records = $model->results();
 
-			if($records['RECORDS']){
-				foreach($records['RECORDS'] as $record){
+			if($records){
+				foreach($records as $record){
 					foreach($record as $field => $value){
 						$this->APP->form->addField($field, $value, $value);
 					}
