@@ -24,8 +24,8 @@ class Users_Admin extends Module {
 
 		define('MODEL_TEST', true);
 
-		$model = $this->APP->model->open('groups');
-		var_dump($model->get_ignore());
+//		$model = $this->APP->model->open('groups');
+		$model = $this->APP->model->open('users');
 		$res = $model->results();
 
 		Debug::dump($res)->pre();

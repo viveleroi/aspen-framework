@@ -443,8 +443,6 @@ class Model extends Library {
 		}
 
 		$this->db_schema = $db_map;
-//Debug::dump($this->db_schema)->pre(false);
-//exit;
 		$this->schema =  $this->db_schema[$this->table];
 	}
 
@@ -1477,13 +1475,14 @@ class Model extends Library {
 							foreach($schema['children'] as $join_table => $child_table){
 //Debug::dump($this->table . '  ' . $child_table . ' --- ' . $sql)->pre(false);
 //Debug::dump($this->ignore_tables)->v(false);
-								if(!in_array($child_table, $this->ignore_tables)){
 
+								if(!in_array($child_table, $this->ignore_tables)){
+//Debug::dump($this->table . '  ' . $child_table . ' --- ' . $sql)->pre(false);
 //									$this->ignore($child_table);
 
 
 									
-			
+//Debug::dump($join_table . '  ' . $child_table . ' --- ' . $sql)->pre(false);
 
 									if($child_table != $join_table){
 
@@ -1501,20 +1500,20 @@ class Model extends Library {
 										$child->where($join_table.'.'.$field, $result[$key]);
 										$field = rtrim($child_table, 's').'_id';
 //var_dump($child->getBuildQuery());
-										$result[$child_table] = $child->results();
+										$result[ucwords($child_table)] = $child->results();
 								$this->ignore($child->get_ignore_prev());
 										
 									} else {
 
 
-//									$child = $this->open($child_table);
-//									$this->ignore($child_table);
-//									$child->ignore($this->ignore_tables);
-//									$field = rtrim($this->table, 's').'_id';
-//									$child->where($field, $result[$key]);
-//									$result[$child_table] = $child->results();
-//									print $child->lq('html');
-//									$this->ignore($child->get_ignore_prev());
+										$child = $this->open($child_table);
+										$this->ignore($child_table);
+										$child->ignore($this->ignore_tables);
+										$field = rtrim($this->table, 's').'_id';
+										$child->where($field, $result[$key]);
+										$result[ucwords($child_table)] = $child->results();
+	//									print $child->lq('html');
+//										$this->ignore($child->get_ignore_prev());
 
 									}
 			
@@ -1533,9 +1532,9 @@ class Model extends Library {
 									$child = $this->open($child_table);
 									$child->ignore($this->ignore_tables);
 									$child->where($child->getPrimaryKey(), $result[$key]);
-									$result[$child_table] = $child->results();
+									$result[ucwords($child_table)] = $child->results();
 
-//									$this->ignore($child->get_ignore_prev());
+									$this->ignore($child->get_ignore_prev());
 								}
 							}
 						}
@@ -1549,7 +1548,7 @@ class Model extends Library {
 	                    } else {
 	                    	$records[] = $result;
 	                    }
-						$this->ignore_tables = array();
+//						$this->ignore_tables = array();
 					}
 				} else {
 
