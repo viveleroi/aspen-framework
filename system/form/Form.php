@@ -412,7 +412,7 @@ class Form extends Library {
 			}
 		}
 
-		return $current_values;
+		return Peregrine::sanitize($current_values);
 
 	}
 

@@ -255,6 +255,7 @@ $tbody .= "		</tr>\n
 
 
 		// make sure the template has access to all current values
+		// @todo fix this
 		$values = $form->getCurrentValues();
 		$schema = $this->APP->model->getSchema();
 

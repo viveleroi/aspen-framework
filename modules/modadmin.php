@@ -196,13 +196,10 @@ $class_output .= "
 			}
 		}
 
-		// make sure the template has access to all current values
-		\$data['values'] = \$form->getCurrentValues();
-
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getModuleTemplateDir().DS . 'add.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		\$this->APP->template->display(\$data);
+		\$this->APP->template->display(array('form'=>\$form));
 
 	}
 
@@ -226,13 +223,10 @@ $class_output .= "
 			}
 		}
 
-		// make sure the template has access to all current values
-		\$data['values'] = \$form->getCurrentValues();
-
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		\$this->APP->template->display(\$data);
+		\$this->APP->template->display(array('form'=>\$form));
 
 	}
 
