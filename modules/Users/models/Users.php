@@ -57,8 +57,6 @@ class UsersModel extends Model {
 					$this->addError('Groups', $this->APP->template->text('db:error:groups-noadmin'));
 				}
 			}
-		} else {
-			$this->addError('Groups', $this->APP->template->text('db:error:groups'));
 		}
 
 		// if we're inserting new record, no empty pass

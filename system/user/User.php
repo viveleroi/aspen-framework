@@ -32,9 +32,9 @@ class User extends Library {
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.
 			$values = $form->getCurrentValues();
-			if($values->isSetAndEmpty('password')){
-				if($values->isSetAndNotEmpty('password_confirm')){
-					$form->addError('password', 'You must confirm your password.');
+			if($values->isSetAndNotEmpty('password') || $values->isSetAndNotEmpty('password_confirm')){
+				if($values->isSetAndEmpty('password') || $values->isSetAndEmpty('password_confirm')){
+					$form->addError('password', 'You must enter and confirm your password.');
 				} else {
 					if(!$values->match('password', 'password_confirm')){
 						$form->addError('password', 'Your passwords do not match.');
@@ -62,35 +62,7 @@ class User extends Library {
 	 * @access public
 	 */
 	public function my_account(){
-
-		$id = $this->APP->params->session->getInt('user_id');
-
-		$form = new Form('users', $id);
-		$form->addField('password_confirm');
-
-		// if form submitted
-		if($form->isSubmitted('post','user-submit')){
-
-			// We need to validate the confirm password field here
-			// because the model doesn't care about this field.
-			if($form->isFilled('password')){
-				if(!$form->isFilled('password_confirm')){
-					$form->addError('password', 'You must confirm your password.');
-				} else {
-					if(!$form->fieldsMatch('password', 'password_confirm')){
-						$form->addError('password', 'Your passwords do not match.');
-					}
-				}
-			}
-
-			return $form->save($id);
-			
-		}
-
-		$this->APP->template->set(array('form'=>$form));
-
-		return false;
-
+		$this->edit($this->APP->params->session->getInt('user_id'));
 	}
 
 
@@ -100,11 +72,8 @@ class User extends Library {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($id){
-			$auth = $this->APP->model->open('users');
-			return $auth->delete($id);
-		}
-		return false;
+		$auth = $this->APP->model->open('users');
+		return $auth->delete($id);
 	}
 
 
