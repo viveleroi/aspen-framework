@@ -130,6 +130,8 @@ class User extends Library {
 			
 		}
 
+		$this->APP->template->set(array('form'=>$form));
+
 		return false;
 
 	}
@@ -229,6 +231,8 @@ class User extends Library {
 				return -1;
 			}
 		}
+
+		$this->APP->template->set(array('form'=>$form));
 
 		return false;
 

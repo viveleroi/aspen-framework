@@ -2,7 +2,6 @@
 
 <p><?php print $this->text('s1b:intro'); ?></p>
 
-<?php print $this->APP->form->printErrors(); ?>
 <?php print $this->APP->sml->printMessage(); ?>
 
 <form action="<?php print $this->createFormAction('account') ?>" method="post">

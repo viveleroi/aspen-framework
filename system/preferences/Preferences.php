@@ -123,7 +123,7 @@ class Preferences extends Library {
 		}
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted('post','preferences-submit')){
+		if($this->APP->params->post->isSetAndEmpty('preferences-submit')){
 			$config = $this->APP->model->open('config');
 			foreach($record as $field => $existing_value){
 				$record[$field] = $this->APP->params->post->getRaw($field);

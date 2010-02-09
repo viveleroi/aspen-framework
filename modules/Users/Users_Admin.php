@@ -76,8 +76,6 @@ class Users_Admin extends Module {
 			$this->APP->router->redirect('view', false, 'Index');
 		}
 
-		$data['values'] = $this->APP->form->getCurrentValues();
-
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'my_account.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
