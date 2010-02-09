@@ -385,6 +385,7 @@
 
 	$config['load_core_class'][] = array('classname' => 'Peregrine', 'folder' => 'security/Peregrine', 'var'=>'params');
 	$config['load_core_class'][] = array('classname' => 'Security');
+	$config['load_core_class'][] = array('classname' => 'Utils','autoload'=>false);
 	$config['load_core_class'][] = array('classname' => 'Date');
 	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false);

@@ -21,6 +21,12 @@ class Model extends Library {
 	private $calcs = false;
 
 	/**
+	 * @var array An array of tables to include upon resultset
+	 * @access private
+	 */
+	private $contains = array();
+
+	/**
 	 * @var integer Current page = total results divided by per_page
 	 * @access private
 	 */
@@ -379,6 +385,23 @@ class Model extends Library {
 			$this->ignore_tables = array_merge($this->ignore_tables, $tables);
 		} else {
 			$this->ignore_tables[] = $tables;
+		}
+	}
+
+
+	/**
+	 *
+	 * @return <type>
+	 */
+	public function contains(){
+		$args = func_get_args();
+
+		foreach($args as $arg){
+			if(is_array($arg)){
+				$this->contains = array_merge($this->contains, $arg);
+			} else {
+				$this->contains[] = $arg;
+			}
 		}
 	}
 
@@ -1460,15 +1483,13 @@ class Model extends Library {
 					while($result = $results->FetchRow()){
 
 						$schema = $this->getSchema();
-
-						if(defined('MODEL_TEST') && MODEL_TEST){ // @todo remove
-
 						$this->ignore($this->table);
 
 						if(isset($schema['children'])){
 							foreach($schema['children'] as $join_table => $child_table){
 
-								if(!in_array($child_table, $this->ignore_tables)){
+								if(!in_array($child_table, $this->ignore_tables) 
+										&& (in_array($child_table, $this->contains) || in_array($join_table, $this->contains))){
 
 									$child = $this->open($child_table);
 									$this->ignore($child_table);
@@ -1510,7 +1531,6 @@ class Model extends Library {
 						}
 
 						$this->ignore_tables_prev = $this->ignore_tables;
-						} // end MODEL_TEST
 
 						if(isset($result[$key]) && !isset($records[$result[$key]])){
 	                    	$records[$result[$key]] = $result;

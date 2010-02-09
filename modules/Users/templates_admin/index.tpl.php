@@ -15,12 +15,14 @@
 	<tbody>
 		<?php
 		if($users){
-			foreach($users as $user){ ?>
+			foreach($users as $user){ 
+		?>
+
 		<tr>
 			<td><?php print $this->createLink($user['nice_name'], 'edit', array('id' => $user['id'])) ?></td>
 			<td><?php print $user['username'] ?></td>
 			<td><?php print $this->niceDate($user['latest_login']) ?></td>
-			<td><?php print implode(', ', $this->APP->user->usersGroups($user['id'])) ?></td>
+			<td><?php print Utils::implode(', ', Utils::extract('Groups.{n}.name', $user)) ?></td>
 		</tr>
 		<?php
 			}
