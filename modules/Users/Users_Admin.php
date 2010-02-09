@@ -25,7 +25,6 @@ class Users_Admin extends Module {
 		$model = $this->APP->model->open('users');
 		$model->contains('groups');
 		$model->orderBy('username', 'ASC');
-		$model->ignore(array('config'));
 		$data['users'] = $model->results();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');

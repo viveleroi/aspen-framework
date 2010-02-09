@@ -1504,7 +1504,7 @@ class Model extends Library {
 										$field = rtrim($this->table, 's').'_id';
 										$child->where($join_table.'.'.$field, $result[$key]);
 										$result[ucwords($child_table)] = $child->results();
-										$this->ignore($child->get_ignore_prev());
+//										$this->ignore($child->get_ignore_prev());
 										
 									} else {
 
@@ -1525,7 +1525,7 @@ class Model extends Library {
 									$child->where($child->getPrimaryKey(), $result[$key]);
 									$result[ucwords($child_table)] = $child->results();
 
-									$this->ignore($child->get_ignore_prev());
+//									$this->ignore($child->get_ignore_prev());
 								}
 							}
 						}
@@ -1537,6 +1537,7 @@ class Model extends Library {
 	                    } else {
 	                    	$records[] = $result;
 	                    }
+						$this->ignore_tables = array();
 					}
 				} else {
 
