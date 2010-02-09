@@ -468,15 +468,14 @@ class Form extends Library {
 		
 		$this->param_type 	= $method;
 		$field_model 		= false;
-		$schema 			= $this->APP->model->getSchema();
 
 		if(is_array($this->_form_fields)){
 			foreach($this->_form_fields as $field => $bits){
 
 				// identify field from schema
 				$field_model = false;
-				if(isset($schema['schema'][strtoupper($field)])){
-					$field_model = $schema['schema'][strtoupper($field)];
+				if(isset($this->schema['schema'][strtoupper($field)])){
+					$field_model = $this->schema['schema'][strtoupper($field)];
 				}
 				
 				// determine security method
@@ -489,6 +488,7 @@ class Form extends Library {
 						$param_access_type = 'getDigits';
 					}
 				}
+
 				
 				// get core array, so we can verify if it's even set
 				$source = $this->APP->params->getRawSource($this->param_type);
@@ -496,14 +496,19 @@ class Form extends Library {
 
 				// if array key not set, we use the current value
 				if(!array_key_exists($field, $source)){
-					$this->_form_fields[$field]['current_value'] = $this->_form_fields[$field]['default_value'];
+					// if the field model is false, this really isn't a field
+					// so we can set it to false
+					if(!$field_model){
+						$this->_form_fields[$field]['current_value'] = false;
+					} else {
+						$this->_form_fields[$field]['current_value'] = $this->_form_fields[$field]['default_value'];
+					}
 				} else {
 	
 					// if array key set and a primary field, set post and current to default
 					if($field == $this->_primary_key_field){
 						$this->_form_fields[$field]['post_value'] = $this->_form_fields[$field]['default_value'];
 						$this->_form_fields[$field]['current_value'] = $this->_form_fields[$field]['post_value'];
-						
 					// otherwise, set value to incoming
 					} else {
 						$this->_form_fields[$field]['post_value'] = $get_val;
