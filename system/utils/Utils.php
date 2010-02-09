@@ -351,13 +351,15 @@ class Utils extends Library {
 					return null;
 				}
 			} elseif ($key === '{n}') {
-				foreach ($data as $j => $val) {
-					if (is_int($j)) {
-						$tmpPath = array_slice($path, $i + 1);
-						if (empty($tmpPath)) {
-							$tmp[] = $val;
-						} else {
-							$tmp[] = Utils::classicExtract($val, $tmpPath);
+				if(is_array($data)){
+					foreach ($data as $j => $val) {
+						if (is_int($j)) {
+							$tmpPath = array_slice($path, $i + 1);
+							if (empty($tmpPath)) {
+								$tmp[] = $val;
+							} else {
+								$tmp[] = Utils::classicExtract($val, $tmpPath);
+							}
 						}
 					}
 				}

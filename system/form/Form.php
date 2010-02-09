@@ -111,7 +111,7 @@ class Form extends Library {
 	 * @param string $field
 	 * @access private
 	 */
-	private function loadRecord($table, $id = false, $contains = array()){
+	private function loadRecord($table, $id = false, $contains = array(), $field = false){
 
 		$this->table = $table;
 	
@@ -161,6 +161,14 @@ class Form extends Library {
 			if(!$field->primary_key){
 				$fields[$field->name] = $this->cv($field->name, false);
 			}
+		}
+
+		// load in any child/parent data
+		foreach($schema['children'] as $table){
+			$fields[ucwords($table)] = $this->cv(ucwords($table));
+		}
+		foreach($schema['parents'] as $table){
+			$fields[ucwords($table)] = $this->cv(ucwords($table));
 		}
 		
 		// If there are no form errors, then attempt to process the database action.
@@ -376,8 +384,8 @@ class Form extends Library {
 		$val = $this->cv($field);
 
 		// if field is the name of a child/parent table
-		if(in_array(strtolower($field), $this->schema['children'])
-				|| in_array(strtolower($field), $this->schema['parents'])){
+		if($val && (in_array(strtolower($field), $this->schema['children'])
+				|| in_array(strtolower($field), $this->schema['parents']))){
 			return array_key_exists($match, $val) ? $str : '';
 		}
 		elseif(is_array($val)){

@@ -45,7 +45,7 @@
 		if($groups){
 			foreach($groups as $group){
 		?>
-		<input type="checkbox" name="group[]" value="<?php print $group['id'] ?>" id="group_<?php print $group['id'] ?>"<?php print $form->checked('Groups', $group['id']); ?> />
+		<input type="checkbox" name="Groups[]" value="<?php print $group['id'] ?>" id="group_<?php print $group['id'] ?>"<?php print $form->checked('Groups', $group['id']); ?> />
 		<label for="group_<?php print $group['id'] ?>"><?php print $group['name'] ?></label><br />
 		<?php
 			}

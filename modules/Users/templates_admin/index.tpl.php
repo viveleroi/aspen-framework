@@ -15,7 +15,7 @@
 	<tbody>
 		<?php
 		if($users){
-			foreach($users as $user){ 
+			foreach($users as $user){
 		?>
 
 		<tr>
