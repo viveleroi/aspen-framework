@@ -11,7 +11,7 @@
 	<pressUrl>http://www.aspen-framework.org</pressUrl>
 	<updateUrl>http://www.aspen-framework.org</updateUrl>
 
-    <model>authentication</model>
+    <model>users</model>
 	<model>groups</model>
 	
 </package>

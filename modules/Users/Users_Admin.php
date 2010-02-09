@@ -13,16 +13,17 @@
  * @package Aspen_Framework
  * @uses Module
  */
-class Users_Admin extends Module {	
+class Users_Admin extends Module {
 
-	
+
 	/**
 	 * Displays the list of users
 	 * @access public
 	 */
 	public function view(){
 
-		$model = $this->APP->model->open('authentication');
+		$model = $this->APP->model->open('users');
+		$model->contains('groups');
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
 
@@ -41,7 +42,7 @@ class Users_Admin extends Module {
 	public function add(){
 		$this->edit();
 	}
-	
+
 
 	/**
 	 * Displays and processes the edit user form
@@ -54,7 +55,7 @@ class Users_Admin extends Module {
 			$this->APP->sml->addNewMessage('User account changes have been saved successfully.', true);
 			$this->APP->router->redirect('view');
 		}
-		
+
 		$data['groups'] = $this->APP->user->groupList();
 		$data['values'] = $this->APP->form->getCurrentValues();
 
@@ -64,8 +65,8 @@ class Users_Admin extends Module {
 		$this->APP->template->display($data);
 
 	}
-	
-	
+
+
 	/**
 	 * Displays and processes the my account form
 	 * @access public
@@ -136,8 +137,8 @@ class Users_Admin extends Module {
 		$this->APP->template->display();
 
 	}
-	
-	
+
+
 	/**
 	 * Runs the authentication process on the login form data
 	 * @access public
@@ -151,7 +152,7 @@ class Users_Admin extends Module {
 		}
 	}
 
-	
+
 	/**
 	 * Processes a logout
 	 * @access public

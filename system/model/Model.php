@@ -21,6 +21,12 @@ class Model extends Library {
 	private $calcs = false;
 
 	/**
+	 * @var array An array of tables to include upon resultset
+	 * @access private
+	 */
+	private $contains = array();
+
+	/**
 	 * @var integer Current page = total results divided by per_page
 	 * @access private
 	 */
@@ -58,22 +64,22 @@ class Model extends Library {
 	private $field_security_rules = array();
 
 	/**
-	 * @var array Holds an array of foreign key mappings
+	 * @var array Contains an array of tables to ignore when pulling related results
 	 * @access private
 	 */
-	private $foreignkeys = array();
+	private $ignore_tables = array();
+
+	/**
+	 * @var array Contains an array of tables to ignore when pulling related results
+	 * @access private
+	 */
+	private $ignore_tables_prev = array();
 
 	/**
 	 * @var string Holds the last executed query
 	 * @access private
 	 */
 	private $last_query;
-
-	/**
-	 * @var string An array of tables to load which have a foreign key to current table
-	 * @access private
-	 */
-	private $load_child_tables;
 
 	/**
 	 * @var boolean Toggles the pagination features
@@ -216,8 +222,6 @@ class Model extends Library {
 	private function openTable($table = false){
 		$this->table = $table;
 		$this->generateSchema();
-		$this->generateForeignKeys();
-
 		if(!is_array($this->schema)){
 			$this->APP->error->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
 		}
@@ -254,7 +258,7 @@ class Model extends Library {
 			$clean 	= Peregrine::sanitize($fields);
 			$schema = $this->getSchema();
 
-			foreach($schema as $column){
+			foreach($schema['schema'] as $column){
 
 				// if it's set, and a value is present, we must validate that
 				// value against the database.
@@ -338,8 +342,8 @@ class Model extends Library {
         $found = true;
 
         $enums = false;
-        if(isset($this->schema[strtoupper($field)])){
-            $enums = $this->schema[strtoupper($field)]->enums;
+        if(isset($this->schema['schema'][strtoupper($field)])){
+            $enums = $this->schema['schema'][strtoupper($field)]->enums;
         }
 
         if(is_array($enums)){
@@ -373,12 +377,96 @@ class Model extends Library {
 
 
 	/**
+	 *
+	 * @param <type> $tables
+	 */
+	public function ignore($tables){
+		if(is_array($tables)){
+			$this->ignore_tables = array_merge($this->ignore_tables, $tables);
+		} else {
+			$this->ignore_tables[] = $tables;
+		}
+	}
+
+
+	/**
+	 *
+	 * @return <type>
+	 */
+	public function contains(){
+		$args = func_get_args();
+
+		foreach($args as $arg){
+			if(is_array($arg)){
+				$this->contains = array_merge($this->contains, $arg);
+			} else {
+				$this->contains[] = $arg;
+			}
+		}
+	}
+
+
+	/**
+	 *
+	 * @return <type>
+	 */
+	public function get_ignore(){
+		return $this->ignore_tables;
+	}
+
+
+	/**
+	 *
+	 * @return <type>
+	 */
+	public function get_ignore_prev(){
+		return $this->ignore_tables_prev;
+	}
+
+
+	/**
 	 * Loads the current table schema.
 	 * @access private
 	 * @return array
 	 */
 	private function generateSchema(){
-		$this->schema = $this->APP->db->MetaColumns($this->table, false);
+
+		$db_map = array();
+
+		// pull a list of all tables
+		$tables = $this->APP->db->MetaTables();
+		foreach($tables as $table){
+			$db_map[$table]['schema'] = $this->APP->db->MetaColumns($table, false);
+
+			foreach($db_map[$table]['schema'] as $field){
+				if(!$field->primary_key){
+					// If field name matches a table name
+					if(strpos($field->name, '_id')){
+						$tmp_tbl_name = str_replace('_id', '', $field->name).'s';
+						if(in_array($tmp_tbl_name,$tables)){
+							$db_map[$tmp_tbl_name]['children'][$table] = $table;
+							$db_map[$table]['parents'][$tmp_tbl_name] = $tmp_tbl_name;
+						}
+					}
+				}
+			}
+		}
+
+		// flag relation-only tables
+		foreach($db_map as $name => $table){
+			$db_map[$name]['relation_only'] = false;
+			if( isset($table['parents']) &&
+				count($table['parents']) == 2 &&
+				count($table['schema']) <= 3){
+					$db_map[$name]['relation_only'] = true;
+					$k = array_keys($table['parents']);
+					$db_map[ $k[0] ]['children'][$name] = $k[1];
+					$db_map[ $k[1] ]['children'][$name] = $k[0];
+			}
+		}
+
+		$this->db_schema = $db_map;
+		$this->schema =  $this->db_schema[$this->table];
 	}
 
 
@@ -398,53 +486,10 @@ class Model extends Library {
 	 * @access public
 	 */
 	final public function inSchema($field){
-		if(is_array($this->schema)){
-			return array_key_exists(strtoupper($field), $this->schema);
+		if(is_array($this->schema['schema'])){
+			return array_key_exists(strtoupper($field), $this->schema['schema']);
 		}
 		return false;
-	}
-
-
-	/**
-	 * Loads the current table foreign key mappings.
-	 * @access private
-	 * @return array
-	 */
-	private function generateForeignKeys(){
-
-		$key_maps = array();
-
-		// find all keys in the current table which connect it
-		// to a key of another table
-		$keys = $this->APP->db->MetaForeignKeys($this->table, false);
-		if(is_array($keys)){
-			foreach($keys as $table => $maps){
-				foreach($maps as $table_field => $local_field){
-					$key_maps[$local_field] = array($table => $table_field);
-				}
-			}
-		}
-
-
-		// attempt to find all tables which link to this tables primary key
-		$fks = $this->APP->getChildForeignKeys();
-		if(is_array($fks) && array_key_exists($this->table, $fks)){
-			$children = $fks[$this->table];
-			$key_maps[$this->getPrimaryKey()] = $children;
-		}
-
-		$this->foreignkeys = $key_maps;
-
-	}
-
-
-	/**
-	 * Returns raw schema for the current table
-	 * @return array
-	 * @access public
-	 */
-	final public function getForeignKeys(){
-		return $this->foreignkeys;
 	}
 
 
@@ -456,8 +501,8 @@ class Model extends Library {
 
 		$schema = $this->getSchema();
 
-		if(is_array($schema)){
-			foreach($schema as $field){
+		if(is_array($schema['schema'])){
+			foreach($schema['schema'] as $field){
 				if($field->primary_key){
 					return $field->name;
 				}
@@ -652,23 +697,6 @@ class Model extends Library {
 
 
 	/**
-	 * Adds a child table to inclusion in the results
-	 * @param string $child_table
-	 * @return boolean
-	 * @access public
-	 */
-	public function select_children($child_table){
-		foreach($this->foreignkeys as $field => $map){
-			if(in_array($child_table, array_keys($map))){
-				$this->load_child_tables[$field] = $child_table;
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-	/**
 	 * Adds an additional select field
 	 * @param string $field
 	 * @access public
@@ -800,7 +828,7 @@ class Model extends Library {
 
 	}
 
-	
+
 	/**
 	 * Adds a custom condition to the array
 	 * @param string $where
@@ -1048,7 +1076,7 @@ class Model extends Library {
 		// Create a base array of the current schema
 		$table_base_fields = array('keyword_search'=>false);
 		$table_schema = array_keys($this->getSchema());
-		foreach($table_schema as $key){
+		foreach($table_schema['schema'] as $key){
 			$table_base_fields[strtolower($key)] = false;
 		}
 
@@ -1250,8 +1278,10 @@ class Model extends Library {
 
 		// verify the field exists, if muliple fields present, skip
 		if(strpos($sort['sort_by'], ',') === false && strpos($sort['sort_by'], 'ASC') === false){
-			$sort['sort_by'] = array_key_exists(strtoupper($field), $this->getSchema()) || strpos($this->sql['FIELDS'], $field) ? $sort['sort_by'] : $this->table.'.'.$this->getPrimaryKey();
+			$schema = $this->getSchema();
+			$sort['sort_by'] = array_key_exists(strtoupper($field), $schema['schema']) || strpos($this->sql['FIELDS'], $field) ? $sort['sort_by'] : $this->table.'.'.$this->getPrimaryKey();
 		}
+
 		$this->sql['ORDER'] = sprintf("ORDER BY %s %s", $sort['sort_by'], $sort['sort_direction']);
 
 	}
@@ -1284,7 +1314,7 @@ class Model extends Library {
 
 			$fields = array();
 
-			foreach($this->schema as $field){
+			foreach($this->schema['schema'] as $field){
 				if(in_array($field->type, $this->APP->config('mysql_field_group_text'))){
 					$fields[] = $field->name;
 				}
@@ -1445,7 +1475,7 @@ class Model extends Library {
 		if($this->query_type == 'select'){
 
 			$records = array();
-			$records['RECORDS'] = array();
+			$records = array();
 
 			if($results = $this->query($sql)){
 
@@ -1454,35 +1484,71 @@ class Model extends Library {
 				if($results->RecordCount()){
 					while($result = $results->FetchRow()){
 
-						// Load in data from any selected child tables
-						if(!empty($this->load_child_tables)){
-							foreach($this->load_child_tables as $key => $child_table){
+						$schema = $this->getSchema();
+						$this->ignore($this->table);
 
-								// get the foreign key field name
-								$fk_field = $this->foreignkeys[$key][$child_table];
+						if(isset($schema['children'])){
+							foreach($schema['children'] as $join_table => $child_table){
 
-								// run query on child table to find all records
-								$child = $this->open($child_table);
-								$child->where($fk_field, $result[$key]);
-								$result[$child_table] = $child->results();
+								if(!in_array($child_table, $this->ignore_tables) 
+										&& (in_array($child_table, $this->contains) || in_array($join_table, $this->contains))){
 
+									$child = $this->open($child_table);
+									$this->ignore($child_table);
+									$this->ignore($join_table);
+									$child->ignore($this->get_ignore());
+
+									if($child_table != $join_table){
+
+										$field = rtrim($child_table, 's').'_id';
+										$child->leftJoin($join_table, $field, 'id', array($field));
+
+										$field = rtrim($this->table, 's').'_id';
+										$child->where($join_table.'.'.$field, $result[$key]);
+										$result[ucwords($child_table)] = $child->results();
+//										$this->ignore($child->get_ignore_prev());
+										
+									} else {
+
+										$field = rtrim($this->table, 's').'_id';
+										$child->where($field, $result[$key]);
+										$result[ucwords($child_table)] = $child->results();
+
+									}
+								}
+							}
+						}
+						if(isset($schema['parents'])){
+							foreach($schema['parents'] as $child_table){
+								if(!in_array($child_table, $this->ignore_tables)){
+									$this->ignore($child_table);
+									$child = $this->open($child_table);
+									$child->ignore($this->ignore_tables);
+									$child->where($child->getPrimaryKey(), $result[$key]);
+									$result[ucwords($child_table)] = $child->results();
+
+//									$this->ignore($child->get_ignore_prev());
+								}
 							}
 						}
 
-						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
-	                    	$records['RECORDS'][$result[$key]] = $result;
+						$this->ignore_tables_prev = $this->ignore_tables;
+
+						if(isset($result[$key]) && !isset($records[$result[$key]])){
+	                    	$records[$result[$key]] = $result;
 	                    } else {
-	                    	$records['RECORDS'][] = $result;
+	                    	$records[] = $result;
 	                    }
+						$this->ignore_tables = array();
 					}
 				} else {
 
-					$records['RECORDS'] = false;
+					$records = false;
 
 				}
 			} else {
 
-				$records['RECORDS'] = false;
+				$records = false;
 
 			}
 
@@ -1496,19 +1562,20 @@ class Model extends Library {
 			}
 
 			// if any pagination, return found rows
-			if($this->paginate){
-				$results = $this->query('SELECT FOUND_ROWS()');
-				$records['TOTAL_RECORDS_FOUND'] = $results->fields['FOUND_ROWS()'];
-				$records['CURRENT_PAGE'] = $this->current_page;
-				$records['RESULTS_PER_PAGE'] = $this->per_page;
-				$records['TOTAL_PAGE_COUNT'] = ceil($records['TOTAL_RECORDS_FOUND'] / $this->per_page);
-			} else {
-				$records['TOTAL_RECORDS_FOUND'] = ($records['RECORDS'] ? count($records['RECORDS']) : 0);
-			}
+			// // @todo fix this
+//			if($this->paginate){
+//				$results = $this->query('SELECT FOUND_ROWS()');
+//				$records['TOTAL_RECORDS_FOUND'] = $results->fields['FOUND_ROWS()'];
+//				$records['CURRENT_PAGE'] = $this->current_page;
+//				$records['RESULTS_PER_PAGE'] = $this->per_page;
+//				$records['TOTAL_PAGE_COUNT'] = ceil($records['TOTAL_RECORDS_FOUND'] / $this->per_page);
+//			} else {
+//				$records['TOTAL_RECORDS_FOUND'] = ($records ? count($records) : 0);
+//			}
 
 			// If return single set, grab first array item
 			if($this->return_single){
-				$records = $records['RECORDS'] ? array_shift($records['RECORDS']) : false;
+				$records = $records ? array_shift($records) : false;
 			}
 
 			$this->tmp_records = false;
@@ -1615,8 +1682,8 @@ class Model extends Library {
 			$this->where($field_name, $id);
 			$records = $this->results();
 
-			if($records['RECORDS']){
-				foreach($records['RECORDS'] as $del){
+			if($records){
+				foreach($records as $del){
 					$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $this->getPrimaryKey(), $del['id']);
 					$result = (bool)$this->query($this->sql['DELETE']);
 					if($result){
@@ -1656,7 +1723,7 @@ class Model extends Library {
 
 		$fields = $this->getSchema();
 
-		foreach($fields as $field){
+		foreach($fields['schema'] as $field){
 			if(!$field->auto_increment){
 				$field_names[] = $field->name;
 			}
@@ -1707,8 +1774,8 @@ class Model extends Library {
 
 		$total = 0;
 
-		if(is_array($this->tmp_records['RECORDS'])){
-			foreach($this->tmp_records['RECORDS'] as $record){
+		if(is_array($this->tmp_records)){
+			foreach($this->tmp_records as $record){
 				$total += isset($record[$field]) ? $record[$field] : 0;
 			}
 		}
@@ -1731,7 +1798,7 @@ class Model extends Library {
 
 		$html = '<table>' . "\n";
 
-		foreach($this->schema as $field){
+		foreach($this->schema['schema'] as $field){
 			if(!$field->primary_key && !in_array($field->name, $ignore_fields)){
 
 				$name = isset($row_names[$field->name]) ? $row_names[$field->name] : $field->name;

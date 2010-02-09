@@ -62,8 +62,8 @@ class Modules extends Library {
 			$model->orderBy('sort_order');
 			$modules = $model->results();
 
-			if($modules['RECORDS']){
-				foreach($modules['RECORDS'] as $module){
+			if($modules){
+				foreach($modules as $module){
 					$reg = $this->APP->moduleRegistry($module['guid']);
 					if(isset($reg->installable) && $reg->installable){
 						$nonbase[] = $module['guid'];

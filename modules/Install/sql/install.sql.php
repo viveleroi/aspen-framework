@@ -8,7 +8,7 @@
 
 $sql[] = "
 
-CREATE TABLE IF NOT EXISTS `authentication` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `username` text NOT NULL,
   `nice_name` varchar(155) NOT NULL default '',

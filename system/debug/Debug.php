@@ -56,10 +56,19 @@ class DebugBase {
 	/**
 	 *
 	 */
-	private function dump(){
+	private function dump($trace = true){
+
+		$debug = Debug::called_from();
+		$name = ($this->name ? $this->name : $this->print_type );
 
 		print $this->line_end;
-		print ($this->name ? $this->name : $this->print_type ).': '.$this->line_end;
+		printf('%s: from %s::%s() line %d',
+					$name,
+					$debug['caller']['class'],
+					$debug['caller']['function'],
+					$debug['caller']['line']);
+		print $this->line_end;
+
 		if($this->print_type == 'var_dump'){
 			var_dump($this->val);
 		}
@@ -68,16 +77,20 @@ class DebugBase {
 		}
 		print $this->line_end;
 
+		if($trace){
+			print $name.' Backtrace: '.$this->line_end;
+			print $debug['trace'];
+		}
 	}
 
 
 	/**
 	 *
 	 */
-	public function pre(){
+	public function pre($trace = true){
 		print '<pre>';
 		$this->line_end = "\n";
-		$this->p();
+		$this->p($trace);
 		print '</pre>';
 	}
 
@@ -85,19 +98,19 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function cli(){
+	public function cli($trace = true){
 		$this->line_end = "\n";
-		$this->dump();
+		$this->dump($trace);
 	}
 
 
 	/**
 	 *
 	 */
-	public function html($hide = false){
+	public function html($hide = false, $trace = true){
 		print $hide ? '<!--' : '';
 		$this->line_end = $hide ? "\n" : "<br />";
-		$this->dump();
+		$this->dump($trace);
 		print $hide ? '-->' : '';
 	}
 
@@ -105,18 +118,18 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function p(){
+	public function p($trace = true){
 		$this->print_type = 'print_r';
-		$this->dump();
+		$this->dump($trace);
 	}
 
 
 	/**
 	 *
 	 */
-	public function v(){
+	public function v($trace = true){
 		$this->print_type = 'var_dump';
-		$this->dump();
+		$this->dump($trace);
 	}
 
 
@@ -235,6 +248,48 @@ class Debug {
 		}
 
 		print ($ignore_phpunit ? ' -- ignoring phpunit -- ' : '') . $line_end;
+
+	}
+
+
+	/**
+	 *
+	 * @param <type> $line_end
+	 * @param <type> $ignore_phpunit
+	 */
+	static public function called_from($line_end = false, $ignore_phpunit = true){
+
+		$line_end = $line_end ? $line_end : "\n";
+
+		$db = debug_backtrace();
+		$ret = array('trace'=>'','caller'=>array());
+
+		foreach($db as $pos => $caller){
+			if($pos > 0){
+				$clean 	= Peregrine::sanitize($caller);
+				if($ignore_phpunit && strpos(strtolower($clean->getRaw('file')), 'phpunit') !== false){
+					continue;
+				}
+				elseif(strpos(strtolower($clean->getRaw('file')), 'debug') !== false){
+					continue;
+				}
+				elseif(strpos(strtolower($clean->getRaw('class')), 'debugbase') !== false){
+					continue;
+				}
+
+				if(empty($ret['caller'])){
+					$ret['caller']['file'] = $clean->getRaw('file');
+					$ret['caller']['line'] = $db[($pos-1)]['line'];
+					$ret['caller']['class'] = $clean->getRaw('class');
+					$ret['caller']['function'] = $clean->getRaw('function');
+				}
+
+				$ret['trace'] .= $pos . ': ' . $clean->getRaw('file').' - ' . $clean->getInt('line') . ' called ' . $clean->getRaw('class') . '::' . $clean->getRaw('function') . '();' . $line_end;
+
+			}
+		}
+
+		return $ret;
 
 	}
 }

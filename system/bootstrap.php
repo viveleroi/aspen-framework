@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', false);
+ini_set('display_errors', true);
 error_reporting(E_ALL);
 
 /**
@@ -1183,8 +1183,8 @@ class Bootstrap extends Base {
 			$model = $this->model->open('modules');
 			$model->orderBy('sort_order');
 			$modules = $model->results();
-			if($modules['RECORDS']){
-				foreach($modules['RECORDS'] as $module){
+			if($modules){
+				foreach($modules as $module){
 					$this->_modules[] = $module['guid'];
 				}
 				return true;
@@ -1346,7 +1346,7 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function awaitingUpgrade(){
-		if($this->config('watch_pending_db_upgrade')){
+		if($this->config('watch_pending_db_upgrade') && $this->isInstalled()){
 
 			$build = $this->formatVersionNumber($this->config('application_version'));
 			$latest_build = $this->latestVersion();

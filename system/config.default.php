@@ -262,7 +262,7 @@
 
 	// list any tables the activity log needs to be watching
 	// Note, you must enable the activity log by including the class.
-	$config['activity_watch_tables'] = array('authentication');
+	//$config['activity_watch_tables'] = array('authentication');
 
 	// preference config_keys to load for preference editing function
 	$config['preference_configs_to_edit'] = array();
@@ -385,6 +385,7 @@
 
 	$config['load_core_class'][] = array('classname' => 'Peregrine', 'folder' => 'security/Peregrine', 'var'=>'params');
 	$config['load_core_class'][] = array('classname' => 'Security');
+	$config['load_core_class'][] = array('classname' => 'Utils','autoload'=>false);
 	$config['load_core_class'][] = array('classname' => 'Date');
 	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false);

@@ -80,7 +80,7 @@ class Activityrender extends Library {
 		$this->all_recent_activity = array();
 
 		$ac = $this->APP->model->open('activity');
-		$ac->leftJoin('authentication', 'id', 'user_id', array('username','nice_name'));
+		$ac->leftJoin('users', 'id', 'user_id', array('username','nice_name'));
 		$ac->inPastXDays('timestamp');
 
 		if($this->table){
@@ -100,8 +100,8 @@ class Activityrender extends Library {
 		$activities = $ac->results();
 
 		$count = 0;
-		if($activities['RECORDS']){
-			foreach($activities['RECORDS'] as $activity){
+		if($activities){
+			foreach($activities as $activity){
 
 				if($count > $this->activity_limit){
 					break;
@@ -122,7 +122,7 @@ class Activityrender extends Library {
 				$this->all_recent_activity[$key][] = $activity;
 			}
 		}
-		return (bool)$activities['RECORDS'];
+		return (bool)$activities;
 	}
 	
 
@@ -201,7 +201,7 @@ class Activityrender extends Library {
 	 */
 	public function getRealUser($user){
 		if($user){
-			$user = $this->APP->model->open('authentication', $user);
+			$user = $this->APP->model->open('users', $user);
 			return $user['nice_name'];
 		}
 		return '(empty)';

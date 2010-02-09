@@ -22,7 +22,7 @@ class User extends Library {
 	 */
 	public function edit($id = false){
 
-		$this->APP->form->load('authentication', $id);
+		$this->APP->form->load('users', $id);
 		$this->APP->form->addField('password_confirm');
 
 		// pull all groups this user is associated with
@@ -31,8 +31,8 @@ class User extends Library {
 			$model = $this->APP->model->open('user_group_link');
 			$model->where('user_id', $id);
 			$groups = $model->results();
-			if($groups['RECORDS']){
-				foreach($groups['RECORDS'] as $group){
+			if($groups){
+				foreach($groups as $group){
 					$group_array[] = $group['group_id'];
 				}
 			}
@@ -135,7 +135,7 @@ class User extends Library {
 
 		$id = $this->APP->params->session->getInt('user_id');
 
-		$this->APP->form->load('authentication', $id);
+		$this->APP->form->load('users', $id);
 		$this->APP->form->addField('password_confirm');
 
 		// if form submitted
@@ -169,7 +169,7 @@ class User extends Library {
 	 */
 	public function delete($id = false){
 		if($id){
-			$auth = $this->APP->model->open('authentication');
+			$auth = $this->APP->model->open('users');
 			return $auth->delete($id);
 		}
 		return false;
@@ -226,7 +226,7 @@ class User extends Library {
 			$new_pass = $this->makePassword();
 
 			// load the account
-			$auth = $this->APP->model->open('authentication');
+			$auth = $this->APP->model->open('users');
 			$user = $auth->quickSelectSingle($this->APP->form->cv('user'), 'username');
 
 			if(is_array($user)){
@@ -285,15 +285,15 @@ class User extends Library {
 
 		if($user && $pass){
 
-			$model = $this->APP->model->open('authentication');
+			$model = $this->APP->model->open('users');
 			$model->where('password', $pass);
 			$model->where('username', $user);
 			$model->where('allow_login', 1);
 			$model->limit(0, 1);
 			$result = $model->results();
 
-			if($result['RECORDS']){
-				foreach($result['RECORDS'] as $account){
+			if($result){
+				foreach($result as $account){
 
 					$auth = true;
 
@@ -308,7 +308,6 @@ class User extends Library {
 
 					// update last login date
 					$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
-					$model = $this->APP->model->open('authentication');
 					$model->update($upd, $account['id']);
 
 					$auth = true;
@@ -409,8 +408,8 @@ class User extends Library {
 
 				$group_where = '';
 
-				if($groups['RECORDS']){
-					foreach($groups['RECORDS'] as $group){
+				if($groups){
+					foreach($groups as $group){
 						$group_where .= '
 							OR group_id = ' . $group['group_id'];
 					}
@@ -469,8 +468,8 @@ class User extends Library {
 
 				$group_where = '';
 
-				if($groups['RECORDS']){
-					foreach($groups['RECORDS'] as $group){
+				if($groups){
+					foreach($groups as $group){
 						$group_where .= '
 							OR group_id = ' . $group['group_id'];
 					}
@@ -556,7 +555,7 @@ class User extends Library {
 			$model->where('groups.name', $group_name);
 			$groups = $model->results();
 
-			$ingroup = (boolean)$groups['RECORDS'];
+			$ingroup = (boolean)$groups;
 
 		}
 
@@ -582,8 +581,8 @@ class User extends Library {
 			$model->where('user_id', $user_id);
 			$groups = $model->results();
 
-			if($groups['RECORDS']){
-				foreach($groups['RECORDS'] as $id => $group){
+			if($groups){
+				foreach($groups as $id => $group){
 					$ingroups[$id] = $group['name'];
 				}
 			}
@@ -610,7 +609,7 @@ class User extends Library {
 			$model->where('group_id', 1);
 			$groups = $model->results();
 
-			$has_access = $groups['RECORDS'] ? true : false;
+			$has_access = $groups ? true : false;
 
 		}
 
@@ -628,9 +627,9 @@ class User extends Library {
 
 		if($this->APP->checkDbConnection()){
 
-			$model = $this->APP->model->open('authentication');
+			$model = $this->APP->model->open('users');
 			$accounts = $model->results();
-			return count($accounts['RECORDS']);
+			return count($accounts);
 
 		} else {
 
@@ -706,7 +705,7 @@ class User extends Library {
 		$model = $this->APP->model->open('groups');
 		$model->orderBy('name');
 		$groups = $model->results();
-		return $groups['RECORDS'];
+		return $groups;
 
 	}
 }

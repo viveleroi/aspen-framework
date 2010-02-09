@@ -60,13 +60,13 @@ class Scaffold extends Library {
 			$schema 	= $model->getSchema();
 			$key_field 	= $model->getPrimaryKey();
 
-			foreach($schema as $field){
+			foreach($schema['schema'] as $field){
 				$thead .= sprintf('<th>%s</th>' . "\n", $this->fieldName($field->name));
 			}
 
 			// loop the results
-			if($results['RECORDS']){
-				foreach($results['RECORDS'] as $result){
+			if($results){
+				foreach($results as $result){
 
 					$tbody .= '<tr>' . "\n";
 
@@ -122,7 +122,7 @@ class Scaffold extends Library {
 			$schema 	= $model->getSchema();
 			$key_field 	= $model->getPrimaryKey();
 
-			foreach($schema as $field){
+			foreach($schema['schema'] as $field){
 				$thead .= sprintf('			<th>%s</th>' . "\n", $this->fieldName($field->name));
 			}
 
@@ -131,8 +131,8 @@ class Scaffold extends Library {
 
 $tbody .= "
 		<?php
-			if($".$table."['RECORDS']){
-				foreach($".$table."['RECORDS'] as \$record){
+			if($".$table."){
+				foreach($".$table." as \$record){
 		?>
 		<tr>\n";
 
@@ -276,7 +276,7 @@ $tbody .= "		</tr>\n
 			$html .= sprintf('<form action="%s" method="post">'."\n", $this->APP->template->createFormAction());
 		}
 
-		foreach($schema as $field){
+		foreach($schema['schema'] as $field){
 
 			if(!$field->primary_key){
 				$html .= '	<p>' . "\n";

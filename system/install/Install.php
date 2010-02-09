@@ -220,7 +220,7 @@ class Install extends Library {
 			}
 		}
 
-		$this->APP->form->load('authentication');
+		$this->APP->form->load('users');
 		$this->APP->form->addField('password_2');
 
 		// process the form if submitted

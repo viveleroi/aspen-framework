@@ -31,8 +31,8 @@ class Preferences extends Library {
 			$pref_model->where('LEFT(config_key, 4)', 'sort');
 			$sorts = $pref_model->results();
 
-			if($sorts['RECORDS']){
-				foreach($sorts['RECORDS'] as $sort){
+			if($sorts){
+				foreach($sorts as $sort){
 					$_SESSION['settings']['sorts'][$sort['config_key']] = $sort;
 				}
 			}

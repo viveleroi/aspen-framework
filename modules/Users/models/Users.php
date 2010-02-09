@@ -12,7 +12,7 @@
  * This class manages our mysql sql query generation
  * @package Aspen_Framework
  */
-class AuthenticationModel extends Model {
+class UsersModel extends Model {
 
 	/**
 	 * We must allow the parent constructor to run properly
@@ -40,10 +40,10 @@ class AuthenticationModel extends Model {
 
 			// if we're adding the record, check for existing username
 			if(!$primary_key){
-				$user = $this->open('authentication');
+				$user = $this->open('users');
 				$user->where('username', $clean->getRaw('username'));
 				$unique = $user->results();
-				if($unique['RECORDS']){
+				if($unique){
 					$this->addError('username', $this->APP->template->text('db:error:username-dup'));
 				}
 			}
