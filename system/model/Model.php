@@ -1791,30 +1791,31 @@ class Model extends Library {
 	 * @param array $ignore_fields
 	 * @return string
 	 * @access public
+	 * @todo fix or deprecate this
 	 */
-	public function createHtmlTable($row_names = false, $ignore_fields = false){
-
-		$row_names = is_array($row_names) ? $row_names : array();
-
-		$html = '<table>' . "\n";
-
-		foreach($this->schema['schema'] as $field){
-			if(!$field->primary_key && !in_array($field->name, $ignore_fields)){
-
-				$name = isset($row_names[$field->name]) ? $row_names[$field->name] : $field->name;
-
-				// clean name for row title
-				$name = ucwords(str_replace("_", " ", $name));
-
-				$html .= sprintf('<tr><td><b>%s:</b></td><td>%s</td></tr>' . "\n", $name, $this->APP->form->cv($field->name));
-			}
-		}
-
-		$html .= '</table>' . "\n";
-
-		return $html;
-
-	}
+//	public function createHtmlTable($row_names = false, $ignore_fields = false){
+//
+//		$row_names = is_array($row_names) ? $row_names : array();
+//
+//		$html = '<table>' . "\n";
+//
+//		foreach($this->schema as $field){
+//			if(!$field->primary_key && !in_array($field->name, $ignore_fields)){
+//
+//				$name = isset($row_names[$field->name]) ? $row_names[$field->name] : $field->name;
+//
+//				// clean name for row title
+//				$name = ucwords(str_replace("_", " ", $name));
+//
+//				$html .= sprintf('<tr><td><b>%s:</b></td><td>%s</td></tr>' . "\n", $name, $this->APP->form->cv($field->name));
+//			}
+//		}
+//
+//		$html .= '</table>' . "\n";
+//
+//		return $html;
+//
+//	}
 
 
 //+-----------------------------------------------------------------------+
@@ -1991,7 +1992,8 @@ class Model extends Library {
 
 			$this->after_update($result, $where_value, $where_field, $fields, $this->existing_record);
 
-			return $result;
+			// return the primary record id if it's available, otherwise bool
+			return $update_id ? $update_id : $result;
 
 		}
 

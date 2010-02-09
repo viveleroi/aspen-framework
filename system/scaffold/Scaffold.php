@@ -243,19 +243,20 @@ $tbody .= "		</tr>\n
 	public function recordForm($table = false, $type = 'Add', $id = false, $return_html = false){
 
 		// loads record - if fails it defaults to loadTable
-		$this->APP->form->load($table, $id);
+		$form = new Form($table, $id);
 
 		// if form has been submitted
-		if($this->APP->form->isSubmitted()){
+		if($form->isSubmitted()){
 
-			if($this->APP->form->save($id)){
+			if($form->save($id)){
 				$this->APP->router->redirect('view');
 			}
 		}
 
 
 		// make sure the template has access to all current values
-		$values = $this->APP->form->getCurrentValues();
+		// @todo fix this
+		$values = $form->getCurrentValues();
 		$schema = $this->APP->model->getSchema();
 
 		// build the html form

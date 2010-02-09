@@ -2,7 +2,7 @@
 
 <p><?php print $this->text('s2:intro'); ?></p>
 
-<?php print $this->APP->form->printErrors(); ?>
+<?php print $form->printErrors(); ?>
 <?php print $this->APP->sml->printMessage(); ?>
 
 <form action="<?php print $this->createUrl('account') ?>" method="post">

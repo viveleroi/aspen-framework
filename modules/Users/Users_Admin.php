@@ -57,7 +57,6 @@ class Users_Admin extends Module {
 		}
 
 		$data['groups'] = $this->APP->user->groupList();
-		$data['values'] = $this->APP->form->getCurrentValues();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
@@ -77,8 +76,6 @@ class Users_Admin extends Module {
 			$this->APP->sml->addNewMessage('Your account has been updated successfully.', true);
 			$this->APP->router->redirect('view', false, 'Index');
 		}
-
-		$data['values'] = $this->APP->form->getCurrentValues();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'my_account.tpl.php');

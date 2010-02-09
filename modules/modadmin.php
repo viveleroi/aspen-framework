@@ -184,25 +184,22 @@ $class_output .= "
 	 */
 	public function add(){
 
-		\$this->APP->form->load('".$table_name."');
+		\$form = new Form('".$table_name."');
 
 		// if form has been submitted
-		if(\$this->APP->form->isSubmitted()){
+		if(\$form->isSubmitted()){
 
 			// insert a new record with available data
-			if(\$this->APP->form->save()){
+			if(\$form->save()){
 				// if successful insert, redirect to the list
 				\$this->APP->router->redirect('view');
 			}
 		}
 
-		// make sure the template has access to all current values
-		\$data['values'] = \$this->APP->form->getCurrentValues();
-
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getModuleTemplateDir().DS . 'add.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		\$this->APP->template->display(\$data);
+		\$this->APP->template->display(array('form'=>\$form));
 
 	}
 
@@ -214,25 +211,22 @@ $class_output .= "
 	 */
 	public function edit(\$id = false){
 
-		\$this->APP->form->load('".$table_name."', \$id);
+		\$form = new Form('".$table_name."', \$id);
 
 		// if form has been submitted
-		if(\$this->APP->form->isSubmitted()){
+		if(\$form->isSubmitted()){
 
 			// insert a new record with available data
-			if(\$this->APP->form->save(\$id)){
+			if(\$form->save(\$id)){
 				// if successful insert, redirect to the list
 				\$this->APP->router->redirect('view');
 			}
 		}
 
-		// make sure the template has access to all current values
-		\$data['values'] = \$this->APP->form->getCurrentValues();
-
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
 		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		\$this->APP->template->display(\$data);
+		\$this->APP->template->display(array('form'=>\$form));
 
 	}
 

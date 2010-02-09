@@ -104,34 +104,35 @@ class Install extends Library {
 	public function setup($retry = false){
 		
 		// define the form
-		$this->APP->form->addFields(array('db_username', 'db_password', 'db_database', 'db_hostname'));
+		$form = new Form();
+		$form->addFields(array('db_username', 'db_password', 'db_database', 'db_hostname'));
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted('post', 'submit')){
+		if($form->isSubmitted('post', 'submit')){
 
 			// validation
-			if(!$this->APP->form->isFilled('db_username')){
-				$this->APP->form->addError('db_username', 'You must enter a username');
+			if(!$form->isFilled('db_username')){
+				$form->addError('db_username', 'You must enter a username');
 			}
 			
-			if(!$this->APP->form->isFilled('db_database')){
-				$this->APP->form->addError('db_database', 'You must enter a database name.');
+			if(!$form->isFilled('db_database')){
+				$form->addError('db_database', 'You must enter a database name.');
 			}
 			
-			if(!$this->APP->form->isFilled('db_hostname')){
-				$this->APP->form->addError('db_hostname', 'You must enter a hostname or ip address.');
+			if(!$form->isFilled('db_hostname')){
+				$form->addError('db_hostname', 'You must enter a hostname or ip address.');
 			}
 			
 
 			// if no error, proceed with setting up config file
-			if(!$this->APP->form->error()){
+			if(!$form->error()){
 				
 				// save the config to a file
 				$fill = "<?php\n";
-				$fill .= '$config[\'db_hostname\'] = \''.	$this->APP->form->cv('db_hostname')	."';\n";
-				$fill .= '$config[\'db_database\'] = \''.	$this->APP->form->cv('db_database')	."';\n";
-				$fill .= '$config[\'db_username\'] = \''.	$this->APP->form->cv('db_username')	."';\n";
-				$fill .= '$config[\'db_password\'] = \''.	$this->APP->form->cv('db_password')	."';\n";
+				$fill .= '$config[\'db_hostname\'] = \''.	$form->cv('db_hostname')	."';\n";
+				$fill .= '$config[\'db_database\'] = \''.	$form->cv('db_database')	."';\n";
+				$fill .= '$config[\'db_username\'] = \''.	$form->cv('db_username')	."';\n";
+				$fill .= '$config[\'db_password\'] = \''.	$form->cv('db_password')	."';\n";
 				$fill .= '?>';
 
 				// check if we can write the config file ourselves
@@ -159,7 +160,7 @@ class Install extends Library {
 			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 			$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'setup_config.tpl.php');
 			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-			$this->APP->template->display();
+			$this->APP->template->display(array('form'=>$form));
 			
 		} else {
 			
@@ -192,6 +193,8 @@ class Install extends Library {
 	 * @access public
 	 */
 	public function account(){
+
+		$form = new Form('users');
 		
 		// If no config file present we cannot proceed - sends user back to setup config
 		if(!$this->APP->checkUserConfigExists()){
@@ -200,7 +203,7 @@ class Install extends Library {
 		}
 
 		// if the config exists and we're not creating an account, attempt to install the base tables
-		if(!$this->APP->form->isSubmitted('post', 'submit')){
+		if(!$form->isSubmitted('post', 'submit')){
 			if($this->APP->db){
 				
 				// if no tables exist yet
@@ -220,17 +223,17 @@ class Install extends Library {
 			}
 		}
 
-		$this->APP->form->load('users');
-		$this->APP->form->addField('password_2');
+		$form->load('authentication');
+		$form->addField('password_2');
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted('post', 'submit')){
+		if($form->isSubmitted('post', 'submit')){
 			
-			if(!$this->APP->form->fieldsMatch('password', 'password_2')){
-				$this->APP->form->addError('password', 'Your passwords must match.');
+			if(!$form->fieldsMatch('password', 'password_2')){
+				$form->addError('password', 'Your passwords must match.');
 			}
 
-			if($this->APP->form->save()){
+			if($form->save()){
 
 				$group_link = $this->APP->model->open('user_group_link');
 				$group_link->insert( array('group_id'=>1,'user_id'=>1) );
@@ -242,7 +245,7 @@ class Install extends Library {
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'create_account.tpl.php');
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		$this->APP->template->display(array('form'=>$form));
 
 	}
 	
@@ -295,7 +298,7 @@ class Install extends Library {
 	 * @access private
 	 */
 	private function recordCurrentBuild(){
-		$this->APP->settings->setConfig( 'app.database.version', $this->APP->formatVersionNumber($this->APP->config('application_version')) );
+		$this->APP->settings->setConfig( 'app.database.version', $formatVersionNumber($this->APP->config('application_version')) );
 	}
 	
 	
