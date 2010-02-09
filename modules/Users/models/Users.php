@@ -49,6 +49,18 @@ class UsersModel extends Model {
 			}
 		}
 
+		// verify groups
+		if(!$clean->isEmpty('Groups')){
+			// Make sure an admin isn't removing his own admin status
+			if(defined('IS_ADMIN') && IS_ADMIN && $primary_key == $this->APP->params->session->getInt('user_id')){
+				if(!in_array(1, $clean->getRaw('Groups'))){
+					$this->addError('Groups', $this->APP->template->text('db:error:groups-noadmin'));
+				}
+			}
+		} else {
+			$this->addError('Groups', $this->APP->template->text('db:error:groups'));
+		}
+
 		// if we're inserting new record, no empty pass
 		if(!$primary_key && $clean->isEmpty('password')){
 			$this->addError('password', $this->APP->template->text('db:error:password'));
@@ -96,6 +108,7 @@ class UsersModel extends Model {
 		}
 
 		return $fields;
+		
 	}
 
 

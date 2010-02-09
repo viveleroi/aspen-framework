@@ -22,6 +22,7 @@ class User extends Library {
 	 */
 	public function edit($id = false){
 
+		$result = false;
 		$form = new Form('users', $id, array('groups'));
 		$form->addField('password_confirm');
 
@@ -41,46 +42,17 @@ class User extends Library {
 				}
 			}
 
-			// validate the groups
-			$groups = $form->cv('group');
-			if(empty($groups)){
-//				$form->addError('group', 'You must select at least one user group.');
-			}
-
 			// if allow_login not present, set to false
 			$form->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
 
 			// save the data as well as the groups
-			if($result = $form->save($id)){
-
-//				/**
-//				 * Add in new groups
-//				 */
-//				$groups = $form->cv('group');
-//
-//				// if user is admin, we can't permit them to remove the admin group
-//				// from themselves
-//				if(IS_ADMIN && $id == $this->APP->params->session->getInt('user_id')){
-//					if(!in_array(1, $groups)){
-//						$groups[] = 1;
-//					}
-//				}
-//
-//				// remove existing and add in new groups
-//				$group_model = $this->APP->model->open('user_group_link');
-//				$group_model->delete($id, 'user_id');
-//				foreach($groups as $group){
-//					$group_model->insert(array('user_id' => (int)$id, 'group_id' => (int)$group));
-//				}
-
-				return $result;
-
-			}
+			$result = $form->save($id);
+			
 		}
 
 		$this->APP->template->set(array('form'=>$form));
 
-		return false;
+		return $result;
 
 	}
 

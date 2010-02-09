@@ -52,8 +52,10 @@ $lang['admin']['denied:title'] 	= 'Permission Denied';
 $lang['admin']['denied:intro'] 	= 'Your user account does not currently have sufficient permission to access this page. Please contact an administrator for assistance.';
 
 // query validation errors
-$lang['admin']['db:error:username']		= 'You must enter a username (E-mail address).';
-$lang['admin']['db:error:username-dup'] = 'The chosen username / email has already been used.';
-$lang['admin']['db:error:password']		= 'You must enter a valid password.';
-$lang['admin']['db:error:groupname']	= 'You must enter a name.';
+$lang['admin']['db:error:username']			= 'You must enter a username (E-mail address).';
+$lang['admin']['db:error:username-dup']		= 'The chosen username / email has already been used.';
+$lang['admin']['db:error:password']			= 'You must enter a valid password.';
+$lang['admin']['db:error:groupname']		= 'You must enter a name.';
+$lang['admin']['db:error:groups']			= 'You must select at least one group.';
+$lang['admin']['db:error:groups-noadmin']	= 'You may not remove your own administrator status.';
 ?>
