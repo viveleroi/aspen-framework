@@ -1915,6 +1915,34 @@ class Model extends Library {
 				$this->activity_detect_changes('insert', $result, $fields);
 			}
 
+			// @todo not sure if this works for parents?
+//			$rel_tables = array_unique(array_merge($this->schema['children'], $this->schema['parents']));
+
+			// extract any child/parent table data and process those saves separately
+			if($result){
+				foreach($this->schema['children'] as $real_table => $table){
+					if(isset($fields[ucwords($table)]) && is_array($fields[ucwords($table)])){
+						$arr = $fields[ucwords($table)];
+
+						$rel_model = $this->open($real_table);
+
+						$field_1 = rtrim($this->table, 's').'_id';
+						$field_2 = rtrim($table, 's').'_id';
+
+						if($rel_model->is_relation_only()){
+							foreach($arr as $val){
+								$rec = array($field_1=>$result,$field_2=>$val);
+								$rel_model->insert($rec);
+								print $rel_model->lq();
+							}
+						} else {
+							// We don't need to do anything here, because it should be
+							// handled by the foreign key in the primary table
+						}
+					}
+				}
+			}
+
 			$this->after_insert($result, $fields);
 
 			return $result;
@@ -2006,29 +2034,31 @@ class Model extends Library {
 //			$rel_tables = array_unique(array_merge($this->schema['children'], $this->schema['parents']));
 
 			// extract any child/parent table data and process those saves separately
-			foreach($this->schema['children'] as $real_table => $table){
-				if(isset($fields[ucwords($table)]) && is_array($fields[ucwords($table)])){
-					$arr = $fields[ucwords($table)];
-					
-					$rel_model = $this->open($real_table);
+			if($result){
+				foreach($this->schema['children'] as $real_table => $table){
+					if(isset($fields[ucwords($table)]) && is_array($fields[ucwords($table)])){
+						$arr = $fields[ucwords($table)];
 
-					$field_1 = rtrim($this->table, 's').'_id';
-					$field_2 = rtrim($table, 's').'_id';
+						$rel_model = $this->open($real_table);
 
-					if($rel_model->is_relation_only()){
+						$field_1 = rtrim($this->table, 's').'_id';
+						$field_2 = rtrim($table, 's').'_id';
 
-						// Remove old links, as this must be a replacement
-						$del_sql = 'DELETE FROM %s WHERE %s = "%d"';
-						$rel_model->query( sprintf($del_sql, $real_table, $field_1, $update_id) );
+						if($rel_model->is_relation_only()){
 
-						// insert new values
-						foreach($arr as $val){
-							$rec = array($field_1=>$update_id,$field_2=>$val);
-							$rel_model->insert($rec);
+							// Remove old links, as this must be a replacement
+							$del_sql = 'DELETE FROM %s WHERE %s = "%d"';
+							$rel_model->query( sprintf($del_sql, $real_table, $field_1, $update_id) );
+
+							// insert new values
+							foreach($arr as $val){
+								$rec = array($field_1=>$update_id,$field_2=>$val);
+								$rel_model->insert($rec);
+							}
+						} else {
+							// We don't need to do anything here, because it should be
+							// handled by the foreign key in the primary table
 						}
-					} else {
-						// We don't need to do anything here, because it should be
-						// handled by the foreign key in the primary table
 					}
 				}
 			}

@@ -62,10 +62,11 @@ class Form extends Library {
 	 * Loads a single record - field names and values
 	 * @param string $table
 	 * @param integer $id
+	 * @param array $contains
 	 * @param string $field
 	 * @access public
 	 */
-	public function __construct($table, $id = false, $contains = array()){
+	public function __construct($table, $id = false, $contains = array(), $field = false){
 		parent::__construct();
 		if($id){
 			define('ADD_OR_EDIT', 'edit');
@@ -82,23 +83,28 @@ class Form extends Library {
 	/**
 	 * Loads a table's fields and it's schema
 	 * @param string $table
+	 * @param array $contains
 	 * @access private
 	 */
-	private function loadTable($table = false){
+	private function loadTable($table = false, $contains = array()){
 	
 		$this->table = $table;
 
 		if($this->table){
 
 			$model = $this->APP->model->open($this->table);
+			$model->contains($contains);
 			$this->_primary_key_field = $model->getPrimaryKey();
 			$this->schema = $model->getSchema();
 
+			// add fields for schema as well as related tables
 			foreach($this->schema['schema'] as $field){
-
 				$default_val = $field->has_default ? $field->default_value : '';
 				$this->addField($field->name, $default_val, $default_val);
-
+			}
+			$rels = array_merge($this->schema['children'], $this->schema['parents']);
+			foreach($rels as $field){
+				$this->addField(ucwords($field));
 			}
 		}
 	}
@@ -108,6 +114,7 @@ class Form extends Library {
 	 * Loads a single record - field names and values
 	 * @param string $table
 	 * @param integer $id
+	 * @param array $contains
 	 * @param string $field
 	 * @access private
 	 */
@@ -190,7 +197,7 @@ class Form extends Library {
 				}
 			}
 		}
-		
+
 		return $success;
 		
 	}
