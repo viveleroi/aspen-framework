@@ -45,7 +45,8 @@ class User extends Library {
 
 			// We need to validate the confirm password field here
 			// because the model doesn't care about this field.
-			$values = Peregrine::sanitize( $form->getCurrentValues() );
+			$values = $form->getCurrentValues();
+			$values = Peregrine::sanitize($values);
 			if($values->isSetAndEmpty('password')){
 				if($values->isSetAndNotEmpty('password_confirm')){
 					$form->addError('password', 'You must confirm your password.');

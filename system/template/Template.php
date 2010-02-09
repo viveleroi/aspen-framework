@@ -255,7 +255,9 @@ class Template extends Library {
 	 * @access public
 	 */
 	public function set($data){
-		$this->_data = array_merge($this->_data, $data);
+		if(is_array($data)){
+			$this->_data = array_merge($this->_data, $data);
+		}
 	}
 
 
