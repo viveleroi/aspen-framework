@@ -1,5 +1,5 @@
 ASPEN FRAMEWORK
-Copyright 2008 Trellis Development, LLC (trellisdevelopment.com)
+Copyright 2008-2010 Trellis Development, LLC (trellisdevelopment.com)
 Licensed under Mozilla Public License, 1.1 (see license)
 
 
@@ -40,7 +40,7 @@ Links:
 
 Third Party Libraries:
 -------------------------------------------
-  ADOdb V5.06
+  ADOdb V5.10
     http://adodb.sourceforge.net/
 
   HTMLPurifier 3.3.0
