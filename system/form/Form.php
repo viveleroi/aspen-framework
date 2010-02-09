@@ -44,6 +44,12 @@ class Form extends Library {
 	 * @access private
 	 */
 	private $param_type = 'post';
+
+	/**
+	 * @var array Holds the schema for the current table
+	 * @access private
+	 */
+	private $schema;
 	
 	/**
 	 * @var string $table Holds the db table we're using, if any
@@ -59,12 +65,12 @@ class Form extends Library {
 	 * @param string $field
 	 * @access public
 	 */
-	public function __construct($table, $id = false, $field = false){
+	public function __construct($table, $id = false, $contains = array()){
 		parent::__construct();
 		if($id){
 			define('ADD_OR_EDIT', 'edit');
 			define('IS_EDIT_PAGE', true);
-			$this->loadRecord($table, $id, $field);
+			$this->loadRecord($table, $id, $contains);
 		} else {
 			define('ADD_OR_EDIT', 'add');
 			define('IS_EDIT_PAGE', false);
@@ -86,9 +92,9 @@ class Form extends Library {
 
 			$model = $this->APP->model->open($this->table);
 			$this->_primary_key_field = $model->getPrimaryKey();
-			$schema = $model->getSchema();
+			$this->schema = $model->getSchema();
 
-			foreach($schema['schema'] as $field){
+			foreach($this->schema['schema'] as $field){
 
 				$default_val = $field->has_default ? $field->default_value : '';
 				$this->addField($field->name, $default_val, $default_val);
@@ -105,14 +111,16 @@ class Form extends Library {
 	 * @param string $field
 	 * @access private
 	 */
-	private function loadRecord($table, $id = false, $field = false){
+	private function loadRecord($table, $id = false, $contains = array()){
 
 		$this->table = $table;
 	
 		if($id){
 			
 			$model = $this->APP->model->open($this->table);
+			$model->contains($contains);
 			$this->_primary_key_field = $model->getPrimaryKey();
+			$this->schema = $model->getSchema();
 		
 			$field = $field ? $field : $this->_primary_key_field;
 			
@@ -364,9 +372,15 @@ class Form extends Library {
 	 * @return string
 	 */
 	protected function match_base($field, $match, $str){
-		$match = $match ? $match : $match;
+
 		$val = $this->cv($field);
-		if(is_array($val)){
+
+		// if field is the name of a child/parent table
+		if(in_array(strtolower($field), $this->schema['children'])
+				|| in_array(strtolower($field), $this->schema['parents'])){
+			return array_key_exists($match, $val) ? $str : '';
+		}
+		elseif(is_array($val)){
 			return in_array($match, $val) ? $str : '';
 		}
 		elseif(!$match) {
@@ -491,26 +505,6 @@ class Form extends Library {
 			}
 		}
 	}
-	
-	
-	/**
-	 * Loads in values straight from get/post from an array of field names
-	 * @return array
-	 * @access public
-	 */
-	public function loadSingleValues($param_type = 'get', $fields){
-       
-        $values = array();
-       
-        if(is_array($fields)){
-            foreach($fields as $field){
-                $values[$field] = $this->APP->params->{$param_type}->getRaw($field);
-            }
-        }
-
-        return $values;
-       
-    }
 	
 	
 	/**

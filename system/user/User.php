@@ -22,23 +22,8 @@ class User extends Library {
 	 */
 	public function edit($id = false){
 
-		$form = new Form('users', $id);
+		$form = new Form('users', $id, array('groups'));
 		$form->addField('password_confirm');
-
-		// pull all groups this user is associated with
-		$group_array = array();
-		if($id){
-			$model = $this->APP->model->open('user_group_link');
-			$model->where('user_id', $id);
-			$groups = $model->results();
-			if($groups){
-				foreach($groups as $group){
-					$group_array[] = $group['group_id'];
-				}
-			}
-		}
-		$form->addField('group', $group_array, $group_array);
-
 
 		// process the form if submitted
 		if($form->isSubmitted()){

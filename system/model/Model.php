@@ -437,6 +437,14 @@ class Model extends Library {
 		$tables = $this->APP->db->MetaTables();
 		foreach($tables as $table){
 			$db_map[$table]['schema'] = $this->APP->db->MetaColumns($table, false);
+			$db_map[$table]['relation_only'] = false;
+
+			if(!isset($db_map[$table]['children'])){
+				$db_map[$table]['children']	= array();
+			}
+			if(!isset($db_map[$table]['parents'])){
+				$db_map[$table]['parents'] = array();
+			}
 
 			foreach($db_map[$table]['schema'] as $field){
 				if(!$field->primary_key){
@@ -454,7 +462,6 @@ class Model extends Library {
 
 		// flag relation-only tables
 		foreach($db_map as $name => $table){
-			$db_map[$name]['relation_only'] = false;
 			if( isset($table['parents']) &&
 				count($table['parents']) == 2 &&
 				count($table['schema']) <= 3){
