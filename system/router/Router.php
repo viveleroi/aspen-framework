@@ -393,7 +393,7 @@ class Router extends Library {
 	 */
 	public function loadInterfaceLanguage($interface = false){
 
-		$lang 			= array();
+		$languages 		= array();
 		$lang_setting 	= $this->APP->config('language');
 
 		// load the interface language library
@@ -403,11 +403,14 @@ class Router extends Library {
 			include($lang_path);
 			$this->APP->log->write('Including interface language library ' . $lang_path);
 			if(isset($lang[LS])){
-				$lang = $lang[LS];
+				$languages = array_merge($languages, $lang[LS]);
+			}
+			if(isset($lang['*'])){
+				$languages = array_merge($languages, $lang['*']);
 			}
 		}
 
-		$this->APP->template->loadLanguageTerms($lang);
+		$this->APP->template->loadLanguageTerms($languages);
 
 	}
 
@@ -418,7 +421,7 @@ class Router extends Library {
 	 */
 	public function loadModuleLanguage($module = false, $interface = false){
 
-		$lang 			= array();
+		$languages 		= array();
 		$lang_setting 	= $this->APP->config('language');
 
 		// load the module-specific language library
@@ -429,11 +432,14 @@ class Router extends Library {
 			include($module_lang_path);
 			$this->APP->log->write('Including module language library ' . $module_lang_path);
 			if(isset($lang[LS])){
-				$lang = $lang[LS];
+				$languages = array_merge($languages, $lang[LS]);
+			}
+			if(isset($lang['*'])){
+				$languages = array_merge($languages, $lang['*']);
 			}
 		}
 
-		$this->APP->template->loadLanguageTerms($lang);
+		$this->APP->template->loadLanguageTerms($languages);
 
 	}
 
