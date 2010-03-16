@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `user_group_link` (
 $sql[] = "
 
 ALTER TABLE `config`
-  ADD CONSTRAINT `config_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `config_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 ";
 
@@ -125,9 +125,9 @@ $sql[] = "
 
 ALTER TABLE `user_group_link`
   ADD CONSTRAINT `user_group_link_ibfk_4` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `user_group_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `user_group_link_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `user_group_link_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `authentication` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `user_group_link_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `user_group_link_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `user_group_link_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 ";
 

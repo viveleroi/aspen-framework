@@ -32,13 +32,13 @@ class Form extends Library {
 	 * @access private
 	 */
 	private $_error = false;
-	
+
 	/**
 	 * @var string $_primary_key_field Holds the field name of our primary key
 	 * @access private
 	 */
 	private $_primary_key_field = false;
-	
+
 	/**
 	 * @var string $param_type Holds the type of superglobal we're accessing
 	 * @access private
@@ -50,14 +50,14 @@ class Form extends Library {
 	 * @access private
 	 */
 	private $schema;
-	
+
 	/**
 	 * @var string $table Holds the db table we're using, if any
 	 * @access private
 	 */
 	private $table = false;
-	
-	
+
+
 	/**
 	 * Loads a single record - field names and values
 	 * @param string $table
@@ -66,7 +66,7 @@ class Form extends Library {
 	 * @param string $field
 	 * @access public
 	 */
-	public function __construct($table, $id = false, $contains = array(), $field = false){
+	public function __construct($table = false, $id = false, $contains = array(), $field = false){
 		parent::__construct();
 		if($id){
 			define('ADD_OR_EDIT', 'edit');
@@ -87,7 +87,7 @@ class Form extends Library {
 	 * @access private
 	 */
 	private function loadTable($table = false, $contains = array()){
-	
+
 		$this->table = $table;
 
 		if($this->table){
@@ -121,16 +121,16 @@ class Form extends Library {
 	private function loadRecord($table, $id = false, $contains = array(), $field = false){
 
 		$this->table = $table;
-	
-		if($id){
-			
+
+		if($id && $this->table){
+
 			$model = $this->APP->model->open($this->table);
 			$model->contains($contains);
 			$this->_primary_key_field = $model->getPrimaryKey();
 			$this->schema = $model->getSchema();
-		
+
 			$field = $field ? $field : $this->_primary_key_field;
-			
+
 			$model->select();
 			$model->where($field, $this->APP->security->dbescape($id));
 			$records = $model->results();
@@ -148,8 +148,8 @@ class Form extends Library {
 			$this->loadTable($this->table);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Initiates the insert/update queries on form data
 	 * @param integer $id
@@ -157,11 +157,11 @@ class Form extends Library {
 	 * @access public
 	 */
 	public function save($id = false){
-		
+
 		$model 		= $this->APP->model->open($this->table);
 		$success 	= false;
 		$schema		= $model->getSchema();
-		
+
 		// build the array of field/vars
 		$fields = array();
 		foreach($schema['schema'] as $field){
@@ -177,7 +177,7 @@ class Form extends Library {
 		foreach($schema['parents'] as $table){
 			$fields[ucwords($table)] = $this->cv(ucwords($table));
 		}
-		
+
 		// If there are no form errors, then attempt to process the database action.
 		// The database action will force the model validation and will return false if
 		// something fails.
@@ -188,7 +188,7 @@ class Form extends Library {
 		} else {
 			$model->validate($fields, $id);
 		}
-		
+
 		// if failed, pull all model validation errors into form array
 		if(!$success){
 			foreach($model->getErrors() as $field => $errors){
@@ -199,10 +199,10 @@ class Form extends Library {
 		}
 
 		return $success;
-		
+
 	}
 
-	
+
 	/**
 	 * Determines whether or not a form has been submitted
 	 * @param string $method
@@ -211,9 +211,9 @@ class Form extends Library {
 	 * @access public
 	 */
 	public function isSubmitted($method = 'post', $field = false){
-		
+
 		$submitted = false;
-		
+
 		// verify field isset - we dont care about the value
 		$data = $this->APP->params->getRawSource($method);
 		if(is_array($data) && count($data)){
@@ -223,7 +223,7 @@ class Form extends Library {
 				$submitted = true;
 			}
 		}
-		
+
 		if($submitted){
 			if($submitted){
 				if($method == 'post'){
@@ -233,10 +233,10 @@ class Form extends Library {
 					$this->loadGET();
 				}
 			}
-		
+
 			// if token authorization is enabled, we must authenticate
 			if($this->APP->config('require_form_token_auth')){
-				
+
 				$sess_token = $this->APP->params->session->getAlnum('form_token');
 
 				if(empty($sess_token) || $sess_token != $this->APP->params->{$method}->getAlnum('token')){
@@ -245,10 +245,10 @@ class Form extends Library {
 				}
 			}
 		}
-		
+
 		return $submitted;
 	}
-	
+
 
 	/**
 	 * Adds a new field to our form schema
@@ -265,8 +265,8 @@ class Form extends Library {
 											'current_value' => ($current_value ? $current_value : $default_value));
 
 	}
-	
-	
+
+
 	/**
 	 * Adds each item in an array as a field
 	 * @param array $fields
@@ -293,8 +293,8 @@ class Form extends Library {
 			$this->_form_fields[$field]['current_value'] = $value;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Returns the default value for a field
 	 * @param string $field
@@ -314,8 +314,8 @@ class Form extends Library {
 		return $value;
 
 	}
-	
-	
+
+
 	/**
 	 * Resets all form fields to their default values
 	 * @access public
@@ -342,7 +342,7 @@ class Form extends Library {
 		}
 	}
 
-	
+
 	/**
 	 * Returns the current value for a field
 	 * @param string $field
@@ -404,8 +404,8 @@ class Form extends Library {
 			return $val == $match ? $str : '';
 		}
 	}
-	
-	
+
+
 	/**
 	 * Returns the current value for a field
 	 * @param string $field
@@ -426,7 +426,7 @@ class Form extends Library {
 		return $value;
 
 	}
-	
+
 
 	/**
 	 * Returns an array of all fields and their current values
@@ -465,14 +465,14 @@ class Form extends Library {
 	public function loadGET(){
 		$this->loadIncomingValues('get');
 	}
-	
-	
+
+
 	/**
 	 * Imports all values for current fields from incoming GET/POST data
 	 * @access private
 	 */
 	public function loadIncomingValues($method = 'post'){
-		
+
 		$this->param_type 	= $method;
 		$field_model 		= false;
 
@@ -484,7 +484,7 @@ class Form extends Library {
 				if(isset($this->schema['schema'][strtoupper($field)])){
 					$field_model = $this->schema['schema'][strtoupper($field)];
 				}
-				
+
 				// determine security method
 				$param_access_type	= 'getRaw';
 				if(is_object($field_model) && isset($field_model->type)){
@@ -496,7 +496,7 @@ class Form extends Library {
 					}
 				}
 
-				
+
 				// get core array, so we can verify if it's even set
 				$source = $this->APP->params->getRawSource($this->param_type);
 				$get_val = $this->APP->params->{$this->param_type}->{$param_access_type}($field);
@@ -511,7 +511,7 @@ class Form extends Library {
 						$this->_form_fields[$field]['current_value'] = $this->_form_fields[$field]['default_value'];
 					}
 				} else {
-	
+
 					// if array key set and a primary field, set post and current to default
 					if($field == $this->_primary_key_field){
 						$this->_form_fields[$field]['post_value'] = $this->_form_fields[$field]['default_value'];
@@ -525,8 +525,8 @@ class Form extends Library {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Triggers a validation error message
 	 * @param string $field
@@ -600,8 +600,8 @@ class Form extends Library {
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Prints out form error messages using html wrapping defined in config
 	 * @access public

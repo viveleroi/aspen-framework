@@ -660,7 +660,8 @@ class Router extends Library {
                 }
 
                 $uri = str_replace($replace, '', urldecode($this->APP->params->server->getRaw('REQUEST_URI')));
-
+				$uri = $this->stripQuery($uri);
+				
             } else {
 
                 $no_qs_url = str_replace('?' . $this->APP->params->server->getRaw('QUERY_STRING'), '', $this->APP->params->server->getRaw('REQUEST_URI'));
