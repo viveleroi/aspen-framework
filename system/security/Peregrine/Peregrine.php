@@ -3,7 +3,7 @@
  * @package  Peregrine
  * @author   Michael Botsko, Trellis Development, LLC
  * @license  Mozilla Public License, 1.1
- * @version  1.0-rc1-1-gf11b76a
+ * @version  1.0-rc1-4-g6e12c7a
  *
  * Peregrine is a class that aims to improve PHP superglobal security
  * by transferring the raw incoming values to private member variables.
@@ -93,23 +93,16 @@ class CageBase {
 		if($key !== false && strpos($method, 'is') !== false){
 			$real_method = str_replace('is', 'get', $method);
 			if(method_exists($this, $real_method)){
-				$res = $this->{$real_method}($key,
-											$this->getArg(1),
-											$this->getArg(2),
-											$this->getArg(3),
-											$this->getArg(4));
-				return $res === $this->getRaw($key);
+				$res = call_user_func_array(array($this, $real_method), $this->_args);
+				// Skip the test if the result is false (don't want to confuse bools)
+				return $this->getRaw($key) === false ? false : ($res === $this->getRaw($key));
 			}
 		}
 
 		if($key !== false && strpos($method, 'get') !== false){
 			$real_method = str_replace('get', 'is', $method);
 			if(method_exists($this, $real_method)){
-				if($this->{$real_method}($key,
-											$this->getArg(1),
-											$this->getArg(2),
-											$this->getArg(3),
-											$this->getArg(4))){
+				if(call_user_func_array(array($this, $real_method), $this->_args)){
 					return $this->getRaw($key);
 				}
 				return false;
@@ -483,7 +476,7 @@ class CageBase {
 	 */
 	public function getAlpha($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key)){
+		if($this->isSetAndNotEmpty($key)){
 			return preg_replace('/[^[:alpha:]]/', '', $this->getKey($key));
 		}
 		return $default;
@@ -499,7 +492,7 @@ class CageBase {
 	 */
 	public function getAlnum($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key)){
+		if($this->isSetAndNotEmpty($key)){
 			return preg_replace('/[^[:alnum:]]/', '', $this->getKey($key));
 		}
 		return $default;
@@ -515,7 +508,7 @@ class CageBase {
 	 */
 	public function getName($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key)){
+		if($this->isSetAndNotEmpty($key)){
 			return preg_replace('/[^a-zA-Z-[:space:]\.\']/', '', $this->getKey($key));
 		}
 		return $default;
@@ -531,7 +524,7 @@ class CageBase {
 	 */
 	public function getElemId($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key)){
+		if($this->isSetAndNotEmpty($key)){
 			$val = str_replace(array(' '), '_', strtolower($this->getKey($key)));
 			return preg_replace('/[^a-zA-Z0-9-_\.]/', '', $val);
 		}
@@ -629,7 +622,7 @@ class CageBase {
 	 */
 	public function getDate($key = false, $format = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key)){
+		if($this->isSetAndNotEmpty($key)){
 			$format = $format ? $format : DATE_RFC822;
 			if($time = strtotime($this->getRaw($key))){
 				return date($format, $time);
@@ -649,7 +642,7 @@ class CageBase {
 	 */
 	public function getZip($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key)){
+		if($this->isSetAndNotEmpty($key)){
 			preg_match('/(^\d{5}$)|(^\d{5}-\d{4}$)/', $this->getDigits($key), $matches);
 			if(is_array($matches)){
 				return $matches[0];
@@ -660,9 +653,7 @@ class CageBase {
 
 
 	/**
-	 * Returns a floating-point decimal. The return type is set as the same
-	 * type as the incoming value. If you provide a float, you get a float back.
-	 * If you provide a string, you get a string back.
+	 * Returns characters generally allowed within a file system path
 	 *
 	 * @param string $key
 	 * @param string $default
@@ -670,8 +661,24 @@ class CageBase {
 	 */
 	public function getPath($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key)){
-			return preg_replace('/[^a-zA-Z0-9_~\.\/-]/', '', $this->getKey($key));
+		if($this->isSetAndNotEmpty($key)){
+			return preg_replace('/[^a-zA-Z0-9_:~\.\/-]/', '', $this->getKey($key));
+		}
+		return $default;
+	}
+
+
+	/**
+	 * Returns characters generally allowed within a file system path
+	 *
+	 * @param string $key
+	 * @param string $default
+	 * @return mixed
+	 */
+	public function getArray($key = false, $default = NULL){
+		$default = $default === NULL ? false : $default;
+		if($this->isSetAndNotEmpty($key)){
+			return is_array($this->getKey($key)) ? $this->getKey($key) : $default;
 		}
 		return $default;
 	}
