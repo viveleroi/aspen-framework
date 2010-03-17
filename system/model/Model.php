@@ -1516,21 +1516,15 @@ class Model extends Library {
 									$child->ignore($this->get_ignore());
 
 									if($child_table != $join_table){
-
 										$field = rtrim($child_table, 's').'_id';
 										$child->leftJoin($join_table, $field, 'id', array($field));
-
 										$field = rtrim($this->table, 's').'_id';
 										$child->where($join_table.'.'.$field, $result[$key]);
 										$result[ucwords($child_table)] = $child->results();
-//										$this->ignore($child->get_ignore_prev());
-										
 									} else {
-
 										$field = rtrim($this->table, 's').'_id';
 										$child->where($field, $result[$key]);
 										$result[ucwords($child_table)] = $child->results();
-
 									}
 								}
 							}
@@ -1539,12 +1533,14 @@ class Model extends Library {
 							foreach($schema['parents'] as $child_table){
 								if(!in_array($child_table, $this->ignore_tables)){
 									$this->ignore($child_table);
-									$child = $this->open($child_table);
-									$child->ignore($this->ignore_tables);
-									$child->where($child->getPrimaryKey(), $result[$key]);
-									$result[ucwords($child_table)] = $child->results();
 
-//									$this->ignore($child->get_ignore_prev());
+									$field = rtrim($child_table, 's').'_id';
+									if(isset($result[$field])){
+										$child = $this->open($child_table);
+										$child->ignore($this->ignore_tables);
+										$child->where($child->getPrimaryKey(), $result[$field]);
+										$result[ucwords($child_table)] = $child->results();
+									}
 								}
 							}
 						}
