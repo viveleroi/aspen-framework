@@ -133,7 +133,7 @@ $_SERVER = $APP->params->getRawSource('server');
 		// make our directories
 		shell_exec('mkdir ' . dirname(__FILE__) . DIRECTORY_SEPARATOR . $module);
 		shell_exec('mkdir ' . dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'templates' . strtolower($interface));
-
+		shell_exec('mkdir ' . dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'language');
 
 
 	// CREATE THE MODULE CLASS
@@ -158,8 +158,7 @@ class ".$classname." extends Module {
 
 		\$data = array();
 
-		\$model = $this->APP->model->open('".$table_name."');
-		\$model->select();
+		\$model = \$this->APP->model->open('".$table_name."');
 		\$data['".$table_name."'] = \$model->results();";
 	}
 
@@ -183,24 +182,7 @@ $class_output .= "
 	 * @access public
 	 */
 	public function add(){
-
-		\$form = new Form('".$table_name."');
-
-		// if form has been submitted
-		if(\$form->isSubmitted()){
-
-			// insert a new record with available data
-			if(\$form->save()){
-				// if successful insert, redirect to the list
-				\$this->APP->router->redirect('view');
-			}
-		}
-
-		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		\$this->APP->template->addView(\$this->APP->template->getModuleTemplateDir().DS . 'add.tpl.php');
-		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		\$this->APP->template->display(array('form'=>\$form));
-
+		\$this->edit();
 	}
 
 
@@ -273,12 +255,12 @@ $class_output .= "
 	fclose($file);
 
 
-	// CREATE THE ADD FORM TEMPLATE
+	// CREATE THE EDIT FORM TEMPLATE
 	if($table_exists){
 
-		$template_output = $APP->scaffold->recordForm($table_name, 'Add', false, true);
+		$template_output = $APP->scaffold->recordForm($table_name, 'Edit', false, true);
 
-		$file_path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'templates' . strtolower($interface) . DIRECTORY_SEPARATOR . 'add.tpl.php';
+		$file_path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'templates' . strtolower($interface) . DIRECTORY_SEPARATOR . 'edit.tpl.php';
 		touch($file_path);
 		$file = fopen($file_path, 'w');
 		fwrite($file, $template_output);
@@ -287,12 +269,12 @@ $class_output .= "
 	}
 
 
-	// CREATE THE EDIT FORM TEMPLATE
+	// CREATE THE LANGUAGE FILE
 	if($table_exists){
 
-		$template_output = $APP->scaffold->recordForm($table_name, 'Edit', false, true);
+		$template_output = $APP->scaffold->languageFile();
 
-		$file_path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'templates' . strtolower($interface) . DIRECTORY_SEPARATOR . 'edit.tpl.php';
+		$file_path = dirname(__FILE__) . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . 'en_US.php';
 		touch($file_path);
 		$file = fopen($file_path, 'w');
 		fwrite($file, $template_output);

@@ -16,12 +16,6 @@
 class App extends Bootstrap {
 
 	/**
-	 * @var array $_admin_menu Holds an array of links needed for the menu
-	 * @access private
-	 */
-	private $_admin_menu;
-
-	/**
 	 * @var array $_modules_awaiting_install Contains a list of modules found on the server, but not yet installed
 	 * @access private
 	 */

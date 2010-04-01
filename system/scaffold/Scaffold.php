@@ -14,6 +14,11 @@
  */
 class Scaffold extends Library {
 
+	/**
+	 *
+	 * @var <type>
+	 */
+	private $langs = array();
 
 	/**
 	 * Converts text into a proper English field name
@@ -123,7 +128,8 @@ class Scaffold extends Library {
 			$key_field 	= $model->getPrimaryKey();
 
 			foreach($schema['schema'] as $field){
-				$thead .= sprintf('			<th>%s</th>' . "\n", $this->fieldName($field->name));
+				$this->langs['table:th:'.$field->name] = $this->fieldName($field->name);
+				$thead .= sprintf('			<th><?php print $this->text(\'table:th:%s\'); ?></th>' . "\n", $field->name);
 			}
 
 			// loop the results
@@ -136,7 +142,7 @@ $tbody .= "
 		?>
 		<tr>\n";
 
-foreach($schema as $field){
+foreach($schema['schema'] as $field){
 	$tbody .= sprintf('		<td>%s</td>' . "\n", "<?php print \$this->createLink(\$record['".$field->name."'], 'edit', array('id' => \$record['".$key_field."'])) ?>");
 }
 
@@ -150,8 +156,11 @@ $tbody .= "		</tr>\n
 
 
 			// begin building the html
-			$html .= sprintf('<h2>%s</h2>'."\n", ucwords($table));
-			$html .= "<p><?php print \$this->APP->template->createLink('Add a new record', 'add'); ?></p>\n";
+			$this->langs['index:title'] = ucwords($table);
+			$html .= '<h2><?php print $this->text(\'index:title\'); ?></h2>'."\n\n";
+			$html .= '<?php print $this->APP->sml->printMessage(); ?>'."\n\n";
+			$this->langs['add-new'] = 'Add new record';
+			$html .= "<p><?php print \$this->APP->template->createLink(\$this->text('add-new'), 'add'); ?></p>\n\n";
 
 			// create our table
 			$html .= '<table>' . "\n";
@@ -184,11 +193,13 @@ $tbody .= "		</tr>\n
 	 */
 	private function getFormField($field, $value = false, $return_html = false){
 
+		$this->langs['form:'.$field->name] = $this->fieldName($field->name);
+
 		$html = '		';
-		$html .= sprintf('<label for="%s">%s:</label><br />' . "\n", $field->name, $this->fieldName($field->name));
+		$html .= sprintf('<label for="%s"><?php print $this->text(\'form:%1$s\'); ?>:</label><br />' . "\n", $field->name);
 
 		if($return_html){
-			$value = "<?php print \$values['".$field->name."']; ?>";
+			$value = "<?php print \$form->cv('".$field->name."'); ?>";
 		}
 
 		if(in_array($field->type, $this->APP->config('mysql_field_group_int'))){
@@ -257,19 +268,29 @@ $tbody .= "		</tr>\n
 		// make sure the template has access to all current values
 		// @todo fix this
 		$values = $form->getCurrentValues();
-		$schema = $this->APP->model->getSchema();
+
+		$model = $this->APP->model->open($table);
+		$schema = $model->getSchema();
 
 		// build the html form
 		$html = '';
-		$html .= sprintf('<h2>%s</h2>'."\n\n", $type . ' ' . ucwords($table) . ' Record');
+		$html .= '<h2><?php print $this->text(\'form:title-\'.ADD_OR_EDIT); ?></h2>'."\n\n";
+
+		$this->langs['form:title-add'] = 'Add ' . ucwords($table) . ' Record';
+		$this->langs['form:title-edit'] = 'Edit ' . ucwords($table) . ' Record';
 
 		if($type == 'Edit'){
 			if($return_html){
-				$html .= "<p><?php print \$this->createLink('Delete', 'delete', array('".$this->APP->model->getPrimaryKey()."' => \$values['".$this->APP->model->getPrimaryKey()."'])); ?></p>\n\n";
+				$html .= "<?php if(IS_EDIT_PAGE){ ?>\n";
+				$html .= "<p><?php print \$this->createLink('Delete', 'delete', array('".$model->getPrimaryKey()."' => \$form->cv('".$model->getPrimaryKey()."'))); ?></p>\n";
+				$html .= "<?php } ?>\n\n";
 			} else {
-				$html .= $this->APP->template->createLink('Delete', 'delete', array($this->APP->model->getPrimaryKey() => $id)) . "\n";
+				$html .= $this->APP->template->createLink('Delete', 'delete', array($model->getPrimaryKey() => $id)) . "\n";
 			}
 		}
+
+		$html .= '<?php print $form->printErrors(); ?>'."\n";
+		$html .= '<?php print $this->APP->sml->printMessage(); ?>'."\n\n";
 
 		if($return_html){
 			$html .= '<form action="<?php print $this->createFormAction(); ?>" method="post">'."\n";
@@ -281,12 +302,15 @@ $tbody .= "		</tr>\n
 
 			if(!$field->primary_key){
 				$html .= '	<p>' . "\n";
-				$html .= $this->getFormField($field, $values[$field->name], $return_html)."\n";
+				$html .= $this->getFormField($field, $values->cv($field->name), $return_html)."\n";
 				$html .= '	</p>' . "\n";
 			}
 		}
 
-		$html .= '	<p><input type="submit" name="submit" value="'.($type == 'Edit' ? 'Save Changes' : 'Add').'" /></p>' . "\n";
+		$this->langs['form:submit-add'] = 'Add Record';
+		$this->langs['form:submit-edit'] = 'Save Changes';
+
+		$html .= '	<p><input type="submit" name="submit" value="<?php print $this->text(\'form:submit-\'.ADD_OR_EDIT); ?>" /></p>' . "\n";
 		$html .= '</form>';
 
 		if($return_html){
@@ -316,6 +340,24 @@ $tbody .= "		</tr>\n
 				$this->APP->router->redirect('view');
 			}
 		}
+	}
+
+
+	/**
+	 *
+	 */
+	public function languageFile(){
+
+		$content = '<?php'."\n";
+
+		foreach($this->langs as $key => $lang){
+			$content .= "\$lang['*']['".$key."'] = '".$lang."';"."\n";
+		}
+
+		$content .= '?>';
+
+		return $content;
+
 	}
 }
 ?>

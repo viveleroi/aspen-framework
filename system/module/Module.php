@@ -28,5 +28,18 @@ class Module {
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
 
+
+	/**
+	 * Loads our default dashboard screen
+	 * @access public
+	 */
+	public function view(){
+
+		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
+		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
+		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
+		$this->APP->template->display();
+
+	}
 }
 ?>

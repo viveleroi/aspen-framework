@@ -394,7 +394,7 @@ class Install extends Library {
 						$this->APP->loadModule($guid);
 
 						// call module install process if it exists
-						if(method_exists($this->APP->{$classname}, 'install')){
+						if(isset($this->APP->{$classname}) && method_exists($this->APP->{$classname}, 'install')){
 							$this->APP->{$classname}->install($guid);
 						}
 
