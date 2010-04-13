@@ -202,7 +202,7 @@ $tbody .= "		</tr>\n
 			$value = "<?php print \$form->cv('".$field->name."'); ?>";
 		}
 
-		if(in_array($field->type, $this->APP->config('mysql_field_group_int'))){
+		if(in_array($field->type, $this->APP->config('mysql_field_group_int')) || in_array($field->type, $this->APP->config('mysql_field_group_dec'))){
 			$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" class="text" />', $field->name, $field->name, $value);
 		}
 
