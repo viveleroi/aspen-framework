@@ -1092,9 +1092,13 @@ class Model extends Library {
 
 		// Create a base array of the current schema
 		$table_base_fields = array('keyword_search'=>false);
-		$table_schema = array_keys($this->getSchema());
-		foreach($table_schema['schema'] as $key){
-			$table_base_fields[strtolower($key)] = false;
+		$table_schema = $this->getSchema();
+		$table_schema = array_keys($table_schema['schema']);
+
+		if($table_schema){
+			foreach($table_schema as $key){
+				$table_base_fields[strtolower($key)] = false;
+			}
 		}
 
 		$user_id				= $this->APP->params->session->getInt('user_id', NULL);
@@ -1465,7 +1469,12 @@ class Model extends Library {
 
 			} else {
 				if($this->APP->config('log_verbosity') < 3){
-					$this->APP->log->write($query);
+					$wr = $query;
+					if($this->APP->config('log_query_backtrace')){
+						$trace = $this->queryBacktrace(true);
+						$wr .= " (".basename($trace['file'])."/".$trace['line'].")";
+					}
+					$this->APP->log->write($wr);
 				}
 			}
 		}
@@ -1473,6 +1482,29 @@ class Model extends Library {
 		$this->reset();
 
 		return $results;
+
+	}
+
+
+	/**
+	 * Provides a backtrace for the most recent query. Primarily
+	 * used with query logging.
+	 *
+	 * @param boolean $only_last Weather or not to return the full backtrace, or last file
+	 * @return array
+	 */
+	private function queryBacktrace($only_last = false){
+
+		$trace = array();
+		$back = debug_backtrace();
+
+		foreach($back as $file){
+			if(strpos($file['file'], 'Model.php') === false){
+				$trace[] = array('file'=>$file['file'],'line'=>$file['line']);
+			}
+		}
+
+		return ($only_last ? array_shift($trace) : $only_last);
 
 	}
 
@@ -1507,7 +1539,7 @@ class Model extends Library {
 						if(isset($schema['children'])){
 							foreach($schema['children'] as $join_table => $child_table){
 
-								if(!in_array($child_table, $this->ignore_tables) 
+								if(!in_array($child_table, $this->ignore_tables)
 										&& (in_array($child_table, $this->contains) || in_array($join_table, $this->contains))){
 
 									$child = $this->open($child_table);
@@ -1531,7 +1563,7 @@ class Model extends Library {
 						}
 						if(isset($schema['parents'])){
 							foreach($schema['parents'] as $child_table){
-								if(!in_array($child_table, $this->ignore_tables)){
+								if(!in_array($child_table, $this->ignore_tables) && (in_array($child_table, $this->contains))){
 									$this->ignore($child_table);
 
 									$field = rtrim($child_table, 's').'_id';

@@ -24,11 +24,12 @@ class Activity extends Library {
 	 * @param string $new_value
 	 * @param string> $message
 	 */
-	public function logChange($key = '', $type = '', $table = '', $record_id = '', $field = '', $old_value = '', $new_value = ''){
+	public function logChange($key = '', $type = '', $table = '', $record_id = '', $field = '', $old_value = '', $new_value = '', $parent_token = false){
 
 		$activity = $this->APP->model->open('activity');
-		$res = $activity->insert(array(
+		return $activity->insert(array(
 								'changeset_hash'=>$key,
+								'parent_changeset_hash'=>$parent_token,
 								'activity_type'=>$type,
 								'table_name'=>$table,
 								'record_id' => $record_id,

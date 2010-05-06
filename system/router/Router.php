@@ -15,6 +15,12 @@
 class Router extends Library {
 
 	/**
+	 * @var array $_loaded_languages Remembers which langs have already been loaded
+	 * @access private
+	 */
+	private $_loaded_languages = array();
+
+	/**
 	 * @var string $_selected_module Lists the currently selected module
 	 * @access private
 	 */
@@ -425,22 +431,25 @@ class Router extends Library {
 		$lang_setting 	= $this->APP->config('language');
 
 		// load the module-specific language library
-		$module = $this->cleanModule($module);
-		$module_lang_path = $this->getModulePath($module, $interface).DS. 'language' . DS . $lang_setting.'.php';
-		$this->APP->log->write('Seeking module language library ' . $module_lang_path);
-		if(file_exists($module_lang_path)){
-			include($module_lang_path);
-			$this->APP->log->write('Including module language library ' . $module_lang_path);
-			if(isset($lang[LS])){
-				$languages = array_merge($languages, $lang[LS]);
+		if(!in_array($module.'_'.$interface, $this->_loaded_languages)){
+			$module = $this->cleanModule($module);
+			$module_lang_path = $this->getModulePath($module, $interface).DS. 'language' . DS . $lang_setting.'.php';
+			$this->APP->log->write('Seeking module language library ' . $module_lang_path);
+			if(file_exists($module_lang_path)){
+				include($module_lang_path);
+				$this->APP->log->write('Including module language library ' . $module_lang_path);
+				if(isset($lang[LS])){
+					$languages = array_merge($languages, $lang[LS]);
+				}
+				if(isset($lang['*'])){
+					$languages = array_merge($languages, $lang['*']);
+				}
 			}
-			if(isset($lang['*'])){
-				$languages = array_merge($languages, $lang['*']);
-			}
+
+			$this->_loaded_languages[] = $module.'_'.$interface;
+
+			$this->APP->template->loadLanguageTerms($languages);
 		}
-
-		$this->APP->template->loadLanguageTerms($languages);
-
 	}
 
 
@@ -667,7 +676,7 @@ class Router extends Library {
 
                 $uri = str_replace($replace, '', urldecode($this->APP->params->server->getRaw('REQUEST_URI')));
 				$uri = $this->stripQuery($uri);
-				
+
             } else {
 
                 $no_qs_url = str_replace('?' . $this->APP->params->server->getRaw('QUERY_STRING'), '', $this->APP->params->server->getRaw('REQUEST_URI'));
