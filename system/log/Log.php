@@ -228,6 +228,12 @@ class Log extends Library {
 				$this->write('$_SERVER[\''.$key.'\'] = ' . $this->logValue($value));
 			}
 
+			$this->section('FILES Data');
+			$server = $this->APP->params->getRawSource('files');
+			foreach($server as $key => $value){
+				$this->write('$_FILES[\''.$key.'\'] = ' . $this->logValue($value));
+			}
+
 			// save all urls/paths to log for debugging
 			$this->section('Router Urls & Paths');
 			$this->write('Router::getDomainUrl set to: ' . $this->APP->router->getDomainUrl());

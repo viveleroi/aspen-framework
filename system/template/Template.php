@@ -410,7 +410,7 @@ class Template extends Library {
 	public function at($module = false, $method = false, $interface = false){
 		return ($this->APP->router->here($module, $method, $interface) ? ' class="at"' : '');
 	}
-	
+
 
 	/**
 	 * Returns a URL using a module and method
@@ -485,7 +485,7 @@ class Template extends Library {
 		}
 
 		return $this->APP->config('lowercase_urls') ? strtolower($url) : $url;
-		
+
 	}
 
 
@@ -769,7 +769,7 @@ class Template extends Library {
 		}
 		return false;
 	}
-	
+
 
 	/**
 	 * Returns a body id of the module/method
@@ -1000,17 +1000,12 @@ class Template extends Library {
 		// If the type is ENUM, we'll get the possible values from
 		// the database
 		if($method == "ENUM"){
-
 			$my_enums = $this->APP->db->MetaColumns($selectTable, false);
-
 			foreach($my_enums as $value){
-
 				if($value->name == $selectField){
-					foreach($value->enums as $value2){
-
-						$value2 = str_replace("'", "", $value2);
-						$return_select_array = array_merge($return_select_array, array($value2));
-
+					foreach($value->enums as $choice){
+						$choice = str_replace("'", "", $choice);
+						$return_select_array[$choice] = $choice;
 					}
 				}
 			}
@@ -1025,15 +1020,11 @@ class Template extends Library {
 
 			if($getArray->RecordCount()){
 				while($getArrayRow = $getArray->FetchRow()){
-
 					if($select_id){
-						$record_array = array($select_id=>$getArrayRow[$select_id], $selectField=>$getArrayRow[$selectField]);
+						$return_select_array[] = array($select_id=>$getArrayRow[$select_id], $selectField=>$getArrayRow[$selectField]);
 					} else {
-						$record_array = array('key'=>$getArrayRow[$selectField], $selectField=>$getArrayRow[$selectField]);
+						$return_select_array[] = array('key'=>$getArrayRow[$selectField], $selectField=>$getArrayRow[$selectField]);
 					}
-
-					array_push($return_select_array, $record_array);
-
 				}
 			}
 		}
@@ -1082,18 +1073,16 @@ class Template extends Library {
 								$this->encodeTextEntities($option[$keys[1]]));
 				} else {
 
-					$value = is_string($key) ? $key : $option;
-
 					// match
 					$match = '';
 					if(is_array($match_value)){
-						$match = (in_array($value, $match_value) ? ' selected="selected"' : '');
+						$match = (in_array($key, $match_value) ? ' selected="selected"' : '');
 					} else {
-						$match = ($value == $match_value ? ' selected="selected"' : '');
+						$match = ($key == $match_value ? ' selected="selected"' : '');
 					}
 
 					printf('<option value="%s"%s>%s</option>' . "\n",
-								$this->encodeTextEntities($value),
+								$this->encodeTextEntities($key),
 								$match,
 								$this->encodeTextEntities($option));
 
