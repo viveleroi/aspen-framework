@@ -47,11 +47,18 @@ class App extends Bootstrap {
 			$this->prefs->loadUserPreferences();
 		}
 
-		// determine if the current user is an admin
-		define('IS_ADMIN', $this->user->userHasGlobalAccess());
+		if($this->config('enable_authentication_support')){
 
-		// determine if this a one-user system or not
-		define('MULTIPLE_USERS', $this->user->userAccountCount() == 1 ? false : true);
+			// determine if the current user is an admin
+			define('IS_ADMIN', $this->user->userHasGlobalAccess());
+
+			// determine if this a one-user system or not
+			define('MULTIPLE_USERS', $this->user->userAccountCount() == 1 ? false : true);
+
+		} else {
+			define('IS_ADMIN', false);
+			define('MULTIPLE_USERS', false);
+		}
 
 		// set the referring page unless we're POSTing
 		$post_set = $this->params->getRawSource('post');

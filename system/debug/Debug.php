@@ -56,7 +56,7 @@ class DebugBase {
 	/**
 	 *
 	 */
-	private function dump($trace = true){
+	private function dump($trace = false){
 
 		$debug = Debug::called_from();
 		$name = ($this->name ? $this->name : $this->print_type );
@@ -87,7 +87,7 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function pre($trace = true){
+	public function pre($trace = false){
 		print '<pre>';
 		$this->line_end = "\n";
 		$this->p($trace);
@@ -98,7 +98,7 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function cli($trace = true){
+	public function cli($trace = false){
 		$this->line_end = "\n";
 		$this->dump($trace);
 	}
@@ -107,7 +107,7 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function html($hide = false, $trace = true){
+	public function html($hide = false, $trace = false){
 		print $hide ? '<!--' : '';
 		$this->line_end = $hide ? "\n" : "<br />";
 		$this->dump($trace);
@@ -118,7 +118,7 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function p($trace = true){
+	public function p($trace = false){
 		$this->print_type = 'print_r';
 		$this->dump($trace);
 	}
@@ -127,7 +127,7 @@ class DebugBase {
 	/**
 	 *
 	 */
-	public function v($trace = true){
+	public function v($trace = false){
 		$this->print_type = 'var_dump';
 		$this->dump($trace);
 	}

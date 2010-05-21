@@ -473,7 +473,7 @@ class Model extends Library {
 		}
 
 		$this->db_schema = $db_map;
-		$this->schema =  $this->db_schema[$this->table];
+		$this->schema = isset($this->db_schema[$this->table]) ? $this->db_schema[$this->table] : false;
 	}
 
 
