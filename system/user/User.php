@@ -16,6 +16,22 @@ class User extends Library {
 
 
 	/**
+	 * @var array Holds the permissions table results
+	 */
+	private $permissions = array();
+
+
+	/**
+	 * Loads the permissions table results so we don't need to query the db constantly
+	 * @access private
+	 */
+	public function loadPermissions(){
+		$perms = $this->APP->model->open('permissions');
+		$this->permissions = $perms->results();
+	}
+
+
+	/**
 	 * Displays and processes the add/edit user form
 	 * @access public
 	 * @param integer $id
@@ -47,7 +63,7 @@ class User extends Library {
 
 			// save the data as well as the groups
 			$result = $form->save($id);
-			
+
 		}
 
 		$this->APP->template->set(array('form'=>$form));
@@ -296,10 +312,8 @@ class User extends Library {
 		$interface 		= $interface ? $interface : LOADING_SECTION;
 		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
 
-		if($this->userHasGlobalAccess()){
-
+		if(IS_ADMIN){
 			$authenticated = true;
-
 		} else {
 
 			if($this->isLoggedIn()){
@@ -309,29 +323,16 @@ class User extends Library {
 				$model->select(array('group_id'));
 				$model->where('user_id', $user_id);
 				$groups = $model->results();
+				$groups = Utils::extract('/group_id', $groups);
 
-				$group_where = '';
-
-				if($groups){
-					foreach($groups as $group){
-						$group_where .= '
-							OR group_id = ' . $group['group_id'];
+				foreach($this->permissions as $perm){
+					if(
+						($perm['interface'] == $interface || $perm['interface'] == '*') &&
+						(in_array($perm['group_id'], $groups) || $perm['user_id'] = $user_id)
+					){
+						$authenticated = true;
 					}
 				}
-
-
-				// auth if:
-				// interface matches current or is all
-				// module matches current or is all
-				// method matches current or is all
-				$strict_sql = sprintf('
-							SELECT * FROM permissions
-							WHERE (interface = "%s" OR interface = "*") AND (user_id = %s%s)',
-								$interface, $user_id, $group_where);
-
-				$stricts = $this->APP->model->query($strict_sql);
-				$authenticated = $stricts->RecordCount() ? true : false;
-
 			}
 		}
 
@@ -351,15 +352,15 @@ class User extends Library {
 	 */
 	public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
 
-		$authenticated 	= false;
+       	$authenticated 	= false;
 		$module 		= $module ? $module : $this->APP->router->getSelectedModule();
 		$method 		= $method ? $method : $this->APP->router->getSelectedMethod();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
 		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
 
-		if($this->userHasGlobalAccess() || $this->allowAnonymous($module, $method, $interface)){
-			return true;
+		if(IS_ADMIN || $this->allowAnonymous($module, $method, $interface)){
+			$authenticated = true;
 		} else {
 
 			if($this->isLoggedIn() && $method != 'logout'){
@@ -369,29 +370,18 @@ class User extends Library {
 				$model->select(array('group_id'));
 				$model->where('user_id', $user_id);
 				$groups = $model->results();
+				$groups = Utils::extract('/group_id', $groups);
 
-				$group_where = '';
-
-				if($groups){
-					foreach($groups as $group){
-						$group_where .= '
-							OR group_id = ' . $group['group_id'];
+				foreach($this->permissions as $perm){
+					if(
+						($perm['interface'] == $interface || $perm['interface'] == '*') &&
+						($perm['module'] == $module || $perm['module'] == '*') &&
+						($perm['method'] == $method || $perm['method'] == '*') &&
+						(in_array($perm['group_id'], $groups) || $perm['user_id'] = $user_id)
+					){
+						$authenticated = true;
 					}
 				}
-
-
-				// auth if:
-				// interface matches current or is all
-				// module matches current or is all
-				// method matches current or is all
-				$strict_sql = sprintf('
-							SELECT * FROM permissions
-							WHERE (interface = "%s" OR interface = "*") AND (module = "%s" OR module = "*") AND (method="%s" OR method = "*") AND (user_id = %s%s)',
-								$interface, $module, $method, $user_id, $group_where);
-
-				$stricts = $this->APP->model->query($strict_sql);
-				$authenticated = $stricts->RecordCount() ? true : false;
-
 			}
 		}
 
@@ -418,13 +408,16 @@ class User extends Library {
 			$module = ucwords(str_replace('_'.$interface, '', strtolower($module)));
 			$interface = ucwords(strtolower($interface));
 
-			$sql = sprintf('
-					SELECT * FROM permissions
-					WHERE (interface = "%s" OR interface = "*") AND (module = "%s" OR module = "*") AND (method="%s" OR method = "*") AND user_id IS NULL AND group_id IS NULL',
-						$interface, $module, $method);
-
-			$access = $this->APP->model->query($sql);
-			return $access->RecordCount() ? true : false;
+			foreach($this->permissions as $perm){
+				if(
+					($perm['interface'] == $interface || $perm['interface'] == '*') &&
+					($perm['module'] == $module || $perm['module'] == '*') &&
+					($perm['method'] == $method || $perm['method'] == '*') &&
+					$perm['group_id'] === null && $perm['user_id'] == null
+				){
+					return true;
+				}
+			}
 		}
 		return false;
 
@@ -567,7 +560,7 @@ class User extends Library {
 
 		return $default;
 	}
-	 
+
 
 	/**
 	 * Generates new random password

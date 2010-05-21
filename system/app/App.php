@@ -42,12 +42,14 @@ class App extends Bootstrap {
 				$this->params->get->getElemId('sort_direction'));
 		}
 
-		// load all default user preferences
-		if($this->params->session->getInt('user_id')){
-			$this->prefs->loadUserPreferences();
-		}
-
 		if($this->config('enable_authentication_support')){
+
+			$this->user->loadPermissions();
+
+			// load all default user preferences
+			if($this->params->session->getInt('user_id')){
+				$this->prefs->loadUserPreferences();
+			}
 
 			// determine if the current user is an admin
 			define('IS_ADMIN', $this->user->userHasGlobalAccess());
@@ -71,10 +73,10 @@ class App extends Bootstrap {
 
 		// end logging
 		$this->log->write('Application request completed at ' . date("Y-m-d H:i:s"));
-		
+
 	}
 
-	
+
 	/**
 	 * Generates an unordered list nav admin menu based off of all links currently in the array.
 	 * @param boolean $display_ul Whether or not to print out the UL element wrapper
@@ -92,9 +94,9 @@ class App extends Bootstrap {
 			if(is_object($reg)){
 				if(isset($reg->disable_menu) && $reg->disable_menu){
 				} else {
-					
+
 					$link = $this->template->createLink($reg->name, 'view', false, $reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false));
-					
+
 					if(!empty($link)){
 						$menu .= '<li'.($this->router->here($reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false)) ? ' class="at"' : '').'>';
 						$menu .= $link;
@@ -109,15 +111,15 @@ class App extends Bootstrap {
 		return $menu;
 
 	}
-	
-	
+
+
 	/**
 	 * Generates menu items for non-base modules
 	 * @return string
 	 * @access public
 	 */
 	public function generateNonBaseModuleLinks(){
-		
+
 		$nonbase = $this->modules->getNonBaseModules();
 		$menu = '';
 
@@ -128,9 +130,9 @@ class App extends Bootstrap {
 			if(is_object($reg)){
 				if(isset($reg->disable_menu) && $reg->disable_menu){
 				} else {
-					
+
 					$link = $this->template->createLink($reg->name, 'view', false, $reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false));
-					
+
 					if(!empty($link)){
 						$menu .= '<li'.($this->router->here($reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false)) ? ' class="at"' : '').'>';
 						$menu .= $link;
@@ -143,7 +145,7 @@ class App extends Bootstrap {
 		return $menu;
 
 	}
-	
+
 
 	/**
 	 * Scans the modules installed on the server that are awaiting install
@@ -181,7 +183,7 @@ class App extends Bootstrap {
 	 * @access public
 	 */
 	public function modulesAwaitingInstallBox(){
-		
+
 		if(
 			$this->user->isLoggedIn() &&
 			is_array($this->_modules_awaiting_install) &&
@@ -207,70 +209,70 @@ class App extends Bootstrap {
 
 		}
 	}
-	
-	
+
+
 	/**
 	 * Displays a box listing the modules awaiting installation, with links
 	 * @access public
 	 */
 	public function modulesAwaitingInstallAlert(){
-		
+
 		if($this->router->getSelectedModule() != 'Settings_Admin' && $this->router->getSelectedModule() != 'Install_Admin'){
-		
+
 			if(
 				$this->user->isLoggedIn() &&
 				is_array($this->_modules_awaiting_install) &&
 				count($this->_modules_awaiting_install) > 0){
-	
+
 				$html = '<div class="notice"><em>';
 				$html .= $this->template->text('app:mod-install-intro');
 				$html .= ' ' . $this->template->createLink('Click to View', 'view', false, 'Settings') . '</em></div>'."\n";
-	
+
 				print $html;
-	
+
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Displays a box listing the modules awaiting installation, with links
 	 * @access public
 	 */
 	public function moduleControls(){
-		
+
 		$nonbase = $this->modules->getAllNonBaseModules();
 		$items = array();
 
 		foreach($nonbase as $guid){
-		
+
 			$reg = $this->moduleRegistry($guid);
 
 			if(is_object($reg)){
-				
+
 				// status may be set to:
 				// enabled (installed, and enabled)
 				// disabled (installed, but disabled)
 				// false (not installed)
-				
+
 				$status = false;
 
 				$install_link = false;
 				if(in_array((string)$reg->guid, $this->getInstalledModuleGuids())){
 					//$install_link = $this->template->createLink('Disable', 'disable_module', array('guid' => $reg->guid), 'Install')."\n";
-					
+
 					// if disbaled
 					//$install_link = $this->template->createLink('Enable', 'enable_module', array('guid' => $reg->guid), 'Install')."\n";
 				} else {
 					$install_link = true;
 				}
-				
+
 				// any uninstall link
 				$uninstall_link = false;
 				if($status){
 					$uninstall_link = true;
 				}
-				 					
+
 				$items[] = array('name' => $reg->name, 'guid' => $reg->guid, 'install' => $install_link);
 
 			}
@@ -280,33 +282,33 @@ class App extends Bootstrap {
 		return $items;
 
 	}
-	
-	
+
+
 	/**
 	 * Displays a box listing all non-base modules that are either awaiting install or that may be uninstalled, with links to perform the actions.
 	 * @access public
 	 */
 	public function modulesControlBox(){
-		
+
 		$controls = $this->moduleControls();
 		$html = '<table><thead><tr><th>Module</th><th>Action</th></tr></thead><tbody>' . "\n";
-		
+
 		if(is_array($controls) && count($controls)){
 			foreach($controls as $control){
-				
+
 				if($control['install']){
 					$link = $this->template->createLink('Install', 'install_module', array('guid' => $control['guid']), 'Install')."\n";
 				} else {
 					$link = $this->template->createLink('Uninstall', 'uninstall_module', array('guid' => $control['guid']), 'Install')."\n";
 				}
-				
+
 				$html .= sprintf('<tr><td>%s</td><td>%s</td></tr>' . "\n", $control['name'], $link);
-				
+
 			}
 		} else {
 			$html .= '<tr><td colspan="2">There are no modules to be installed or uninstalled.</td></tr>' . "\n";
 		}
-		
+
 		$html .= '</tbody></table>';
 
 		print $html;
