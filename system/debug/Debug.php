@@ -135,6 +135,17 @@ class DebugBase {
 
 	/**
 	 *
+	 */
+	public function pre_v($trace = false){
+		print '<pre>';
+		$this->line_end = "\n";
+		$this->v($trace);
+		print '</pre>';
+	}
+
+
+	/**
+	 *
 	 * @param <type> $data
 	 * @param <type> $caption
 	 * @return <type>

@@ -620,6 +620,9 @@ class Bootstrap extends Base {
     	// assign supercage
     	$this->params->init();
 
+		// load in permissions table
+		$this->user->loadPermissions();
+
     	// router has been used already, so we need to force it to load
     	$this->router = new Router;
 
