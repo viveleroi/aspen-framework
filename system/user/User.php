@@ -98,7 +98,7 @@ class User extends Library {
 	 * @param string $module_path
 	 * @access public
 	 */
-	public function login(){
+	final public function login(){
 
 		$uri = $this->APP->params->server->getRaw('REQUEST_URI').$this->APP->params->server->getRaw('QUERY_STRING');
 		$uri = strip_tags(urldecode($uri));
@@ -186,7 +186,7 @@ class User extends Library {
 	 * @return string
 	 * @access private
 	 */
-	private function getDomainKeyValue(){
+	final private function getDomainKeyValue(){
 		$string = $this->APP->config('application_guid') . LS;
 		$string .= $this->APP->params->server->getRaw('HTTP_HOST');
 		return $string;
@@ -197,7 +197,7 @@ class User extends Library {
 	 * Handles authenticating the user
 	 * @access public
 	 */
-	public function authenticate(){
+	final public function authenticate(){
 
 		$auth = false;
 		$user = $this->APP->params->post->getRaw('user');
@@ -226,6 +226,9 @@ class User extends Library {
 					$_SESSION['last_login'] 		= $account['last_login'];
 					$_SESSION['user_id'] 			= $account['id'];
 
+					// run any post-auth logic
+					$this->post_authentication($account);
+
 					// update last login date
 					$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
 					$model->update($upd, $account['id']);
@@ -238,6 +241,15 @@ class User extends Library {
 
 		return $auth;
 
+	}
+
+
+	/**
+	 * Allows users to run additional code during login without having to
+	 * extend the authentication function itself.
+	 */
+	protected function post_authentication($account = false){
+		return true;
 	}
 
 
@@ -278,7 +290,7 @@ class User extends Library {
 	 * @return boolean
 	 * @access public
 	 */
-	public function isLoggedIn(){
+	final public function isLoggedIn(){
 
 		$authenticated 	= false;
 		$auth_key 		= sha1($this->APP->params->session->getRaw('username') . $this->APP->params->session->getInt('user_id'));

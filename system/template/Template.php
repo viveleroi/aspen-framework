@@ -892,86 +892,17 @@ class Template extends Library {
 	 * @return <type>
 	 */
 	public function pref_date($gmdate, $format = false, $timezone = false){
-		return $this->APP->date->pref_date($gmdate, $format, $timezone);
-	}
 
+		$timezone	= $timezone ? $timezone : $this->APP->config('timezone');
+		$format		= $format ? $format : $this->APP->config('date_format');
 
-	/**
-	 * Prints a nicer date display
-	 * @param string $date
-	 * @param string $date_format_string The format to print the date, if needed
-	 * @param mixed $empty_string What to print if the data is empty
-	 * @param boolean $date_only Whether or not to display nice names or just dates
-	 * @return string
-	 * @access public
-	 */
-	public function niceDate($date, $date_format_string = "n/j/Y", $empty_string = '-', $date_only = false){
-
-		$return_date = $empty_string;
-
-		$empty_date = str_replace(array(0, "-", ":", " "), '', $date);
-
-		if(strlen($empty_date) > 0){
-
-			$date = strtotime($date);
-			$days_between = $this->daysBetween(date("Y-m-d"), date("Y-m-d", $date));
-
-			if(!$date_only){
-				if(date("Y-m-d", $date) == date("Y-m-d")){
-					$return_date = 'Today';
-				}
-				elseif(date("Y-m-d", $date) == date("Y-m-d", mktime(0, 0, 0, date("m"), date("d")+1, date("y")))){
-					$return_date = 'Tomorrow';
-				}
-				elseif(date("Y-m-d", $date) == date("Y-m-d", mktime(0, 0, 0, date("m"), date("d")-1, date("y")))){
-					$return_date = 'Yesterday';
-				}
-				elseif($days_between > 0 && $days_between < 7){
-					// if this week
-					if(date("W") == date("W", $date)){
-						$return_date = "This " . date("l", $date);
-					} else {
-						$return_date = "Next " . date("l", $date);
-					}
-				}
-				elseif($days_between > 7 && $days_between <= 14){
-					$return_date = "Two Weeks";
-				}
-				elseif($days_between > 14 && $days_between <= 21){
-					$return_date = "Three Weeks";
-				}
-				elseif($days_between > 21 && $days_between <= 60){
-					$return_date = "Next Month";
-				}
-				elseif($days_between < 0 && $days_between > -7){
-					$return_date = "Last " . date("l", $date);
-				}
-				elseif($days_between == -7){
-					$return_date = "One Week Ago";
-				}
-				else {
-					$return_date = date($date_format_string, $date);
-				}
-			} else {
-				$return_date = date($date_format_string, $date);
-			}
+		// try to get a user timezone setting
+		if($user_id = $this->APP->params->session->getInt('user_id')){
+			$timezone = $this->APP->settings->getConfig('timezone', $user_id);
 		}
 
-		return $return_date;
+		return Date::tzFormatDate($gmdate, $format, $timezone);
 
-	}
-
-
-	/**
-	 * Returns a count of days between two dates
-	 * @param datetime $start
-	 * @param datetime $end
-	 * @return float
-	 * @access public
-	 * @todo This has no proper place, so it's here
-	 */
-	public function daysBetween($start, $end){
-		return (strtotime($end) - strtotime($start)) / 86400;
 	}
 
 

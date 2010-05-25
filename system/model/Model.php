@@ -1961,7 +1961,6 @@ class Model extends Library {
 							foreach($arr as $val){
 								$rec = array($field_1=>$result,$field_2=>$val);
 								$rel_model->insert($rec);
-								print $rel_model->lq();
 							}
 						} else {
 							// We don't need to do anything here, because it should be

@@ -12,7 +12,7 @@
  * Provides a method of writing to a log file.
  * @package Aspen_Framework
  */
-class Utils extends Library {
+class Utils {
 
 
 	/**
