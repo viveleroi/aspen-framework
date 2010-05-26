@@ -188,7 +188,7 @@ class User extends Library {
 	 */
 	final private function getDomainKeyValue(){
 		$string = $this->APP->config('application_guid') . LS;
-		$string .= $this->APP->params->server->getRaw('HTTP_HOST');
+		$string .= $this->APP->params->server->getServerName('HTTP_HOST');
 		return $string;
 	}
 
