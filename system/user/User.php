@@ -182,14 +182,17 @@ class User extends Library {
 
 
 	/**
-	 * Returns a string used for specific domain/application id
+	 * Returns a machine-user-application specific string that's encoded and stored
+	 * in the session and is used to verify that session.
 	 * @return string
 	 * @access private
 	 */
 	final private function getDomainKeyValue(){
 		$string = $this->APP->config('application_guid') . LS;
 		$string .= $this->APP->params->server->getServerName('HTTP_HOST');
-		return $string;
+		$string .= $this->APP->params->server->getServerName('HTTP_USER_AGENT');
+		$string .= $this->APP->params->server->getServerName('REMOTE_ADDR');
+		return sha1($string);
 	}
 
 
@@ -219,7 +222,7 @@ class User extends Library {
 
 					$_SESSION['authenticated']		= true;
 					$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['username'], $account['id']);
-					$_SESSION['domain_key'] 		= sha1($this->getDomainKeyValue());
+					$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
 					$_SESSION['username'] 			= $account['username'];
 					$_SESSION['nice_name'] 			= $account['nice_name'];
 					$_SESSION['latest_login'] 		= $account['latest_login'];
@@ -294,13 +297,12 @@ class User extends Library {
 
 		$authenticated 	= false;
 		$auth_key 		= sha1($this->APP->params->session->getEmail('username') . $this->APP->params->session->getInt('user_id'));
-		$domain_key 	= sha1($this->getDomainKeyValue());
 
 		if($this->APP->checkDbConnection()){
 			if(
 				$this->APP->params->session->getInt('authenticated', false) &&
 				$this->APP->params->session->getAlnum('authentication_key') == $auth_key &&
-				$this->APP->params->session->getAlnum('domain_key') == $domain_key
+				$this->APP->params->session->getAlnum('domain_key') == $this->getDomainKeyValue()
 				){
 					$authenticated = true;
 			}
