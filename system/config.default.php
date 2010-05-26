@@ -379,6 +379,20 @@
  * class, following the documentation at:
  *
  * http://docs.aspen-framework.org/wiki/Aspen:Extending_System_Classes
+ *
+ * Accepted values for load_core_class are:
+ * 'classname' => 'Security',
+ * 'folder' => false,
+ * 'filename' => false,
+ * 'var' => false,
+ * 'autoload' => false,
+ * 'extends' => 'childclassname'
+ * 'root' => '/full/path/to/root/of/class'
+ *
+ * Accepted values for custom_classes are:
+ * 'classname' => 'Myclass',
+ * 'root' => '/full/path/to/root/of/class',
+ * 'extends' => 'Settings'
  */
 
 	$config['load_core_class'][] = array('classname' => 'Library', 'autoload' => false);
@@ -404,7 +418,7 @@
 	$config['load_core_class'][] = array('classname' => 'Model');
 	$config['load_core_class'][] = array('classname' => 'Module');
 	$config['load_core_class'][] = array('classname' => 'Modules');
-	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail');
+	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail', 'filename'=>'class.phpmailer.php');
 	$config['load_core_class'][] = array('classname' => 'Settings');
 	$config['load_core_class'][] = array('classname' => 'Sml');
 	$config['load_core_class'][] = array('classname' => 'Form', 'autoload' => false);
