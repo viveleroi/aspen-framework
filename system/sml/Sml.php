@@ -83,7 +83,7 @@ class Sml extends Library {
      * @access public
      */
 	public function getMessageLog(){
-    	$message_log = $this->APP->params->session->getRaw('message_log');
+    	$message_log = $this->APP->params->session->getArray('message_log');
     	$this->sessionMessageArray = is_string($message_log) ? unserialize($message_log) : array();
     	return $this->sessionMessageArray;
     }
@@ -94,7 +94,7 @@ class Sml extends Library {
      * @access public
      */
 	public function printMessage(){
-		if($this->APP->params->session->getRaw('unread_message_flag')){
+		if($this->APP->params->session->getInt('unread_message_flag')){
 			$message = $this->getMostRecentMessage();
 			printf($this->APP->config('sml_message_html'), $message['message'], $message['class']);
 			$_SESSION['unread_message_flag'] = false;

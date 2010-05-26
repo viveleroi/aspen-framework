@@ -75,7 +75,7 @@ class Router extends Library {
 		$bits = array();
 
 		// if mod_rewrite enabled, and request doesn't look like a non-rewrite request
-		if($this->APP->config('enable_mod_rewrite') && strpos($this->APP->params->server->getRaw('REQUEST_URI'), '.php?') === false){
+		if($this->APP->config('enable_mod_rewrite') && strpos($this->APP->params->server->getUri('REQUEST_URI'), '.php?') === false){
 
 			// we force the entire url as replacement because
 			// an interface app name may be the same as a module
@@ -87,7 +87,7 @@ class Router extends Library {
 				$replace[] = $this->getApplicationUrl();
 				$replace[] = $this->getPath();
 			}
-			$uri = $to_map = str_replace($replace, '', $this->getDomainUrl() . $this->APP->params->server->getRaw('REQUEST_URI'));
+			$uri = $to_map = str_replace($replace, '', $this->getDomainUrl() . $this->APP->params->server->getUri('REQUEST_URI'));
 			$uri = explode('/', $uri);
 
 			// If route mapping fails, then we need to parse the url for the default config
@@ -105,8 +105,8 @@ class Router extends Library {
 			}
 		} else {
 
-			$this->map['module'] = $this->APP->params->get->getRaw('module');
-			$this->map['method'] = $this->APP->params->get->getRaw('method');
+			$this->map['module'] = $this->APP->params->get->getElemId('module');
+			$this->map['method'] = $this->APP->params->get->getElemId('method');
 
 			// loop additional bits to pass to our arguments
 			$get = $this->APP->params->getRawSource('get');
@@ -564,7 +564,7 @@ class Router extends Library {
 	public function getFullUrl(){
 
 		$url = $this->getDomainUrl();
-		$url .= $this->APP->params->server->getRaw('REQUEST_URI');
+		$url .= $this->APP->params->server->getUri('REQUEST_URI');
 		$url = strip_tags(urldecode($url));
 
 		return $url;

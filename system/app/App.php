@@ -35,9 +35,9 @@ class App extends Bootstrap {
 		$this->listModulesAwaitingInstall();
 
 		// if new display settings are set in the url, save them to the database
-		if($this->params->get->getRaw('sort_location') && $this->params->get->getElemId('sort_by')){
+		if($this->params->get->getElemId('sort_location') && $this->params->get->getElemId('sort_by')){
 			$this->prefs->addSort(
-				$this->params->get->getRaw('sort_location'),
+				$this->params->get->getElemId('sort_location'),
 				$this->params->get->getElemId('sort_by'),
 				$this->params->get->getElemId('sort_direction'));
 		}

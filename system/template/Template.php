@@ -868,11 +868,11 @@ class Template extends Library {
 
 		$filters = array();
 
-		if($this->APP->params->get->getRaw('filter')){
-			$filters = $this->APP->params->get->getRaw('filter');
+		if($this->APP->params->get->isArray('filter')){
+			$filters = $this->APP->params->get->getArray('filter');
 		} else {
 
-			$sess_filters = $this->APP->params->session->getRaw('filter');
+			$sess_filters = $this->APP->params->session->getArray('filter');
 
 			if(isset($sess_filters[$this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod()])){
 				$filters = $sess_filters[$this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod()];

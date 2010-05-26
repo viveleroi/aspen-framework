@@ -100,7 +100,7 @@ class User extends Library {
 	 */
 	final public function login(){
 
-		$uri = $this->APP->params->server->getRaw('REQUEST_URI').$this->APP->params->server->getRaw('QUERY_STRING');
+		$uri = $this->APP->params->server->getUri('REQUEST_URI').$this->APP->params->server->getRaw('QUERY_STRING');
 		$uri = strip_tags(urldecode($uri));
 		$uri = preg_replace('/redirected=(.*)/', '', $uri);
 
@@ -200,7 +200,7 @@ class User extends Library {
 	final public function authenticate(){
 
 		$auth = false;
-		$user = $this->APP->params->post->getRaw('user');
+		$user = $this->APP->params->post->getEmail('user');
 		$pass = sha1($this->APP->params->post->getRaw('pass'));
 
 		if($user && $pass){
@@ -293,7 +293,7 @@ class User extends Library {
 	final public function isLoggedIn(){
 
 		$authenticated 	= false;
-		$auth_key 		= sha1($this->APP->params->session->getRaw('username') . $this->APP->params->session->getInt('user_id'));
+		$auth_key 		= sha1($this->APP->params->session->getEmail('username') . $this->APP->params->session->getInt('user_id'));
 		$domain_key 	= sha1($this->getDomainKeyValue());
 
 		if($this->APP->checkDbConnection()){

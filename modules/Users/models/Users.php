@@ -41,7 +41,7 @@ class UsersModel extends Model {
 			// if we're adding the record, check for existing username
 			if(!$primary_key){
 				$user = $this->open('users');
-				$user->where('username', $clean->getRaw('username'));
+				$user->where('username', $clean->getEmail('username'));
 				$unique = $user->results();
 				if($unique){
 					$this->addError('username', $this->APP->template->text('db:error:username-dup'));
@@ -53,7 +53,7 @@ class UsersModel extends Model {
 		if(!$clean->isEmpty('Groups')){
 			// Make sure an admin isn't removing his own admin status
 			if(defined('IS_ADMIN') && IS_ADMIN && $primary_key == $this->APP->params->session->getInt('user_id')){
-				if(!in_array(1, $clean->getRaw('Groups'))){
+				if(!$clean->isInArray('Groups', 1)){
 					$this->addError('Groups', $this->APP->template->text('db:error:groups-noadmin'));
 				}
 			}
