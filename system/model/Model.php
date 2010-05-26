@@ -152,7 +152,7 @@ class Model extends Library {
 	 * @return object
 	 * @access public
 	 */
-	 final public function open($table, $id = false){
+	 final public function open($table, $id = false, $contains = false){
 
 		$final_obj = false;
 
@@ -180,6 +180,10 @@ class Model extends Library {
 			} else {
 				$this->APP->error->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
 				$final_obj = new Model($table);
+			}
+
+			if($contains){
+				$final_obj->contains($contains);
 			}
 
 			if(is_object($final_obj)){
