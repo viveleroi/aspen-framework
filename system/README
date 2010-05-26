@@ -43,13 +43,13 @@ Third Party Libraries:
   ADOdb V5.10
     http://adodb.sourceforge.net/
 
-  HTMLPurifier 3.3.0
+  HTMLPurifier 4.1.0
     http://htmlpurifier.org/
 
   PhpThumb v3.0 Ian Selby
     http://phpthumb.gxdlabs.com
 
-  PHPMailer 2.3
+  PHPMailer 5.0
     http://phpmailer.sourceforge.net
 
   RSS v 2.2.1 Michael Wimmer

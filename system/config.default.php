@@ -418,7 +418,7 @@
 	$config['load_core_class'][] = array('classname' => 'Model');
 	$config['load_core_class'][] = array('classname' => 'Module');
 	$config['load_core_class'][] = array('classname' => 'Modules');
-	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail', 'filename'=>'class.phpmailer.php');
+	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail', 'filename'=>'class.phpmailer');
 	$config['load_core_class'][] = array('classname' => 'Settings');
 	$config['load_core_class'][] = array('classname' => 'Sml');
 	$config['load_core_class'][] = array('classname' => 'Form', 'autoload' => false);

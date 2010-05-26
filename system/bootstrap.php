@@ -627,15 +627,15 @@ class Bootstrap extends Base {
     	if($this->isLibraryLoaded('HTMLPurifier')){
 	    	$html_config = HTMLPurifier_Config::createDefault();
 	    	if($this->config('enable_cache')){
-	    		$html_config->set('Cache', 'SerializerPath', $this->config('cache_dir'));
+	    		$html_config->set('Cache.SerializerPath', $this->config('cache_dir'));
 	    	} else {
-	    		$html_config->set('Cache', 'DefinitionImpl', null);
+	    		$html_config->set('Cache.DefinitionImpl', null);
 	    	}
 
 	    	// set user-defined html purifier settings
 	    	if(is_array($this->config('html_purifier_settings')) && count($this->config('html_purifier_settings')) > 0){
 	    		foreach($this->config('html_purifier_settings') as $setting){
-	    			$html_config->set($setting[0], $setting[1], $setting[2]);
+	    			$html_config->set($setting[0].'.'.$setting[1], $setting[2]);
 	    		}
 	    	}
 
