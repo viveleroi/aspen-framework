@@ -491,34 +491,13 @@ class Router extends Library {
 
 			$this->APP->log->write('Looking for Module: ' . $this->getSelectedModule() . '->' . $this->getSelectedMethod());
 
-			/* this sucks balls, but I don't think you can call a function with an array as separate variables, like
-			 * like imploding an array into separate function arguments  */
 			if(isset($this->APP->{$this->getSelectedModule()})){
 				if(method_exists($this->APP->{$this->getSelectedModule()}, $this->getSelectedMethod())){
 
 					$this->APP->log->write('Running Module: ' . $this->getSelectedModule() . '->' . $this->getSelectedMethod());
 
-					$this->APP->{$this->getSelectedModule()}->{$this->getSelectedMethod()}(
-														$this->arg(1),
-														$this->arg(2),
-														$this->arg(3),
-														$this->arg(4),
-														$this->arg(5),
-														$this->arg(6),
-														$this->arg(7),
-														$this->arg(8),
-														$this->arg(9),
-														$this->arg(10),
-														$this->arg(11),
-														$this->arg(12),
-														$this->arg(13),
-														$this->arg(14),
-														$this->arg(15),
-														$this->arg(16),
-														$this->arg(17),
-														$this->arg(18),
-														$this->arg(19),
-														$this->arg(20));
+					// Call the actual class method for our current page, and pass all arguments to it
+					call_user_func_array(array($this->APP->{$this->getSelectedModule()}, $this->getSelectedMethod()), $this->_selected_arguments);
 
 				} else { // method not found within module
 					if($this->APP->config('log_error_on_404')){
