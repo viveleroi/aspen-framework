@@ -17,6 +17,9 @@ define('APPLICATION_PATH', str_replace(DIRECTORY_SEPARATOR . "system", '', SYSTE
 define('MODULES_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'modules');
 define('PLUGINS_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'plugins');
 
+// set execution start time
+define('EXECUTION_START', microtime());
+
 // here we'll quicly check for absolute minimal php5 support
 if(version_compare(phpversion(), "5.1.0", 'ge')){
 	

@@ -69,7 +69,7 @@ class Log extends Library {
 
 		if($loaded){
 
-			$this->write('Logging has been activated at ' . date("Y-m-d H:i:s") . '.', 'w');
+			$this->write('Logging has been activated at ' . Date::formatMicrotime(Date::microtime(EXECUTION_START)) . '.', 'w');
 
 			if($this->level == 1){
 				$this->logCoreInfo();
@@ -110,7 +110,7 @@ class Log extends Library {
 		$new_filename = 'log';
 
 		if($this->APP->config('timestamp_log_file')){
-			$new_filename .= '-' . REQUEST_START;
+			$new_filename .= '-' . Date::formatMicrotime(Date::microtime(EXECUTION_START));
 		}
 
 		$this->full_path = $this->dir . DS . $new_filename;

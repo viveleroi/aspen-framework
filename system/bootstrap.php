@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', true);
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 
 /**
@@ -262,7 +262,6 @@ class Bootstrap extends Base {
 		// set a few constants
 		define('LS', strtolower(LOADING_SECTION));
 		define('DS', DIRECTORY_SEPARATOR);
-		define('REQUEST_START', date("YmdHis"));
 
 		$interface = LS;
 		if(is_array($this->config('interface_global_folder_replace'))){

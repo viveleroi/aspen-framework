@@ -72,7 +72,9 @@ class App extends Bootstrap {
 		$this->router->loadFromUrl();
 
 		// end logging
-		$this->log->write('Application request completed at ' . date("Y-m-d H:i:s"));
+		$end = Date::microtime();
+		$this->log->write('Application request completed at ' . Date::formatMicrotime($end));
+		$this->log->write('Time Spent: ' . ($end-EXECUTION_START).' seconds');
 
 	}
 

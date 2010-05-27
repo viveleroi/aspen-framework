@@ -16,6 +16,32 @@ class Date {
 
 
 	/**
+	 * Returns the current date time string with microseconds
+	 * @param string $mtime
+	 * @return integer
+	 */
+	static public function microtime($mtime = false){
+		$mtime = $mtime ? $mtime : microtime();
+		$mtime = explode(" ", $mtime);
+		return $mtime[1] + $mtime[0];
+	}
+
+
+	/**
+	 * Formats a microtime-based timestamp.
+	 * @param integer $time
+	 * @param string $format
+	 * @return string
+	 */
+	static public function formatMicrotime($time = false, $format = 'Y-m-d H:i:s.u'){
+		$time = $time ? $time : Date::microtime();
+		$micro = sprintf("%06d",($time - floor($time)) * 1000000);
+		$d = new DateTime( date('Y-m-d H:i:s.'.$micro,$time) );
+		return $d->format($format);
+	}
+
+
+	/**
 	 * Returns a count of days between two dates
 	 * @param datetime $start
 	 * @param datetime $end

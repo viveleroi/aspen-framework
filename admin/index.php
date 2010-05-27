@@ -5,6 +5,9 @@
 // not running in a subdirectory
 define('LOADING_SECTION', 'Admin');
 
+// set execution start time
+define('EXECUTION_START', microtime());
+
 // Here are our application file path definitions. Unless
 // you're varying from the default install, these should not
 // need to be changed.

@@ -183,12 +183,12 @@ class Activityrender extends Library {
 	 */
 	public function formatDate($date){
 
-		$today = $this->APP->date->pref_date(gmdate('Y-m-d H:i:s'), 'Y-m-d');
+		$today = $this->APP->template->pref_date(gmdate('Y-m-d H:i:s'), 'Y-m-d');
 		
-		if($this->APP->date->pref_date($date, 'Y-m-d') == $today){
-			return $this->APP->date->pref_date($date, 'g:i a');
+		if($this->APP->template->pref_date($date, 'Y-m-d') == $today){
+			return $this->APP->template->pref_date($date, 'g:i a');
 		} else {
-			return $this->APP->date->pref_date($date, 'm/d @ g:i a');
+			return $this->APP->template->pref_date($date, 'm/d @ g:i a');
 		}
 		return $date;
 	}
