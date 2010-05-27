@@ -44,8 +44,6 @@ class App extends Bootstrap {
 
 		if($this->config('enable_authentication_support')){
 
-			$this->user->loadPermissions();
-
 			// load all default user preferences
 			if($this->params->session->getInt('user_id')){
 				$this->prefs->loadUserPreferences();
