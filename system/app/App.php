@@ -74,7 +74,7 @@ class App extends Bootstrap {
 		// end logging
 		$end = Date::microtime();
 		$this->log->write('Application request completed at ' . Date::formatMicrotime($end));
-		$this->log->write('Time Spent: ' . ($end-EXECUTION_START).' seconds');
+		$this->log->write('Time Spent: ' . ($end-Date::microtime(EXECUTION_START)).' seconds');
 
 	}
 

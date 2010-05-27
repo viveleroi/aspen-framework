@@ -312,7 +312,7 @@ class Model extends Library {
 					 * Validate ENUMs
 					 */
 					if($column->type == 'enum'){
-                        if(!$this->enumExists($column->name, $clean->getElemId( $column->name ))){
+                        if(!$this->enumExists($column->name, $clean->getRaw( $column->name ))){
 							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' is not in list of acceptable values.');
 						}
 					}
@@ -323,7 +323,7 @@ class Model extends Library {
 					 */
 
 					// maxlength
-					if($column->max_length > 0 && strlen($clean->getElemId($column->name)) > $column->max_length){
+					if($column->max_length > 0 && strlen($clean->getRaw($column->name)) > $column->max_length){
 						$this->addError($column->name, 'Invalid db value. ' . $column->name . ' exceeds maxlength.');
 					}
 				}
@@ -1503,8 +1503,10 @@ class Model extends Library {
 		$back = debug_backtrace();
 
 		foreach($back as $file){
-			if(strpos($file['file'], 'Model.php') === false){
-				$trace[] = array('file'=>$file['file'],'line'=>$file['line']);
+			if(isset($file['file'])){
+				if(strpos($file['file'], 'Model.php') === false){
+					$trace[] = array('file'=>$file['file'],'line'=>$file['line']);
+				}
 			}
 		}
 

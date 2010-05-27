@@ -83,7 +83,7 @@ class Sml extends Library {
      * @access public
      */
 	public function getMessageLog(){
-    	$message_log = $this->APP->params->session->getArray('message_log');
+    	$message_log = $this->APP->params->session->getRaw('message_log');
     	$this->sessionMessageArray = is_string($message_log) ? unserialize($message_log) : array();
     	return $this->sessionMessageArray;
     }
