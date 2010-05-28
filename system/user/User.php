@@ -197,19 +197,30 @@ class User extends Library {
 
 
 	/**
+	 * Returns a securely hashed string.
+	 * @param <type> $pass
+	 * @return <type>
+	 */
+	final private function stringHash($pass){
+		$p = new PasswordHash();
+		return $p->HashPassword($pass);
+	}
+
+
+	/**
 	 * Handles authenticating the user
 	 * @access public
 	 */
 	final public function authenticate(){
 
 		$auth = false;
+		$p	  = new PasswordHash();
 		$user = $this->APP->params->post->getEmail('user');
-		$pass = sha1($this->APP->params->post->getRaw('pass'));
+		$pass = $this->APP->params->post->getRaw('pass');
 
 		if($user && $pass){
 
 			$model = $this->APP->model->open('users');
-			$model->where('password', $pass);
 			$model->where('username', $user);
 			$model->where('allow_login', 1);
 			$model->limit(0, 1);
@@ -217,27 +228,27 @@ class User extends Library {
 
 			if($result){
 				foreach($result as $account){
+					if($p->CheckPassword($pass, $account['password'])){
 
-					$auth = true;
+						$_SESSION['authenticated']		= true;
+						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['username'], $account['id']);
+						$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
+						$_SESSION['username'] 			= $account['username'];
+						$_SESSION['nice_name'] 			= $account['nice_name'];
+						$_SESSION['latest_login'] 		= $account['latest_login'];
+						$_SESSION['last_login'] 		= $account['last_login'];
+						$_SESSION['user_id'] 			= $account['id'];
 
-					$_SESSION['authenticated']		= true;
-					$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['username'], $account['id']);
-					$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
-					$_SESSION['username'] 			= $account['username'];
-					$_SESSION['nice_name'] 			= $account['nice_name'];
-					$_SESSION['latest_login'] 		= $account['latest_login'];
-					$_SESSION['last_login'] 		= $account['last_login'];
-					$_SESSION['user_id'] 			= $account['id'];
+						// run any post-auth logic
+						$this->post_authentication($account);
 
-					// run any post-auth logic
-					$this->post_authentication($account);
+						// update last login date
+						$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
+						$model->update($upd, $account['id']);
 
-					// update last login date
-					$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
-					$model->update($upd, $account['id']);
+						$auth = true;
 
-					$auth = true;
-
+					}
 				}
 			}
 		}

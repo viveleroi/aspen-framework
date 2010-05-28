@@ -79,7 +79,7 @@ class UsersModel extends Model {
 
 		// enforce a sha1 on the password
 		if(array_key_exists('password', $fields) && !empty($fields['password'])){
-			$fields['password'] = $this->encode_password($fields['password']);
+			$fields['password'] = $this->stringHash($fields['password']);
 		}
 
 		// set date created
@@ -100,7 +100,7 @@ class UsersModel extends Model {
 
 		// if the password provided =, encode it - otherwise, remove
 		if(!empty($fields['password'])){
-			$fields['password'] = $this->encode_password($fields['password']);
+			$fields['password'] = $this->stringHash($fields['password']);
 		} else {
 			unset($fields['password']);
 		}
@@ -111,16 +111,13 @@ class UsersModel extends Model {
 
 
 	/**
-	 * Defines an encoding type for the password.
-	 * @param string $pass
-	 * @return string
-	 * @access
-	 * private
+	 * Returns a securely hashed string.
+	 * @param <type> $pass
+	 * @return <type>
 	 */
-	protected function encode_password($pass = false){
-		if(!empty($pass)){
-			return sha1($pass);
-		}
+	final private function stringHash($pass){
+		$p = new PasswordHash();
+		return $p->HashPassword($pass);
 	}
 }
 ?>

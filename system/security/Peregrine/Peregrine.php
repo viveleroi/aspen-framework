@@ -704,7 +704,7 @@ class CageBase {
 	public function getQueryString($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
 		if($this->isSetAndNotEmpty($key)){
-			return preg_replace('/[^a-zA-Z0-9_:~\.\/-?{}\[\]]/', '', $this->getKey($key));
+			return preg_replace('/[^a-zA-Z0-9-_:~\.\/?{}\[\]]/', '', $this->getKey($key));
 		}
 		return $default;
 	}
