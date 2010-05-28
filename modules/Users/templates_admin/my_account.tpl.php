@@ -4,6 +4,7 @@
 <?php print $this->APP->sml->printMessage(); ?>
 
 <form action="<?php print $this->createUrl() ?>" method="post">
+	<input id="allow_login_hidden" name="allow_login" type="hidden" value="<?php print $form->cv('allow_login') ?>" />
 	<fieldset>
 		<p class="notice"><?php print $this->text('myaccount:help'); ?></p>
 

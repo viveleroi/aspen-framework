@@ -48,8 +48,9 @@ class PasswordHash {
 	function get_random_bytes($count)
 	{
 		$output = '';
-		if (is_readable('/dev/urandom') &&
-		    ($fh = @fopen('/dev/urandom', 'rb'))) {
+		if (strpos(ini_get('open_basedir'), '/dev/urandom') !== false &&
+			is_readable('/dev/urandom') &&
+			($fh = @fopen('/dev/urandom', 'rb'))) {
 			$output = fread($fh, $count);
 			fclose($fh);
 		}

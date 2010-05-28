@@ -58,9 +58,6 @@ class User extends Library {
 				}
 			}
 
-			// if allow_login not present, set to false
-			$form->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
-
 			// save the data as well as the groups
 			$result = $form->save($id);
 
@@ -78,7 +75,7 @@ class User extends Library {
 	 * @access public
 	 */
 	public function my_account(){
-		$this->edit($this->APP->params->session->getInt('user_id'));
+		return $this->edit($this->APP->params->session->getInt('user_id'));
 	}
 
 

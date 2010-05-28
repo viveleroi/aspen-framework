@@ -146,8 +146,8 @@ class Error extends Library {
 		if($this->APP->config('error_json_post_url')){
 			$ch = curl_init();
 			curl_setopt($ch,CURLOPT_URL,$this->APP->config('error_json_post_url'));
-			curl_setopt($ch,CURLOPT_POST,count($errors));
-			curl_setopt($ch,CURLOPT_POSTFIELDS,'payload='.json_encode($errors));
+			curl_setopt($ch,CURLOPT_POST,count($error));
+			curl_setopt($ch,CURLOPT_POSTFIELDS,'payload='.json_encode($error));
 			$result = curl_exec($ch);
 			curl_close($ch);
 		}

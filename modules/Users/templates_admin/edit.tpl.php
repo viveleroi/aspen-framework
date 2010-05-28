@@ -33,6 +33,7 @@
 	
 		<p>
 		<label for="allow_login">Allow Login:</label>
+		<input id="allow_login_hidden" name="allow_login" type="hidden" value="0" />
 		<input id="allow_login" name="allow_login"<?php print $form->checked('allow_login'); ?> type="checkbox" value="1" />
 		</p>
 	</fieldset>

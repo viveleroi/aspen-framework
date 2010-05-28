@@ -69,12 +69,16 @@ class Form extends Library {
 	public function __construct($table = false, $id = false, $contains = array(), $field = false){
 		parent::__construct();
 		if($id){
-			define('ADD_OR_EDIT', 'edit');
-			define('IS_EDIT_PAGE', true);
+			if(!defined('ADD_OR_EDIT')){
+				define('ADD_OR_EDIT', 'edit');
+				define('IS_EDIT_PAGE', true);
+			}
 			$this->loadRecord($table, $id, $contains);
 		} else {
-			define('ADD_OR_EDIT', 'add');
-			define('IS_EDIT_PAGE', false);
+			if(!defined('ADD_OR_EDIT')){
+				define('ADD_OR_EDIT', 'add');
+				define('IS_EDIT_PAGE', false);
+			}
 			$this->loadTable($table);
 		}
 	}
