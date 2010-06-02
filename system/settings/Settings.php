@@ -83,19 +83,14 @@ class Settings extends Library {
 	 * @access private
 	 */
 	private function configRecord($key, $user_id = NULL){
-
-		// first check the array
-		foreach($this->settings as $setting){
-			if($setting['config_key'] == $key && $setting['user_id'] == $user_id ){
-				return $setting;
+		if(is_array($this->settings)){
+			foreach($this->settings as $setting){
+				if($setting['config_key'] == $key && $setting['user_id'] == $user_id ){
+					return $setting;
+				}
 			}
 		}
-
-		// otherwise check the database
-		$cfg_model	= $this->APP->model->openSingle('config');
-		$cfg_model->where('config_key', $key);
-		$cfg_model->where('user_id', $user_id);
-		return $cfg_model->results();
+		return NULL;
 	}
 }
 ?>

@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', true);
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 
 /**
@@ -618,6 +618,9 @@ class Bootstrap extends Base {
 
     	// assign supercage
     	$this->params->init();
+
+		// load user perms
+		$this->user->loadPermissions();
 
     	// router has been used already, so we need to force it to load
     	$this->router = new Router;

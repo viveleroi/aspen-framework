@@ -22,14 +22,6 @@ class User extends Library {
 
 
 	/**
-	 * Loads the permissions table
-	 */
-	public function  aspen_init() {
-		$this->loadPermissions();
-	}
-
-
-	/**
 	 * Loads the permissions table results so we don't need to query the db constantly
 	 * @access private
 	 */
