@@ -166,11 +166,16 @@ class Form extends Library {
 		$success 	= false;
 		$schema		= $model->getSchema();
 
-		// build the array of field/vars
+		// determine the primary key field
+		$pid = $model->getPrimaryKey();
+
+		// build a complete array of all incoming data
+		// even if some of the fields are not in the database,
+		// those may now be validated through the models
 		$fields = array();
-		foreach($schema['schema'] as $field){
-			if(!$field->primary_key){
-				$fields[$field->name] = $this->cv($field->name, false);
+		foreach($this->_form_fields as $field => $elems){
+			if($field != $pid){
+				$fields[$field] = $this->cv($field);
 			}
 		}
 
