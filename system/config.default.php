@@ -207,8 +207,18 @@
 	// enable firephp support (must have debug class loaded)
 	$config['enable_firephp'] = false;
 
+/**
+ * Snowy-Evening.com integration
+ */
+
 	// POST the data as JSON object to a Url
 	$config['error_json_post_url'] = false;
+
+	// If posting error via json, what api key do we use?
+	$config['error_json_post_api_key'] = '';
+
+	// If posting error via json, what project id do we use?
+	$config['error_json_post_proj_id'] = 0;
 
 
 /**

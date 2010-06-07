@@ -144,10 +144,16 @@ class Error extends Library {
 
 
 		if($this->APP->config('error_json_post_url')){
+
+			$params = array(
+					'api_key'=>$this->APP->config('error_json_post_api_key'),
+					'project_id'=>$this->APP->config('error_json_post_proj_id'),
+					'payload'=>json_encode($error));
+
 			$ch = curl_init();
 			curl_setopt($ch,CURLOPT_URL,$this->APP->config('error_json_post_url'));
 			curl_setopt($ch,CURLOPT_POST,count($error));
-			curl_setopt($ch,CURLOPT_POSTFIELDS,'payload='.json_encode($error));
+			curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($params));
 			$result = curl_exec($ch);
 			curl_close($ch);
 		}
