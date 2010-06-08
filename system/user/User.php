@@ -194,17 +194,6 @@ class User extends Library {
 
 
 	/**
-	 * Returns a securely hashed string.
-	 * @param <type> $pass
-	 * @return <type>
-	 */
-	final private function stringHash($pass){
-		$p = new PasswordHash();
-		return $p->HashPassword($pass);
-	}
-
-
-	/**
 	 * Handles authenticating the user
 	 * @access public
 	 */

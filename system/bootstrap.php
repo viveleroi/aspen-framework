@@ -203,7 +203,7 @@ class Bootstrap extends Base {
 	 * @var array $config Holds an array of table child keys
 	 * @access private
 	 */
-	private $_child_foreign_keys;
+	private $_db_schema;
 
 	/**
 	 * @var array $config Holds an array of all successfully loaded libraries
@@ -216,12 +216,6 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	private $_model_extensions;
-
-	/**
-	 * @var array Holds an array of all model support libraries
-	 * @access private
-	 */
-	private $_module_libraries;
 
 	/**
 	 * @var array $_modules Contains a list of modules found in the database.
@@ -375,7 +369,7 @@ class Bootstrap extends Base {
 
 		// update app build, if used
 		define('VERSION_COMPLETE', 'v'.VERSION.' b'.BUILD.' Aspen-'.FRAMEWORK_REV);
-		
+
 	}
 
 
@@ -577,9 +571,6 @@ class Bootstrap extends Base {
 			$this->db = false;
 		}
 
-		// attempt to map child foreign keys
-		$this->_child_foreign_keys = $this->mapChildForeignKeys();
-
 		// compile our final array of classes to load
 		$all_classes 	= array();
 		$base_classes 	= $this->config('load_core_class');
@@ -619,8 +610,16 @@ class Bootstrap extends Base {
     	// assign supercage
     	$this->params->init();
 
+		// load database schema
+		if($this->db){
+			$this->_db_schema = $this->model->loadDatabaseSchema();
+//			Debug::dump($this->_db_schema)->pre();
+		}
+
 		// load user perms
-		$this->user->loadPermissions();
+		if($this->isInstalled()){
+			$this->user->loadPermissions();
+		}
 
     	// router has been used already, so we need to force it to load
     	$this->router = new Router;
@@ -848,72 +847,6 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * Attempts to map foreign keys to their parent table
-	 * @return <type>
-	 */
-	private function mapChildForeignKeys(){
-
-		$_db_schema = array();
-		$_child_fks = array();
-
-		if($this->checkDbConnection()){
-
-			// iterate all tables in db
-			$tables = $this->db->MetaTables();
-			foreach($tables as $table){
-
-				// pull complete schema for this table
-				$_db_schema[$table] = $schema = $this->db->MetaColumns($table);
-
-				// loop the schema and find the primary keys
-				foreach($schema as $field => $field_info){
-					if($field_info->primary_key){
-
-						// convert the primary key to it's likely
-						// foreign key name
-
-						if(substr($table, -1) == 's'){
-							$child_field = substr_replace($table ,"",-1);
-						} else {
-							$child_field = $table;
-						}
-
-						$_child_fks[$table] = $child_field.'_id';
-					}
-				}
-			}
-		}
-
-		// now that we know what the child field name should be,
-		// we need to look for it
-		$map = array();
-
-		foreach($_child_fks as $orig_table => $potent_field){
-			foreach($_db_schema as $table => $schema){
-				foreach($schema as $field => $field_info){
-					if($potent_field == strtolower($field)){
-						$map[$orig_table][$table] = $potent_field;
-					}
-				}
-			}
-		}
-
-		return $map;
-
-	}
-
-
-	/**
-	 * Returns the child key mappings
-	 * @return array
-	 * @access public
-	 */
-	public function getChildForeignKeys(){
-		return $this->_child_foreign_keys;
-	}
-
-
-	/**
 	 * Accepted values for "models" are:
 	 * 'module' => 'Index',
 	 * 'folder' => false,
@@ -970,6 +903,19 @@ class Bootstrap extends Base {
 			}
 		} else {
 			return false;
+		}
+	}
+
+
+	/**
+	 * Returns the database schema
+	 * @return array
+	 */
+	public function getDatabaseSchema($table = false){
+		if($table){
+			return isset($this->_db_schema[$table]) ? $this->_db_schema[$table]  : false;
+		} else {
+			return $this->_db_schema;
 		}
 	}
 

@@ -433,7 +433,7 @@ class Model extends Library {
 	 * @access private
 	 * @return array
 	 */
-	private function generateSchema(){
+	public function loadDatabaseSchema(){
 
 		$db_map = array();
 
@@ -476,8 +476,18 @@ class Model extends Library {
 			}
 		}
 
-		$this->db_schema = $db_map;
-		$this->schema = isset($this->db_schema[$this->table]) ? $this->db_schema[$this->table] : false;
+		return $db_map;
+
+	}
+
+
+	/**
+	 * Loads the current table schema.
+	 * @access private
+	 * @return array
+	 */
+	private function generateSchema(){
+		$this->schema = $this->APP->getDatabaseSchema($this->table);
 	}
 
 
