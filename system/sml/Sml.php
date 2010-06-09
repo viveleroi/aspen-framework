@@ -94,7 +94,7 @@ class Sml extends Library {
      * @access public
      */
 	public function printMessage(){
-		if($this->APP->params->session->getRaw('unread_message_flag')){
+		if($this->APP->params->session->getInt('unread_message_flag')){
 			$message = $this->getMostRecentMessage();
 			printf($this->APP->config('sml_message_html'), $message['message'], $message['class']);
 			$_SESSION['unread_message_flag'] = false;

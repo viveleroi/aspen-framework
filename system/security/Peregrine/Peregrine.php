@@ -3,7 +3,7 @@
  * @package  Peregrine
  * @author   Michael Botsko, Trellis Development, LLC
  * @license  Mozilla Public License, 1.1
- * @version  1.0-rc1-4-g6e12c7a
+ * @version  1.0-rc1-6-g9ce0f77
  *
  * Peregrine is a class that aims to improve PHP superglobal security
  * by transferring the raw incoming values to private member variables.
@@ -317,11 +317,11 @@ class CageBase {
 	 * @param array $allowed
 	 * @return boolean
 	 */
-	public function isInArray($key, $allowed = NULL){
+	public function isInArray($key, $seek_val = NULL){
 		// @todo: make this work recursively
-		$val = $this->getRaw($key);
-		if(is_array($allowed)){
-			return in_array($val, $allowed);
+		$check_array = $this->getArray($key);
+		if(is_array($check_array)){
+			return in_array($seek_val, $check_array);
 		}
 		return NULL;
 	}
@@ -454,6 +454,29 @@ class CageBase {
 		$regex .= '(/((%[0-9a-f]{2}|[-a-z0-9/~;:@=+$,.!*_()\'\&]*)*)/?)?';	// path
 		$regex .= '(\?[^#]*)?';							// query
 		$regex .= '(#([-a-z0-9_]*))?';					// anchor (fragment)
+		$regex .= '$&i';
+
+		$res = preg_match($regex, $this->getRaw($key), $matches);
+		return (bool) $res;
+
+	}
+
+
+	/**
+	 * Determines if the string is a valid domain name only, no http or port allowed
+	 *
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function isTopLevelDomain($key){
+
+		$regex = '&^';
+		$regex .= '([-a-z0-9/~;:@=+$,.!*()\']+@)?';		// userinfo
+		$regex .= '(';
+		$regex .= '((?:[^\W_]((?:[^\W_]|-){0,61}[^\W_])?\.)+[a-zA-Z]{2,6}\.?)';		// domain name
+		$regex .= '|';
+		$regex .= '([0-9]{1,3}(\.[0-9]{1,3})?(\.[0-9]{1,3})?(\.[0-9]{1,3})?)';	// OR ipv4
+		$regex .= ')';
 		$regex .= '$&i';
 
 		$res = preg_match($regex, $this->getRaw($key), $matches);
@@ -663,6 +686,50 @@ class CageBase {
 		$default = $default === NULL ? false : $default;
 		if($this->isSetAndNotEmpty($key)){
 			return preg_replace('/[^a-zA-Z0-9_:~\.\/-]/', '', $this->getKey($key));
+		}
+		return $default;
+	}
+
+
+	/**
+	 * Returns characters generally allowed within a query string
+	 * Note: the string may also be validates a full URI/URL if you use
+	 * the getUri method, however this is more specific for query strings
+	 * without the rest of the url.
+	 *
+	 * @param string $key
+	 * @param string $default
+	 * @return mixed
+	 */
+	public function getQueryString($key = false, $default = NULL){
+		$default = $default === NULL ? false : $default;
+		if($this->isSetAndNotEmpty($key)){
+			return preg_replace('/[^a-zA-Z0-9-=_:~\.\/?{}\[\]]/', '', $this->getKey($key));
+		}
+		return $default;
+	}
+
+
+	/**
+	 * Returns characters which are allowed in the apache SERVER_NAME variable
+	 *
+	 * @param string $key
+	 * @param string $default
+	 * @return mixed
+	 */
+	public function getServerName($key = false, $default = NULL){
+		$default = $default === NULL ? false : $default;
+		if($this->isSetAndNotEmpty($key)){
+			if($this->isIP($key)){
+				return $this->getKey($key);
+			}
+			elseif($this->isTopLevelDomain($key)){
+				return $this->getKey($key);
+			}
+			// for stuff like "localhost"
+			elseif($this->isAlnum($key)){
+				return $this->getKey($key);
+			}
 		}
 		return $default;
 	}

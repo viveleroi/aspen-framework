@@ -88,7 +88,7 @@ class Preferences extends Library {
 
 		if($this->APP->params->session->getInt('user_id', false) && $this->APP->params->session->getRaw('settings', false)){
 
-			$settings = $this->APP->params->session->getRaw('settings');
+			$settings = $this->APP->params->session->getArray('settings');
 
 			$loc_key = 'sort.'.$location;
 			if(isset($settings['sorts'][$loc_key.'.field'])){
@@ -123,7 +123,7 @@ class Preferences extends Library {
 		}
 
 		// process the form if submitted
-		if($this->APP->params->post->isSetAndEmpty('preferences-submit')){
+		if($this->APP->params->post->keyExists('preferences-submit')){
 			$config = $this->APP->model->open('config');
 			foreach($record as $field => $existing_value){
 				$record[$field] = $this->APP->params->post->getRaw($field);

@@ -152,7 +152,7 @@ class Model extends Library {
 	 * @return object
 	 * @access public
 	 */
-	 final public function open($table, $id = false){
+	 final public function open($table, $id = false, $contains = false){
 
 		$final_obj = false;
 
@@ -180,6 +180,10 @@ class Model extends Library {
 			} else {
 				$this->APP->error->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
 				$final_obj = new Model($table);
+			}
+
+			if($contains){
+				$final_obj->contains($contains);
 			}
 
 			if(is_object($final_obj)){
@@ -429,7 +433,7 @@ class Model extends Library {
 	 * @access private
 	 * @return array
 	 */
-	private function generateSchema(){
+	public function loadDatabaseSchema(){
 
 		$db_map = array();
 
@@ -472,8 +476,18 @@ class Model extends Library {
 			}
 		}
 
-		$this->db_schema = $db_map;
-		$this->schema = isset($this->db_schema[$this->table]) ? $this->db_schema[$this->table] : false;
+		return $db_map;
+
+	}
+
+
+	/**
+	 * Loads the current table schema.
+	 * @access private
+	 * @return array
+	 */
+	private function generateSchema(){
+		$this->schema = $this->APP->getDatabaseSchema($this->table);
 	}
 
 
@@ -1499,8 +1513,10 @@ class Model extends Library {
 		$back = debug_backtrace();
 
 		foreach($back as $file){
-			if(strpos($file['file'], 'Model.php') === false){
-				$trace[] = array('file'=>$file['file'],'line'=>$file['line']);
+			if(isset($file['file'])){
+				if(strpos($file['file'], 'Model.php') === false){
+					$trace[] = array('file'=>$file['file'],'line'=>$file['line']);
+				}
 			}
 		}
 
@@ -1898,7 +1914,7 @@ class Model extends Library {
 	 * @return integer
 	 * @access public
 	 */
-	public function insert($fields = false){
+	public function insert($fields = false, $parent_token = false){
 
 		// set default values if prompted from extension install / update funcs
 		$fields = $this->getDefaults($fields);
@@ -1940,7 +1956,7 @@ class Model extends Library {
 
 			// run the activity log
 			if($result){
-				$this->activity_detect_changes('insert', $result, $fields);
+				$this->activity_detect_changes('insert', $result, $fields, false, $parent_token);
 			}
 
 			// @todo not sure if this works for parents?
@@ -1961,7 +1977,6 @@ class Model extends Library {
 							foreach($arr as $val){
 								$rec = array($field_1=>$result,$field_2=>$val);
 								$rel_model->insert($rec);
-								print $rel_model->lq();
 							}
 						} else {
 							// We don't need to do anything here, because it should be
@@ -2014,7 +2029,7 @@ class Model extends Library {
 	 * @return boolean
 	 * @access public
 	 */
-	public function update($fields = false, $where_value = false, $where_field = false ){
+	public function update($fields = false, $where_value = false, $where_field = false, $parent_token = false){
 
 		// set default values if prompted from extension install / update funcs
 		$fields = $this->getDefaults($fields);
@@ -2093,7 +2108,7 @@ class Model extends Library {
 
 			// run the activity log
 			if($result){
-				$this->activity_detect_changes('update', $where_value, $fields, $this->existing_record);
+				$this->activity_detect_changes('update', $where_value, $fields, $this->existing_record, $parent_token);
 			}
 
 			$this->after_update($result, $where_value, $where_field, $fields, $this->existing_record);
@@ -2135,8 +2150,15 @@ class Model extends Library {
 	 * @param <type> $new_values
 	 * @return <type>
 	 */
-	public function activity_detect_changes($type, $record_id, $new_values, $old_values = false){
-		if($this->APP->isLibraryLoaded('Activity') && in_array($this->table, $this->APP->config('activity_watch_tables'))){
+	public function activity_detect_changes($type, $record_id, $new_values, $old_values = false, $parent_token = false){
+
+		$res = false;
+
+		$watch_tables = $this->APP->config('activity_watch_tables');
+
+		if($this->APP->isLibraryLoaded('Activity') && array_key_exists($this->table, $watch_tables)){
+
+			$watch_fields = $watch_tables[$this->table];
 
 			// set a hash for this activity so we can group simultaneous changes together
 			$key = sha1($type . $this->table .  $record_id . time());
@@ -2144,29 +2166,41 @@ class Model extends Library {
 			// if old vals is an array, we're running an update
 			if($type == 'update' && is_array($old_values)){
 				foreach($old_values as $old_key => $old_val){
-					if(isset($new_values[$old_key])){
-						if((!empty($old_val) || !empty($new_values[$old_key]))){
-							if($old_val !== $new_values[$old_key]){
-								$this->activity_log_change($key, $type, $this->table, $record_id, $old_key, $old_val, $new_values[$old_key]);
+					if(in_array($old_key, $watch_fields)){
+						if(isset($new_values[$old_key])){
+							if((!empty($old_val) || !empty($new_values[$old_key]))){
+								if($old_val !== $new_values[$old_key]){
+									$res = $this->activity_log_change($key, $type, $this->table, $record_id, $old_key, $old_val, $new_values[$old_key], $parent_token);
+								}
 							}
 						}
 					}
+				}
+
+				// even though no values have changed, we'll record an activity so
+				// that we have a new hash to record that this save action
+				// took place. This assists with child activities when the child
+				// changes but the parent does not.
+				if(!$res){
+				  $res = $this->activity_log_change($key, $type, $this->table, $record_id, $this->getPrimaryKey(), $record_id, $record_id, $parent_token);
 				}
 			}
 
 			// if we're running an insert
 			if($type == 'insert' && is_array($new_values)){
 				foreach($new_values as $field => $val){
-					$this->activity_log_change($key, $type, $this->table, $record_id, $field, false, $val);
+					if(in_array($field, $watch_fields)){
+						$res = $this->activity_log_change($key, $type, $this->table, $record_id, $field, false, $val, $parent_token);
+					}
 				}
 			}
 
 			// if we're running an delete
 			if($type == 'delete'){
-				$this->activity_log_change($key, $type, $this->table, $record_id, $this->getPrimaryKey(), false, false);
+				$res = $this->activity_log_change($key, $type, $this->table, $record_id, $this->getPrimaryKey(), false, false, $parent_token);
 			}
 		}
-		return false;
+		return $res;
 	}
 
 
@@ -2176,10 +2210,12 @@ class Model extends Library {
 	 * @param <type> $old_value
 	 * @param <type> $new_value
 	 */
-	public function activity_log_change($key, $type, $table, $record_id, $field, $old_value, $new_value){
+	public function activity_log_change($key, $type, $table, $record_id, $field, $old_value, $new_value, $parent_token){
+		$res = false;
 		if($this->APP->isLibraryLoaded('Activity')){
-			$this->APP->activity->logChange($key, $type, $table, $record_id, $field, $old_value, $new_value);
+			$res = $this->APP->activity->logChange($key, $type, $table, $record_id, $field, $old_value, $new_value, $parent_token);
 		}
+		return $res;
 	}
 
 

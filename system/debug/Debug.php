@@ -98,6 +98,17 @@ class DebugBase {
 	/**
 	 *
 	 */
+	public function pre_v($trace = false){
+		print '<pre>';
+		$this->line_end = "\n";
+		$this->v($trace);
+		print '</pre>';
+	}
+
+
+	/**
+	 *
+	 */
 	public function cli($trace = false){
 		$this->line_end = "\n";
 		$this->dump($trace);
@@ -251,10 +262,10 @@ class Debug {
 		foreach($db as $pos => $caller){
 			if($pos > 0){
 				$clean 	= Peregrine::sanitize($caller);
-				if($ignore_phpunit && strpos(strtolower($clean->getRaw('file')), 'phpunit') !== false){
+				if($ignore_phpunit && strpos(strtolower($clean->getPath('file')), 'phpunit') !== false){
 					continue;
 				}
-				print $pos . ': ' . $clean->getRaw('file').' - ' . $clean->getRaw('line') . ' called ' . $clean->getRaw('class') . '::' . $clean->getRaw('function') . '();' . $line_end;
+				print $pos . ': ' . $clean->getPath('file').' - ' . $clean->getInt('line') . ' called ' . $clean->getElemId('class') . '::' . $clean->getElemId('function') . '();' . $line_end;
 			}
 		}
 
@@ -278,24 +289,24 @@ class Debug {
 		foreach($db as $pos => $caller){
 			if($pos > 0){
 				$clean 	= Peregrine::sanitize($caller);
-				if($ignore_phpunit && strpos(strtolower($clean->getRaw('file')), 'phpunit') !== false){
+				if($ignore_phpunit && strpos(strtolower($clean->getPath('file')), 'phpunit') !== false){
 					continue;
 				}
-				elseif(strpos(strtolower($clean->getRaw('file')), 'debug') !== false){
+				elseif(strpos(strtolower($clean->getPath('file')), 'debug') !== false){
 					continue;
 				}
-				elseif(strpos(strtolower($clean->getRaw('class')), 'debugbase') !== false){
+				elseif(strpos(strtolower($clean->getElemId('class')), 'debugbase') !== false){
 					continue;
 				}
 
 				if(empty($ret['caller'])){
-					$ret['caller']['file'] = $clean->getRaw('file');
+					$ret['caller']['file'] = $clean->getPath('file');
 					$ret['caller']['line'] = $db[($pos-1)]['line'];
-					$ret['caller']['class'] = $clean->getRaw('class');
-					$ret['caller']['function'] = $clean->getRaw('function');
+					$ret['caller']['class'] = $clean->getElemId('class');
+					$ret['caller']['function'] = $clean->getElemId('function');
 				}
 
-				$ret['trace'] .= $pos . ': ' . $clean->getRaw('file').' - ' . $clean->getInt('line') . ' called ' . $clean->getRaw('class') . '::' . $clean->getRaw('function') . '();' . $line_end;
+				$ret['trace'] .= $pos . ': ' . $clean->getPath('file').' - ' . $clean->getInt('line') . ' called ' . $clean->getElemId('class') . '::' . $clean->getElemId('function') . '();' . $line_end;
 
 			}
 		}

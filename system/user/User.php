@@ -58,9 +58,6 @@ class User extends Library {
 				}
 			}
 
-			// if allow_login not present, set to false
-			$form->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
-
 			// save the data as well as the groups
 			$result = $form->save($id);
 
@@ -78,7 +75,7 @@ class User extends Library {
 	 * @access public
 	 */
 	public function my_account(){
-		$this->edit($this->APP->params->session->getInt('user_id'));
+		return $this->edit($this->APP->params->session->getInt('user_id'));
 	}
 
 
@@ -98,9 +95,9 @@ class User extends Library {
 	 * @param string $module_path
 	 * @access public
 	 */
-	public function login(){
+	final public function login(){
 
-		$uri = $this->APP->params->server->getRaw('REQUEST_URI').$this->APP->params->server->getRaw('QUERY_STRING');
+		$uri = $this->APP->params->server->getUri('REQUEST_URI').$this->APP->params->server->getRaw('QUERY_STRING');
 		$uri = strip_tags(urldecode($uri));
 		$uri = preg_replace('/redirected=(.*)/', '', $uri);
 
@@ -182,14 +179,17 @@ class User extends Library {
 
 
 	/**
-	 * Returns a string used for specific domain/application id
+	 * Returns a machine-user-application specific string that's encoded and stored
+	 * in the session and is used to verify that session.
 	 * @return string
 	 * @access private
 	 */
-	private function getDomainKeyValue(){
+	final private function getDomainKeyValue(){
 		$string = $this->APP->config('application_guid') . LS;
-		$string .= $this->APP->params->server->getRaw('HTTP_HOST');
-		return $string;
+		$string .= $this->APP->params->server->getServerName('HTTP_HOST');
+		$string .= $this->APP->params->server->getServerName('HTTP_USER_AGENT');
+		$string .= $this->APP->params->server->getServerName('REMOTE_ADDR');
+		return sha1($string);
 	}
 
 
@@ -197,16 +197,16 @@ class User extends Library {
 	 * Handles authenticating the user
 	 * @access public
 	 */
-	public function authenticate(){
+	final public function authenticate(){
 
 		$auth = false;
-		$user = $this->APP->params->post->getRaw('user');
-		$pass = sha1($this->APP->params->post->getRaw('pass'));
+		$p	  = new PasswordHash();
+		$user = $this->APP->params->post->getEmail('user');
+		$pass = $this->APP->params->post->getRaw('pass');
 
 		if($user && $pass){
 
 			$model = $this->APP->model->open('users');
-			$model->where('password', $pass);
 			$model->where('username', $user);
 			$model->where('allow_login', 1);
 			$model->limit(0, 1);
@@ -214,30 +214,42 @@ class User extends Library {
 
 			if($result){
 				foreach($result as $account){
+					if($p->CheckPassword($pass, $account['password'])){
 
-					$auth = true;
+						$_SESSION['authenticated']		= true;
+						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['username'], $account['id']);
+						$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
+						$_SESSION['username'] 			= $account['username'];
+						$_SESSION['nice_name'] 			= $account['nice_name'];
+						$_SESSION['latest_login'] 		= $account['latest_login'];
+						$_SESSION['last_login'] 		= $account['last_login'];
+						$_SESSION['user_id'] 			= $account['id'];
 
-					$_SESSION['authenticated']		= true;
-					$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['username'], $account['id']);
-					$_SESSION['domain_key'] 		= sha1($this->getDomainKeyValue());
-					$_SESSION['username'] 			= $account['username'];
-					$_SESSION['nice_name'] 			= $account['nice_name'];
-					$_SESSION['latest_login'] 		= $account['latest_login'];
-					$_SESSION['last_login'] 		= $account['last_login'];
-					$_SESSION['user_id'] 			= $account['id'];
+						// run any post-auth logic
+						$this->post_authentication($account);
 
-					// update last login date
-					$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
-					$model->update($upd, $account['id']);
+						// update last login date
+						$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
+						$model->update($upd, $account['id']);
 
-					$auth = true;
+						$auth = true;
 
+					}
 				}
 			}
 		}
 
 		return $auth;
 
+	}
+
+
+	/**
+	 * Allows users to run additional code during login without having to
+	 * extend the authentication function itself.
+	 */
+	protected function post_authentication($account = false){
+		return true;
 	}
 
 
@@ -278,17 +290,16 @@ class User extends Library {
 	 * @return boolean
 	 * @access public
 	 */
-	public function isLoggedIn(){
+	final public function isLoggedIn(){
 
 		$authenticated 	= false;
-		$auth_key 		= sha1($this->APP->params->session->getRaw('username') . $this->APP->params->session->getInt('user_id'));
-		$domain_key 	= sha1($this->getDomainKeyValue());
+		$auth_key 		= sha1($this->APP->params->session->getEmail('username') . $this->APP->params->session->getInt('user_id'));
 
 		if($this->APP->checkDbConnection()){
 			if(
 				$this->APP->params->session->getInt('authenticated', false) &&
 				$this->APP->params->session->getAlnum('authentication_key') == $auth_key &&
-				$this->APP->params->session->getAlnum('domain_key') == $domain_key
+				$this->APP->params->session->getAlnum('domain_key') == $this->getDomainKeyValue()
 				){
 					$authenticated = true;
 			}

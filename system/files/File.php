@@ -257,7 +257,7 @@ class File extends Library {
 	 * @access public
 	 */
 	public function upload($form_field = false, $overwrite = false, $timestamp = true, $rename = false){
-		if($this->APP->config('enable_uploads') && $this->APP->params->files->getRaw($form_field)){
+		if($this->APP->config('enable_uploads') && $this->APP->params->files->isArray($form_field)){
 			if($this->setUploadDirectory()){
 				return $this->upload_files($form_field, $rename, $overwrite, $timestamp);
 			}
@@ -309,9 +309,9 @@ class File extends Library {
 		$uploads = array();
 
 		// if form field set
-		if($form_field && $this->APP->params->files->getRaw($form_field)){
+		if($form_field && $this->APP->params->files->isArray($form_field)){
 			
-			$file = $this->APP->params->files->getRaw($form_field);
+			$file = $this->APP->params->files->getArray($form_field);
 			
 			if(isset($file['name'])){
 				// If the file uploads is an array

@@ -61,7 +61,7 @@ class Activityrender_html extends Library {
 
 		// build standard message
 		$msg = 'With table "%s", record %s was %s.';
-		$msg = sprintf($msg, $ac['table_name'], $ac['record_id'], $this->getActivityType($ac['activity_type']));
+		$msg = sprintf($msg, $ac['table_name'], $ac['record_id'], $this->render_base->getActivityType($ac['activity_type']));
 		$render = str_replace('{message}',$msg,$render);
 
 		// add the sublist

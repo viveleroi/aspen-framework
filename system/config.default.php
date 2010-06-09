@@ -207,8 +207,18 @@
 	// enable firephp support (must have debug class loaded)
 	$config['enable_firephp'] = false;
 
+/**
+ * Snowy-Evening.com integration
+ */
+
 	// POST the data as JSON object to a Url
 	$config['error_json_post_url'] = false;
+
+	// If posting error via json, what api key do we use?
+	$config['error_json_post_api_key'] = '';
+
+	// If posting error via json, what project id do we use?
+	$config['error_json_post_proj_id'] = 0;
 
 
 /**
@@ -379,12 +389,27 @@
  * class, following the documentation at:
  *
  * http://docs.aspen-framework.org/wiki/Aspen:Extending_System_Classes
+ *
+ * Accepted values for load_core_class are:
+ * 'classname' => 'Security',
+ * 'folder' => false,
+ * 'filename' => false,
+ * 'var' => false,
+ * 'autoload' => false,
+ * 'extends' => 'childclassname'
+ * 'root' => '/full/path/to/root/of/class'
+ *
+ * Accepted values for custom_classes are:
+ * 'classname' => 'Myclass',
+ * 'root' => '/full/path/to/root/of/class',
+ * 'extends' => 'Settings'
  */
 
 	$config['load_core_class'][] = array('classname' => 'Library', 'autoload' => false);
 
 	$config['load_core_class'][] = array('classname' => 'Peregrine', 'folder' => 'security/Peregrine', 'var'=>'params');
 	$config['load_core_class'][] = array('classname' => 'Security');
+	$config['load_core_class'][] = array('classname' => 'Phpass', 'folder' => 'security', 'autoload'=>false);
 	$config['load_core_class'][] = array('classname' => 'Utils','autoload'=>false);
 	$config['load_core_class'][] = array('classname' => 'Date');
 	$config['load_core_class'][] = array('classname' => 'User');
@@ -404,7 +429,7 @@
 	$config['load_core_class'][] = array('classname' => 'Model');
 	$config['load_core_class'][] = array('classname' => 'Module');
 	$config['load_core_class'][] = array('classname' => 'Modules');
-	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail');
+	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail', 'filename'=>'class.phpmailer');
 	$config['load_core_class'][] = array('classname' => 'Settings');
 	$config['load_core_class'][] = array('classname' => 'Sml');
 	$config['load_core_class'][] = array('classname' => 'Form', 'autoload' => false);

@@ -41,7 +41,7 @@ class UsersModel extends Model {
 			// if we're adding the record, check for existing username
 			if(!$primary_key){
 				$user = $this->open('users');
-				$user->where('username', $clean->getRaw('username'));
+				$user->where('username', $clean->getEmail('username'));
 				$unique = $user->results();
 				if($unique){
 					$this->addError('username', $this->APP->template->text('db:error:username-dup'));
@@ -53,7 +53,7 @@ class UsersModel extends Model {
 		if(!$clean->isEmpty('Groups')){
 			// Make sure an admin isn't removing his own admin status
 			if(defined('IS_ADMIN') && IS_ADMIN && $primary_key == $this->APP->params->session->getInt('user_id')){
-				if(!in_array(1, $clean->getRaw('Groups'))){
+				if(!$clean->isInArray('Groups', 1)){
 					$this->addError('Groups', $this->APP->template->text('db:error:groups-noadmin'));
 				}
 			}
@@ -79,7 +79,7 @@ class UsersModel extends Model {
 
 		// enforce a sha1 on the password
 		if(array_key_exists('password', $fields) && !empty($fields['password'])){
-			$fields['password'] = $this->encode_password($fields['password']);
+			$fields['password'] = $this->stringHash($fields['password']);
 		}
 
 		// set date created
@@ -100,7 +100,7 @@ class UsersModel extends Model {
 
 		// if the password provided =, encode it - otherwise, remove
 		if(!empty($fields['password'])){
-			$fields['password'] = $this->encode_password($fields['password']);
+			$fields['password'] = $this->stringHash($fields['password']);
 		} else {
 			unset($fields['password']);
 		}
@@ -111,16 +111,13 @@ class UsersModel extends Model {
 
 
 	/**
-	 * Defines an encoding type for the password.
-	 * @param string $pass
-	 * @return string
-	 * @access
-	 * private
+	 * Returns a securely hashed string.
+	 * @param <type> $pass
+	 * @return <type>
 	 */
-	protected function encode_password($pass = false){
-		if(!empty($pass)){
-			return sha1($pass);
-		}
+	final private function stringHash($pass){
+		$p = new PasswordHash();
+		return $p->HashPassword($pass);
 	}
 }
 ?>

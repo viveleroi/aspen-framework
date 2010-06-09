@@ -5,14 +5,54 @@
  * @subpackage 	System
  * @author 		Michael Botsko
  * @copyright 	2009 Trellis Development, LLC
- * @since 		
+ * @since
  */
 
 /**
- * Provides a method of writing to a log file.
+ * Static class containing a collection of useful date methods.
  * @package Aspen_Framework
  */
-class Date extends Library {
+class Date {
+
+
+	/**
+	 * Returns the current date time string with microseconds
+	 * @param string $mtime
+	 * @return integer
+	 */
+	static public function microtime($mtime = false){
+		$mtime = $mtime ? $mtime : microtime();
+		$mtime = explode(" ", $mtime);
+		return $mtime[1] + $mtime[0];
+	}
+
+
+	/**
+	 * Formats a microtime-based timestamp.
+	 * @param integer $time
+	 * @param string $format
+	 * @return string
+	 */
+	static public function formatMicrotime($time = false, $format = 'Y-m-d H:i:s.u'){
+		$time = $time ? $time : Date::microtime();
+		$micro = sprintf("%06d",($time - floor($time)) * 1000000);
+		$d = new DateTime( date('Y-m-d H:i:s.'.$micro,$time) );
+		return $d->format($format);
+	}
+
+
+	/**
+	 * Returns a count of days between two dates
+	 * @param datetime $start
+	 * @param datetime $end
+	 * @return float
+	 * @access public
+	 */
+	static public function daysBetween($start = false, $end = false ){
+		$start = $start ? strtotime($start) : time();
+		$end = $end ? strtotime($end) : time();
+		return ($end - $start) / 86400;
+	}
 
 
 	/**
@@ -20,30 +60,93 @@ class Date extends Library {
 	 * @param <type> $gmdate
 	 * @param <type> $format
 	 * @param <type> $timezone
-	 * @return <type> 
+	 * @return <type>
 	 */
-	public function pref_date($gmdate, $format = false, $timezone = false){
-
-		$timezone	= $timezone ? $timezone : $this->APP->config('timezone');
-		$format		= $format ? $format : $this->APP->config('date_format');
-
-		// try to get a user timezone setting
-		if($user_id = $this->APP->params->session->getInt('user_id')){
-			$timezone = $this->APP->settings->getConfig('timezone', $user_id);
-		}
-
+	static public function tzFormatDate($gmdate, $format = false, $timezone = false){
 		$cnv_date = new DateTime($gmdate);
 		$cnv_date->setTimeZone(new DateTimeZone($timezone));
 		return $cnv_date->format($format);
+	}
+
+
+	/**
+	 * Prints a nicer date display
+	 * @param string $date
+	 * @param string $date_format_string The format to print the date, if needed
+	 * @param mixed $empty_string What to print if the data is empty
+	 * @param boolean $date_only Whether or not to display nice names or just dates
+	 * @return string
+	 * @access public
+	 */
+	static public function niceDate($date, $arg_opts = array()){
+
+		// set options
+		$opts = array(
+					'format'=>"n/j/Y",
+					'empty'=>"-",
+					'date_only'=>false
+				);
+		$opts = array_merge($opts, $arg_opts);
+
+		$return_date = $opts['empty'];
+		$empty_date = str_replace(array(0, "-", ":", " "), '', $date);
+
+		if(strlen($empty_date) > 0){
+
+			$date = strtotime($date);
+			$days_between = Date::daysBetween(date("Y-m-d"), date("Y-m-d", $date));
+
+			if(!$opts['date_only']){
+				if(date("Y-m-d", $date) == date("Y-m-d")){
+					$return_date = 'Today';
+				}
+				elseif(date("Y-m-d", $date) == date("Y-m-d", mktime(0, 0, 0, date("m"), date("d")+1, date("y")))){
+					$return_date = 'Tomorrow';
+				}
+				elseif(date("Y-m-d", $date) == date("Y-m-d", mktime(0, 0, 0, date("m"), date("d")-1, date("y")))){
+					$return_date = 'Yesterday';
+				}
+				elseif($days_between > 0 && $days_between < 7){
+					// if this week
+					if(date("W") == date("W", $date)){
+						$return_date = "This " . date("l", $date);
+					} else {
+						$return_date = "Next " . date("l", $date);
+					}
+				}
+				elseif($days_between > 7 && $days_between <= 14){
+					$return_date = "Two Weeks";
+				}
+				elseif($days_between > 14 && $days_between <= 21){
+					$return_date = "Three Weeks";
+				}
+				elseif($days_between > 21 && $days_between <= 60){
+					$return_date = "Next Month";
+				}
+				elseif($days_between < 0 && $days_between > -7){
+					$return_date = "Last " . date("l", $date);
+				}
+				elseif($days_between == -7){
+					$return_date = "One Week Ago";
+				}
+				else {
+					$return_date = date($opts['format'], $date);
+				}
+			} else {
+				$return_date = date($opts['format'], $date);
+			}
+		}
+
+		return $return_date;
 
 	}
 
 
 	/**
 	 *
-	 * @return <type> 
+	 * @return <type>
 	 */
-	public function timezone_us_quicklist(){
+	static public function timezone_us_quicklist(){
 
 		$dates = array();
 
@@ -65,7 +168,7 @@ class Date extends Library {
 	 * @param <type> $region
 	 * @return <type>
 	 */
-	public function timezone_list($region = 'all'){
+	static public function timezone_list($region = 'all'){
 
 		$dates = array();
 
@@ -237,7 +340,7 @@ class Date extends Library {
 		}
 
 		return $dates;
-		
+
 	}
 }
 ?>

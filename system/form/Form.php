@@ -69,12 +69,16 @@ class Form extends Library {
 	public function __construct($table = false, $id = false, $contains = array(), $field = false){
 		parent::__construct();
 		if($id){
-			define('ADD_OR_EDIT', 'edit');
-			define('IS_EDIT_PAGE', true);
+			if(!defined('ADD_OR_EDIT')){
+				define('ADD_OR_EDIT', 'edit');
+				define('IS_EDIT_PAGE', true);
+			}
 			$this->loadRecord($table, $id, $contains);
 		} else {
-			define('ADD_OR_EDIT', 'add');
-			define('IS_EDIT_PAGE', false);
+			if(!defined('ADD_OR_EDIT')){
+				define('ADD_OR_EDIT', 'add');
+				define('IS_EDIT_PAGE', false);
+			}
 			$this->loadTable($table);
 		}
 	}
@@ -162,11 +166,16 @@ class Form extends Library {
 		$success 	= false;
 		$schema		= $model->getSchema();
 
-		// build the array of field/vars
+		// determine the primary key field
+		$pid = $model->getPrimaryKey();
+
+		// build a complete array of all incoming data
+		// even if some of the fields are not in the database,
+		// those may now be validated through the models
 		$fields = array();
-		foreach($schema['schema'] as $field){
-			if(!$field->primary_key){
-				$fields[$field->name] = $this->cv($field->name, false);
+		foreach($this->_form_fields as $field => $elems){
+			if($field != $pid){
+				$fields[$field] = $this->cv($field);
 			}
 		}
 

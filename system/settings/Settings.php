@@ -14,6 +14,32 @@
  */
 class Settings extends Library {
 
+	/**
+	 * @var array Holds the user settings configurations from the db
+	 */
+	private $settings = array();
+
+
+	/**
+	 * Constructor
+	 */
+	public function  aspen_init() {
+		if($this->APP->checkDbConnection()){
+			$this->loadSettings( $this->APP->params->session->getInt('user_id') );
+		}
+	}
+
+
+	/**
+	 *
+	 * @param <type> $user_id
+	 */
+	public function loadSettings($user_id){
+		$cfg_model	= $this->APP->model->open('config');
+		$cfg_model->where('user_id', $user_id);
+		$this->settings = $cfg_model->results();
+	}
+
 
 	/**
 	 * Returns a configuration value from the db
@@ -42,9 +68,7 @@ class Settings extends Library {
 	 * @param integer $user_id
 	 */
 	public function setConfig($key = false, $value = false, $user_id = NULL){
-
 		$new_rc = array('current_value'=>$value,'config_key'=>$key,'user_id'=>$user_id);
-
 		$cfg_model	= $this->APP->model->open('config');
 		$cfg = $this->configRecord($key, $user_id);
 		return is_array($cfg) ? $cfg_model->update($new_rc, $cfg['id']) : $cfg_model->insert($new_rc);
@@ -59,10 +83,14 @@ class Settings extends Library {
 	 * @access private
 	 */
 	private function configRecord($key, $user_id = NULL){
-		$cfg_model	= $this->APP->model->openSingle('config');
-		$cfg_model->where('config_key', $key);
-		$cfg_model->where('user_id', $user_id);
-		return $cfg_model->results();
+		if(is_array($this->settings)){
+			foreach($this->settings as $setting){
+				if($setting['config_key'] == $key && $setting['user_id'] == $user_id ){
+					return $setting;
+				}
+			}
+		}
+		return NULL;
 	}
 }
 ?>
