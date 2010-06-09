@@ -21,6 +21,12 @@ class Template extends Library {
 	private $_data = array();
 
 	/**
+	 * @var array Holds custom css styles for printing in the header
+	 * @access private
+	 */
+	private $_css_styles = array();
+
+	/**
 	 * @var array An array of css files queued for loading in the header
 	 * @access private
 	 */
@@ -104,6 +110,15 @@ class Template extends Library {
 			}
 		}
 
+		// append any custom css styles
+		if(!empty($this->_css_styles)){
+			print '<style type="text/css">'."\n";
+			foreach($this->_css_styles as $style){
+				printf('%s { %s: %s }'."\n", $style['selector'], $style['attr'], $style['value']);
+			}
+			print '</style>'."\n";
+		}
+
 		// append any js files for loading
 		if(!empty($this->_load_js)){
 
@@ -171,6 +186,17 @@ class Template extends Library {
 		// merge any incoming args and append the load array
 		$this->_load_css[] = (is_array($args) ? array_merge($base, $args) : $base);
 
+	}
+
+
+	/**
+	 * Allows the user to add custom styles which will be printed with module header
+	 * @param string $selector
+	 * @param string $attr
+	 * @param string $value
+	 */
+	public function setCssStyle($selector, $attr, $value){
+		$this->_css_styles[] = array('selector'=>$selector,'attr'=>$attr,'value'=>$value);
 	}
 
 
