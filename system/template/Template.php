@@ -271,7 +271,16 @@ class Template extends Library {
 	 * @access public
 	 */
 	public function text($key){
-		return isset($this->terms[$key]) ? $this->terms[$key] : '';
+		$text = isset($this->terms[$key]) ? $this->terms[$key] : '';
+		// If non-empty, pass any additional arguments straight to sprintf
+		if(!empty($text)){
+			$args = func_get_args();
+			if(count($args) > 1){
+				$args[0] = $text;
+				$text = call_user_func_array('sprintf',$args);
+			}
+		}
+		return $text;
 	}
 
 

@@ -41,5 +41,16 @@ class Module {
 		$this->APP->template->display();
 
 	}
+
+
+	/**
+	 * Activates the default loading of the 404 error
+	 */
+	public function error_404(){
+		$this->APP->router->header_code(404);
+		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . '404.tpl.php');
+		$this->APP->template->display();
+		exit;
+	}
 }
 ?>

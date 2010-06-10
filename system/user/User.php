@@ -44,23 +44,7 @@ class User extends Library {
 
 		// process the form if submitted
 		if($form->isSubmitted()){
-
-			// We need to validate the confirm password field here
-			// because the model doesn't care about this field.
-			$values = $form->getCurrentValues();
-			if($values->isSetAndNotEmpty('password') || $values->isSetAndNotEmpty('password_confirm')){
-				if($values->isSetAndEmpty('password') || $values->isSetAndEmpty('password_confirm')){
-					$form->addError('password', 'You must enter and confirm your password.');
-				} else {
-					if(!$values->match('password', 'password_confirm')){
-						$form->addError('password', 'Your passwords do not match.');
-					}
-				}
-			}
-
-			// save the data as well as the groups
 			$result = $form->save($id);
-
 		}
 
 		$this->APP->template->set(array('form'=>$form));

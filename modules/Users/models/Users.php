@@ -49,6 +49,17 @@ class UsersModel extends Model {
 			}
 		}
 
+		// verify password
+		if($clean->isSetAndNotEmpty('password') || $clean->isSetAndNotEmpty('password_confirm')){
+			if($clean->isSetAndEmpty('password') || $clean->isSetAndEmpty('password_confirm')){
+				$this->addError('password', $this->APP->template->text('db:error:password'));
+			} else {
+				if(!$clean->match('_raw_password', 'password_confirm')){
+					$this->addError('password', $this->APP->template->text('db:error:password_match'));
+				}
+			}
+		}
+
 		// verify groups
 		if(!$clean->isEmpty('Groups')){
 			// Make sure an admin isn't removing his own admin status
@@ -79,6 +90,7 @@ class UsersModel extends Model {
 
 		// enforce a sha1 on the password
 		if(array_key_exists('password', $fields) && !empty($fields['password'])){
+			$fields['_raw_password'] = $fields['password'];
 			$fields['password'] = $this->stringHash($fields['password']);
 		}
 
