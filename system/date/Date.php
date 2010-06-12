@@ -16,6 +16,17 @@ class Date {
 
 
 	/**
+	 * Does not perform strotime func on a value that's already an integer
+	 * @param mixed $str
+	 * @return integer
+	 * @access public
+	 */
+	static public function strtotime($str){
+		return is_int($str) ? $str : strtotime($str);
+	}
+
+
+	/**
 	 * Returns the current date time string with microseconds
 	 * @param string $mtime
 	 * @return integer
@@ -49,8 +60,8 @@ class Date {
 	 * @access public
 	 */
 	static public function daysBetween($start = false, $end = false ){
-		$start = $start ? strtotime($start) : time();
-		$end = $end ? strtotime($end) : time();
+		$start = $start ? Date::strtotime($start) : time();
+		$end = $end ? Date::strtotime($end) : time();
 		return ($end - $start) / 86400;
 	}
 
@@ -93,7 +104,7 @@ class Date {
 
 		if(strlen($empty_date) > 0){
 
-			$date = strtotime($date);
+			$date = Date::strtotime($date);
 			$days_between = Date::daysBetween(date("Y-m-d"), date("Y-m-d", $date));
 
 			if(!$opts['date_only']){
