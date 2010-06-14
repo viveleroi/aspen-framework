@@ -775,6 +775,15 @@ class Model extends Library {
 		// append the left join statement itself
 		$this->sql['LEFT_JOIN'][] = sprintf('LEFT JOIN %s ON %s = %s.%s', $table . $as, $as_table.'.'.$key, $from_table, $foreign_key);
 
+		// if wildcard supplied, load all fields for joined table
+		if($fields == '*'){
+			$schema = $this->APP->getDatabaseSchema($table);
+			$fields = array();
+			foreach($schema['schema'] as $field){
+				$fields[] = $field->primary_key ? $field->name.' as '.$table.'_'.$field->name : $field->name;
+			}
+		}
+
 		// append the fields we've selected
 		if(is_array($fields)){
 			foreach($fields as $field){

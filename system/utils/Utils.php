@@ -9,7 +9,7 @@
  */
 
 /**
- * Provides a method of writing to a log file.
+ * Various utility functions for dealing with arrays, formatting data (not dates)
  * @package Aspen_Framework
  */
 class Utils {
@@ -17,7 +17,7 @@ class Utils {
 
 	/**
 	 * Cleaner implode that gracefully handles null values
-	 * 
+	 *
 	 * @param <type> $glue
 	 * @param <type> $data
 	 * @return <type>
@@ -401,7 +401,7 @@ class Utils {
 		return $data;
 	}
 
-	
+
 	/**
 	 * Tokenizes a string using $separator, ignoring any instance of $separator that appears between $leftBound
 	 * and $rightBound

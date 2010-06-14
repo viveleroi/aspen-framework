@@ -415,6 +415,7 @@
 	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'Template');
+	$config['load_core_class'][] = array('classname' => 'DataDisplay','autoload'=>false,'filename'=>'DataDisplay','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Error',
 									'folder' => 'errors',
 									'autoload' => false);

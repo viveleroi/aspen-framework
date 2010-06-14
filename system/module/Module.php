@@ -52,5 +52,16 @@ class Module {
 		$this->APP->template->display();
 		exit;
 	}
+
+
+	/**
+	 * Returns the text value for a key from the selected language
+	 * @param string $key
+	 * @return string
+	 * @access public
+	 */
+	public function text(){
+		return call_user_func_array(array($this->APP->template, 'text'), func_get_args());
+	}
 }
 ?>

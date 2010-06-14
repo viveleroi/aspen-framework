@@ -28,5 +28,15 @@ class Library {
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
 
+
+	/**
+	 * Returns the text value for a key from the selected language
+	 * @param string $key
+	 * @return string
+	 * @access public
+	 */
+	public function text(){
+		return call_user_func_array(array($this->APP->template, 'text'), func_get_args());
+	}
 }
 ?>

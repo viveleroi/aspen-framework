@@ -130,6 +130,7 @@ class Error extends Library {
 				&& !$this->APP->params->env->keyExists('SSH_CONNECTION')
 				&& $this->APP->params->server->keyExists('HTTP_HOST')){
 
+				$this->APP->template->resetTemplateQueue();
 				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'error.tpl.php');
 				$this->APP->template->display(array('error'=>$error));
 				exit;
