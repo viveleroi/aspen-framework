@@ -1174,6 +1174,8 @@ class Model extends Library {
 			foreach($filters as $field => $value){
 				if(
 					$value != '' &&
+					$field != 'saved-name' &&
+					$field != 'default-name' &&
 					in_array($field, $allowed_filter_keys) &&
 					!in_array($field, $disabled_filters)
 					){
@@ -1252,6 +1254,9 @@ class Model extends Library {
 				}
 			}
 		}
+
+		// append filter name to source filter data
+		$filters['saved-name'] = !empty($named) ? $named : (!empty($filter_name) ? $filter_name : $filters['saved-name']);
 
 		// save the filters to the config table
 		$this->APP->settings->setConfig('filter.'.$location_key, serialize($filters), $user_id);
