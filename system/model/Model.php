@@ -33,6 +33,12 @@ class Model extends Library {
 	private $current_page = false;
 
 	/**
+	 * @var string Holds a class name to be used as the returning data display wrapper
+	 * @access private
+	 */
+	private $data_display;
+
+	/**
 	 * @var array $errors Holds an array of field validation errors
 	 * @access private
 	 */
@@ -1174,8 +1180,6 @@ class Model extends Library {
 			foreach($filters as $field => $value){
 				if(
 					$value != '' &&
-					$field != 'saved-name' &&
-					$field != 'default-name' &&
 					in_array($field, $allowed_filter_keys) &&
 					!in_array($field, $disabled_filters)
 					){
@@ -1254,9 +1258,6 @@ class Model extends Library {
 				}
 			}
 		}
-
-		// append filter name to source filter data
-		$filters['saved-name'] = !empty($named) ? $named : (!empty($filter_name) ? $filter_name : $filters['saved-name']);
 
 		// save the filters to the config table
 		$this->APP->settings->setConfig('filter.'.$location_key, serialize($filters), $user_id);
@@ -1610,9 +1611,9 @@ class Model extends Library {
 						$this->ignore_tables_prev = $this->ignore_tables;
 
 						if(isset($result[$key]) && !isset($records[$result[$key]])){
-	                    	$records[$result[$key]] = $result;
+							$records[$result[$key]] = ($this->data_display ? (new $this->data_display($result)) : $result);
 	                    } else {
-	                    	$records[] = $result;
+							$records[] = ($this->data_display ? (new $this->data_display($result)) : $result);
 	                    }
 						$this->ignore_tables = array();
 					}
@@ -1679,6 +1680,17 @@ class Model extends Library {
 		$this->reset();
 		return false;
 
+	}
+
+
+	/**
+	 * Sets the name of the data display container object
+	 * @param string $class
+	 */
+	public function dataDisplay($class){
+		if(class_exists($class)){
+			$this->data_display = $class;
+		}
 	}
 
 

@@ -227,11 +227,26 @@ class Debug {
 	/**
 	 *
 	 * @param <type> $val
+	 * @param <type> $name
 	 * @param <type> $print_type
+	 * @param <type> $line_end
 	 * @return DebugBase
 	 */
 	static public function dump($val, $name = false, $print_type = false, $line_end = false){
 		return new DebugBase($val, $name, $print_type, $line_end);
+	}
+
+
+	/**
+	 *
+	 * @param <type> $obj
+	 * @param <type> $name
+	 * @param <type> $print_type
+	 * @param <type> $line_end
+	 * @return DebugBase
+	 */
+	static public function funcs($obj, $name = false, $print_type = false, $line_end = false){
+		return new DebugBase(get_class_methods($obj), $name, $print_type, $line_end);
 	}
 
 
