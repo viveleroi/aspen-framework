@@ -639,5 +639,34 @@ class Form extends Library {
 	public function error(){
 		return $this->_error;
 	}
+
+
+	/**
+	 * AJAX HELPERS AND RESPONDERS
+	 */
+
+
+	/**
+	 * Basic ajax form handling responder. Submits the form and returns
+	 * useful json-encoded data for the client-side handlers.
+	 *
+	 * @param string $method
+	 * @param integer $id
+	 * @return string
+	 * @access public
+	 */
+	public function ajaxResponder($method = 'post', $id = false){
+		$res = false;
+		if($this->isSubmitted($method)){
+			$res = $this->save($id);
+		}
+		return json_encode( array(
+			'success'	=> $res,
+			'errors'	=> $this->getErrors(),
+			'id'		=> $id,
+			'method'	=> $method,
+			'raw_data'	=> $this->APP->params->getRawSource($method)
+		) );
+	}
 }
 ?>

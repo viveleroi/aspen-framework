@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<title>Fury</title>
+	<title><?php print $error['error_message'] ?></title>
 	<style type="text/css">
 		body { background-color: #eee; font-family: Georgia, serif; }
 		.inner { margin: 50px 0 0 100px; }

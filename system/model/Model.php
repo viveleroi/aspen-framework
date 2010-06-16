@@ -1329,7 +1329,11 @@ class Model extends Library {
 		// verify the field exists, if muliple fields present, skip
 		if(strpos($sort['sort_by'], ',') === false && strpos($sort['sort_by'], 'ASC') === false){
 			$schema = $this->getSchema();
-			$sort['sort_by'] = array_key_exists(strtoupper($field), $schema['schema']) || strpos($this->sql['FIELDS'], $field) ? $sort['sort_by'] : $this->table.'.'.$this->getPrimaryKey();
+			if(array_key_exists(strtoupper($field), $schema['schema']) || strpos($this->sql['FIELDS'], $field) || strtoupper($field) == 'RAND()'){
+				$sort['sort_by'] = $sort['sort_by'];
+			} else {
+				$sort['sort_by'] = $this->table.'.'.$this->getPrimaryKey();
+			}
 		}
 
 		$this->sql['ORDER'] = sprintf("ORDER BY %s %s", $sort['sort_by'], $sort['sort_direction']);
