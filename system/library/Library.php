@@ -36,7 +36,8 @@ class Library {
 	 * @access public
 	 */
 	public function text(){
-		return call_user_func_array(array($this->APP->template, 'text'), func_get_args());
+		$args = func_get_args();
+		return call_user_func_array(array($this->APP->template, 'text'), $args);
 	}
 }
 ?>

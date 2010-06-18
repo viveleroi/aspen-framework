@@ -81,7 +81,7 @@ class User extends Library {
 	 */
 	final public function login(){
 
-		$uri = $this->APP->params->server->getUri('REQUEST_URI').$this->APP->params->server->getRaw('QUERY_STRING');
+		$uri = $this->APP->params->server->getPath('REQUEST_URI').$this->APP->params->server->getRaw('QUERY_STRING');
 		$uri = strip_tags(urldecode($uri));
 		$uri = preg_replace('/redirected=(.*)/', '', $uri);
 
