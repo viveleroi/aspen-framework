@@ -50,8 +50,8 @@ class UsersModel extends Model {
 		}
 
 		// verify password
-		if($clean->isSetAndNotEmpty('password') || $clean->isSetAndNotEmpty('password_confirm')){
-			if($clean->isSetAndEmpty('password') || $clean->isSetAndEmpty('password_confirm')){
+		if($clean->isSetAndNotEmpty('_raw_password') || $clean->isSetAndNotEmpty('password_confirm')){
+			if($clean->isSetAndEmpty('_raw_password') || $clean->isSetAndEmpty('password_confirm')){
 				$this->addError('password', $this->APP->template->text('db:error:password'));
 			} else {
 				if(!$clean->match('_raw_password', 'password_confirm')){

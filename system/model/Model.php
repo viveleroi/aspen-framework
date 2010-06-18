@@ -2008,9 +2008,6 @@ class Model extends Library {
 								$rec = array($field_1=>$result,$field_2=>$val);
 								$rel_model->insert($rec);
 							}
-						} else {
-							// We don't need to do anything here, because it should be
-							// handled by the foreign key in the primary table
 						}
 					}
 				}
@@ -2103,14 +2100,10 @@ class Model extends Library {
 			// Pass result to after update
 			$result = $this->results();
 
-			// @todo not sure if this works for parents?
-//			$rel_tables = array_unique(array_merge($this->schema['children'], $this->schema['parents']));
-
 			// extract any child/parent table data and process those saves separately
 			if($result){
 				foreach($this->schema['children'] as $real_table => $table){
-					if(isset($fields[ucwords($table)]) && is_array($fields[ucwords($table)])){
-						$arr = $fields[ucwords($table)];
+					if(isset($fields[ucwords($table)])){
 
 						$rel_model = $this->open($real_table);
 
@@ -2124,13 +2117,13 @@ class Model extends Library {
 							$rel_model->query( sprintf($del_sql, $real_table, $field_1, $update_id) );
 
 							// insert new values
-							foreach($arr as $val){
-								$rec = array($field_1=>$update_id,$field_2=>$val);
-								$rel_model->insert($rec);
+							if(is_array($fields[ucwords($table)])){
+								$arr = $fields[ucwords($table)];
+								foreach($arr as $val){
+									$rec = array($field_1=>$update_id,$field_2=>$val);
+									$rel_model->insert($rec);
+								}
 							}
-						} else {
-							// We don't need to do anything here, because it should be
-							// handled by the foreign key in the primary table
 						}
 					}
 				}
