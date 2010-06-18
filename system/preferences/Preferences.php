@@ -23,7 +23,9 @@ class Preferences extends Library {
 
 		$_SESSION['settings'] =  array();
 
-		if($user_id = $this->APP->params->session->getInt('user_id') && $this->APP->checkDbConnection()){
+		$user_id = $this->APP->params->session->getInt('user_id');
+
+		if($user_id && $this->APP->checkDbConnection()){
 
 			// load sort field
 			$pref_model = $this->APP->model->open('config');
@@ -86,7 +88,7 @@ class Preferences extends Library {
 
 		$sort = array('sort_by'=>$default,'sort_direction'=>strtoupper($dir));
 
-		if($this->APP->params->session->getInt('user_id', false) && $this->APP->params->session->getRaw('settings', false)){
+		if($this->APP->params->session->isArray('settings')){
 
 			$settings = $this->APP->params->session->getArray('settings');
 
