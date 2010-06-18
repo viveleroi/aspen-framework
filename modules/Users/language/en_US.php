@@ -52,6 +52,7 @@ $lang['admin']['denied:title'] 	= 'Permission Denied';
 $lang['admin']['denied:intro'] 	= 'Your user account does not currently have sufficient permission to access this page. Please contact an administrator for assistance.';
 
 // query validation errors
+$lang['admin']['db:error:nice_name']		= 'You must enter your name.';
 $lang['admin']['db:error:username']			= 'You must enter a username (E-mail address).';
 $lang['admin']['db:error:username-dup']		= 'The chosen username / email has already been used.';
 $lang['admin']['db:error:password']			= 'You must enter a valid password.';

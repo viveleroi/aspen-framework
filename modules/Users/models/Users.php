@@ -33,6 +33,11 @@ class UsersModel extends Model {
 
 		$clean = parent::validate($fields, $primary_key);
 
+		// nice name
+		if($clean->isEmpty('nice_name')){
+			$this->addError('nice_name', $this->APP->template->text('db:error:nice_name'));
+		}
+
 		// verify username
 		if($clean->isEmpty('username')){
 			$this->addError('username', $this->APP->template->text('db:error:username'));
@@ -112,6 +117,7 @@ class UsersModel extends Model {
 
 		// if the password provided =, encode it - otherwise, remove
 		if(!empty($fields['password'])){
+			$fields['_raw_password'] = $fields['password'];
 			$fields['password'] = $this->stringHash($fields['password']);
 		} else {
 			unset($fields['password']);
