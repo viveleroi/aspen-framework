@@ -35,12 +35,12 @@ class UsersModel extends Model {
 
 		// nice name
 		if($clean->isEmpty('nice_name')){
-			$this->addError('nice_name', $this->APP->template->text('db:error:nice_name'));
+			$this->addError('nice_name', $this->text('db:error:nice_name'));
 		}
 
 		// verify username
 		if($clean->isEmpty('username')){
-			$this->addError('username', $this->APP->template->text('db:error:username'));
+			$this->addError('username', $this->text('db:error:username'));
 		} else {
 
 			// if we're adding the record, check for existing username
@@ -49,7 +49,7 @@ class UsersModel extends Model {
 				$user->where('username', $clean->getEmail('username'));
 				$unique = $user->results();
 				if($unique){
-					$this->addError('username', $this->APP->template->text('db:error:username-dup'));
+					$this->addError('username', $this->text('db:error:username-dup'));
 				}
 			}
 		}
@@ -57,10 +57,10 @@ class UsersModel extends Model {
 		// verify password
 		if($clean->isSetAndNotEmpty('_raw_password') || $clean->isSetAndNotEmpty('password_confirm')){
 			if($clean->isSetAndEmpty('_raw_password') || $clean->isSetAndEmpty('password_confirm')){
-				$this->addError('password', $this->APP->template->text('db:error:password'));
+				$this->addError('password', $this->text('db:error:password'));
 			} else {
 				if(!$clean->match('_raw_password', 'password_confirm')){
-					$this->addError('password', $this->APP->template->text('db:error:password_match'));
+					$this->addError('password', $this->text('db:error:password_match'));
 				}
 			}
 		}
@@ -70,14 +70,14 @@ class UsersModel extends Model {
 			// Make sure an admin isn't removing his own admin status
 			if(defined('IS_ADMIN') && IS_ADMIN && $primary_key == $this->APP->params->session->getInt('user_id')){
 				if(!$clean->isInArray('Groups', 1)){
-					$this->addError('Groups', $this->APP->template->text('db:error:groups-noadmin'));
+					$this->addError('Groups', $this->text('db:error:groups-noadmin'));
 				}
 			}
 		}
 
 		// if we're inserting new record, no empty pass
 		if(!$primary_key && $clean->isEmpty('password')){
-			$this->addError('password', $this->APP->template->text('db:error:password'));
+			$this->addError('password', $this->text('db:error:password'));
 		}
 
 		return !$this->error();

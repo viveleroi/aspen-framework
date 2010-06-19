@@ -1,19 +1,35 @@
 <?php
 
 /**
- * Description of 
+ * Description of
  * @todo cleanup this comment
  * @author botskonet
  */
 class Activityrender_html extends Library {
 
 	/**
-	 * @var string HTML template container for each activity entry.
+	 * @var string HTML template container for each subset activity entry list.
 	 */
-	protected $html_template = '<li><span class="{flag-css}">{flag-css}</span> <span class="date">{date}</span> <span class="user">{user}</span> {message}</li>';
+	protected $html_template = '<ul>%s</ul>';
 
 	/**
-	 * 
+	 * @var string HTML template container for each activity entry.
+	 */
+	protected $html_template_li = '<li><span class="{flag-css}">{flag-css}</span> <span class="date">{date}</span> <span class="user">{user}</span> {message}</li>';
+
+	/**
+	 * @var string HTML template container for each subset activity entry list.
+	 */
+	protected $sub_html_template = '<ul>%s</ul>';
+
+	/**
+	 * @var string HTML template container for each subset activity entry.
+	 */
+	protected $sub_html_template_li = '<li>{field} changed from "{old_val}" to "{new_val}"</li>';
+
+
+	/**
+	 *
 	 */
 	protected $render_base;
 
@@ -34,13 +50,11 @@ class Activityrender_html extends Library {
 	 * @return <type>
 	 */
 	public function render(){
-		$output = '<ul>';
+		$output = '';
 		foreach($this->ac_array as $ac){
 			$output .= $this->formatChangeset($ac);
 		}
-		$output .= '<ul>';
-
-		return $output;
+		return sprintf($this->html_template, $output);
 	}
 
 
@@ -84,7 +98,7 @@ class Activityrender_html extends Library {
 	protected function format_base($ac){
 
 		// build html
-		$html = $this->html_template;
+		$html = $this->html_template_li;
 		$html = str_replace('{flag-css}',$this->render_base->getActivityCss($ac['activity_type']),$html);
 		$html = str_replace('{date}',$this->render_base->formatDate($ac['timestamp']),$html);
 
@@ -102,23 +116,13 @@ class Activityrender_html extends Library {
 	 * @return <type>
 	 */
 	protected function formatSubChangeset($changes){
-
 		$html = '';
-
-		$chg_msg = '<li>%s changed from "%s" to "%s"</li>';
-
 		if($changes){
-			$html .= '<ul>';
 			foreach($changes as $change){
-				$field		= $change['field_name'];
-				$old_val	= $change['old_value'];
-				$new_val	= $change['new_value'];
-				$html .= sprintf($chg_msg, ucwords($field), $old_val, $new_val);
+				$html .= sprintf($this->sub_html_template_li, ucwords($change['field_name']), $change['old_value'], $change['new_value']);
 			}
-			$html .= '</ul>';
 		}
-
-		return $html;
+		return sprintf($this->sub_html_template, $html);
 	}
 }
 ?>

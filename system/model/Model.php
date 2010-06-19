@@ -2282,5 +2282,17 @@ class Model extends Library {
 	final public function error(){
 		return $this->error;
 	}
+
+
+	/**
+	 * Returns the text value for a key from the selected language
+	 * @param string $key
+	 * @return string
+	 * @access public
+	 */
+	public function text(){
+		$args = func_get_args();
+		return call_user_func_array(array($this->APP->template, 'text'), $args);
+	}
 }
 ?>

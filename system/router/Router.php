@@ -827,13 +827,13 @@ class Router extends Library {
 
 		if($module && $selected_module == $module){
 			if($method){
-				if($this->getSelectedMethod() == $method){
-					$here = true;
+				if(is_array($method)){
+					$here = in_array($this->getSelectedMethod(), $method);
+				} else {
+					$here = $this->getSelectedMethod() == $method;
 				}
 			} else {
-
 				$here = true;
-
 			}
 		}
 

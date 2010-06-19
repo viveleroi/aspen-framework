@@ -33,7 +33,7 @@ class GroupsModel extends Model {
 
 		// verify username
 		if($clean->isEmpty('name')){
-			$this->addError('name', $this->APP->template->text('db:error:groupname'));
+			$this->addError('name', $this->text('db:error:groupname'));
 		}
 
 		return !$this->error();
