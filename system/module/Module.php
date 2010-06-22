@@ -64,5 +64,14 @@ class Module {
 		$args = func_get_args();
 		return call_user_func_array(array($this->APP->template, 'text'), $args);
 	}
+
+	
+	/**
+	 * Sets the template page title.
+	 * @param string $str
+	 */
+	public function setPageTitle($str){
+		$this->APP->template->page_title = $str;
+	}
 }
 ?>
