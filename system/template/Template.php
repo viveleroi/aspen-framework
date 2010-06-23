@@ -18,7 +18,7 @@ class Template extends Library {
 	 * @var string Holds the display template of the page title
 	 * @access public
 	 */
-	public $page_title = '{lang_title} - ';
+	public $page_title = '{lang_title}';
 
 	/**
 	 * @var array An array of variables to pass through to the object
@@ -832,10 +832,10 @@ class Template extends Library {
 		$module = $this->APP->router->cleanModule($this->APP->router->getSelectedModule());
 		$method = $this->APP->router->getSelectedMethod();
 
-		$this->page_title = str_replace('{lang_title}', $this->text($method.':title'), $this->page_title);
+		$this->page_title = str_replace('{lang_title}', $this->text(strtolower($module).':'.$method.':head-title'), $this->page_title);
 		$this->page_title = str_replace('{module}', ucwords($module), $this->page_title);
 		$this->page_title = str_replace('{method}', ucwords($this->APP->router->getSelectedMethod()), $this->page_title);
-		$this->page_title .= $this->APP->config('application_name');
+		$this->page_title .= '&nbsp;&ndash;&nbsp;'.$this->APP->config('application_name');
 
 		return $this->page_title;
 
