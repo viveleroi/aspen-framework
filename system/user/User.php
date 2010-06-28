@@ -92,7 +92,7 @@ class User extends Library {
 			!strpos($uri, 'users&method=forgot') && !strpos($uri, 'users/forgot') &&
 			!strpos($uri, 'users&method=authenticate') && !strpos($uri, 'users/authenticate')
 		){
-			$_SESSION['post-login_redirect'] = $uri;
+			$_SESSION['post-login_redirect'] = $this->APP->router->getDomainUrl().$uri;
 		} else {
 			$_SESSION['post-login_redirect'] = $this->APP->router->getInterfaceUrl();
 		}
@@ -256,8 +256,7 @@ class User extends Library {
 
 		$redirect = false;
 		if($this->APP->params->session->isPath('post-login_redirect')){
-			$redirect = $this->APP->router->getDomainUrl();
-			$redirect .= $this->APP->params->session->getPath('post-login_redirect');
+			$redirect = $this->APP->params->session->getPath('post-login_redirect');
 			$lred = strtolower($redirect);
 			if(strpos($lred, 'users/login') !== false || strpos($lred, 'users/authenticate') !== false){
 				$redirect = false;
