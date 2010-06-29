@@ -82,12 +82,6 @@ class Model extends Library {
 	private $ignore_tables_prev = array();
 
 	/**
-	 * @var array An array of tables to automatically add as joins
-	 * @access private
-	 */
-	private $joins = array();
-
-	/**
 	 * @var string Holds the last executed query
 	 * @access private
 	 */
@@ -448,22 +442,19 @@ class Model extends Library {
 		$i = new Inflector();
 		$args = func_get_args();
 		foreach($args as $arg){
-			$db = $this->APP->getDatabaseSchema($arg);
-			$key = 'id';
-			if(isset($db['schema'])){
-				foreach($db['schema'] as $field => $vals){
-					if($vals->primary_key){
-						$key = $vals->name;
-					}
-				}
-			}
-			// determine if this is a parent or child, so we know where
+			// determine if this is a parent or child or both, so we know where
 			// to get the field vals
-			if($this->hasChild($arg)){
+			if($this->hasChild($arg) && $this->hasParent($arg)){
+				// get the real table linking these tables
+				$real_table = array_search($arg, $this->schema['children']);
+				$this->leftJoin($real_table, $i->singularize($this->table).'_id', $this->getPrimaryKey(), '*');
+				$this->leftJoin($arg, $this->getPrimaryKey($arg), $i->singularize($arg).'_id', '*', $real_table);
+			}
+			elseif($this->hasChild($arg)){
 				$this->leftJoin($arg, $i->singularize($this->table).'_id', $this->getPrimaryKey(), '*');
 			}
-			if($this->hasParent($arg)){
-				$this->leftJoin($arg, $key, $i->singularize($arg).'_id', '*');
+			elseif($this->hasParent($arg)){
+				$this->leftJoin($arg, $this->getPrimaryKey($arg), $i->singularize($arg).'_id', '*');
 			}
 		}
 	}
@@ -570,18 +561,18 @@ class Model extends Library {
 	 * Returns the field marked as primary key for current table
 	 * @return mixed
 	 */
-	final public function getPrimaryKey(){
-
-		$schema = $this->getSchema();
-
-		if(is_array($schema['schema'])){
-			foreach($schema['schema'] as $field){
-				if($field->primary_key){
-					return $field->name;
+	final public function getPrimaryKey($table = false){
+		$table = $table ? $table : $this->table;
+		$db = $this->APP->getDatabaseSchema($table);
+		$key = false;
+		if(isset($db['schema'])){
+			foreach($db['schema'] as $field => $vals){
+				if($vals->primary_key){
+					$key = $vals->name;
 				}
 			}
 		}
-		return false;
+		return $key;
 	}
 
 
