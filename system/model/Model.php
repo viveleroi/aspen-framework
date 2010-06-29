@@ -82,6 +82,12 @@ class Model extends Library {
 	private $ignore_tables_prev = array();
 
 	/**
+	 * @var array An array of tables to automatically add as joins
+	 * @access private
+	 */
+	private $joins = array();
+
+	/**
 	 * @var string Holds the last executed query
 	 * @access private
 	 */
@@ -405,7 +411,6 @@ class Model extends Library {
 	 */
 	public function contains(){
 		$args = func_get_args();
-
 		foreach($args as $arg){
 			if(is_array($arg)){
 				$this->contains = array_merge($this->contains, $arg);
@@ -431,6 +436,36 @@ class Model extends Library {
 	 */
 	public function get_ignore_prev(){
 		return $this->ignore_tables_prev;
+	}
+
+
+	/**
+	 * Adds automatic joins by determining the proper foreign key name,
+	 * primary key, etc.
+	 * @return <type>
+	 */
+	public function joins(){
+		$i = new Inflector();
+		$args = func_get_args();
+		foreach($args as $arg){
+			$db = $this->APP->getDatabaseSchema($arg);
+			$key = 'id';
+			if(isset($db['schema'])){
+				foreach($db['schema'] as $field => $vals){
+					if($vals->primary_key){
+						$key = $vals->name;
+					}
+				}
+			}
+			// determine if this is a parent or child, so we know where
+			// to get the field vals
+			if($this->hasChild($arg)){
+				$this->leftJoin($arg, $i->singularize($this->table).'_id', $this->getPrimaryKey(), '*');
+			}
+			if($this->hasParent($arg)){
+				$this->leftJoin($arg, $key, $i->singularize($arg).'_id', '*');
+			}
+		}
 	}
 
 
@@ -545,6 +580,32 @@ class Model extends Library {
 					return $field->name;
 				}
 			}
+		}
+		return false;
+	}
+
+
+	/**
+	 * Determines if the table has a child table relation
+	 * @param string $table
+	 * @return boolean
+	 */
+	public function hasChild($table){
+		if(is_array($this->schema['children']) && in_array($table, $this->schema['children'])){
+			return true;
+		}
+		return false;
+	}
+
+
+	/**
+	 * Determines if the table has a parent table relation
+	 * @param string $table
+	 * @return boolean
+	 */
+	public function hasParent($table){
+		if(is_array($this->schema['parents']) && in_array($table, $this->schema['parents'])){
+			return true;
 		}
 		return false;
 	}
