@@ -428,6 +428,7 @@
 	$config['load_core_class'][] = array('classname' => 'Install');
 	$config['load_core_class'][] = array('classname' => 'Log');
 	$config['load_core_class'][] = array('classname' => 'Model');
+	$config['load_core_class'][] = array('classname' => 'Inflector','autoload'=>false,'folder'=>'utils');
 	$config['load_core_class'][] = array('classname' => 'Module');
 	$config['load_core_class'][] = array('classname' => 'Modules');
 	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail', 'filename'=>'class.phpmailer');

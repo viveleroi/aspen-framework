@@ -28,6 +28,34 @@ class Utils {
 		}
 		return false;
 	}
+	
+
+	/**
+	 * Pushes the differences in $array2 onto the end of $array
+	 *
+	 * @param mixed $array Original array
+	 * @param mixed $array2 Differences to push
+	 * @return array Combined array
+	 * @access public
+	 * @static
+	 */
+	static public function pushDiff($array, $array2) {
+		if (empty($array) && !empty($array2)) {
+			return $array2;
+		}
+		if (!empty($array) && !empty($array2)) {
+			foreach ($array2 as $key => $value) {
+				if (!array_key_exists($key, $array)) {
+					$array[$key] = $value;
+				} else {
+					if (is_array($value)) {
+						$array[$key] = Set::pushDiff($array[$key], $array2[$key]);
+					}
+				}
+			}
+		}
+		return $array;
+	}
 
 
 	/**

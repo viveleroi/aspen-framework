@@ -460,7 +460,8 @@ class Model extends Library {
 				if(!$field->primary_key){
 					// If field name matches a table name
 					if(strpos($field->name, '_id')){
-						$tmp_tbl_name = str_replace('_id', '', $field->name).'s';
+						$i = new Inflector();
+						$tmp_tbl_name = $i->pluralize( str_replace('_id', '', $field->name) );
 						if(in_array($tmp_tbl_name,$tables)){
 							$db_map[$tmp_tbl_name]['children'][$table] = $table;
 							$db_map[$table]['parents'][$tmp_tbl_name] = $tmp_tbl_name;
@@ -1571,6 +1572,8 @@ class Model extends Library {
 						$schema = $this->getSchema();
 						$this->ignore($this->table);
 
+						$i = new Inflector();
+
 						if(isset($schema['children'])){
 							foreach($schema['children'] as $join_table => $child_table){
 
@@ -1583,13 +1586,13 @@ class Model extends Library {
 									$child->ignore($this->get_ignore());
 
 									if($child_table != $join_table){
-										$field = rtrim($child_table, 's').'_id';
+										$field = $i->singularize($child_table).'_id';
 										$child->leftJoin($join_table, $field, 'id', array($field));
-										$field = rtrim($this->table, 's').'_id';
+										$field = $i->singularize($this->table).'_id';
 										$child->where($join_table.'.'.$field, $result[$key]);
 										$result[ucwords($child_table)] = $child->results();
 									} else {
-										$field = rtrim($this->table, 's').'_id';
+										$field = $i->singularize($this->table).'_id';
 										$child->where($field, $result[$key]);
 										$result[ucwords($child_table)] = $child->results();
 									}
@@ -1600,8 +1603,7 @@ class Model extends Library {
 							foreach($schema['parents'] as $child_table){
 								if(!in_array($child_table, $this->ignore_tables) && (in_array($child_table, $this->contains))){
 									$this->ignore($child_table);
-
-									$field = rtrim($child_table, 's').'_id';
+									$field = $i->singularize($child_table).'_id';
 									if(isset($result[$field])){
 										$child = $this->open($child_table);
 										$child->ignore($this->ignore_tables);
