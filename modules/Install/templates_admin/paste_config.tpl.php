@@ -2,7 +2,7 @@
 
 <p><?php print $this->text('s1b:intro'); ?></p>
 
-<?php print $this->APP->sml->printMessage(); ?>
+<?php print app()->sml->printMessage(); ?>
 
 <form action="<?php print $this->createFormAction('account') ?>" method="post">
 	<textarea name="config_content" id="config_content" rows="10" cols="50"><?php print $config ?></textarea>

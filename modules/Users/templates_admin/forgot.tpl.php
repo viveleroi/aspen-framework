@@ -1,7 +1,7 @@
 <h2><?php print $this->text('forgot:title'); ?></h2>
 
 <?php print $form->printErrors(); ?>
-<?php print $this->APP->sml->printMessage(); ?>
+<?php print app()->sml->printMessage(); ?>
 
 <form action="<?php print $this->createXhtmlValidUrl(); ?>" method="post">
 	<fieldset>

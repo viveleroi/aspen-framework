@@ -1,6 +1,6 @@
 <h2><?php print $this->text('login:title'); ?></h2>
 
-<?php print $this->APP->sml->printMessage(); ?>
+<?php print app()->sml->printMessage(); ?>
 
 <form action="<?php print $this->createFormAction('authenticate'); ?>" method="post">
 	<fieldset>

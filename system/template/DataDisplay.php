@@ -34,7 +34,7 @@ class DataDisplay extends Library {
 			return $this->data[$name];
 		} else {
 			if(!method_exists($this, $name)){
-				$this->APP->error->raise(1, $this->text('dberror:datadisplay_call_error', $name), __FILE__, __LINE__);
+				app()->error->raise(1, $this->text('dberror:datadisplay_call_error', $name), __FILE__, __LINE__);
 			}
 		}
 	}

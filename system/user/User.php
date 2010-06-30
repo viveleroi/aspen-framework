@@ -26,7 +26,7 @@ class User extends Library {
 	 * @access private
 	 */
 	public function loadPermissions(){
-		$perms = $this->APP->model->open('permissions');
+		$perms = app()->model->open('permissions');
 		$this->permissions = $perms->results();
 	}
 
@@ -47,7 +47,7 @@ class User extends Library {
 			$result = $form->save($id);
 		}
 
-		$this->APP->template->set(array('form'=>$form));
+		app()->template->set(array('form'=>$form));
 
 		return $result;
 
@@ -59,7 +59,7 @@ class User extends Library {
 	 * @access public
 	 */
 	public function my_account(){
-		return $this->edit($this->APP->params->session->getInt('user_id'));
+		return $this->edit(app()->params->session->getInt('user_id'));
 	}
 
 
@@ -69,7 +69,7 @@ class User extends Library {
 	 * @access public
 	 */
 	public function delete($id = false){
-		$auth = $this->APP->model->open('users');
+		$auth = app()->model->open('users');
 		return $auth->delete($id);
 	}
 
@@ -81,20 +81,20 @@ class User extends Library {
 	 */
 	final public function login(){
 
-		$uri = $this->APP->params->server->getPath('REQUEST_URI').$this->APP->params->server->getRaw('QUERY_STRING');
+		$uri = app()->params->server->getPath('REQUEST_URI').app()->params->server->getRaw('QUERY_STRING');
 		$uri = strip_tags(urldecode($uri));
 		$uri = preg_replace('/redirected=(.*)/', '', $uri);
 
 		// set the forwarding url if any set pre-login
 		if(
-			$this->APP->config('post_login_redirect') && !strpos($uri, 'install') &&
+			app()->config('post_login_redirect') && !strpos($uri, 'install') &&
 			!strpos($uri, 'users&method=login') && !strpos($uri, 'users/login') &&
 			!strpos($uri, 'users&method=forgot') && !strpos($uri, 'users/forgot') &&
 			!strpos($uri, 'users&method=authenticate') && !strpos($uri, 'users/authenticate')
 		){
-			$_SESSION['post-login_redirect'] = $this->APP->router->getDomainUrl().$uri;
+			$_SESSION['post-login_redirect'] = app()->router->getDomainUrl().$uri;
 		} else {
-			$_SESSION['post-login_redirect'] = $this->APP->router->getInterfaceUrl();
+			$_SESSION['post-login_redirect'] = app()->router->getInterfaceUrl();
 		}
 	}
 
@@ -104,8 +104,8 @@ class User extends Library {
 	 * @access public
 	 */
 	public function login_failed(){
-		$this->APP->sml->say('Your username and password did not match. Please try again.', false);
-		$this->APP->router->redirect('login',false,'Users');
+		app()->sml->say('Your username and password did not match. Please try again.', false);
+		app()->router->redirect('login',false,'Users');
 	}
 
 
@@ -125,7 +125,7 @@ class User extends Library {
 			$new_pass = $this->makePassword();
 
 			// load the account
-			$auth = $this->APP->model->open('users');
+			$auth = app()->model->open('users');
 			$user = $auth->quickSelectSingle($form->cv('user'), 'username');
 
 			if(is_array($user)){
@@ -134,19 +134,19 @@ class User extends Library {
 				$user['password'] = $new_pass;
 				$auth->update($user, $user['id']);
 
-				if($this->APP->db->Affected_Rows()){
+				if(app()->db->Affected_Rows()){
 
 					// SEND THE EMAIL TO THE USER
-					$this->APP->mail->AddAddress($form->cv('user'));
-					$this->APP->mail->From      	= $this->APP->config('email_sender');
-					$this->APP->mail->FromName  	= $this->APP->config('email_sender_name');
-					$this->APP->mail->Mailer    	= "mail";
-					$this->APP->mail->ContentType 	= 'text/html';
-					$this->APP->mail->Subject   	= $this->APP->config('password_reset_subject');
-					$this->APP->mail->Body 			= str_replace('{new_pass}', $new_pass, $this->APP->config('password_reset_body'));
+					app()->mail->AddAddress($form->cv('user'));
+					app()->mail->From      	= app()->config('email_sender');
+					app()->mail->FromName  	= app()->config('email_sender_name');
+					app()->mail->Mailer    	= "mail";
+					app()->mail->ContentType 	= 'text/html';
+					app()->mail->Subject   	= app()->config('password_reset_subject');
+					app()->mail->Body 			= str_replace('{new_pass}', $new_pass, app()->config('password_reset_body'));
 
-					$this->APP->mail->Send();
-					$this->APP->mail->ClearAddresses();
+					app()->mail->Send();
+					app()->mail->ClearAddresses();
 
 					return 1;
 				}
@@ -155,7 +155,7 @@ class User extends Library {
 			}
 		}
 
-		$this->APP->template->set(array('form'=>$form));
+		app()->template->set(array('form'=>$form));
 
 		return false;
 
@@ -169,10 +169,10 @@ class User extends Library {
 	 * @access private
 	 */
 	final private function getDomainKeyValue(){
-		$string = $this->APP->config('application_guid') . LS;
-		$string .= $this->APP->params->server->getServerName('HTTP_HOST');
-		$string .= $this->APP->params->server->getServerName('HTTP_USER_AGENT');
-		$string .= $this->APP->params->server->getServerName('REMOTE_ADDR');
+		$string = app()->config('application_guid') . LS;
+		$string .= app()->params->server->getServerName('HTTP_HOST');
+		$string .= app()->params->server->getServerName('HTTP_USER_AGENT');
+		$string .= app()->params->server->getServerName('REMOTE_ADDR');
 		return sha1($string);
 	}
 
@@ -185,12 +185,12 @@ class User extends Library {
 
 		$auth = false;
 		$p	  = new PasswordHash();
-		$user = $this->APP->params->post->getEmail('user');
-		$pass = $this->APP->params->post->getRaw('pass');
+		$user = app()->params->post->getEmail('user');
+		$pass = app()->params->post->getRaw('pass');
 
 		if($user && $pass){
 
-			$model = $this->APP->model->open('users');
+			$model = app()->model->open('users');
 			$model->where('username', $user);
 			$model->where('allow_login', 1);
 			$model->limit(0, 1);
@@ -255,15 +255,15 @@ class User extends Library {
 	public function postLoginRedirect(){
 
 		$redirect = false;
-		if($this->APP->params->session->isPath('post-login_redirect')){
-			$redirect = $this->APP->params->session->getPath('post-login_redirect');
+		if(app()->params->session->isPath('post-login_redirect')){
+			$redirect = app()->params->session->getPath('post-login_redirect');
 			$lred = strtolower($redirect);
 			if(strpos($lred, 'users/login') !== false || strpos($lred, 'users/authenticate') !== false){
 				$redirect = false;
 			}
 		}
 
-		return empty($redirect) ? $this->APP->router->getInterfaceUrl() : $redirect;
+		return empty($redirect) ? app()->router->getInterfaceUrl() : $redirect;
 
 	}
 
@@ -276,13 +276,13 @@ class User extends Library {
 	final public function isLoggedIn(){
 
 		$authenticated 	= false;
-		$auth_key 		= sha1($this->APP->params->session->getEmail('username') . $this->APP->params->session->getInt('user_id'));
+		$auth_key 		= sha1(app()->params->session->getEmail('username') . app()->params->session->getInt('user_id'));
 
-		if($this->APP->checkDbConnection()){
+		if(app()->checkDbConnection()){
 			if(
-				$this->APP->params->session->getInt('authenticated', false) &&
-				$this->APP->params->session->getAlnum('authentication_key') == $auth_key &&
-				$this->APP->params->session->getAlnum('domain_key') == $this->getDomainKeyValue()
+				app()->params->session->getInt('authenticated', false) &&
+				app()->params->session->getAlnum('authentication_key') == $auth_key &&
+				app()->params->session->getAlnum('domain_key') == $this->getDomainKeyValue()
 				){
 					$authenticated = true;
 			}
@@ -304,7 +304,7 @@ class User extends Library {
 
 		$authenticated 	= false;
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
+		$user_id		= $user_id ? $user_id : app()->params->session->getInt('user_id');
 
 		if(IS_ADMIN){
 			$authenticated = true;
@@ -313,7 +313,7 @@ class User extends Library {
 			if($this->isLoggedIn()){
 
 				// first identify any groups this user belongs to
-				$model = $this->APP->model->open('user_group_link');
+				$model = app()->model->open('user_group_link');
 				$model->select(array('group_id'));
 				$model->where('user_id', $user_id);
 				$groups = $model->results();
@@ -347,10 +347,10 @@ class User extends Library {
 	public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
 
        	$authenticated 	= false;
-		$module 		= $module ? $module : $this->APP->router->getSelectedModule();
-		$method 		= $method ? $method : $this->APP->router->getSelectedMethod();
+		$module 		= $module ? $module : app()->router->getSelectedModule();
+		$method 		= $method ? $method : app()->router->getSelectedMethod();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
+		$user_id		= $user_id ? $user_id : app()->params->session->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
 
 		if(IS_ADMIN || $this->allowAnonymous($module, $method, $interface)){
@@ -360,7 +360,7 @@ class User extends Library {
 			if($this->isLoggedIn() && $method != 'logout'){
 
 				// first identify any groups this user belongs to
-				$model = $this->APP->model->open('user_group_link');
+				$model = app()->model->open('user_group_link');
 				$model->select(array('group_id'));
 				$model->where('user_id', $user_id);
 				$groups = $model->results();
@@ -398,7 +398,7 @@ class User extends Library {
 			return true;
 		}
 
-		if($this->APP->isInstalled()){
+		if(app()->isInstalled()){
 			$module = ucwords(str_replace('_'.$interface, '', strtolower($module)));
 			$interface = ucwords(strtolower($interface));
 
@@ -440,7 +440,7 @@ class User extends Library {
 
 		if($user_id){
 
-			$model = $this->APP->model->open('user_group_link');
+			$model = app()->model->open('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
 			$model->where('groups.name', $group_name);
@@ -467,7 +467,7 @@ class User extends Library {
 
 		if($user_id){
 
-			$model = $this->APP->model->open('user_group_link');
+			$model = app()->model->open('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
 			$groups = $model->results();
@@ -495,8 +495,8 @@ class User extends Library {
 
 		if($this->isLoggedIn()){
 
-			$model = $this->APP->model->open('user_group_link');
-			$model->where('user_id', $this->APP->params->session->getInt('user_id'));
+			$model = app()->model->open('user_group_link');
+			$model->where('user_id', app()->params->session->getInt('user_id'));
 			$model->where('group_id', 1);
 			$groups = $model->results();
 
@@ -516,9 +516,9 @@ class User extends Library {
 	 */
 	public function userAccountCount(){
 
-		if($this->APP->checkDbConnection()){
+		if(app()->checkDbConnection()){
 
-			$model = $this->APP->model->open('users');
+			$model = app()->model->open('users');
 			$accounts = $model->results();
 			return count($accounts);
 
@@ -536,13 +536,13 @@ class User extends Library {
 	 */
 	 public function getUserDefaultModule(){
 
-		$default = $this->APP->config('default_module');
+		$default = app()->config('default_module');
 
-		if($this->APP->isInstalled()){
-			if($user_id = $this->APP->params->session->getInt('user_id')){
+		if(app()->isInstalled()){
+			if($user_id = app()->params->session->getInt('user_id')){
 				$groups = array_keys( $this->usersGroups($user_id) );
 
-				$ug_defs = $this->APP->config('usergroup_default_modules');
+				$ug_defs = app()->config('usergroup_default_modules');
 
 				foreach($groups as $group){
 					if(array_key_exists($group, $ug_defs)){
@@ -593,7 +593,7 @@ class User extends Library {
 	 */
 	public function groupList(){
 
-		$model = $this->APP->model->open('groups');
+		$model = app()->model->open('groups');
 		$model->orderBy('name');
 		$groups = $model->results();
 		return $groups;

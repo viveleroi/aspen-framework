@@ -226,7 +226,7 @@ class FirePHP {
    * The object constructor
    */
   public function __construct(){
-    $this->APP = get_instance();
+    app() = get_instance();
   }
 
   /**
@@ -942,7 +942,7 @@ class FirePHP {
    * @return string|false
    */
   protected function getUserAgent() {
-    return $this->APP->params->server->getRaw('HTTP_USER_AGENT');
+    return app()->params->server->getRaw('HTTP_USER_AGENT');
   }
 
   /**

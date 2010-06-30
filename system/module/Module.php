@@ -14,19 +14,12 @@
  */
 class Module {
 
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
 
 	/**
-	 * Constructor, initializes the module
-	 * @return Index_Admin
-	 * @access public
+	 * Constructor
 	 */
-	public function __construct(){ $this->APP = get_instance(); }
+	public function  __construct() {
+	}
 
 
 	/**
@@ -35,10 +28,10 @@ class Module {
 	 */
 	public function view(){
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'index.tpl.php');
+		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		app()->template->display();
 
 	}
 
@@ -47,9 +40,9 @@ class Module {
 	 * Activates the default loading of the 404 error
 	 */
 	public function error_404(){
-		$this->APP->router->header_code(404);
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . '404.tpl.php');
-		$this->APP->template->display();
+		app()->router->header_code(404);
+		app()->template->addView(app()->template->getTemplateDir().DS . '404.tpl.php');
+		app()->template->display();
 		exit;
 	}
 
@@ -62,7 +55,7 @@ class Module {
 	 */
 	public function text(){
 		$args = func_get_args();
-		return call_user_func_array(array($this->APP->template, 'text'), $args);
+		return call_user_func_array(array(app()->template, 'text'), $args);
 	}
 
 	
@@ -71,7 +64,7 @@ class Module {
 	 * @param string $str
 	 */
 	public function setPageTitle($str){
-		$this->APP->template->page_title = $str;
+		app()->template->page_title = $str;
 	}
 }
 ?>

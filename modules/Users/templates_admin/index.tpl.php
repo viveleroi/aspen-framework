@@ -1,6 +1,6 @@
 <h2><?php print $this->text('userlist:title'); ?></h2>
 
-<?php print $this->APP->sml->printMessage(); ?>
+<?php print app()->sml->printMessage(); ?>
 
 <table cellspacing="0">
 	<caption>User Accounts | <?php print $this->createLink($this->text('userlist:adduser'), 'add'); ?></caption>

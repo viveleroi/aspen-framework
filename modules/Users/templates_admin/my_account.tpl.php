@@ -1,7 +1,7 @@
 <h2><?php print $this->text('myaccount:title'); ?></h2>
 
 <?php print $form->printErrors(); ?>
-<?php print $this->APP->sml->printMessage(); ?>
+<?php print app()->sml->printMessage(); ?>
 
 <form action="<?php print $this->createUrl() ?>" method="post">
 	<input id="allow_login_hidden" name="allow_login" type="hidden" value="<?php print $form->cv('allow_login') ?>" />

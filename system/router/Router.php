@@ -55,7 +55,7 @@ class Router extends Library {
 		parent::__construct();
 
 		// force use of ssl if required
-		if($this->APP->config('force_https')){
+		if(app()->config('force_https')){
 			$this->redirectToUrl(str_replace(array("https", "http"), "https", $this->getFullUrl()));
 		}
 
@@ -75,7 +75,7 @@ class Router extends Library {
 		$bits = array();
 
 		// if mod_rewrite enabled, and request doesn't look like a non-rewrite request
-		if($this->APP->config('enable_mod_rewrite') && strpos($this->APP->params->server->getQueryString('REQUEST_URI'), '.php?') === false){
+		if(app()->config('enable_mod_rewrite') && strpos(app()->params->server->getQueryString('REQUEST_URI'), '.php?') === false){
 
 			// we force the entire url as replacement because
 			// an interface app name may be the same as a module
@@ -87,7 +87,7 @@ class Router extends Library {
 				$replace[] = $this->getApplicationUrl();
 				$replace[] = $this->getPath();
 			}
-			$uri = $to_map = str_replace($replace, '', $this->getDomainUrl() . $this->APP->params->server->getQueryString('REQUEST_URI'));
+			$uri = $to_map = str_replace($replace, '', $this->getDomainUrl() . app()->params->server->getQueryString('REQUEST_URI'));
 			$uri = explode('/', $uri);
 
 			// If route mapping fails, then we need to parse the url for the default config
@@ -105,16 +105,16 @@ class Router extends Library {
 			}
 		} else {
 
-			$this->map['module'] = $this->APP->params->get->getElemId('module');
-			$this->map['method'] = $this->APP->params->get->getElemId('method');
+			$this->map['module'] = app()->params->get->getElemId('module');
+			$this->map['method'] = app()->params->get->getElemId('method');
 
 			// loop additional bits to pass to our arguments
-			$get = $this->APP->params->getRawSource('get');
+			$get = app()->params->getRawSource('get');
 
 			if(is_array($get)){
 				foreach($get as $key => $value){
 					if($key != 'module' && $key != 'method'){
-						$bits[$key] = $this->stripQuery($this->APP->params->get->getRaw($key));
+						$bits[$key] = $this->stripQuery(app()->params->get->getRaw($key));
 					}
 				}
 				$this->map['bits'] = $bits;
@@ -150,7 +150,7 @@ class Router extends Library {
 	private function applyRouteMap($path){
 
 		$path			= $this->stripQuery($path);
-		$routes			= $this->APP->config('routes');
+		$routes			= app()->config('routes');
 		$map			= false;
 		$matched_keys	= array();
 		$matches		= array();
@@ -201,8 +201,8 @@ class Router extends Library {
 					}
 				}
 
-				$this->APP->log->section('Routes Mapping');
-				$this->APP->log->write($matches);
+				app()->log->section('Routes Mapping');
+				app()->log->write($matches);
 
 			}
 
@@ -235,7 +235,7 @@ class Router extends Library {
 		$acc_method = false;
 
 		// Check if anonymous access is allowed
-		if(!$this->APP->user->allowAnonymous($req_module, $req_method, LS)){
+		if(!app()->user->allowAnonymous($req_module, $req_method, LS)){
 			$acc_module = $this->identifyAcceptedModuleForLoad();
 			$acc_method = $this->identifyAcceptedMethodForLoad();
 		}
@@ -256,7 +256,7 @@ class Router extends Library {
 	 * @access private
 	 */
 	private function identifyRequestedModuleForLoad(){
-		return $this->map['module'] ? $this->map['module'] : $this->APP->user->getUserDefaultModule();
+		return $this->map['module'] ? $this->map['module'] : app()->user->getUserDefaultModule();
 	}
 
 
@@ -266,7 +266,7 @@ class Router extends Library {
 	 * @access private
 	 */
 	private function identifyRequestedMethodForLoad(){
-		return $this->map['method'] ? $this->map['method'] : $this->APP->config('default_method');
+		return $this->map['method'] ? $this->map['method'] : app()->config('default_method');
 	}
 
 
@@ -278,13 +278,13 @@ class Router extends Library {
 	 */
 	private function identifyAcceptedModuleForLoad(){
 
-		if(strtolower(get_class($this->APP)) == "app"){
+		if(strtolower(get_class(app())) == "app"){
 
-			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account' && !$this->APP->awaitingUpgrade()){
+			if(app()->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account' && !app()->awaitingUpgrade()){
 
 				// do a quick check to see if the user is logged in or not
 				// we need to create our own auth check, as the user module is not loaded at this point
-				if($this->APP->user->isLoggedIn()){
+				if(app()->user->isLoggedIn()){
 
 					$default = $this->map['module'] ? $this->map['module'] : false;
 
@@ -295,12 +295,12 @@ class Router extends Library {
 				}
 			} else {
 
-				$default = $this->APP->config('default_module_no_config');
+				$default = app()->config('default_module_no_config');
 
 			}
 		} else {
 
-			$default = get_class($this->APP);
+			$default = get_class(app());
 
 		}
 
@@ -319,10 +319,10 @@ class Router extends Library {
 	private function identifyAcceptedMethodForLoad(){
 
 		// do a basic login check as user module is not loaded at this point
-		if($this->APP->user->isLoggedIn()){
+		if(app()->user->isLoggedIn()){
 
 			$default = $this->map['method'];
-			$default = $default ? $default : $this->APP->config('default_method');
+			$default = $default ? $default : app()->config('default_method');
 
 		}
 		elseif($this->map['method'] == 'authenticate' || $this->map['method'] == 'forgot'){
@@ -330,11 +330,11 @@ class Router extends Library {
 			$default = $this->map['method'];
 
 		} else {
-			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account' && !$this->APP->awaitingUpgrade()){
+			if(app()->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account' && !app()->awaitingUpgrade()){
 				$default = 'login';
 			} else {
 				if($this->getSelectedModule() == "Install_Admin"){
-					$method = $this->APP->awaitingUpgrade() ? 'upgrade' : 'view';
+					$method = app()->awaitingUpgrade() ? 'upgrade' : 'view';
 					$default = $this->map['method'] ? $this->map['method'] : $method;
 				}
 			}
@@ -384,8 +384,8 @@ class Router extends Library {
 
 		$module = $this->getSelectedModule();
 
-		if(method_exists($this->APP->{$this->getSelectedModule()}, 'whosYourDaddy')){
-			$daddy = $this->APP->{$this->getSelectedModule()}->whosYourDaddy();
+		if(method_exists(app()->{$this->getSelectedModule()}, 'whosYourDaddy')){
+			$daddy = app()->{$this->getSelectedModule()}->whosYourDaddy();
 			$module = empty($daddy) ? $module : $daddy;
 		}
 
@@ -400,14 +400,14 @@ class Router extends Library {
 	public function loadInterfaceLanguage($interface = false){
 
 		$languages 		= array();
-		$lang_setting 	= $this->APP->config('language');
+		$lang_setting 	= app()->config('language');
 
 		// load the interface language library
 		$lang_path	= INTERFACE_PATH . DS . 'language' . DS . $lang_setting . '.php';
-		$this->APP->log->write('Seeking interface language library ' . $lang_path);
+		app()->log->write('Seeking interface language library ' . $lang_path);
 		if(file_exists($lang_path)){
 			include($lang_path);
-			$this->APP->log->write('Including interface language library ' . $lang_path);
+			app()->log->write('Including interface language library ' . $lang_path);
 			if(isset($lang[LS])){
 				$languages = array_merge($languages, $lang[LS]);
 			}
@@ -416,7 +416,7 @@ class Router extends Library {
 			}
 		}
 
-		$this->APP->template->loadLanguageTerms($languages);
+		app()->template->loadLanguageTerms($languages);
 
 	}
 
@@ -428,16 +428,16 @@ class Router extends Library {
 	public function loadModuleLanguage($module = false, $interface = false){
 
 		$languages 		= array();
-		$lang_setting 	= $this->APP->config('language');
+		$lang_setting 	= app()->config('language');
 
 		// load the module-specific language library
 		if(!in_array($module.'_'.$interface, $this->_loaded_languages)){
 			$module = $this->cleanModule($module);
 			$module_lang_path = $this->getModulePath($module, $interface).DS. 'language' . DS . $lang_setting.'.php';
-			$this->APP->log->write('Seeking module language library ' . $module_lang_path);
+			app()->log->write('Seeking module language library ' . $module_lang_path);
 			if(file_exists($module_lang_path)){
 				include($module_lang_path);
-				$this->APP->log->write('Including module language library ' . $module_lang_path);
+				app()->log->write('Including module language library ' . $module_lang_path);
 				if(isset($lang[LS])){
 					$languages = array_merge($languages, $lang[LS]);
 				}
@@ -448,7 +448,7 @@ class Router extends Library {
 
 			$this->_loaded_languages[] = $module.'_'.$interface;
 
-			$this->APP->template->loadLanguageTerms($languages);
+			app()->template->loadLanguageTerms($languages);
 		}
 	}
 
@@ -460,24 +460,24 @@ class Router extends Library {
 	public function loadFromUrl(){
 
 		// If user is logged in, but does not have access to this interface app
-		if($this->APP->user->isLoggedIn() &&
+		if(app()->user->isLoggedIn() &&
 				$this->getSelectedMethod() != 'login' && $this->getSelectedMethod() != 'autehenticate'
 			){
-			if(!$this->APP->user->userHasInterfaceAccess()){
-				$this->APP->user->logout();
+			if(!app()->user->userHasInterfaceAccess()){
+				app()->user->logout();
 				$this->redirect('login', false, 'Users');
 			}
 		}
 
 		// redirect if upgrade pending
-		if($this->APP->user->isLoggedIn() && $this->getSelectedModule() != 'Install_Admin'){
-			if($this->APP->awaitingUpgrade()){ $this->redirect('upgrade', false, 'Install'); }
+		if(app()->user->isLoggedIn() && $this->getSelectedModule() != 'Install_Admin'){
+			if(app()->awaitingUpgrade()){ $this->redirect('upgrade', false, 'Install'); }
 		}
 
-		if($this->getSelectedMethod() && $this->APP->user->userHasAccess()){
+		if($this->getSelectedMethod() && app()->user->userHasAccess()){
 
 			// load the module language file
-			if($this->APP->config('enable_languages')){
+			if(app()->config('enable_languages')){
 				$this->loadInterfaceLanguage();
 				$this->loadModuleLanguage();
 			}
@@ -489,47 +489,47 @@ class Router extends Library {
 				$i++;
 			}
 
-			$this->APP->log->write('Looking for Module: ' . $this->getSelectedModule() . '->' . $this->getSelectedMethod());
+			app()->log->write('Looking for Module: ' . $this->getSelectedModule() . '->' . $this->getSelectedMethod());
 
-			if(isset($this->APP->{$this->getSelectedModule()})){
-				if(method_exists($this->APP->{$this->getSelectedModule()}, $this->getSelectedMethod())){
+			if(isset(app()->{$this->getSelectedModule()})){
+				if(method_exists(app()->{$this->getSelectedModule()}, $this->getSelectedMethod())){
 
-					$this->APP->log->write('Running Module: ' . $this->getSelectedModule() . '->' . $this->getSelectedMethod());
+					app()->log->write('Running Module: ' . $this->getSelectedModule() . '->' . $this->getSelectedMethod());
 
 					// Call the actual class method for our current page, and pass all arguments to it
-					call_user_func_array(array($this->APP->{$this->getSelectedModule()}, $this->getSelectedMethod()), $this->_selected_arguments);
+					call_user_func_array(array(app()->{$this->getSelectedModule()}, $this->getSelectedMethod()), $this->_selected_arguments);
 
 				} else { // method not found within module
-					if($this->APP->config('log_error_on_404')){
-						$this->APP->error->raise(2, 'Method ' . $this->getSelectedMethod() . ' does not exist in '
+					if(app()->config('log_error_on_404')){
+						app()->error->raise(2, 'Method ' . $this->getSelectedMethod() . ' does not exist in '
 													 . $this->getSelectedModule(), __FILE__, __LINE__);
 					}
 
 					header("HTTP/1.0 404 Not Found");
-					$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-					$this->APP->template->addView($this->APP->template->getTemplateDir().DS . '404.tpl.php');
-					$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-					$this->APP->template->display();
+					app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+					app()->template->addView(app()->template->getTemplateDir().DS . '404.tpl.php');
+					app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+					app()->template->display();
 					exit;
 				}
 			} else { // no module found
-				if($this->APP->config('log_error_on_404')){
-					$this->APP->error->raise(2, 'Module ' . $this->getSelectedModule() . ' does not exist.', __FILE__, __LINE__);
+				if(app()->config('log_error_on_404')){
+					app()->error->raise(2, 'Module ' . $this->getSelectedModule() . ' does not exist.', __FILE__, __LINE__);
 				}
 
 				header("HTTP/1.0 404 Not Found");
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . '404.tpl.php');
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-				$this->APP->template->display();
+				app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+				app()->template->addView(app()->template->getTemplateDir().DS . '404.tpl.php');
+				app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+				app()->template->display();
 				exit;
 			}
 		} else { // not authorized
 			$this->loadModuleLanguage('Users', 'Admin');
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-			$this->APP->template->addView($this->APP->template->getModuleTemplateDir('Users', 'Admin').DS . 'denied.tpl.php');
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-			$this->APP->template->display();
+			app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+			app()->template->addView(app()->template->getModuleTemplateDir('Users', 'Admin').DS . 'denied.tpl.php');
+			app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+			app()->template->display();
 			exit;
 		}
 	}
@@ -564,7 +564,7 @@ class Router extends Library {
 	public function getFullUrl(){
 
 		$url = $this->getDomainUrl();
-		$url .= $this->APP->params->server->getQueryString('REQUEST_URI');
+		$url .= app()->params->server->getQueryString('REQUEST_URI');
 		$url = strip_tags(urldecode($url));
 
 		return $url;
@@ -580,7 +580,7 @@ class Router extends Library {
 	public function getApplicationUrl(){
 
 		$url = $this->getDomainUrl();
-		$url .= $this->APP->config('application_url') ? $this->APP->config('application_url') : $this->getPath();
+		$url .= app()->config('application_url') ? app()->config('application_url') : $this->getPath();
 		return $url;
 
 	}
@@ -592,7 +592,7 @@ class Router extends Library {
 	 * @access public
 	 */
 	public function getPort(){
-		return $this->APP->params->server->getInt('SERVER_PORT');
+		return app()->params->server->getInt('SERVER_PORT');
 	}
 
 
@@ -604,7 +604,7 @@ class Router extends Library {
 	public function getDomainUrl(){
 
 		$url = $this->getPort() == 443 ? 'https://' : 'http://';
-		$url .= $this->APP->params->server->getServerName('SERVER_NAME');
+		$url .= app()->params->server->getServerName('SERVER_NAME');
 
 		if($this->getPort() != 80 && $this->getPort() != 443){
 			$url .= ':'.$this->getPort();
@@ -623,7 +623,7 @@ class Router extends Library {
     public function getPath(){
 
         $adjusted_app_path = str_replace('\\', '/', APPLICATION_PATH);
-        $adjusted_doc_root = str_replace('\\', '/', $this->APP->params->server->getPath('DOCUMENT_ROOT'));
+        $adjusted_doc_root = str_replace('\\', '/', app()->params->server->getPath('DOCUMENT_ROOT'));
 
         $doc_strlen = strlen($adjusted_doc_root);
         if(substr($adjusted_doc_root, $doc_strlen - 1, $doc_strlen) == '/'){
@@ -641,9 +641,9 @@ class Router extends Library {
         } else {
 
             // if no mod_rewrite, we need to handle the paths appropriately
-            if($this->APP->config('enable_mod_rewrite') && strpos($this->APP->params->server->getQueryString('REQUEST_URI'), '.php?') === false){
+            if(app()->config('enable_mod_rewrite') && strpos(app()->params->server->getQueryString('REQUEST_URI'), '.php?') === false){
 
-                $redirected = stripslashes($this->APP->params->get->getQueryString('redirected'));
+                $redirected = stripslashes(app()->params->get->getQueryString('redirected'));
                 $interface = LS ? LS : '';
 
                 $replace = array();
@@ -654,12 +654,12 @@ class Router extends Library {
                     $replace[] = '/'.$redirected;
                 }
 
-                $uri = str_replace($replace, '', urldecode($this->APP->params->server->getQueryString('REQUEST_URI')));
+                $uri = str_replace($replace, '', urldecode(app()->params->server->getQueryString('REQUEST_URI')));
 				$uri = $this->stripQuery($uri);
 
             } else {
 
-                $no_qs_url = str_replace('?' . $this->APP->params->server->getQueryString('QUERY_STRING'), '', $this->APP->params->server->getQueryString('REQUEST_URI'));
+                $no_qs_url = str_replace('?' . app()->params->server->getQueryString('QUERY_STRING'), '', app()->params->server->getQueryString('REQUEST_URI'));
                 $interface = LS ? LS : '';
                 $uri = str_replace(array("index.php", '/'.$interface), "", $no_qs_url);
 
@@ -690,9 +690,9 @@ class Router extends Library {
 	 * @access public
 	 */
 	public function getUploadsUrl(){
-		$browser_url = $this->APP->config('upload_browser_path');
+		$browser_url = app()->config('upload_browser_path');
 		if(!$browser_url){
-			$browser_url = str_replace(APPLICATION_PATH, $this->getApplicationUrl(), $this->APP->config('upload_server_path'));
+			$browser_url = str_replace(APPLICATION_PATH, $this->getApplicationUrl(), app()->config('upload_server_path'));
 		}
 		return $browser_url;
     }
@@ -705,13 +705,13 @@ class Router extends Library {
 	 */
 	public function getStaticContentUrl($interface = false){
 
-		if($this->APP->config('static_content_url')){
-			return $this->APP->config('static_content_url');
+		if(app()->config('static_content_url')){
+			return app()->config('static_content_url');
 		} else {
 
 			$interface = $interface !== false ? $interface : LS;
-			if(is_array($this->APP->config('interface_global_folder_replace'))){
-				$replace = $this->APP->config('interface_global_folder_replace');
+			if(is_array(app()->config('interface_global_folder_replace'))){
+				$replace = app()->config('interface_global_folder_replace');
 				if(array_key_exists($interface, $replace)){
 					$interface = $replace[$interface];
 				}
@@ -730,7 +730,7 @@ class Router extends Library {
 	 */
 	public function getModuleUrl($module_name = false){
 		$module = $this->cleanModule($module_name);
-		$registry = $this->APP->moduleRegistry(false, $module);
+		$registry = app()->moduleRegistry(false, $module);
 		return isset($registry->folder) ? $this->getApplicationUrl() . '/modules/' . $registry->folder : false;
 	}
 
@@ -776,7 +776,7 @@ class Router extends Library {
 	public function getModulePath($module = false, $interface = false){
 
 		$module = $this->cleanModule($module);
-		$registry = $this->APP->moduleRegistry(false, $module, $interface);
+		$registry = app()->moduleRegistry(false, $module, $interface);
 
 		if(isset($registry->folder)){
 			return MODULES_PATH . DS . $registry->folder;
@@ -818,9 +818,9 @@ class Router extends Library {
 		$module = $this->cleanModule($module);
 		$module = $module . ($interface ? '_' . $interface  : false);
 
-		if(isset($this->APP->{$this->getSelectedModule()})){
-			if(method_exists($this->APP->{$this->getSelectedModule()}, 'whosYourDaddy')){
-				$daddy = $this->APP->{$this->getSelectedModule()}->whosYourDaddy();
+		if(isset(app()->{$this->getSelectedModule()})){
+			if(method_exists(app()->{$this->getSelectedModule()}, 'whosYourDaddy')){
+				$daddy = app()->{$this->getSelectedModule()}->whosYourDaddy();
 				$selected_module = empty($daddy) ? $selected_module : $daddy;
 			}
 		}
@@ -848,8 +848,8 @@ class Router extends Library {
 	 */
 	public function setReturnToReferrer(){
 		if(strpos($this->getSelectedMethod(), 'ajax') === false){
-			if($this->APP->params->server->getUri('HTTP_REFERER')){
-				$_SESSION['referring_page'] = $this->APP->params->server->getUri('HTTP_REFERER');
+			if(app()->params->server->getUri('HTTP_REFERER')){
+				$_SESSION['referring_page'] = app()->params->server->getUri('HTTP_REFERER');
 			}
 		}
 	}
@@ -860,7 +860,7 @@ class Router extends Library {
 	 * @access public
 	 */
 	public function returnToReferrer(){
-		$location = $this->APP->params->session->getUri('referring_page', $this->APP->template->createUrl('view'));
+		$location = app()->params->session->getUri('referring_page', app()->template->createUrl('view'));
 		if(!empty($location)){
 			$this->redirectToUrl($location);
 		}
@@ -875,7 +875,7 @@ class Router extends Library {
 	 * @access public
 	 */
 	public function redirect($method = false, $bits = false, $module = false, $interface = false){
-		$this->redirectToUrl( $this->APP->template->createUrl($method, $bits, $module, $interface), false, true);
+		$this->redirectToUrl( app()->template->createUrl($method, $bits, $module, $interface), false, true);
     }
 
 
@@ -901,7 +901,7 @@ class Router extends Library {
 				exit;
 			}
 		} else {
-			$this->APP->error->raise(1, 'URL for redirect appears to be an invalid resource: '. $url, __FILE__, __LINE__);
+			app()->error->raise(1, 'URL for redirect appears to be an invalid resource: '. $url, __FILE__, __LINE__);
 		}
 	}
 

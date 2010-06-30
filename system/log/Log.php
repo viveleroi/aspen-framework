@@ -41,23 +41,23 @@ class Log extends Library {
 
 		$loaded = false;
 
-		$this->on 		= $this->APP->config('enable_logging');
-		$this->dir 		= $this->APP->config('log_dir');
-		$this->level 	= $this->APP->config('log_verbosity');
+		$this->on 		= app()->config('enable_logging');
+		$this->dir 		= app()->config('log_dir');
+		$this->level 	= app()->config('log_verbosity');
 
 		if($this->on && $this->dir){
 
 			// verify directory exists and is writeable
 			if(!$this->checkDirectory()){
 				$this->on = false;
-				$this->APP->error->raise(1,
+				app()->error->raise(1,
 					'Logging is enabled, but directory is not writeable. Dir: ' . $this->dir, __FILE__, __LINE__);
 			}
 
 			// create a log file
 			if(!$this->createLogFile()){
 				$this->on = false;
-				$this->APP->error->raise(1,
+				app()->error->raise(1,
 					'Failed creating new log file.', __FILE__, __LINE__);
 			}
 
@@ -109,7 +109,7 @@ class Log extends Library {
 
 		$new_filename = 'log';
 
-		if($this->APP->config('timestamp_log_file')){
+		if(app()->config('timestamp_log_file')){
 			$new_filename .= '-' . Date::formatMicrotime(Date::microtime(EXECUTION_START));
 		}
 
@@ -131,12 +131,12 @@ class Log extends Library {
 	 */
 	public function write($message = '(empty message)', $mode = 'a'){
 		if($this->on){
-			$this->APP->file->useFile($this->full_path);
+			app()->file->useFile($this->full_path);
 
 			if(is_array($message) || is_object($message)){
-				$this->APP->file->write( print_r($message, true) . "\n", $mode);
+				app()->file->write( print_r($message, true) . "\n", $mode);
 			} else {
-				$this->APP->file->write( preg_replace('/[\t]+/', '', trim($message)) . "\n", $mode);
+				app()->file->write( preg_replace('/[\t]+/', '', trim($message)) . "\n", $mode);
 			}
 		}
 	}
@@ -192,62 +192,62 @@ class Log extends Library {
 
 			// record all configurations
 			$this->section('Configurations');
-			$config = $this->APP->getConfig();
+			$config = app()->getConfig();
 			foreach($config as $config => $value){
 				$this->write('Config ' . $config . ' was set to a value of: ' . $this->logValue($value));
 			}
 
 			$this->section('Loaded System Libraries');
-			$lib = $this->APP->getLoadedLibraries();
+			$lib = app()->getLoadedLibraries();
 			foreach($lib as $class){
 				$this->write('Library Class ' . $class['classname'] . ' was loaded.');
 			}
 
 			$this->section('Session Data');
-			$session = $this->APP->params->getRawSource('session');
+			$session = app()->params->getRawSource('session');
 			$this->write('Session_id: ' . session_id());
 			foreach($session as $key => $value){
 				$this->write('$_SESSION[\''.$key.'\'] = ' . $this->logValue($value));
 			}
 
 			$this->section('POST Data');
-			$post = $this->APP->params->getRawSource('post');
+			$post = app()->params->getRawSource('post');
 			foreach($post as $key => $value){
 				$this->write('$_POST[\''.$key.'\'] = ' . $this->logValue($value));
 			}
 
 			$this->section('GET Data');
-			$get = $this->APP->params->getRawSource('get');
+			$get = app()->params->getRawSource('get');
 			foreach($get as $key => $value){
 				$this->write('$_GET[\''.$key.'\'] = ' . $this->logValue($value));
 			}
 
 			$this->section('SERVER Data');
-			$server = $this->APP->params->getRawSource('server');
+			$server = app()->params->getRawSource('server');
 			foreach($server as $key => $value){
 				$this->write('$_SERVER[\''.$key.'\'] = ' . $this->logValue($value));
 			}
 
 			$this->section('FILES Data');
-			$server = $this->APP->params->getRawSource('files');
+			$server = app()->params->getRawSource('files');
 			foreach($server as $key => $value){
 				$this->write('$_FILES[\''.$key.'\'] = ' . $this->logValue($value));
 			}
 
 			// save all urls/paths to log for debugging
 			$this->section('Router Urls & Paths');
-			$this->write('Router::getDomainUrl set to: ' . $this->APP->router->getDomainUrl());
-			$this->write('Router::getApplicationUrl set to: ' . $this->APP->router->getApplicationUrl());
-			$this->write('Router::getPath set to: ' . $this->APP->router->getPath());
-			$this->write('Router::getInterfaceUrl set to: ' . $this->APP->router->getInterfaceUrl());
-			//$this->write('Router::getModuleUrl set to: ' . $this->APP->router->getModuleUrl());
-			$this->write('Router::getStaticContentUrl set to: ' . $this->APP->router->getStaticContentUrl());
-			$this->write('Router::getFullUrl set to: ' . $this->APP->router->getFullUrl());
+			$this->write('Router::getDomainUrl set to: ' . app()->router->getDomainUrl());
+			$this->write('Router::getApplicationUrl set to: ' . app()->router->getApplicationUrl());
+			$this->write('Router::getPath set to: ' . app()->router->getPath());
+			$this->write('Router::getInterfaceUrl set to: ' . app()->router->getInterfaceUrl());
+			//$this->write('Router::getModuleUrl set to: ' . app()->router->getModuleUrl());
+			$this->write('Router::getStaticContentUrl set to: ' . app()->router->getStaticContentUrl());
+			$this->write('Router::getFullUrl set to: ' . app()->router->getFullUrl());
 
 			$this->section('Bootstrap');
-			$this->write('Installed checks returned ' . ($this->APP->isInstalled() ? 'true' : 'false'));
+			$this->write('Installed checks returned ' . (app()->isInstalled() ? 'true' : 'false'));
 
-			if($this->APP->checkUserConfigExists()){
+			if(app()->checkUserConfigExists()){
 				$this->write('Found user config file.');
 			} else {
 				$this->write('User config was NOT FOUND.');

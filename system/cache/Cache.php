@@ -46,10 +46,10 @@ class Cache extends Library {
 	 */
 	public function enable(){
 		
-		$this->dir = $this->APP->config('cache_dir');
+		$this->dir = app()->config('cache_dir');
 		
 		if(!$this->checkDirectory()){
-			$this->APP->error->raise(1,
+			app()->error->raise(1,
 				'Caching is enabled, but directory is not writeable. Dir: ' . $this->dir, __FILE__, __LINE__);
 		}
 	}
@@ -90,7 +90,7 @@ class Cache extends Library {
 		
 		if(!$fileexists = file_exists($this->full_path)){
 			if($create){
-				$this->APP->log->write('Attempting to create cache file ' . $this->full_path);
+				app()->log->write('Attempting to create cache file ' . $this->full_path);
 				if(!$fileexists = touch($this->full_path)){
 					$this->error->raise(1, "Failed creating cache file: " . $this->full_path, __FILE__, __LINE__);
 				}
@@ -127,11 +127,11 @@ class Cache extends Library {
 			$metadata .= sprintf("|Datatype:%s\n", $datatype);
 			$metadata .= sprintf("|Data:%s", $data);
 			
-			$this->APP->log->write('Saving data to cache file. Expires: ' . $expiration);
+			app()->log->write('Saving data to cache file. Expires: ' . $expiration);
 		
 			// open for writing
-			$this->APP->file->useFile($this->full_path);
-			$this->APP->file->write($metadata, 'w');
+			app()->file->useFile($this->full_path);
+			app()->file->write($metadata, 'w');
 			
 			return true;
 			
@@ -153,8 +153,8 @@ class Cache extends Library {
 		if($this->checkFile($key, false)){
 		
 			// open for writing
-			$this->APP->file->useFile($this->full_path);
-			$value = $this->APP->file->read();
+			app()->file->useFile($this->full_path);
+			$value = app()->file->read();
 			
 			$matches = array();
 			
@@ -177,7 +177,7 @@ class Cache extends Library {
 			// check expiration of data
 			if(!empty($expiration)){
 				if(strtotime($expiration) < time()){
-					$this->APP->log->write('Cache file is expired, ignoring: ' . $this->full_path);
+					app()->log->write('Cache file is expired, ignoring: ' . $this->full_path);
 					$data = false;
 				}
 			}

@@ -3,7 +3,7 @@
 <p><?php print $this->text('s1:intro'); ?></p>
 
 <?php print $form->printErrors(); ?>
-<?php print $this->APP->sml->printMessage(); ?>
+<?php print app()->sml->printMessage(); ?>
 
 <form action="<?php print $this->createUrl('setup') ?>" method="post">
 

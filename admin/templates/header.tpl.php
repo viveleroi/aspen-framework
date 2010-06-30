@@ -21,20 +21,20 @@
 	<div class="container">
 		
 		<div id="header">
-		<h1><?php print $this->APP->config('application_name'); ?></h1>
-		<?php if($this->APP->user->isLoggedIn()){ ?>
-		<span>Logged in as <?php print $this->createLink($this->APP->params->session->getName('nice_name'), 'my_account', false, 'Users'); ?></span>
+		<h1><?php print app()->config('application_name'); ?></h1>
+		<?php if(app()->user->isLoggedIn()){ ?>
+		<span>Logged in as <?php print $this->createLink(app()->params->session->getName('nice_name'), 'my_account', false, 'Users'); ?></span>
 		<?php } ?>
 		<div class="clear clearfix"></div>
 		</div>
 		
-		<?php print $this->APP->modulesAwaitingInstallAlert(); ?>
+		<?php print app()->modulesAwaitingInstallAlert(); ?>
 		
-		<?php if($this->APP->user->isLoggedIn()){ ?>
+		<?php if(app()->user->isLoggedIn()){ ?>
 		<ul id="nav">
-			<?php print $this->APP->generateInterfaceMenu(false) ?>
+			<?php print app()->generateInterfaceMenu(false) ?>
 			<li><?php print $this->createLink('Logout', 'logout', false, 'Users'); ?></li>
 		</ul>
 		<?php } ?>
 		
-		<div id="content" class="box<?php print $this->APP->user->isLoggedIn() ? ' span-19 last' : '' ?>">
+		<div id="content" class="box<?php print app()->user->isLoggedIn() ? ' span-19 last' : '' ?>">

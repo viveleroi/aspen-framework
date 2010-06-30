@@ -96,7 +96,7 @@ class Form extends Library {
 
 		if($this->table){
 
-			$model = $this->APP->model->open($this->table);
+			$model = app()->model->open($this->table);
 			$model->contains($contains);
 			$this->_primary_key_field = $model->getPrimaryKey();
 			$this->schema = $model->getSchema();
@@ -128,7 +128,7 @@ class Form extends Library {
 
 		if($id && $this->table){
 
-			$model = $this->APP->model->open($this->table);
+			$model = app()->model->open($this->table);
 			$model->contains($contains);
 			$this->_primary_key_field = $model->getPrimaryKey();
 			$this->schema = $model->getSchema();
@@ -136,7 +136,7 @@ class Form extends Library {
 			$field = $field ? $field : $this->_primary_key_field;
 
 			$model->select();
-			$model->where($field, $this->APP->security->dbescape($id));
+			$model->where($field, app()->security->dbescape($id));
 			$records = $model->results();
 
 			if($records){
@@ -162,7 +162,7 @@ class Form extends Library {
 	 */
 	public function save($id = false){
 
-		$model 		= $this->APP->model->open($this->table);
+		$model 		= app()->model->open($this->table);
 		$success 	= false;
 		$schema		= $model->getSchema();
 
@@ -224,10 +224,10 @@ class Form extends Library {
 		$submitted = false;
 
 		// verify field isset - we dont care about the value
-		$data = $this->APP->params->getRawSource($method);
+		$data = app()->params->getRawSource($method);
 		if(is_array($data) && count($data)){
 			if($field){
-				$submitted = $this->APP->params->{$method}->keyExists($field);
+				$submitted = app()->params->{$method}->keyExists($field);
 			} else {
 				$submitted = true;
 			}
@@ -244,11 +244,11 @@ class Form extends Library {
 			}
 
 			// if token authorization is enabled, we must authenticate
-			if($this->APP->config('require_form_token_auth')){
+			if(app()->config('require_form_token_auth')){
 
-				$sess_token = $this->APP->params->session->getAlnum('form_token');
+				$sess_token = app()->params->session->getAlnum('form_token');
 
-				if(empty($sess_token) || $sess_token != $this->APP->params->{$method}->getAlnum('token')){
+				if(empty($sess_token) || $sess_token != app()->params->{$method}->getAlnum('token')){
 					$_SESSION['form_token'] = false;
 					$this->addError('token', 'An invalid token was provided. The form was not processed.');
 				}
@@ -317,7 +317,7 @@ class Form extends Library {
 
 		if(isset($this->_form_fields[$field])){
 			$value = $this->_form_fields[$field]['default_value'];
-			$value = $escape ? $this->APP->security->dbescape($value, $this->APP->model->getSecurityRule($field, 'allow_html')) : $value;
+			$value = $escape ? app()->security->dbescape($value, app()->model->getSecurityRule($field, 'allow_html')) : $value;
 		}
 
 		return $value;
@@ -430,7 +430,7 @@ class Form extends Library {
 			$value = $this->_form_fields[$field]['current_value'];
 		}
 
-		$value = $escape ? $this->APP->security->dbescape($value, $this->APP->model->getSecurityRule($field, 'allow_html')) : $value;
+		$value = $escape ? app()->security->dbescape($value, app()->model->getSecurityRule($field, 'allow_html')) : $value;
 
 		return $value;
 
@@ -497,18 +497,18 @@ class Form extends Library {
 				// determine security method
 				$param_access_type	= 'getRaw';
 				if(is_object($field_model) && isset($field_model->type)){
-					if(in_array($field_model->type, $this->APP->config('mysql_field_group_dec'))){
+					if(in_array($field_model->type, app()->config('mysql_field_group_dec'))){
 						$param_access_type = 'getFloat';
 					}
-					elseif(in_array($field_model->type, $this->APP->config('mysql_field_group_int'))){
+					elseif(in_array($field_model->type, app()->config('mysql_field_group_int'))){
 						$param_access_type = 'getDigits';
 					}
 				}
 
 
 				// get core array, so we can verify if it's even set
-				$source = $this->APP->params->getRawSource($this->param_type);
-				$get_val = $this->APP->params->{$this->param_type}->{$param_access_type}($field);
+				$source = app()->params->getRawSource($this->param_type);
+				$get_val = app()->params->{$this->param_type}->{$param_access_type}($field);
 
 				// if array key not set, we use the current value
 				if(!array_key_exists($field, $source)){
@@ -563,9 +563,9 @@ class Form extends Library {
 
 		// if no custom sort provided, we need to sort the errors
 		// according to their schema position
-		if(!$custom_sort && $this->APP->isInstalled() && $this->table){
+		if(!$custom_sort && app()->isInstalled() && $this->table){
 			$custom_sort = array();
-			$model = $this->APP->model->open($this->table);
+			$model = app()->model->open($this->table);
 			$schema = $model->getSchema();
 			foreach($schema['schema'] as $field){
 				$custom_sort[$field->name] = false;
@@ -622,10 +622,10 @@ class Form extends Library {
 		if($this->error()){
 			foreach($this->getErrors($custom_sort) as $errors){
 				foreach($errors as $field => $error){
-					$lines .= sprintf($this->APP->config('form_error_line_html'), $error);
+					$lines .= sprintf(app()->config('form_error_line_html'), $error);
 				}
 			}
-			printf($this->APP->config('form_error_wrapping_html'), $lines);
+			printf(app()->config('form_error_wrapping_html'), $lines);
 		}
 		print '';
 	}
@@ -665,7 +665,7 @@ class Form extends Library {
 			'errors'	=> $this->getErrors(),
 			'id'		=> $id,
 			'method'	=> $method,
-			'raw_data'	=> $this->APP->params->getRawSource($method)
+			'raw_data'	=> app()->params->getRawSource($method)
 		) );
 	}
 }

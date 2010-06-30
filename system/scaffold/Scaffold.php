@@ -38,10 +38,10 @@ class Scaffold extends Library {
 	 */
 	public function view($table = false){
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView(SYSTEM_PATH.DS.'scaffold'.DS.'templates'.DS . 'generic.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display( array('html' => $this->view_html($table) ));
+		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+		app()->template->addView(SYSTEM_PATH.DS.'scaffold'.DS.'templates'.DS . 'generic.tpl.php');
+		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		app()->template->display( array('html' => $this->view_html($table) ));
 
 	}
 
@@ -60,7 +60,7 @@ class Scaffold extends Library {
 			$thead = '';
 			$tbody = '';
 
-			$model = $this->APP->model->open($table);
+			$model = app()->model->open($table);
 			$results 	= $model->results();
 			$schema 	= $model->getSchema();
 			$key_field 	= $model->getPrimaryKey();
@@ -76,7 +76,7 @@ class Scaffold extends Library {
 					$tbody .= '<tr>' . "\n";
 
 					foreach($result as $field => $value){
-						$tbody .= sprintf('<td>%s</td>' . "\n", $this->APP->template->createLink($value, 'edit', array('id' => $result[$key_field])));
+						$tbody .= sprintf('<td>%s</td>' . "\n", app()->template->createLink($value, 'edit', array('id' => $result[$key_field])));
 					}
 
 					$tbody .= '</tr>' . "\n";
@@ -87,7 +87,7 @@ class Scaffold extends Library {
 
 			// begin building the html
 			$html .= sprintf('<h2>%s</h2>'."\n", ucwords($table));
-			$html .= '<p>'.$this->APP->template->createLink('Add a new record', 'add') . "</p>\n";
+			$html .= '<p>'.app()->template->createLink('Add a new record', 'add') . "</p>\n";
 
 			// create our table
 			$html .= '<table>' . "\n";
@@ -122,7 +122,7 @@ class Scaffold extends Library {
 			$thead = '';
 			$tbody = '';
 
-			$model = $this->APP->model->open($table);
+			$model = app()->model->open($table);
 			$results 	= $model->results();
 			$schema 	= $model->getSchema();
 			$key_field 	= $model->getPrimaryKey();
@@ -158,9 +158,9 @@ $tbody .= "		</tr>\n
 			// begin building the html
 			$this->langs['index:title'] = ucwords($table);
 			$html .= '<h2><?php print $this->text(\'index:title\'); ?></h2>'."\n\n";
-			$html .= '<?php print $this->APP->sml->printMessage(); ?>'."\n\n";
+			$html .= '<?php print app()->sml->printMessage(); ?>'."\n\n";
 			$this->langs['add-new'] = 'Add new record';
-			$html .= "<p><?php print \$this->APP->template->createLink(\$this->text('add-new'), 'add'); ?></p>\n\n";
+			$html .= "<p><?php print \app()->template->createLink(\$this->text('add-new'), 'add'); ?></p>\n\n";
 
 			// create our table
 			$html .= '<table>' . "\n";
@@ -202,12 +202,12 @@ $tbody .= "		</tr>\n
 			$value = "<?php print \$form->cv('".$field->name."'); ?>";
 		}
 
-		if(in_array($field->type, $this->APP->config('mysql_field_group_int')) || in_array($field->type, $this->APP->config('mysql_field_group_dec'))){
+		if(in_array($field->type, app()->config('mysql_field_group_int')) || in_array($field->type, app()->config('mysql_field_group_dec'))){
 			$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" class="text" />', $field->name, $field->name, $value);
 		}
 
 
-		if(in_array($field->type, $this->APP->config('mysql_field_group_text'))){
+		if(in_array($field->type, app()->config('mysql_field_group_text'))){
 			if($field->max_length > 0 && $field->max_length <= 100){
 				$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" class="text" />', $field->name, $field->name, $value);
 			} else {
@@ -215,7 +215,7 @@ $tbody .= "		</tr>\n
 			}
 		}
 
-		if(in_array($field->type, $this->APP->config('mysql_field_group_date'))){
+		if(in_array($field->type, app()->config('mysql_field_group_date'))){
 			$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" class="text" />', $field->name, $field->name, $value);
 		}
 
@@ -260,7 +260,7 @@ $tbody .= "		</tr>\n
 		if($form->isSubmitted()){
 
 			if($form->save($id)){
-				$this->APP->router->redirect('view');
+				app()->router->redirect('view');
 			}
 		}
 
@@ -269,7 +269,7 @@ $tbody .= "		</tr>\n
 		// @todo fix this
 		$values = $form->getCurrentValues();
 
-		$model = $this->APP->model->open($table);
+		$model = app()->model->open($table);
 		$schema = $model->getSchema();
 
 		// build the html form
@@ -285,17 +285,17 @@ $tbody .= "		</tr>\n
 				$html .= "<p><?php print \$this->createLink('Delete', 'delete', array('".$model->getPrimaryKey()."' => \$form->cv('".$model->getPrimaryKey()."'))); ?></p>\n";
 				$html .= "<?php } ?>\n\n";
 			} else {
-				$html .= $this->APP->template->createLink('Delete', 'delete', array($model->getPrimaryKey() => $id)) . "\n";
+				$html .= app()->template->createLink('Delete', 'delete', array($model->getPrimaryKey() => $id)) . "\n";
 			}
 		}
 
 		$html .= '<?php print $form->printErrors(); ?>'."\n";
-		$html .= '<?php print $this->APP->sml->printMessage(); ?>'."\n\n";
+		$html .= '<?php print app()->sml->printMessage(); ?>'."\n\n";
 
 		if($return_html){
 			$html .= '<form action="<?php print $this->createFormAction(); ?>" method="post">'."\n";
 		} else {
-			$html .= sprintf('<form action="%s" method="post">'."\n", $this->APP->template->createFormAction());
+			$html .= sprintf('<form action="%s" method="post">'."\n", app()->template->createFormAction());
 		}
 
 		foreach($schema['schema'] as $field){
@@ -319,10 +319,10 @@ $tbody .= "		</tr>\n
 
 		} else {
 
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-			$this->APP->template->addView(SYSTEM_PATH.DS.'scaffold'.DS.'templates'.DS . 'generic.tpl.php');
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-			$this->APP->template->display(array('html' => $html));
+			app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+			app()->template->addView(SYSTEM_PATH.DS.'scaffold'.DS.'templates'.DS . 'generic.tpl.php');
+			app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+			app()->template->display(array('html' => $html));
 
 		}
 	}
@@ -336,8 +336,8 @@ $tbody .= "		</tr>\n
 	 */
 	public function delete($table = false, $id = false){
 		if($table && $id){
-			if($this->APP->model->delete($table, $id)){
-				$this->APP->router->redirect('view');
+			if(app()->model->delete($table, $id)){
+				app()->router->redirect('view');
 			}
 		}
 	}

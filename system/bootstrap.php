@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', false);
+ini_set('display_errors', true);
 error_reporting(E_ALL);
 
 /**
@@ -39,7 +39,7 @@ class Base {
  * Returns an instance of our original app
  * @return object
  */
-function &get_instance(){
+function &app(){
 
 	$APP = Base::get_instance();
 

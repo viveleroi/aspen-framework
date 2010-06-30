@@ -114,8 +114,8 @@ class Security extends Library {
 	 */
 	private function cleanHtml($value){
 		
-		if($this->APP->isLibraryLoaded('HTMLPurifier')){
-			return $this->APP->html->purify($value);
+		if(app()->isLibraryLoaded('HTMLPurifier')){
+			return app()->html->purify($value);
 		} else {
 			return $value;
 		}

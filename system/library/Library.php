@@ -14,19 +14,12 @@
  */
 class Library {
 
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
 
 	/**
-	 * Constructor, initializes the module
-	 * @return Index_Admin
-	 * @access public
+	 * Constructor
 	 */
-	public function __construct(){ $this->APP = get_instance(); }
+	public function  __construct() {
+	}
 
 
 	/**
@@ -37,7 +30,7 @@ class Library {
 	 */
 	public function text(){
 		$args = func_get_args();
-		return call_user_func_array(array($this->APP->template, 'text'), $args);
+		return call_user_func_array(array(app()->template, 'text'), $args);
 	}
 }
 ?>

@@ -21,7 +21,7 @@ class Install_Admin extends Module {
 	 * @access public
 	 */
 	public function view(){
-		$this->APP->install->beginInstallProcess();
+		app()->install->beginInstallProcess();
 	}
 	
 	
@@ -30,7 +30,7 @@ class Install_Admin extends Module {
 	 * @access public
 	 */
 	public function prereq(){
-		$this->APP->install->prereq();
+		app()->install->prereq();
 	}
 
 
@@ -39,7 +39,7 @@ class Install_Admin extends Module {
 	 * @access public
 	 */
 	public function setup($retry = false){
-		$this->APP->install->setup($retry);
+		app()->install->setup($retry);
 	}
 	
 	
@@ -48,7 +48,7 @@ class Install_Admin extends Module {
 	 * @access public
 	 */
 	public function paste_config($config){
-		$this->APP->install->paste_config($config);
+		app()->install->paste_config($config);
 	}
 
 
@@ -57,7 +57,7 @@ class Install_Admin extends Module {
 	 * @access public
 	 */
 	public function account(){
-		$this->APP->install->account();
+		app()->install->account();
 	}
 	
 	
@@ -66,7 +66,7 @@ class Install_Admin extends Module {
 	 * @access public
 	 */
 	public function success(){
-		$this->APP->install->success();
+		app()->install->success();
 	}
 	
 	
@@ -75,7 +75,7 @@ class Install_Admin extends Module {
 	 * @access public
 	 */
 	public function upgrade(){
-		$this->APP->install->upgrade();
+		app()->install->upgrade();
 	}
 	
 	
@@ -84,7 +84,7 @@ class Install_Admin extends Module {
 	 * @access public
 	 */
 	public function run_upgrade(){
-		$this->APP->install->run_upgrade();
+		app()->install->run_upgrade();
 	}
 	
 	
@@ -93,7 +93,7 @@ class Install_Admin extends Module {
 	 * @param string $guid
 	 */
 	public function install_module($guid = false){
-		$this->APP->install->install_module($guid);
+		app()->install->install_module($guid);
 	}
 	
 	
@@ -102,8 +102,8 @@ class Install_Admin extends Module {
 	 * @param string $guid
 	 */
 	public function uninstall_module($guid = false){
-		$this->APP->install->uninstall_module($guid);
-		$this->APP->router->redirect('view', false, 'settings');
+		app()->install->uninstall_module($guid);
+		app()->router->redirect('view', false, 'settings');
 	}
 }
 ?>

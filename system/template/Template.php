@@ -75,8 +75,8 @@ class Template extends Library {
 	public function getModuleTemplateDir($module = false, $interface = false){
 		$orig_interface = $interface;
 		$interface = $interface ? strtolower($interface) : LS;
-		$module = $this->APP->router->cleanModule($module);
-        return $this->APP->router->getModulePath($module, $orig_interface) . DS . 'templates' . ($interface == '' ? false : '_' . $interface);
+		$module = app()->router->cleanModule($module);
+        return app()->router->getModulePath($module, $orig_interface) . DS . 'templates' . ($interface == '' ? false : '_' . $interface);
     }
 
 
@@ -129,9 +129,9 @@ class Template extends Library {
 		if(!empty($this->_load_js)){
 
 			// print some js globals
-			if($this->APP->config('print_js_variables')){
+			if(app()->config('print_js_variables')){
 				print '<script type="text/javascript">'."\n";
-				print 'var INTERFACE_URL = "'.$this->APP->router->getInterfaceUrl().'";'."\n";
+				print 'var INTERFACE_URL = "'.app()->router->getInterfaceUrl().'";'."\n";
 				print '</script>'."\n";
 			}
 
@@ -241,14 +241,14 @@ class Template extends Library {
 		$basepath = $filename = '';
 
 		if($args['from'] == 'm'){
-			$filename = $args['file'] ? $args['file'] : strtolower($this->APP->router->getSelectedMethod()).'.'.$args['ext'];
-			$basepath = $args['basepath'] ? $args['basepath'] : $this->APP->router->getModuleUrl() . '/'.$args['ext'];
+			$filename = $args['file'] ? $args['file'] : strtolower(app()->router->getSelectedMethod()).'.'.$args['ext'];
+			$basepath = $args['basepath'] ? $args['basepath'] : app()->router->getModuleUrl() . '/'.$args['ext'];
 		}
 
 		if($args['from'] == 'i'){
 			$interface = isset($args['interface']) ? $args['interface'] : false;
 			$filename = $args['file'] ? $args['file'] : strtolower(LS).'.'.$args['ext'];
-			$basepath = $args['basepath'] ? $args['basepath'] : $this->APP->router->getStaticContentUrl($interface) . '/'.$args['ext'];
+			$basepath = $args['basepath'] ? $args['basepath'] : app()->router->getStaticContentUrl($interface) . '/'.$args['ext'];
 		}
 
 		return $file = $basepath . '/' . $filename;
@@ -314,22 +314,22 @@ class Template extends Library {
 		if(is_array($this->_load_templates)){
 
 			// if token auth on, we need to generate a token
-			if($this->APP->config('require_form_token_auth')){
-				$token = $this->APP->security->generateFormToken();
+			if(app()->config('require_form_token_auth')){
+				$token = app()->security->generateFormToken();
 			}
 
 			$cache = false;
 
 			// if cache of template enabled
-			if($this->APP->config('enable_cache') && $this->APP->config('cache_template_output')){
+			if(app()->config('enable_cache') && app()->config('cache_template_output')){
 
 				// if we can find any existing cache of this page
-				if($cache = $this->APP->cache->getData($this->createSelfUrl())){
-					$this->APP->log->write('Returning templates from cache.');
+				if($cache = app()->cache->getData($this->createSelfUrl())){
+					app()->log->write('Returning templates from cache.');
 					print $cache;
 				} else {
 
-					$this->APP->log->write('Beginning output buffering, to capture template html for cache.');
+					app()->log->write('Beginning output buffering, to capture template html for cache.');
 
 					// begin collecting output
 					ob_start();
@@ -349,7 +349,7 @@ class Template extends Library {
 							}
 						}
 
-						$this->APP->log->write('Including template ' . $template);
+						app()->log->write('Including template ' . $template);
 						include($template);
 
 
@@ -358,12 +358,12 @@ class Template extends Library {
 			}
 
 			// if cache enabled and cache file not found, save it
-			if($this->APP->config('enable_cache') && $this->APP->config('cache_template_output') && !$cache){
+			if(app()->config('enable_cache') && app()->config('cache_template_output') && !$cache){
 
-				$this->APP->cache->put($this->createSelfUrl(), ob_get_contents());
+				app()->cache->put($this->createSelfUrl(), ob_get_contents());
 				ob_end_flush();
 
-				$this->APP->log->write('Saved output contents to cache, and stopped output buffering.');
+				app()->log->write('Saved output contents to cache, and stopped output buffering.');
 
 			}
 		}
@@ -407,8 +407,8 @@ class Template extends Library {
 	public function createLink($text, $method = false, $bits = false, $module = false, $title = false, $interface = false ){
 
 		// set values, or use default if false.
-		$method = $method ? $method : $this->APP->router->getSelectedMethod();
-		$module = $this->APP->router->cleanModule($module);
+		$method = $method ? $method : app()->router->getSelectedMethod();
+		$module = app()->router->cleanModule($module);
 		$interface = $interface ? $interface : LOADING_SECTION;
 		$interface = empty($interface) ? false : $interface;
 		$title = $title ? $title : $text;
@@ -416,13 +416,13 @@ class Template extends Library {
 		$mi = empty($interface) ? $module : $module.'_'.$interface;
 
 		$link = '';
-		if($this->APP->user->userHasAccess($module, $method, $interface)){
+		if(app()->user->userHasAccess($module, $method, $interface)){
 
 			$class = false;
 
 			// highlight the link if the user is at the page
-			if($method == $this->APP->router->getSelectedMethod()
-					&& $mi == $this->APP->router->getSelectedModule()){
+			if($method == app()->router->getSelectedMethod()
+					&& $mi == app()->router->getSelectedModule()){
 				$class = true;
 			}
 
@@ -449,7 +449,7 @@ class Template extends Library {
 	 * @return string
 	 */
 	public function at($module = false, $method = false, $interface = false){
-		return ($this->APP->router->here($module, $method, $interface) ? ' class="at"' : '');
+		return (app()->router->here($module, $method, $interface) ? ' class="at"' : '');
 	}
 
 
@@ -465,13 +465,13 @@ class Template extends Library {
 
 		// begin url with absolute url to this app
 		$interface = strtolower( $interface ? $interface : (LOADING_SECTION != '' ? LOADING_SECTION : '') );
-		$url = $this->APP->router->getInterfaceUrl($interface);
+		$url = app()->router->getInterfaceUrl($interface);
 
-		$method = $method ? $method : $this->APP->router->getSelectedMethod();
-		$module = $this->APP->router->cleanModule($module);
+		$method = $method ? $method : app()->router->getSelectedMethod();
+		$module = app()->router->cleanModule($module);
 
 		// if mod rewrite/clean urls are off
-		if(!$this->APP->config('enable_mod_rewrite')){
+		if(!app()->config('enable_mod_rewrite')){
 
 			$url .= sprintf('/index.php?module=%s&method=%s', $module, $method);
 
@@ -489,7 +489,7 @@ class Template extends Library {
 		} else {
 
 			// Determine if there are any routes that need to be used instead
-			$routes = $this->APP->config('routes');
+			$routes = app()->config('routes');
 
 			$route_mask = false;
 			if(is_array($routes)){
@@ -509,7 +509,7 @@ class Template extends Library {
 			if(!$route_mask){
 
 				$url .= sprintf('/%s', $module);
-				$url .= $method != $this->APP->config('default_method') || is_array($bits) ? sprintf('/%s', $method) : '';
+				$url .= $method != app()->config('default_method') || is_array($bits) ? sprintf('/%s', $method) : '';
 
 				if(is_array($bits)){
 					foreach($bits as $bit => $value){
@@ -525,7 +525,7 @@ class Template extends Library {
 			}
 		}
 
-		return $this->APP->config('lowercase_urls') ? strtolower($url) : $url;
+		return app()->config('lowercase_urls') ? strtolower($url) : $url;
 
 	}
 
@@ -563,8 +563,8 @@ class Template extends Library {
 	 */
 	public function createFormAction($method = false, $module = false){
 		$bits = false;
-		if($this->APP->router->arg(1)){
-			$bits = array('id' => $this->APP->router->arg(1));
+		if(app()->router->arg(1)){
+			$bits = array('id' => app()->router->arg(1));
 		}
 		return $this->createXhtmlValidUrl($method, $bits, $module);
 	}
@@ -579,10 +579,10 @@ class Template extends Library {
 	 * @access public
 	 */
 	public function createAjaxUrl($method = false, $bits = false, $module = false, $interface = false){
-		$orig_config = $this->APP->config('enable_mod_rewrite');
-		$this->APP->setConfig('enable_mod_rewrite', false); // turn off rewrite urls
+		$orig_config = app()->config('enable_mod_rewrite');
+		app()->setConfig('enable_mod_rewrite', false); // turn off rewrite urls
 		$url = $this->createUrl($method, $bits, $module, $interface);
-		$this->APP->setConfig('enable_mod_rewrite', $orig_config); // turn them back to what they were
+		app()->setConfig('enable_mod_rewrite', $orig_config); // turn them back to what they were
 		return $url;
 	}
 
@@ -597,7 +597,7 @@ class Template extends Library {
 	 */
 	public function createSelfLink($text, $bits = false, $method = false){
 
-		$new_params = $this->APP->router->getMappedArguments();
+		$new_params = app()->router->getMappedArguments();
 
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
@@ -620,7 +620,7 @@ class Template extends Library {
 	 */
 	public function createXhtmlValidSelfUrl($bits = false, $method = false){
 
-		$new_params = $this->APP->router->getMappedArguments();
+		$new_params = app()->router->getMappedArguments();
 
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
@@ -643,7 +643,7 @@ class Template extends Library {
 	 */
 	public function createSelfUrl($bits = false, $method = false){
 
-		$new_params = $this->APP->router->getMappedArguments();
+		$new_params = app()->router->getMappedArguments();
 
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
@@ -667,7 +667,7 @@ class Template extends Library {
 	public function sortLink($title, $location, $sort_by){
 
 		$base = $this->createXhtmlValidSelfUrl();
-		$sort = $this->APP->prefs->getSort($location, $sort_by);
+		$sort = app()->prefs->getSort($location, $sort_by);
 
 		// determine the sort direction
 		$new_direction = $sort['sort_direction'] == "ASC" ? "DESC" : "ASC";
@@ -706,7 +706,7 @@ class Template extends Library {
 	 */
 	public function paginateLinks($current_page, $per_page, $total_pages){
 
-		$url = $this->APP->router->getCurrentUrl(array('/(\?|&)page=[0-9]+/'));
+		$url = app()->router->getCurrentUrl(array('/(\?|&)page=[0-9]+/'));
 		$url .= '?';
 
 		// build the html list item
@@ -725,7 +725,7 @@ class Template extends Library {
 
 
 			// if we need to display the other page numbers
-			if($this->APP->config('show_other_page_numbers')){
+			if(app()->config('show_other_page_numbers')){
 
 				// add in the first page
 				$selected = $current_page == 1 ? ' class="at"' : '';
@@ -818,7 +818,7 @@ class Template extends Library {
 	 * @access public
 	 */
 	public function body_id(){
-		return strtolower($this->APP->router->getSelectedModule().'_'.$this->APP->router->getSelectedMethod());
+		return strtolower(app()->router->getSelectedModule().'_'.app()->router->getSelectedMethod());
 	}
 
 
@@ -829,13 +829,13 @@ class Template extends Library {
 	 */
 	public function page_title(){
 
-		$module = $this->APP->router->cleanModule($this->APP->router->getSelectedModule());
-		$method = $this->APP->router->getSelectedMethod();
+		$module = app()->router->cleanModule(app()->router->getSelectedModule());
+		$method = app()->router->getSelectedMethod();
 
 		$this->page_title = str_replace('{lang_title}', $this->text(strtolower($module).':'.$method.':head-title'), $this->page_title);
 		$this->page_title = str_replace('{module}', ucwords($module), $this->page_title);
-		$this->page_title = str_replace('{method}', ucwords($this->APP->router->getSelectedMethod()), $this->page_title);
-		$this->page_title .= '&nbsp;&ndash;&nbsp;'.$this->APP->config('application_name');
+		$this->page_title = str_replace('{method}', ucwords(app()->router->getSelectedMethod()), $this->page_title);
+		$this->page_title .= '&nbsp;&ndash;&nbsp;'.app()->config('application_name');
 
 		return $this->page_title;
 
@@ -929,14 +929,14 @@ class Template extends Library {
 
 		$filters = array();
 
-		if($this->APP->params->get->isArray('filter')){
-			$filters = $this->APP->params->get->getArray('filter');
+		if(app()->params->get->isArray('filter')){
+			$filters = app()->params->get->getArray('filter');
 		} else {
 
-			$sess_filters = $this->APP->params->session->getArray('filter');
+			$sess_filters = app()->params->session->getArray('filter');
 
-			if(isset($sess_filters[$this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod()])){
-				$filters = $sess_filters[$this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod()];
+			if(isset($sess_filters[app()->router->getSelectedModule() . ':' . app()->router->getSelectedMethod()])){
+				$filters = $sess_filters[app()->router->getSelectedModule() . ':' . app()->router->getSelectedMethod()];
 			}
 		}
 
@@ -954,12 +954,12 @@ class Template extends Library {
 	 */
 	public function pref_date($gmdate, $format = false, $timezone = false){
 
-		$timezone	= $timezone ? $timezone : $this->APP->config('timezone');
-		$format		= $format ? $format : $this->APP->config('date_format');
+		$timezone	= $timezone ? $timezone : app()->config('timezone');
+		$format		= $format ? $format : app()->config('date_format');
 
 		// try to get a user timezone setting
-		if($user_id = $this->APP->params->session->getInt('user_id')){
-			$timezone = $this->APP->settings->getConfig('timezone', $user_id);
+		if($user_id = app()->params->session->getInt('user_id')){
+			$timezone = app()->settings->getConfig('timezone', $user_id);
 		}
 
 		return Date::tzFormatDate($gmdate, $format, $timezone);
@@ -985,14 +985,14 @@ class Template extends Library {
 		$return_select_array = array();
 
 		if(!$select_id){
-			$tbl = $this->APP->model->open($selectTable);
+			$tbl = app()->model->open($selectTable);
 			$select_id = $tbl->getPrimaryKey();
 		}
 
 		// If the type is ENUM, we'll get the possible values from
 		// the database
 		if($method == "ENUM"){
-			$my_enums = $this->APP->db->MetaColumns($selectTable, false);
+			$my_enums = app()->db->MetaColumns($selectTable, false);
 			foreach($my_enums as $value){
 				if($value->name == $selectField){
 					foreach($value->enums as $choice){
@@ -1008,7 +1008,7 @@ class Template extends Library {
 			$sql = "SELECT DISTINCT ".($select_id ? $select_id . ', ' : false)
 						."$selectField FROM $selectTable $where ORDER BY $orderby";
 
-			$getArray = $this->APP->model->query($sql);
+			$getArray = app()->model->query($sql);
 
 			if($getArray->RecordCount()){
 				while($getArrayRow = $getArray->FetchRow()){

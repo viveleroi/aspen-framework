@@ -79,7 +79,7 @@ class Activityrender extends Library {
 
 		$this->all_recent_activity = array();
 
-		$ac = $this->APP->model->open('activity');
+		$ac = app()->model->open('activity');
 		$ac->leftJoin('users', 'id', 'user_id', array('username','nice_name'));
 		$ac->inPastXDays('timestamp');
 
@@ -183,12 +183,12 @@ class Activityrender extends Library {
 	 */
 	public function formatDate($date){
 
-		$today = $this->APP->template->pref_date(gmdate('Y-m-d H:i:s'), 'Y-m-d');
+		$today = app()->template->pref_date(gmdate('Y-m-d H:i:s'), 'Y-m-d');
 
-		if($this->APP->template->pref_date($date, 'Y-m-d') == $today){
-			return $this->APP->template->pref_date($date, 'g:i a');
+		if(app()->template->pref_date($date, 'Y-m-d') == $today){
+			return app()->template->pref_date($date, 'g:i a');
 		} else {
-			return $this->APP->template->pref_date($date, 'm/d @ g:i a');
+			return app()->template->pref_date($date, 'm/d @ g:i a');
 		}
 		return $date;
 	}
@@ -201,7 +201,7 @@ class Activityrender extends Library {
 	 */
 	public function getRealUser($user){
 		if($user){
-			$user = $this->APP->model->open('users', $user);
+			$user = app()->model->open('users', $user);
 			return $user['nice_name'];
 		}
 		return '(empty)';

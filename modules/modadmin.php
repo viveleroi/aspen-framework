@@ -158,16 +158,16 @@ class ".$classname." extends Module {
 
 		\$data = array();
 
-		\$model = \$this->APP->model->open('".$table_name."');
+		\$model = \app()->model->open('".$table_name."');
 		\$data['".$table_name."'] = \$model->results();";
 	}
 
 	$class_output .= "
 
-		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		\$this->APP->template->addView(\$this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		\$this->APP->template->display(".($table_name ? "\$data" : "").");
+		\app()->template->addView(\app()->template->getTemplateDir().DS . 'header.tpl.php');
+		\app()->template->addView(\app()->template->getModuleTemplateDir().DS . 'index.tpl.php');
+		\app()->template->addView(\app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		\app()->template->display(".($table_name ? "\$data" : "").");
 
 	}";
 
@@ -201,14 +201,14 @@ $class_output .= "
 			// insert a new record with available data
 			if(\$form->save(\$id)){
 				// if successful insert, redirect to the list
-				\$this->APP->router->redirect('view');
+				\app()->router->redirect('view');
 			}
 		}
 
-		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		\$this->APP->template->addView(\$this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		\$this->APP->template->addView(\$this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		\$this->APP->template->display(array('form'=>\$form));
+		\app()->template->addView(\app()->template->getTemplateDir().DS . 'header.tpl.php');
+		\app()->template->addView(\app()->template->getModuleTemplateDir().DS . 'edit.tpl.php');
+		\app()->template->addView(\app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		\app()->template->display(array('form'=>\$form));
 
 	}
 
@@ -219,8 +219,8 @@ $class_output .= "
 	 * @access public
 	 */
 	public function delete(\$id = false){
-		if(\$this->APP->model->delete('".$table_name."', \$id)){
-			\$this->APP->router->redirect('view');
+		if(\app()->model->delete('".$table_name."', \$id)){
+			\app()->router->redirect('view');
 		}
 	}";
 

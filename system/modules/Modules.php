@@ -22,13 +22,13 @@ class Modules extends Library {
 	 */
 	public function callModuleHooks($guid = false){
 
-		if($guid && $this->APP->checkDbConnection()){
+		if($guid && app()->checkDbConnection()){
 
 			$autoload	= array();
-			$installed	= $this->APP->getInstalledModuleGuids();
+			$installed	= app()->getInstalledModuleGuids();
 
 			foreach($installed as $module){
-				$reg = $this->APP->moduleRegistry($module);
+				$reg = app()->moduleRegistry($module);
 				if(isset($reg->hook)){
 					$att = $reg->hook->attributes();
 					if((string)$att->type == "module"){
@@ -40,7 +40,7 @@ class Modules extends Library {
 			// if modules found, let's load them!
 			if(count($autoload) > 0){
 				foreach($autoload as $load_guid){
-					$this->APP->loadModule($load_guid);
+					app()->loadModule($load_guid);
 				}
 			}
 		}
@@ -55,16 +55,16 @@ class Modules extends Library {
 
 		$nonbase = array();
 
-		if($this->APP->checkDbConnection()){
+		if(app()->checkDbConnection()){
 
 			// find any modules with autoload set to current guid
-			$model = $this->APP->model->open('modules');
+			$model = app()->model->open('modules');
 			$model->orderBy('sort_order');
 			$modules = $model->results();
 
 			if($modules){
 				foreach($modules as $module){
-					$reg = $this->APP->moduleRegistry($module['guid']);
+					$reg = app()->moduleRegistry($module['guid']);
 					if(isset($reg->installable) && $reg->installable){
 						$nonbase[] = $module['guid'];
 					}
@@ -85,7 +85,7 @@ class Modules extends Library {
 
 		$nonbase = array();
 
-		foreach($this->APP->getModuleRegistry() as $module){
+		foreach(app()->getModuleRegistry() as $module){
 			if(isset($module->installable) && $module->installable){
 				$nonbase[] = (string)$module->guid;
 			}

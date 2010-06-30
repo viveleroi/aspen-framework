@@ -22,10 +22,10 @@ class Index_Admin extends Module {
 	 */
 	public function view(){
 		
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'index.tpl.php');
+		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		app()->template->display();
 		
 	}
 }

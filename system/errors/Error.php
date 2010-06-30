@@ -62,14 +62,14 @@ class Error extends Library {
 		}
 
 		// determine uri
-		if(is_object($this->APP->router) && method_exists($this->APP->router, 'getFullUrl')){
-			$uri = $this->APP->router->getFullUrl();
+		if(is_object(app()->router) && method_exists(app()->router, 'getFullUrl')){
+			$uri = app()->router->getFullUrl();
 		} else {
 			$uri = $this->getServerValue('REQUEST_URI');
 		}
 
 		$error = array(
-				'application' => $this->APP->config('application'),
+				'application' => app()->config('application'),
 				'version_complete' => VERSION_COMPLETE,
 				'version' => VERSION,
 				'build' => BUILD,
@@ -88,7 +88,7 @@ class Error extends Library {
 			);
 
 		// if we're going to save to a db
-		if($this->APP->config('save_error_to_db') && $this->APP->checkDbConnection()){
+		if(app()->config('save_error_to_db') && app()->checkDbConnection()){
 
 			$error_sql = sprintf('
 				INSERT INTO error_log (
@@ -108,9 +108,9 @@ class Error extends Library {
 					mysql_real_escape_string($error['error_message'])
 				);
 
-			if(!$this->APP->db->Execute($error_sql)){
+			if(!app()->db->Execute($error_sql)){
 				print 'There was an error trying to log the most recent error to the database:<p>'
-						.  $this->APP->db->ErrorMsg()
+						.  app()->db->ErrorMsg()
 						. '<p>Query was:</p>' . $error_sql;
 						exit;
 			}
@@ -118,41 +118,41 @@ class Error extends Library {
 
 
 		// if logging exists, log this error
-		if(isset($this->APP->log) && is_object($this->APP->log)){
-			$this->APP->log->write(sprintf('ERROR (File: %s/%s: %s',$error['file'],$error['line'],$error['error_message']));
+		if(isset(app()->log) && is_object(app()->log)){
+			app()->log->write(sprintf('ERROR (File: %s/%s: %s',$error['file'],$error['line'],$error['error_message']));
 		}
 
 		// If we need to display this error, do so
-		if($errNo <= $this->APP->config('minimum_displayable_error')){
+		if($errNo <= app()->config('minimum_displayable_error')){
 			if(
-				!$this->APP->params->env->keyExists('SSH_CLIENT')
-				&& !$this->APP->params->env->keyExists('TERM')
-				&& !$this->APP->params->env->keyExists('SSH_CONNECTION')
-				&& $this->APP->params->server->keyExists('HTTP_HOST')){
+				!app()->params->env->keyExists('SSH_CLIENT')
+				&& !app()->params->env->keyExists('TERM')
+				&& !app()->params->env->keyExists('SSH_CONNECTION')
+				&& app()->params->server->keyExists('HTTP_HOST')){
 
-				$this->APP->template->resetTemplateQueue();
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'error.tpl.php');
-				$this->APP->template->display(array('error'=>$error));
+				app()->template->resetTemplateQueue();
+				app()->template->addView(app()->template->getTemplateDir().DS . 'error.tpl.php');
+				app()->template->display(array('error'=>$error));
 				exit;
 
 			}
 		}
 
         // send the errors to firephp
-        if($this->APP->isLibraryLoaded('Debug') && $this->APP->config('enable_firephp')){
-            $this->APP->debug->firephp()->error($error['error_message'] . ' Line: ' .$error['line'] . ' - File: ' .$error['file']);
+        if(app()->isLibraryLoaded('Debug') && app()->config('enable_firephp')){
+            app()->debug->firephp()->error($error['error_message'] . ' Line: ' .$error['line'] . ' - File: ' .$error['file']);
         }
 
 
-		if($this->APP->config('error_json_post_url')){
+		if(app()->config('error_json_post_url')){
 
 			$params = array(
-					'api_key'=>$this->APP->config('error_json_post_api_key'),
-					'project_id'=>$this->APP->config('error_json_post_proj_id'),
+					'api_key'=>app()->config('error_json_post_api_key'),
+					'project_id'=>app()->config('error_json_post_proj_id'),
 					'payload'=>json_encode($error));
 
 			$ch = curl_init();
-			curl_setopt($ch,CURLOPT_URL,$this->APP->config('error_json_post_url'));
+			curl_setopt($ch,CURLOPT_URL,app()->config('error_json_post_url'));
 			curl_setopt($ch,CURLOPT_POST,count($error));
 			curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($params));
 			$result = curl_exec($ch);
@@ -170,8 +170,8 @@ class Error extends Library {
 	 */
 	private function getServerValue($key, $default = 'N/A'){
 
-		if(isset($this->APP->params) && is_object($this->APP->params)){
-			return $this->APP->params->server->getRaw($key);
+		if(isset(app()->params) && is_object(app()->params)){
+			return app()->params->server->getRaw($key);
 		} else {
 			return isset($_SERVER[$key]) ? $_SERVER[$key] : $default;
 		}

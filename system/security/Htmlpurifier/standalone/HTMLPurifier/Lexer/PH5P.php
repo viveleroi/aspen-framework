@@ -3555,7 +3555,7 @@ class HTML5TreeConstructer {
             }
         }
 
-        $this->appendToRealParent($el);
+        app()endToRealParent($el);
         $this->stack[] = $el;
 
         return $el;
@@ -3563,12 +3563,12 @@ class HTML5TreeConstructer {
 
     private function insertText($data) {
         $text = $this->dom->createTextNode($data);
-        $this->appendToRealParent($text);
+        app()endToRealParent($text);
     }
 
     private function insertComment($data) {
         $comment = $this->dom->createComment($data);
-        $this->appendToRealParent($comment);
+        app()endToRealParent($comment);
     }
 
     private function appendToRealParent($node) {

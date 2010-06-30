@@ -22,15 +22,15 @@ class Users_Admin extends Module {
 	 */
 	public function view(){
 
-		$model = $this->APP->model->open('users');
+		$model = app()->model->open('users');
 		$model->contains('groups');
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'index.tpl.php');
+		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		app()->template->display($data);
 
 	}
 
@@ -51,17 +51,17 @@ class Users_Admin extends Module {
 	 */
 	public function edit($id = false){
 
-		if($this->APP->user->edit($id)){
-			$this->APP->sml->addNewMessage('User account changes have been saved successfully.', true);
-			$this->APP->router->redirect('view');
+		if(app()->user->edit($id)){
+			app()->sml->addNewMessage('User account changes have been saved successfully.', true);
+			app()->router->redirect('view');
 		}
 
-		$data['groups'] = $this->APP->user->groupList();
+		$data['groups'] = app()->user->groupList();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'edit.tpl.php');
+		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		app()->template->display($data);
 
 	}
 
@@ -72,15 +72,15 @@ class Users_Admin extends Module {
 	 */
 	public function my_account(){
 
-		if($this->APP->user->my_account()){
-			$this->APP->sml->addNewMessage('Your account has been updated successfully.', true);
-			$this->APP->router->redirect('view', false, 'Index');
+		if(app()->user->my_account()){
+			app()->sml->addNewMessage('Your account has been updated successfully.', true);
+			app()->router->redirect('view', false, 'Index');
 		}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'my_account.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'my_account.tpl.php');
+		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		app()->template->display($data);
 
 	}
 
@@ -91,9 +91,9 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($this->APP->user->delete($id)){
-			$this->APP->sml->addNewMessage('User account has been deleted successfully.', true);
-			$this->APP->router->redirect('view');
+		if(app()->user->delete($id)){
+			app()->sml->addNewMessage('User account has been deleted successfully.', true);
+			app()->router->redirect('view');
 		}
 	}
 
@@ -104,12 +104,12 @@ class Users_Admin extends Module {
 	 */
 	public function login(){
 
-		$this->APP->user->login();
+		app()->user->login();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'login.tpl.php');
+		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		app()->template->display();
 	}
 
 
@@ -119,19 +119,19 @@ class Users_Admin extends Module {
 	 */
 	public function forgot(){
 
-		if($this->APP->user->forgot() == 1){
-			$this->APP->sml->addNewMessage('Your password has been reset. Please check your email.', true);
-			$this->APP->router->redirect('login');
+		if(app()->user->forgot() == 1){
+			app()->sml->addNewMessage('Your password has been reset. Please check your email.', true);
+			app()->router->redirect('login');
 		}
-		elseif($this->APP->user->forgot() == -1){
-			$this->APP->sml->addNewMessage('We were unable to find any accounts matching that username.', false);
-			$this->APP->router->redirect('forgot');
+		elseif(app()->user->forgot() == -1){
+			app()->sml->addNewMessage('We were unable to find any accounts matching that username.', false);
+			app()->router->redirect('forgot');
 		}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'forgot.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'forgot.tpl.php');
+		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		app()->template->display();
 
 	}
 
@@ -141,11 +141,11 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function authenticate(){
-		if($this->APP->user->authenticate()){
-			$this->APP->router->redirectToUrl($this->APP->user->postLoginRedirect());
+		if(app()->user->authenticate()){
+			app()->router->redirectToUrl(app()->user->postLoginRedirect());
 			exit;
 		} else {
-			$this->APP->user->login_failed();
+			app()->user->login_failed();
 		}
 	}
 
@@ -155,8 +155,8 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function logout(){
-		$this->APP->user->logout();
-		$this->APP->router->redirectToUrl($this->APP->router->getInterfaceUrl());
+		app()->user->logout();
+		app()->router->redirectToUrl(app()->router->getInterfaceUrl());
 	}
 
 
@@ -165,10 +165,10 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function denied(){
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'denied.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'denied.tpl.php');
+		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
+		app()->template->display();
 	}
 }
 ?>

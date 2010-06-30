@@ -23,12 +23,12 @@ class Preferences extends Library {
 
 		$_SESSION['settings'] =  array();
 
-		$user_id = $this->APP->params->session->getInt('user_id');
+		$user_id = app()->params->session->getInt('user_id');
 
-		if($user_id && $this->APP->checkDbConnection()){
+		if($user_id && app()->checkDbConnection()){
 
 			// load sort field
-			$pref_model = $this->APP->model->open('config');
+			$pref_model = app()->model->open('config');
 			$pref_model->where('user_id', $user_id);
 			$pref_model->where('LEFT(config_key, 4)', 'sort');
 			$sorts = $pref_model->results();
@@ -40,7 +40,7 @@ class Preferences extends Library {
 			}
 		}
 
-		$this->APP->params->refreshCage('session');
+		app()->params->refreshCage('session');
 
 	}
 
@@ -54,9 +54,9 @@ class Preferences extends Library {
 	 */
 	public function addSort($location = false, $field = false, $dir = 'ASC'){
 
-		if($user_id = $this->APP->params->session->getInt('user_id')){
+		if($user_id = app()->params->session->getInt('user_id')){
 
-			$pref_model = $this->APP->model->open('config');
+			$pref_model = app()->model->open('config');
 
 			// remove any old entry for this location
 			$sql = sprintf('
@@ -88,9 +88,9 @@ class Preferences extends Library {
 
 		$sort = array('sort_by'=>$default,'sort_direction'=>strtoupper($dir));
 
-		if($this->APP->params->session->isArray('settings')){
+		if(app()->params->session->isArray('settings')){
 
-			$settings = $this->APP->params->session->getArray('settings');
+			$settings = app()->params->session->getArray('settings');
 
 			$loc_key = 'sort.'.$location;
 			if(isset($settings['sorts'][$loc_key.'.field'])){
@@ -116,23 +116,23 @@ class Preferences extends Library {
 	public function edit($user_id = NULL){
 
 		// Load the prefs we're allowed to edit
-		$edit_prefs = $this->APP->config('preference_configs_to_edit');
+		$edit_prefs = app()->config('preference_configs_to_edit');
 
 		// Set the current/default values
 		$record = array();
 		foreach($edit_prefs as $pref){
-			$record[$pref] = $this->APP->settings->getConfig($pref, $user_id);
+			$record[$pref] = app()->settings->getConfig($pref, $user_id);
 		}
 
 		// process the form if submitted
-		if($this->APP->params->post->keyExists('preferences-submit')){
-			$config = $this->APP->model->open('config');
+		if(app()->params->post->keyExists('preferences-submit')){
+			$config = app()->model->open('config');
 			foreach($record as $field => $existing_value){
-				$record[$field] = $this->APP->params->post->getRaw($field);
+				$record[$field] = app()->params->post->getRaw($field);
 				$config->query( sprintf('DELETE FROM config WHERE config_key = "%s" AND user_id = "%s"', $field, $user_id) );
 				$config->insert( array('current_value'=>$record[$field],'config_key'=>$field,'user_id'=>$user_id));
 			}
-			$this->APP->sml->say('Your user preferences have been saved successfully.', true);
+			app()->sml->say('Your user preferences have been saved successfully.', true);
 		}
 
 		return $record;

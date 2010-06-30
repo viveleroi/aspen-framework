@@ -168,7 +168,7 @@ class Model extends Library {
 			$lang_module = false;
 
 			// identify available model extensions
-			$exts = $this->APP->getModelExtensions();
+			$exts = app()->getModelExtensions();
 			if(is_array($exts)){
 				if(array_key_exists($table, $exts)){
 					$class = ucwords($table).'Model';
@@ -180,11 +180,11 @@ class Model extends Library {
 
 			if(class_exists($class)){
 				if($lang_module){
-					$this->APP->router->loadModuleLanguage($lang_module);
+					app()->router->loadModuleLanguage($lang_module);
 				}
 				$final_obj = new $class($table);
 			} else {
-				$this->APP->error->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
+				app()->error->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
 				$final_obj = new Model($table);
 			}
 
@@ -233,7 +233,7 @@ class Model extends Library {
 		$this->table = $table;
 		$this->generateSchema();
 		if(!is_array($this->schema)){
-			$this->APP->error->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
+			app()->error->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
 		}
 	}
 
@@ -279,7 +279,7 @@ class Model extends Library {
 					/**
 					 * Validate INTEGERs along with unsigned and maxlengths
 					 */
-					if(in_array($column->type, $this->APP->config('mysql_field_group_int'))){
+					if(in_array($column->type, app()->config('mysql_field_group_int'))){
 						if(!$clean->getInt( $column->name )){
 							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' should be an integer.');
 						} else {
@@ -293,7 +293,7 @@ class Model extends Library {
 					/**
 					 * Validate FLOATs along with unsigned and maxlengths
 					 */
-					if(in_array($column->type, $this->APP->config('mysql_field_group_dec'))){
+					if(in_array($column->type, app()->config('mysql_field_group_dec'))){
 						if(!$clean->getFloat( $column->name )){
 							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' should be a decimal or float.');
 						} else {
@@ -307,7 +307,7 @@ class Model extends Library {
 					/**
 					 * Validate DATEs
 					 */
-					if(in_array($column->type, $this->APP->config('mysql_field_group_date'))){
+					if(in_array($column->type, app()->config('mysql_field_group_date'))){
 						//if(!$clean->isDate( $date )){
 							//$this->addError($column->name, 'Invalid db value. ' . $column->name . ' must be a date.');
 						//}
@@ -470,9 +470,9 @@ class Model extends Library {
 		$db_map = array();
 
 		// pull a list of all tables
-		$tables = $this->APP->db->MetaTables();
+		$tables = app()->db->MetaTables();
 		foreach($tables as $table){
-			$db_map[$table]['schema'] = $this->APP->db->MetaColumns($table, false);
+			$db_map[$table]['schema'] = app()->db->MetaColumns($table, false);
 			$db_map[$table]['relation_only'] = false;
 
 			if(!isset($db_map[$table]['children'])){
@@ -520,7 +520,7 @@ class Model extends Library {
 	 * @return array
 	 */
 	private function generateSchema(){
-		$this->schema = $this->APP->getDatabaseSchema($this->table);
+		$this->schema = app()->getDatabaseSchema($this->table);
 	}
 
 
@@ -563,7 +563,7 @@ class Model extends Library {
 	 */
 	final public function getPrimaryKey($table = false){
 		$table = $table ? $table : $this->table;
-		$db = $this->APP->getDatabaseSchema($table);
+		$db = app()->getDatabaseSchema($table);
 		$key = false;
 		if(isset($db['schema'])){
 			foreach($db['schema'] as $field => $vals){
@@ -836,7 +836,7 @@ class Model extends Library {
 
 		// if wildcard supplied, load all fields for joined table
 		if($fields == '*'){
-			$schema = $this->APP->getDatabaseSchema($table);
+			$schema = app()->getDatabaseSchema($table);
 			$fields = array();
 			foreach($schema['schema'] as $field){
 				$fields[] = $field->primary_key ? $field->name.' as '.$table.'_'.$field->name : $field->name;
@@ -920,7 +920,7 @@ class Model extends Library {
 		$this->sql['WHERE'][] = sprintf($sprint_string,
 											(isset($this->sql['WHERE']) ? $match : 'WHERE'.($this->parenth_start ? ' (' : '') ),
 											$field,
-											$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
+											app()->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
 										);
 
 		$this->parenth_start = false;
@@ -1183,37 +1183,37 @@ class Model extends Library {
 			}
 		}
 
-		$user_id				= $this->APP->params->session->getInt('user_id', NULL);
+		$user_id				= app()->params->session->getInt('user_id', NULL);
 		$using_filters			= false;
-		$location_key			= $location_key ? $location_key : ($this->APP->router->getSelectedModule() . ':' . $this->APP->router->getSelectedMethod());
+		$location_key			= $location_key ? $location_key : (app()->router->getSelectedModule() . ':' . app()->router->getSelectedMethod());
 		$disabled_filters		= $disabled_filters ? $disabled_filters : array();
 		$allowed_filter_keys	= $allowed_filter_keys ? $allowed_filter_keys : array();
 
 		// check GET or POST for any filter overrides
 		// otherwise, check the config table
-		if($this->APP->params->get->getRaw('filter')){
-			$filters = $this->APP->params->get->getRaw('filter');
+		if(app()->params->get->getRaw('filter')){
+			$filters = app()->params->get->getRaw('filter');
 		}
-		elseif($this->APP->params->post->getRaw('filter')){
-			$filters = $this->APP->params->post->getRaw('filter');
+		elseif(app()->params->post->getRaw('filter')){
+			$filters = app()->params->post->getRaw('filter');
 		}
-		elseif($named = $this->APP->params->get->getRaw('named-filter')){
-			$named = $this->APP->router->decodeForRewriteUrl($named);
-			$filters = $this->APP->settings->getConfig('filter.named.'.$named, $user_id);
+		elseif($named = app()->params->get->getRaw('named-filter')){
+			$named = app()->router->decodeForRewriteUrl($named);
+			$filters = app()->settings->getConfig('filter.named.'.$named, $user_id);
 			$filters = unserialize($filters);
 		} else {
-			$filters = $this->APP->settings->getConfig('filter.'.$location_key, $user_id);
+			$filters = app()->settings->getConfig('filter.'.$location_key, $user_id);
 			$filters = unserialize($filters);
 		}
 
 		// look for a save-as named variable
 		// if it's set, we'll store this as a named filter
 		$filter_name = false;
-		if($this->APP->params->get->getRaw('filter-save-as')){
-			$filter_name = $this->APP->params->get->getRaw('filter-save-as');
+		if(app()->params->get->getRaw('filter-save-as')){
+			$filter_name = app()->params->get->getRaw('filter-save-as');
 		}
-		elseif($this->APP->params->post->getRaw('filter-save-as')){
-			$filter_name = $this->APP->params->post->getRaw('filter-save-as');
+		elseif(app()->params->post->getRaw('filter-save-as')){
+			$filter_name = app()->params->post->getRaw('filter-save-as');
 		}
 
 		// over-write the table keys with filters
@@ -1313,11 +1313,11 @@ class Model extends Library {
 		}
 
 		// save the filters to the config table
-		$this->APP->settings->setConfig('filter.'.$location_key, serialize($filters), $user_id);
+		app()->settings->setConfig('filter.'.$location_key, serialize($filters), $user_id);
 
 		// if a save-as name is set, store that filter too
 		if($filter_name){
-			$this->APP->settings->setConfig('filter.named.'.$filter_name, serialize($filters), $user_id);
+			app()->settings->setConfig('filter.named.'.$filter_name, serialize($filters), $user_id);
 		}
 
 		define('MODEL_FILTER_IN_USE', $using_filters);
@@ -1368,7 +1368,7 @@ class Model extends Library {
 		$sort['sort_direction'] = $dir = $dir ? $dir : 'ASC';
 
 		if($sort_location){
-			$sort = $this->APP->prefs->getSort($sort_location, false, $field, $dir);
+			$sort = app()->prefs->getSort($sort_location, false, $field, $dir);
 		}
 
 		if(empty($sort['sort_by'])){
@@ -1415,14 +1415,14 @@ class Model extends Library {
 	 */
 	public function match($search, $fields = false, $fields_append = array(), $match = 'AND'){
 
-		$search = $this->APP->security->dbescape($search);
+		$search = app()->security->dbescape($search);
 
 		if(!$fields){
 
 			$fields = array();
 
 			foreach($this->schema['schema'] as $field){
-				if(in_array($field->type, $this->APP->config('mysql_field_group_text'))){
+				if(in_array($field->type, app()->config('mysql_field_group_text'))){
 					$fields[] = $field->name;
 				}
 			}
@@ -1545,22 +1545,22 @@ class Model extends Library {
 
 			$this->last_query = $query;
 
-			if(!$results = $this->APP->db->Execute($query)){
+			if(!$results = app()->db->Execute($query)){
 				// we don't want every query to show as failure here, so we use the true last location
 				$back = debug_backtrace();
 				$file = strpos($back[0]['file'], 'Model.php') ? $back[1]['file'] : $back[0]['file'];
 				$line = strpos($back[0]['file'], 'Model.php') ? $back[1]['line'] : $back[0]['line'];
 
-				$this->APP->error->raise(2, $this->APP->db->ErrorMsg() . "\nSQL:\n" . $query, $file, $line);
+				app()->error->raise(2, app()->db->ErrorMsg() . "\nSQL:\n" . $query, $file, $line);
 
 			} else {
-				if($this->APP->config('log_verbosity') < 3){
+				if(app()->config('log_verbosity') < 3){
 					$wr = $query;
-					if($this->APP->config('log_query_backtrace')){
+					if(app()->config('log_query_backtrace')){
 						$trace = $this->queryBacktrace(true);
 						$wr .= " (".basename($trace['file'])."/".$trace['line'].")";
 					}
-					$this->APP->log->write($wr);
+					app()->log->write($wr);
 				}
 			}
 		}
@@ -1721,7 +1721,7 @@ class Model extends Library {
 		// if we're doing an INSERT
 		if($this->query_type == 'insert'){
 			if($this->query($sql)){
-				return $this->APP->db->Insert_ID();
+				return app()->db->Insert_ID();
 			}
 		}
 
@@ -1808,7 +1808,7 @@ class Model extends Library {
 	 * @access public
 	 */
 	public function quickSelectSingleToXml($id = false){
-		return $this->APP->xml->arrayToXml( $this->quickSelectSingle($id) );
+		return app()->xml->arrayToXml( $this->quickSelectSingle($id) );
 	}
 
 
@@ -1887,7 +1887,7 @@ class Model extends Library {
 
 		$this->query($sql);
 
-		return $this->APP->db->Insert_ID();
+		return app()->db->Insert_ID();
 
 	}
 
@@ -1952,7 +1952,7 @@ class Model extends Library {
 //				// clean name for row title
 //				$name = ucwords(str_replace("_", " ", $name));
 //
-//				$html .= sprintf('<tr><td><b>%s:</b></td><td>%s</td></tr>' . "\n", $name, $this->APP->form->cv($field->name));
+//				$html .= sprintf('<tr><td><b>%s:</b></td><td>%s</td></tr>' . "\n", $name, app()->form->cv($field->name));
 //			}
 //		}
 //
@@ -2016,19 +2016,19 @@ class Model extends Library {
 				foreach($fields as $field_name => $field_value){
 					if($this->inSchema($field_name)){
 
-						$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name);
+						$ins_fields .= ($ins_fields == '' ? '' : ', ') . app()->security->dbescape($field_name);
 
 						if(is_null($field_value)){
 							$ins_values .= (empty($ins_values) ? '' : ', ') . 'NULL';
 						} else {
-							$ins_values .= (empty($ins_values) ? '' : ', ') . '"' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+							$ins_values .= (empty($ins_values) ? '' : ', ') . '"' . app()->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
 						}
 
 					}
 				}
 
 				$this->sql['INSERT'] = sprintf('INSERT INTO %s (%s) VALUES (%s)',
-									$this->APP->security->dbescape($this->table),
+									app()->security->dbescape($this->table),
 									$ins_fields,
 									$ins_values
 								);
@@ -2135,18 +2135,18 @@ class Model extends Library {
 				foreach($fields as $field_name => $field_value){
 					if($this->inSchema($field_name)){
 						if(is_null($field_value)){
-							$upd_fields .= ($upd_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = NULL';
+							$upd_fields .= ($upd_fields == '' ? '' : ', ') . app()->security->dbescape($field_name) . ' = NULL';
 						} else {
-							$upd_fields .= ($upd_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
+							$upd_fields .= ($upd_fields == '' ? '' : ', ') . app()->security->dbescape($field_name) . ' = "' . app()->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
 						}
 					}
 				}
 
 				$this->sql['UPDATE'] = sprintf('UPDATE %s SET %s WHERE %s = "%s"',
-													$this->APP->security->dbescape($this->table),
+													app()->security->dbescape($this->table),
 													$upd_fields,
-													$this->APP->security->dbescape($where_field),
-													$this->APP->security->dbescape($where_value, $this->getSecurityRule($where_field, 'allow_html')));
+													app()->security->dbescape($where_field),
+													app()->security->dbescape($where_value, $this->getSecurityRule($where_field, 'allow_html')));
 
 			}
 
@@ -2231,9 +2231,9 @@ class Model extends Library {
 
 		$res = false;
 
-		$watch_tables = $this->APP->config('activity_watch_tables');
+		$watch_tables = app()->config('activity_watch_tables');
 
-		if($this->APP->isLibraryLoaded('Activity') && array_key_exists($this->table, $watch_tables)){
+		if(app()->isLibraryLoaded('Activity') && array_key_exists($this->table, $watch_tables)){
 
 			$watch_fields = $watch_tables[$this->table];
 
@@ -2289,8 +2289,8 @@ class Model extends Library {
 	 */
 	public function activity_log_change($key, $type, $table, $record_id, $field, $old_value, $new_value, $parent_token){
 		$res = false;
-		if($this->APP->isLibraryLoaded('Activity')){
-			$res = $this->APP->activity->logChange($key, $type, $table, $record_id, $field, $old_value, $new_value, $parent_token);
+		if(app()->isLibraryLoaded('Activity')){
+			$res = app()->activity->logChange($key, $type, $table, $record_id, $field, $old_value, $new_value, $parent_token);
 		}
 		return $res;
 	}
@@ -2346,7 +2346,7 @@ class Model extends Library {
 	 */
 	public function text(){
 		$args = func_get_args();
-		return call_user_func_array(array($this->APP->template, 'text'), $args);
+		return call_user_func_array(array(app()->template, 'text'), $args);
 	}
 }
 ?>

@@ -132,7 +132,7 @@ class File extends Library {
 		$result = false;
 		if(!$result = file_exists($path)){
 			if(!$result = @mkdir($path, $this->folder_permissions)){
-				$this->APP->error->raise(2, "Failed creating new directory: " . $path, __FILE__, __LINE__);
+				app()->error->raise(2, "Failed creating new directory: " . $path, __FILE__, __LINE__);
 			}
 		}
 		return $result;
@@ -184,7 +184,7 @@ class File extends Library {
 		if(file_exists($this->file_path) && is_writable($this->file_path)){
 			$fp = fopen($this->file_path,$mode);
 			if(!fwrite($fp,$content)){
-				$this->APP->error->raise(2, "Failed writing contents to file: " . $this->file_path, __FILE__, __LINE__);
+				app()->error->raise(2, "Failed writing contents to file: " . $this->file_path, __FILE__, __LINE__);
 			}
 			fclose($fp);
 		}
@@ -208,7 +208,7 @@ class File extends Library {
 				if($result === 0){
 					return true;
 				} else {
-					$this->APP->error->raise(2, "Failed to delete file: " . $this->file_path, __FILE__, __LINE__);
+					app()->error->raise(2, "Failed to delete file: " . $this->file_path, __FILE__, __LINE__);
 				}
 			} else {
 				chmod( $this->file_path, 0775 );
@@ -225,7 +225,7 @@ class File extends Library {
 	 * @access private
 	 */
 	private function typeCheck(){
-		return in_array(str_replace(".", '', $this->file_extension), $this->APP->config('allowed_file_extensions'));
+		return in_array(str_replace(".", '', $this->file_extension), app()->config('allowed_file_extensions'));
 	}
 	
 
@@ -257,12 +257,12 @@ class File extends Library {
 	 * @access public
 	 */
 	public function upload($form_field = false, $overwrite = false, $timestamp = true, $rename = false){
-		if($this->APP->config('enable_uploads')){
-			if($this->setUploadDirectory() && $this->APP->params->files->isArray($form_field)){
+		if(app()->config('enable_uploads')){
+			if($this->setUploadDirectory() && app()->params->files->isArray($form_field)){
 				return $this->upload_files($form_field, $rename, $overwrite, $timestamp);
 			}
 		} else {
-			$this->APP->error->raise(2, "Upload function called yet file uploads are disabled.", __FILE__, __LINE__);
+			app()->error->raise(2, "Upload function called yet file uploads are disabled.", __FILE__, __LINE__);
 		}
 		return false;
 	}
@@ -275,13 +275,13 @@ class File extends Library {
 	 */
 	public function setUploadDirectory(){
 		
-		$this->upload_directory = $this->APP->config('upload_server_path');
-		$this->browser_url = $this->APP->router->getUploadsUrl();
+		$this->upload_directory = app()->config('upload_server_path');
+		$this->browser_url = app()->router->getUploadsUrl();
 
 		// check the status of the folder
 		if(!is_dir($this->upload_directory)){
 			if(!mkdir($this->upload_directory, 0777)){
-				$this->APP->error->raise(2, "Upload directory creation failed. " . $this->upload_directory, __FILE__, __LINE__);
+				app()->error->raise(2, "Upload directory creation failed. " . $this->upload_directory, __FILE__, __LINE__);
 			} else {
 				return true;
 			}
@@ -289,7 +289,7 @@ class File extends Library {
 			if(is_writeable($this->upload_directory)){
 				return true;
 			} else {
-				$this->APP->error->raise(2, "Could not write to upload directory." . $this->upload_directory, __FILE__, __LINE__);
+				app()->error->raise(2, "Could not write to upload directory." . $this->upload_directory, __FILE__, __LINE__);
 			}
 		}
 		return false;
@@ -309,9 +309,9 @@ class File extends Library {
 		$uploads = array();
 
 		// if form field set
-		if($form_field && $this->APP->params->files->isArray($form_field)){
+		if($form_field && app()->params->files->isArray($form_field)){
 			
-			$file = $this->APP->params->files->getArray($form_field);
+			$file = app()->params->files->getArray($form_field);
 			
 			if(isset($file['name'])){
 				// If the file uploads is an array
@@ -337,10 +337,10 @@ class File extends Library {
 					$uploads[] = $this->upload_file($file, $rename, $overwrite, $timestamp);
 				}
 			} else {
-				$this->APP->error->raise(2, "File name was missing from FILES array.", __FILE__, __LINE__);
+				app()->error->raise(2, "File name was missing from FILES array.", __FILE__, __LINE__);
 			}
 		} else {
-			$this->APP->error->raise(2, "Form field was not present in FILES superglobal.", __FILE__, __LINE__);
+			app()->error->raise(2, "Form field was not present in FILES superglobal.", __FILE__, __LINE__);
 		}
 		
 		return $uploads;
@@ -364,9 +364,9 @@ class File extends Library {
 		if(is_array($file)){
 
 			// if file size is within limits
-			if($file['size'] > $this->APP->config('upload_max_file_size')){
-				$return_info['max_size'] = $this->APP->config('upload_max_file_size');
-				$this->APP->error->raise(2, "Upload failed: file size exceeded maximum.", __FILE__, __LINE__);
+			if($file['size'] > app()->config('upload_max_file_size')){
+				$return_info['max_size'] = app()->config('upload_max_file_size');
+				app()->error->raise(2, "Upload failed: file size exceeded maximum.", __FILE__, __LINE__);
 				$file['error'] 	= 2;
 			}
 
@@ -396,7 +396,7 @@ class File extends Library {
 				
 	    		// ensure upload meets allowed file extensions
 				if (!$this->typeCheck()){
-					$this->APP->error->raise(2, "The file upload did not meet file type requirements.", __FILE__, __LINE__);
+					app()->error->raise(2, "The file upload did not meet file type requirements.", __FILE__, __LINE__);
 					return "The file upload did not meet file type requirements.";
 				}
 
@@ -417,7 +417,7 @@ class File extends Library {
 
           		// upload the file
           		if(!$status = move_uploaded_file($this->tmp_name, $this->file_path)){
-					$this->APP->error->raise(2, "move_uploaded_file failed. File: " . $this->tmp_name . '  Path: ' . $this->file_path, __FILE__, __LINE__);
+					app()->error->raise(2, "move_uploaded_file failed. File: " . $this->tmp_name . '  Path: ' . $this->file_path, __FILE__, __LINE__);
           		} else {
             		chmod($this->file_path, 0755);
             		
@@ -429,12 +429,12 @@ class File extends Library {
         	} else {
 				if($file['error'] != 4){
 					$msg = $this->uploadError($file['error']);
-					$this->APP->error->raise(2, $msg, __FILE__, __LINE__);
+					app()->error->raise(2, $msg, __FILE__, __LINE__);
             		return "The file upload was unsuccessful.";
           		}
         	}
 		} else {
-			$this->APP->error->raise(2, "Files array was not set properly.", __FILE__, __LINE__);
+			app()->error->raise(2, "Files array was not set properly.", __FILE__, __LINE__);
 		}
 		return false;
 	}

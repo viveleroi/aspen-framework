@@ -26,7 +26,7 @@ class Activity extends Library {
 	 */
 	public function logChange($key = '', $type = '', $table = '', $record_id = '', $field = '', $old_value = '', $new_value = '', $parent_token = false){
 
-		$activity = $this->APP->model->open('activity');
+		$activity = app()->model->open('activity');
 		return $activity->insert(array(
 								'changeset_hash'=>$key,
 								'parent_changeset_hash'=>$parent_token,
@@ -47,7 +47,7 @@ class Activity extends Library {
 	 * @return <type>
 	 */
 	public function getLastActivity($table = false, $id = false){
-		$activity = $this->APP->model->openSingle('activity');
+		$activity = app()->model->openSingle('activity');
 		$activity->where('table_name', $table);
 		$activity->where('record_id', $id);
 		$activity->orderBy('timestamp', 'DESC');
