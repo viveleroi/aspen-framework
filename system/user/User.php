@@ -92,9 +92,9 @@ class User extends Library {
 			!strpos($uri, 'users&method=forgot') && !strpos($uri, 'users/forgot') &&
 			!strpos($uri, 'users&method=authenticate') && !strpos($uri, 'users/authenticate')
 		){
-			$_SESSION['post-login_redirect'] = app()->router->getDomainUrl().$uri;
+			$_SESSION['post-login_redirect'] = app()->router->domainUrl().$uri;
 		} else {
-			$_SESSION['post-login_redirect'] = app()->router->getInterfaceUrl();
+			$_SESSION['post-login_redirect'] = app()->router->interfaceUrl();
 		}
 	}
 
@@ -263,7 +263,7 @@ class User extends Library {
 			}
 		}
 
-		return empty($redirect) ? app()->router->getInterfaceUrl() : $redirect;
+		return empty($redirect) ? app()->router->interfaceUrl() : $redirect;
 
 	}
 
@@ -347,8 +347,8 @@ class User extends Library {
 	public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
 
        	$authenticated 	= false;
-		$module 		= $module ? $module : app()->router->getSelectedModule();
-		$method 		= $method ? $method : app()->router->getSelectedMethod();
+		$module 		= $module ? $module : app()->router->module();
+		$method 		= $method ? $method : app()->router->method();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
 		$user_id		= $user_id ? $user_id : app()->params->session->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);

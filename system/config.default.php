@@ -204,9 +204,6 @@
 	// log errors on 404s: missing modules, methods
 	$config['log_error_on_404'] = true;
 
-	// enable firephp support (must have debug class loaded)
-	$config['enable_firephp'] = false;
-
 /**
  * Snowy-Evening.com integration
  */

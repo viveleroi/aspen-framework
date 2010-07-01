@@ -4,6 +4,7 @@
  * Language translations
  */
 
-$lang['admin']['title'] 	= 'Settings';
+$lang['admin']['settings:view:head-title'] = 'Settings';
+$lang['admin']['title'] = 'Settings';
 
 ?>

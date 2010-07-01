@@ -360,7 +360,11 @@ class Form extends Library {
 	 * @access public
 	 */
 	public function cv($field, $escape = false){
-		return $this->getCurrentValue($field, $escape);
+		$value = false;
+		if(isset($this->_form_fields[$field])){
+			$value = $this->_form_fields[$field]['current_value'];
+		}
+		return $escape ? app()->security->dbescape($value, app()->model->getSecurityRule($field, 'allow_html')) : $value;
 	}
 
 
@@ -416,44 +420,18 @@ class Form extends Library {
 
 
 	/**
-	 * Returns the current value for a field
-	 * @param string $field
-	 * @param boolean $escape
-	 * @return mixed
-	 * @access public
-	 */
-	public function getCurrentValue($field, $escape = false){
-
-		$value = false;
-
-		if(isset($this->_form_fields[$field])){
-			$value = $this->_form_fields[$field]['current_value'];
-		}
-
-		$value = $escape ? app()->security->dbescape($value, app()->model->getSecurityRule($field, 'allow_html')) : $value;
-
-		return $value;
-
-	}
-
-
-	/**
 	 * Returns an array of all fields and their current values
 	 * @return array
 	 * @access public
 	 */
 	public function getCurrentValues(){
-
 		$current_values = array();
-
 		if(is_array($this->_form_fields)){
 			foreach($this->_form_fields as $field => $bits){
 				$current_values[$field] = $this->cv($field);
 			}
 		}
-
 		return Peregrine::sanitize($current_values);
-
 	}
 
 
@@ -543,9 +521,7 @@ class Form extends Library {
 	 * @access public
 	 */
 	public function addError($field, $message){
-
 		$this->_error = true;
-
 		if(isset($this->_form_errors[$field]) && is_array($this->_form_errors[$field])){
 			array_push($this->_form_errors[$field], $message);
 		} else {

@@ -76,7 +76,7 @@ class Scaffold extends Library {
 					$tbody .= '<tr>' . "\n";
 
 					foreach($result as $field => $value){
-						$tbody .= sprintf('<td>%s</td>' . "\n", app()->template->createLink($value, 'edit', array('id' => $result[$key_field])));
+						$tbody .= sprintf('<td>%s</td>' . "\n", app()->template->link($value, 'edit', array('id' => $result[$key_field])));
 					}
 
 					$tbody .= '</tr>' . "\n";
@@ -87,7 +87,7 @@ class Scaffold extends Library {
 
 			// begin building the html
 			$html .= sprintf('<h2>%s</h2>'."\n", ucwords($table));
-			$html .= '<p>'.app()->template->createLink('Add a new record', 'add') . "</p>\n";
+			$html .= '<p>'.app()->template->link('Add a new record', 'add') . "</p>\n";
 
 			// create our table
 			$html .= '<table>' . "\n";
@@ -143,7 +143,7 @@ $tbody .= "
 		<tr>\n";
 
 foreach($schema['schema'] as $field){
-	$tbody .= sprintf('		<td>%s</td>' . "\n", "<?php print \$this->createLink(\$record['".$field->name."'], 'edit', array('id' => \$record['".$key_field."'])) ?>");
+	$tbody .= sprintf('		<td>%s</td>' . "\n", "<?php print \$this->link(\$record['".$field->name."'], 'edit', array('id' => \$record['".$key_field."'])) ?>");
 }
 
 $tbody .= "		</tr>\n
@@ -160,7 +160,7 @@ $tbody .= "		</tr>\n
 			$html .= '<h2><?php print $this->text(\'index:title\'); ?></h2>'."\n\n";
 			$html .= '<?php print app()->sml->printMessage(); ?>'."\n\n";
 			$this->langs['add-new'] = 'Add new record';
-			$html .= "<p><?php print \app()->template->createLink(\$this->text('add-new'), 'add'); ?></p>\n\n";
+			$html .= "<p><?php print \app()->template->link(\$this->text('add-new'), 'add'); ?></p>\n\n";
 
 			// create our table
 			$html .= '<table>' . "\n";
@@ -282,10 +282,10 @@ $tbody .= "		</tr>\n
 		if($type == 'Edit'){
 			if($return_html){
 				$html .= "<?php if(IS_EDIT_PAGE){ ?>\n";
-				$html .= "<p><?php print \$this->createLink('Delete', 'delete', array('".$model->getPrimaryKey()."' => \$form->cv('".$model->getPrimaryKey()."'))); ?></p>\n";
+				$html .= "<p><?php print \$this->link('Delete', 'delete', array('".$model->getPrimaryKey()."' => \$form->cv('".$model->getPrimaryKey()."'))); ?></p>\n";
 				$html .= "<?php } ?>\n\n";
 			} else {
-				$html .= app()->template->createLink('Delete', 'delete', array($model->getPrimaryKey() => $id)) . "\n";
+				$html .= app()->template->link('Delete', 'delete', array($model->getPrimaryKey() => $id)) . "\n";
 			}
 		}
 
@@ -293,9 +293,9 @@ $tbody .= "		</tr>\n
 		$html .= '<?php print app()->sml->printMessage(); ?>'."\n\n";
 
 		if($return_html){
-			$html .= '<form action="<?php print $this->createFormAction(); ?>" method="post">'."\n";
+			$html .= '<form action="<?php print $this->action(); ?>" method="post">'."\n";
 		} else {
-			$html .= sprintf('<form action="%s" method="post">'."\n", app()->template->createFormAction());
+			$html .= sprintf('<form action="%s" method="post">'."\n", app()->template->action());
 		}
 
 		foreach($schema['schema'] as $field){

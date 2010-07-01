@@ -33,90 +33,90 @@ class TemplateTest extends TestHelper {
 	}
 	
 	/**
-	 * Tests Template->createAjaxUrl()
+	 * Tests Template->ajaxUrl()
 	 */
-	public function testCreateAjaxUrl() {
-		// TODO Auto-generated TemplateTest->testCreateAjaxUrl()
-		$this->markTestIncomplete ( "createAjaxUrl test not implemented" );
+	public function testajaxUrl() {
+		// TODO Auto-generated TemplateTest->testajaxUrl()
+		$this->markTestIncomplete ( "ajaxUrl test not implemented" );
 		
-		//->createAjaxUrl(/* parameters */);
+		//->ajaxUrl(/* parameters */);
 	
 	}
 	
 	/**
-	 * Tests Template->createFormAction()
+	 * Tests Template->action()
 	 */
-	public function testCreateFormAction() {
-		// TODO Auto-generated TemplateTest->testCreateFormAction()
-		$this->markTestIncomplete ( "createFormAction test not implemented" );
+	public function testaction() {
+		// TODO Auto-generated TemplateTest->testaction()
+		$this->markTestIncomplete ( "action test not implemented" );
 		
-		//->createFormAction(/* parameters */);
+		//->action(/* parameters */);
 	
 	}
 	
 	/**
-	 * Tests Template->createLink()
+	 * Tests Template->link()
 	 */
-	public function testCreateLink() {
-		// TODO Auto-generated TemplateTest->testCreateLink()
-		$this->markTestIncomplete ( "createLink test not implemented" );
+	public function testlink() {
+		// TODO Auto-generated TemplateTest->testlink()
+		$this->markTestIncomplete ( "link test not implemented" );
 		
-		//->createLink(/* parameters */);
+		//->link(/* parameters */);
 	
 	}
 	
 	/**
-	 * Tests Template->createSelfLink()
+	 * Tests Template->selfLink()
 	 */
-	public function testCreateSelfLink() {
-		// TODO Auto-generated TemplateTest->testCreateSelfLink()
-		$this->markTestIncomplete ( "createSelfLink test not implemented" );
+	public function testselfLink() {
+		// TODO Auto-generated TemplateTest->testselfLink()
+		$this->markTestIncomplete ( "selfLink test not implemented" );
 		
-		//->createSelfLink(/* parameters */);
+		//->selfLink(/* parameters */);
 	
 	}
 	
 	/**
-	 * Tests Template->createSelfUrl()
+	 * Tests Template->selfUrl()
 	 */
-	public function testCreateSelfUrl() {
-		// TODO Auto-generated TemplateTest->testCreateSelfUrl()
-		$this->markTestIncomplete ( "createSelfUrl test not implemented" );
+	public function testselfUrl() {
+		// TODO Auto-generated TemplateTest->testselfUrl()
+		$this->markTestIncomplete ( "selfUrl test not implemented" );
 		
-		//->createSelfUrl(/* parameters */);
+		//->selfUrl(/* parameters */);
 	
 	}
 	
 	/**
-	 * Tests Template->createUrl()
+	 * Tests Template->url()
 	 */
-	public function testCreateUrl() {
-		// TODO Auto-generated TemplateTest->testCreateUrl()
-		$this->markTestIncomplete ( "createUrl test not implemented" );
+	public function testurl() {
+		// TODO Auto-generated TemplateTest->testurl()
+		$this->markTestIncomplete ( "url test not implemented" );
 		
-		//->createUrl(/* parameters */);
+		//->url(/* parameters */);
 	
 	}
 	
 	/**
-	 * Tests Template->createXhtmlValidSelfUrl()
+	 * Tests Template->xhtmlSelfUrl()
 	 */
-	public function testCreateXhtmlValidSelfUrl() {
-		// TODO Auto-generated TemplateTest->testCreateXhtmlValidSelfUrl()
-		$this->markTestIncomplete ( "createXhtmlValidSelfUrl test not implemented" );
+	public function testxhtmlSelfUrl() {
+		// TODO Auto-generated TemplateTest->testxhtmlSelfUrl()
+		$this->markTestIncomplete ( "xhtmlSelfUrl test not implemented" );
 		
-		//->createXhtmlValidSelfUrl(/* parameters */);
+		//->xhtmlSelfUrl(/* parameters */);
 	
 	}
 	
 	/**
-	 * Tests Template->createXhtmlValidUrl()
+	 * Tests Template->xhtmlUrl()
 	 */
-	public function testCreateXhtmlValidUrl() {
-		// TODO Auto-generated TemplateTest->testCreateXhtmlValidUrl()
-		$this->markTestIncomplete ( "createXhtmlValidUrl test not implemented" );
+	public function testxhtmlUrl() {
+		// TODO Auto-generated TemplateTest->testxhtmlUrl()
+		$this->markTestIncomplete ( "xhtmlUrl test not implemented" );
 		
-		//->createXhtmlValidUrl(/* parameters */);
+		//->xhtmlUrl(/* parameters */);
 	
 	}
 	
@@ -187,24 +187,24 @@ class TemplateTest extends TestHelper {
 	}
 	
 	/**
-	 * Tests Template->getSelectOptions()
+	 * Tests Template->optionArray()
 	 */
-	public function testGetSelectOptions() {
-		// TODO Auto-generated TemplateTest->testGetSelectOptions()
-		$this->markTestIncomplete ( "getSelectOptions test not implemented" );
+	public function testoptionArray() {
+		// TODO Auto-generated TemplateTest->testoptionArray()
+		$this->markTestIncomplete ( "optionArray test not implemented" );
 		
-		//->getSelectOptions(/* parameters */);
+		//->optionArray(/* parameters */);
 	
 	}
 	
 	/**
-	 * Tests Template->getStateList()
+	 * Tests Template->stateList()
 	 */
-	public function testGetStateList() {
-		// TODO Auto-generated TemplateTest->testGetStateList()
-		$this->markTestIncomplete ( "getStateList test not implemented" );
+	public function teststateList() {
+		// TODO Auto-generated TemplateTest->teststateList()
+		$this->markTestIncomplete ( "stateList test not implemented" );
 		
-		//->getStateList(/* parameters */);
+		//->stateList(/* parameters */);
 	
 	}
 	
@@ -220,13 +220,13 @@ class TemplateTest extends TestHelper {
 	}
 	
 	/**
-	 * Tests Template->grabSelectArray()
+	 * Tests Template->selectArray()
 	 */
-	public function testGrabSelectArray() {
-		// TODO Auto-generated TemplateTest->testGrabSelectArray()
-		$this->markTestIncomplete ( "grabSelectArray test not implemented" );
+	public function testselectArray() {
+		// TODO Auto-generated TemplateTest->testselectArray()
+		$this->markTestIncomplete ( "selectArray test not implemented" );
 		
-		//->grabSelectArray(/* parameters */);
+		//->selectArray(/* parameters */);
 	
 	}
 	

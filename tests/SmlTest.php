@@ -9,10 +9,10 @@ class SmlTest extends TestHelper {
 
 
 	/**
-	 * Tests Sml->addNewMessage()
+	 * Tests Sml->say()
 	 */
-	public function testAddNewMessage() {
-		$this->assertEquals(true, $this->sharedFixture->sml->addNewMessage('This is a phpunit sml message.'));
+	public function testsay() {
+		$this->assertEquals(true, $this->sharedFixture->sml->say('This is a phpunit sml message.'));
 		$this->sharedFixture->params->refreshCage('session');
 	}
 

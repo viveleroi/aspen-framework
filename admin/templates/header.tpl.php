@@ -23,7 +23,7 @@
 		<div id="header">
 		<h1><?php print app()->config('application_name'); ?></h1>
 		<?php if(app()->user->isLoggedIn()){ ?>
-		<span>Logged in as <?php print $this->createLink(app()->params->session->getName('nice_name'), 'my_account', false, 'Users'); ?></span>
+		<span>Logged in as <?php print $this->link(app()->params->session->getName('nice_name'), 'my_account', false, 'Users'); ?></span>
 		<?php } ?>
 		<div class="clear clearfix"></div>
 		</div>
@@ -33,7 +33,7 @@
 		<?php if(app()->user->isLoggedIn()){ ?>
 		<ul id="nav">
 			<?php print app()->generateInterfaceMenu(false) ?>
-			<li><?php print $this->createLink('Logout', 'logout', false, 'Users'); ?></li>
+			<li><?php print $this->link('Logout', 'logout', false, 'Users'); ?></li>
 		</ul>
 		<?php } ?>
 		

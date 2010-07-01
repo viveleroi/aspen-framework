@@ -4,10 +4,10 @@
 <?php print app()->sml->printMessage(); ?>
 
 <?php if(IS_EDIT_PAGE){ ?>
-<p><a href="<?php print $this->createXhtmlValidUrl('delete', array('id' => $form->cv('id'))) ?>" onclick="return confirm('<?php print $this->text('userform:delete_warn'); ?>')"><?php print $this->text('userform:delete_link'); ?></a></p>
+<p><a href="<?php print $this->xhtmlUrl('delete', array('id' => $form->cv('id'))) ?>" onclick="return confirm('<?php print $this->text('userform:delete_warn'); ?>')"><?php print $this->text('userform:delete_link'); ?></a></p>
 <?php } ?>
 
-<form method="post" action="<?php print $this->createFormAction(); ?>">
+<form method="post" action="<?php print $this->action(); ?>">
 	<fieldset>
 		<legend><?php print $this->text('userform:profile'); ?></legend>
 	

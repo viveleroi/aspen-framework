@@ -27,12 +27,10 @@ class Module {
 	 * @access public
 	 */
 	public function view(){
-
 		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
 		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'index.tpl.php');
 		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
 		app()->template->display();
-
 	}
 
 

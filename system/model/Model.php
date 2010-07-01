@@ -185,7 +185,7 @@ class Model extends Library {
 				$final_obj = new $class($table);
 			} else {
 				app()->error->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
-				$final_obj = new Model($table);
+				$final_obj = new module($table);
 			}
 
 			if($contains){
@@ -1185,7 +1185,7 @@ class Model extends Library {
 
 		$user_id				= app()->params->session->getInt('user_id', NULL);
 		$using_filters			= false;
-		$location_key			= $location_key ? $location_key : (app()->router->getSelectedModule() . ':' . app()->router->getSelectedMethod());
+		$location_key			= $location_key ? $location_key : (app()->router->module() . ':' . app()->router->method());
 		$disabled_filters		= $disabled_filters ? $disabled_filters : array();
 		$allowed_filter_keys	= $allowed_filter_keys ? $allowed_filter_keys : array();
 

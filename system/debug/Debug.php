@@ -214,18 +214,6 @@ class Debug {
 
 	/**
 	 *
-	 * @return object
-	 * // Firephp usage: http://www.firephp.org/HQ/Use.htm
-	 */
-    static public function firephp(){
-		include_once(dirname(__FILE__).DS.'firephp'.DS.'Fb.php');
-		include_once(dirname(__FILE__).DS.'firephp'.DS.'Firephp.php');
-		return Firephp::getInstance(true);
-    }
-
-
-	/**
-	 *
 	 * @param <type> $val
 	 * @param <type> $name
 	 * @param <type> $print_type

@@ -52,7 +52,7 @@ class Users_Admin extends Module {
 	public function edit($id = false){
 
 		if(app()->user->edit($id)){
-			app()->sml->addNewMessage('User account changes have been saved successfully.', true);
+			app()->sml->say('User account changes have been saved successfully.', true);
 			app()->router->redirect('view');
 		}
 
@@ -73,7 +73,7 @@ class Users_Admin extends Module {
 	public function my_account(){
 
 		if(app()->user->my_account()){
-			app()->sml->addNewMessage('Your account has been updated successfully.', true);
+			app()->sml->say('Your account has been updated successfully.', true);
 			app()->router->redirect('view', false, 'Index');
 		}
 
@@ -92,7 +92,7 @@ class Users_Admin extends Module {
 	 */
 	public function delete($id = false){
 		if(app()->user->delete($id)){
-			app()->sml->addNewMessage('User account has been deleted successfully.', true);
+			app()->sml->say('User account has been deleted successfully.', true);
 			app()->router->redirect('view');
 		}
 	}
@@ -120,11 +120,11 @@ class Users_Admin extends Module {
 	public function forgot(){
 
 		if(app()->user->forgot() == 1){
-			app()->sml->addNewMessage('Your password has been reset. Please check your email.', true);
+			app()->sml->say('Your password has been reset. Please check your email.', true);
 			app()->router->redirect('login');
 		}
 		elseif(app()->user->forgot() == -1){
-			app()->sml->addNewMessage('We were unable to find any accounts matching that username.', false);
+			app()->sml->say('We were unable to find any accounts matching that username.', false);
 			app()->router->redirect('forgot');
 		}
 
@@ -156,7 +156,7 @@ class Users_Admin extends Module {
 	 */
 	public function logout(){
 		app()->user->logout();
-		app()->router->redirectToUrl(app()->router->getInterfaceUrl());
+		app()->router->redirectToUrl(app()->router->interfaceUrl());
 	}
 
 

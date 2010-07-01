@@ -4,6 +4,7 @@
  * Language translations
  */
 
+$lang['admin']['index:view:head-title'] = 'Welcome';
 $lang['admin']['title'] = 'Welcome!';
 $lang['admin']['intro'] = '<p><em>This template is located in <code>modules/Index/templates_admin/index.php</code></em>.</p>
 <p>You have successfully installed the Aspen framework. By default, we\'ve provided two examples of ways you can use the framework.</p>

@@ -5,7 +5,7 @@
 <?php print $form->printErrors(); ?>
 <?php print app()->sml->printMessage(); ?>
 
-<form action="<?php print $this->createUrl('setup') ?>" method="post">
+<form action="<?php print $this->url('setup') ?>" method="post">
 
 	<p>
 	<label><?php print $this->text('s1:user'); ?>:</label><br />

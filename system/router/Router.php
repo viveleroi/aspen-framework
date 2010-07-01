@@ -56,7 +56,7 @@ class Router extends Library {
 
 		// force use of ssl if required
 		if(app()->config('force_https')){
-			$this->redirectToUrl(str_replace(array("https", "http"), "https", $this->getFullUrl()));
+			$this->redirectToUrl(str_replace(array("https", "http"), "https", $this->fullUrl()));
 		}
 
 		// map the url elements and then identify the module/method to load
@@ -80,14 +80,14 @@ class Router extends Library {
 			// we force the entire url as replacement because
 			// an interface app name may be the same as a module
 			// and we don't want to remove both, just one
-			$replace = array($this->getApplicationUrl() . (LS != '' ? '/'.LS : '' ));
+			$replace = array($this->appUrl() . (LS != '' ? '/'.LS : '' ));
 			if($this->getPath() != '/'){
 				// try also to replace with app path minus the LS. If someone is masking the LS
 				// then it may not be seen in the uri.
-				$replace[] = $this->getApplicationUrl();
+				$replace[] = $this->appUrl();
 				$replace[] = $this->getPath();
 			}
-			$uri = $to_map = str_replace($replace, '', $this->getDomainUrl() . app()->params->server->getQueryString('REQUEST_URI'));
+			$uri = $to_map = str_replace($replace, '', $this->domainUrl() . app()->params->server->getQueryString('REQUEST_URI'));
 			$uri = explode('/', $uri);
 
 			// If route mapping fails, then we need to parse the url for the default config
@@ -333,7 +333,7 @@ class Router extends Library {
 			if(app()->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account' && !app()->awaitingUpgrade()){
 				$default = 'login';
 			} else {
-				if($this->getSelectedModule() == "Install_Admin"){
+				if($this->module() == "Install_Admin"){
 					$method = app()->awaitingUpgrade() ? 'upgrade' : 'view';
 					$default = $this->map['method'] ? $this->map['method'] : $method;
 				}
@@ -350,7 +350,7 @@ class Router extends Library {
 	 * @return string
 	 * @access public
 	 */
-	public function getSelectedModule(){
+	public function module(){
 		return $this->_selected_module;
 	}
 
@@ -360,7 +360,7 @@ class Router extends Library {
 	 * @return string
 	 * @access public
 	 */
-	public function getSelectedMethod(){
+	public function method(){
 		return $this->_selected_method;
 	}
 
@@ -382,10 +382,10 @@ class Router extends Library {
 	 */
 	public function getParentModule(){
 
-		$module = $this->getSelectedModule();
+		$module = $this->module();
 
-		if(method_exists(app()->{$this->getSelectedModule()}, 'whosYourDaddy')){
-			$daddy = app()->{$this->getSelectedModule()}->whosYourDaddy();
+		if(method_exists(app()->{$this->module()}, 'whosYourDaddy')){
+			$daddy = app()->{$this->module()}->whosYourDaddy();
 			$module = empty($daddy) ? $module : $daddy;
 		}
 
@@ -461,7 +461,7 @@ class Router extends Library {
 
 		// If user is logged in, but does not have access to this interface app
 		if(app()->user->isLoggedIn() &&
-				$this->getSelectedMethod() != 'login' && $this->getSelectedMethod() != 'autehenticate'
+				$this->method() != 'login' && $this->method() != 'autehenticate'
 			){
 			if(!app()->user->userHasInterfaceAccess()){
 				app()->user->logout();
@@ -470,11 +470,11 @@ class Router extends Library {
 		}
 
 		// redirect if upgrade pending
-		if(app()->user->isLoggedIn() && $this->getSelectedModule() != 'Install_Admin'){
+		if(app()->user->isLoggedIn() && $this->module() != 'Install_Admin'){
 			if(app()->awaitingUpgrade()){ $this->redirect('upgrade', false, 'Install'); }
 		}
 
-		if($this->getSelectedMethod() && app()->user->userHasAccess()){
+		if($this->method() && app()->user->userHasAccess()){
 
 			// load the module language file
 			if(app()->config('enable_languages')){
@@ -489,20 +489,20 @@ class Router extends Library {
 				$i++;
 			}
 
-			app()->log->write('Looking for Module: ' . $this->getSelectedModule() . '->' . $this->getSelectedMethod());
+			app()->log->write('Looking for Module: ' . $this->module() . '->' . $this->method());
 
-			if(isset(app()->{$this->getSelectedModule()})){
-				if(method_exists(app()->{$this->getSelectedModule()}, $this->getSelectedMethod())){
+			if(isset(app()->{$this->module()})){
+				if(method_exists(app()->{$this->module()}, $this->method())){
 
-					app()->log->write('Running Module: ' . $this->getSelectedModule() . '->' . $this->getSelectedMethod());
+					app()->log->write('Running Module: ' . $this->module() . '->' . $this->method());
 
 					// Call the actual class method for our current page, and pass all arguments to it
-					call_user_func_array(array(app()->{$this->getSelectedModule()}, $this->getSelectedMethod()), $this->_selected_arguments);
+					call_user_func_array(array(app()->{$this->module()}, $this->method()), $this->_selected_arguments);
 
 				} else { // method not found within module
 					if(app()->config('log_error_on_404')){
-						app()->error->raise(2, 'Method ' . $this->getSelectedMethod() . ' does not exist in '
-													 . $this->getSelectedModule(), __FILE__, __LINE__);
+						app()->error->raise(2, 'Method ' . $this->method() . ' does not exist in '
+													 . $this->module(), __FILE__, __LINE__);
 					}
 
 					header("HTTP/1.0 404 Not Found");
@@ -514,7 +514,7 @@ class Router extends Library {
 				}
 			} else { // no module found
 				if(app()->config('log_error_on_404')){
-					app()->error->raise(2, 'Module ' . $this->getSelectedModule() . ' does not exist.', __FILE__, __LINE__);
+					app()->error->raise(2, 'Module ' . $this->module() . ' does not exist.', __FILE__, __LINE__);
 				}
 
 				header("HTTP/1.0 404 Not Found");
@@ -561,9 +561,9 @@ class Router extends Library {
 	 * @return string
 	 * @access public
 	 */
-	public function getFullUrl(){
+	public function fullUrl(){
 
-		$url = $this->getDomainUrl();
+		$url = $this->domainUrl();
 		$url .= app()->params->server->getQueryString('REQUEST_URI');
 		$url = strip_tags(urldecode($url));
 
@@ -577,9 +577,9 @@ class Router extends Library {
 	 * @access public
 	 * @return string
 	 */
-	public function getApplicationUrl(){
+	public function appUrl(){
 
-		$url = $this->getDomainUrl();
+		$url = $this->domainUrl();
 		$url .= app()->config('application_url') ? app()->config('application_url') : $this->getPath();
 		return $url;
 
@@ -591,7 +591,7 @@ class Router extends Library {
 	 * @return integer
 	 * @access public
 	 */
-	public function getPort(){
+	public function port(){
 		return app()->params->server->getInt('SERVER_PORT');
 	}
 
@@ -601,13 +601,13 @@ class Router extends Library {
 	 * @access public
 	 * @return string
 	 */
-	public function getDomainUrl(){
+	public function domainUrl(){
 
-		$url = $this->getPort() == 443 ? 'https://' : 'http://';
+		$url = $this->port() == 443 ? 'https://' : 'http://';
 		$url .= app()->params->server->getServerName('SERVER_NAME');
 
-		if($this->getPort() != 80 && $this->getPort() != 443){
-			$url .= ':'.$this->getPort();
+		if($this->port() != 80 && $this->port() != 443){
+			$url .= ':'.$this->port();
 		}
 
 		return $url;
@@ -678,9 +678,9 @@ class Router extends Library {
 	 * @return string
 	 * @access public
 	 */
-	public function getInterfaceUrl($interface = false){
+	public function interfaceUrl($interface = false){
         $interface = $interface ? $interface : LS;
-        return $this->getApplicationUrl() . (empty($interface) ? '' : '/' . $interface);
+        return $this->appUrl() . (empty($interface) ? '' : '/' . $interface);
     }
 
 
@@ -689,10 +689,10 @@ class Router extends Library {
 	 * @return string
 	 * @access public
 	 */
-	public function getUploadsUrl(){
+	public function uploadsUrl(){
 		$browser_url = app()->config('upload_browser_path');
 		if(!$browser_url){
-			$browser_url = str_replace(APPLICATION_PATH, $this->getApplicationUrl(), app()->config('upload_server_path'));
+			$browser_url = str_replace(APPLICATION_PATH, $this->appUrl(), app()->config('upload_server_path'));
 		}
 		return $browser_url;
     }
@@ -703,7 +703,7 @@ class Router extends Library {
 	 * @return string
 	 * @access public
 	 */
-	public function getStaticContentUrl($interface = false){
+	public function staticUrl($interface = false){
 
 		if(app()->config('static_content_url')){
 			return app()->config('static_content_url');
@@ -717,7 +717,7 @@ class Router extends Library {
 				}
 			}
 
-			return $this->getInterfaceUrl($interface);
+			return $this->interfaceUrl($interface);
 		}
 	}
 
@@ -728,10 +728,10 @@ class Router extends Library {
 	 * @return string
 	 * @access public
 	 */
-	public function getModuleUrl($module_name = false){
+	public function moduleUrl($module_name = false){
 		$module = $this->cleanModule($module_name);
 		$registry = app()->moduleRegistry(false, $module);
-		return isset($registry->folder) ? $this->getApplicationUrl() . '/modules/' . $registry->folder : false;
+		return isset($registry->folder) ? $this->appUrl() . '/modules/' . $registry->folder : false;
 	}
 
 
@@ -795,7 +795,7 @@ class Router extends Library {
 	 */
 	public function cleanModule($module = false, $interface = false){
 
-		$module = $module ? $module : $this->getSelectedModule();
+		$module = $module ? $module : $this->module();
 		$interface = $interface ? $interface : LOADING_SECTION;
 		return str_replace('_'.ucwords($interface), '', $module);
 
@@ -813,14 +813,14 @@ class Router extends Library {
 
 		$here = false;
 
-		$selected_module = $this->getSelectedModule();
+		$selected_module = $this->module();
 		$interface = $interface ? $interface : LOADING_SECTION;
 		$module = $this->cleanModule($module);
 		$module = $module . ($interface ? '_' . $interface  : false);
 
-		if(isset(app()->{$this->getSelectedModule()})){
-			if(method_exists(app()->{$this->getSelectedModule()}, 'whosYourDaddy')){
-				$daddy = app()->{$this->getSelectedModule()}->whosYourDaddy();
+		if(isset(app()->{$this->module()})){
+			if(method_exists(app()->{$this->module()}, 'whosYourDaddy')){
+				$daddy = app()->{$this->module()}->whosYourDaddy();
 				$selected_module = empty($daddy) ? $selected_module : $daddy;
 			}
 		}
@@ -828,9 +828,9 @@ class Router extends Library {
 		if($module && $selected_module == $module){
 			if($method){
 				if(is_array($method)){
-					$here = in_array($this->getSelectedMethod(), $method);
+					$here = in_array($this->method(), $method);
 				} else {
-					$here = $this->getSelectedMethod() == $method;
+					$here = $this->method() == $method;
 				}
 			} else {
 				$here = true;
@@ -847,7 +847,7 @@ class Router extends Library {
 	 * @access public
 	 */
 	public function setReturnToReferrer(){
-		if(strpos($this->getSelectedMethod(), 'ajax') === false){
+		if(strpos($this->method(), 'ajax') === false){
 			if(app()->params->server->getUri('HTTP_REFERER')){
 				$_SESSION['referring_page'] = app()->params->server->getUri('HTTP_REFERER');
 			}
@@ -860,7 +860,7 @@ class Router extends Library {
 	 * @access public
 	 */
 	public function returnToReferrer(){
-		$location = app()->params->session->getUri('referring_page', app()->template->createUrl('view'));
+		$location = app()->params->session->getUri('referring_page', app()->template->url('view'));
 		if(!empty($location)){
 			$this->redirectToUrl($location);
 		}
@@ -875,7 +875,7 @@ class Router extends Library {
 	 * @access public
 	 */
 	public function redirect($method = false, $bits = false, $module = false, $interface = false){
-		$this->redirectToUrl( app()->template->createUrl($method, $bits, $module, $interface), false, true);
+		$this->redirectToUrl( app()->template->url($method, $bits, $module, $interface), false, true);
     }
 
 

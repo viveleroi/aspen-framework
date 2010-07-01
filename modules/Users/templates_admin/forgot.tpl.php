@@ -3,7 +3,7 @@
 <?php print $form->printErrors(); ?>
 <?php print app()->sml->printMessage(); ?>
 
-<form action="<?php print $this->createXhtmlValidUrl(); ?>" method="post">
+<form action="<?php print $this->xhtmlUrl(); ?>" method="post">
 	<fieldset>
 	
 		<p>
@@ -13,7 +13,7 @@
 		
 		<p>
 			<input type="submit" name="submit" id="submit" value="<?php print $this->text('forgot:button'); ?>" />
-			<?php print $this->createLink($this->text('forgot:login'), 'login'); ?>
+			<?php print $this->link($this->text('forgot:login'), 'login'); ?>
 		</p>
 	</fieldset>
 </form>

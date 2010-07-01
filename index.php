@@ -7,8 +7,8 @@
 	<head>
 		<title><?php print $APP->config('application_name'); ?></title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" href="<?php print $APP->router->getApplicationUrl() ?>/admin/css/screen.css" type="text/css" media="screen, projection" />
-	  	<!--[if IE]><link rel="stylesheet" href="<?php print $APP->router->getApplicationUrl() ?>/admin/css/ie.css" type="text/css" media="screen, projection" /><![endif]-->
+		<link rel="stylesheet" href="<?php print $APP->router->appUrl() ?>/admin/css/screen.css" type="text/css" media="screen, projection" />
+	  	<!--[if IE]><link rel="stylesheet" href="<?php print $APP->router->appUrl() ?>/admin/css/ie.css" type="text/css" media="screen, projection" /><![endif]-->
 	</head>
 
 	<body id="<?php print $APP->template->body_id(); ?>">

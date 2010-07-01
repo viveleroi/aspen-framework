@@ -62,8 +62,8 @@ class Error extends Library {
 		}
 
 		// determine uri
-		if(is_object(app()->router) && method_exists(app()->router, 'getFullUrl')){
-			$uri = app()->router->getFullUrl();
+		if(is_object(app()->router) && method_exists(app()->router, 'fullUrl')){
+			$uri = app()->router->fullUrl();
 		} else {
 			$uri = $this->getServerValue('REQUEST_URI');
 		}

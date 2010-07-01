@@ -276,7 +276,7 @@ class File extends Library {
 	public function setUploadDirectory(){
 		
 		$this->upload_directory = app()->config('upload_server_path');
-		$this->browser_url = app()->router->getUploadsUrl();
+		$this->browser_url = app()->router->uploadsUrl();
 
 		// check the status of the folder
 		if(!is_dir($this->upload_directory)){

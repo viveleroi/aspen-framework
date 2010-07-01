@@ -22,23 +22,12 @@ class Sml extends Library {
 
 
 	/**
-	 * Alias for addNewMessage
-	 * @param string $msg The message
-	 * @param string $class CSS Class for display
-	 * @access public
-	 */
-	public function say($msg, $class = 'notice'){
-		return $this->addNewMessage($msg, $class);
-	}
-
-
-	/**
 	 * Adds a new message to the session log
 	 * @param string $msg The message
 	 * @param string $class CSS Class for display
 	 * @access public
 	 */
-	public function addNewMessage($msg, $class = 'notice'){
+	public function say($msg, $class = 'notice'){
 
 		// Interpret boolean values
 		if($class === 0 || $class === false){

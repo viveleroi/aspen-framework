@@ -75,24 +75,24 @@ class FormTest extends TestHelper {
 	}
 	
 	/**
-	 * Tests Form->getCurrentValue()
+	 * Tests Form->cv()
 	 */
-	public function testGetCurrentValue() {
-		// TODO Auto-generated FormTest->testGetCurrentValue()
-		$this->markTestIncomplete ( "getCurrentValue test not implemented" );
+	public function testcv() {
+		// TODO Auto-generated FormTest->testcv()
+		$this->markTestIncomplete ( "cv test not implemented" );
 		
-		$this->Form->getCurrentValue(/* parameters */);
+		$this->Form->cv(/* parameters */);
 	
 	}
 	
 	/**
-	 * Tests Form->getCurrentValues()
+	 * Tests Form->cvs()
 	 */
-	public function testGetCurrentValues() {
-		// TODO Auto-generated FormTest->testGetCurrentValues()
-		$this->markTestIncomplete ( "getCurrentValues test not implemented" );
+	public function testcvs() {
+		// TODO Auto-generated FormTest->testcvs()
+		$this->markTestIncomplete ( "cvs test not implemented" );
 		
-		$this->Form->getCurrentValues(/* parameters */);
+		$this->Form->cvs(/* parameters */);
 	
 	}
 	

@@ -95,7 +95,7 @@ class App extends Bootstrap {
 				if(isset($reg->disable_menu) && $reg->disable_menu){
 				} else {
 
-					$link = $this->template->createLink($reg->name, 'view', false, $reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false));
+					$link = $this->template->link($reg->name, 'view', false, $reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false));
 
 					if(!empty($link)){
 						$menu .= '<li'.($this->router->here($reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false)) ? ' class="at"' : '').'>';
@@ -131,7 +131,7 @@ class App extends Bootstrap {
 				if(isset($reg->disable_menu) && $reg->disable_menu){
 				} else {
 
-					$link = $this->template->createLink($reg->name, 'view', false, $reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false));
+					$link = $this->template->link($reg->name, 'view', false, $reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false));
 
 					if(!empty($link)){
 						$menu .= '<li'.($this->router->here($reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false)) ? ' class="at"' : '').'>';
@@ -195,7 +195,7 @@ class App extends Bootstrap {
 
 				 $html .= sprintf('<li>%s %s</li>',
 				 					$module['name'],
-				 					$this->template->createLink(
+				 					$this->template->link(
 				 										'Click to Install',
 				 										'install_module',
 				 										array('guid' => $module['guid']),
@@ -217,7 +217,7 @@ class App extends Bootstrap {
 	 */
 	public function modulesAwaitingInstallAlert(){
 
-		if($this->router->getSelectedModule() != 'Settings_Admin' && $this->router->getSelectedModule() != 'Install_Admin'){
+		if($this->router->module() != 'Settings_Admin' && $this->router->module() != 'Install_Admin'){
 
 			if(
 				$this->user->isLoggedIn() &&
@@ -226,7 +226,7 @@ class App extends Bootstrap {
 
 				$html = '<div class="notice"><em>';
 				$html .= $this->template->text('app:mod-install-intro');
-				$html .= ' ' . $this->template->createLink('Click to View', 'view', false, 'Settings') . '</em></div>'."\n";
+				$html .= ' ' . $this->template->link('Click to View', 'view', false, 'Settings') . '</em></div>'."\n";
 
 				print $html;
 
@@ -259,10 +259,10 @@ class App extends Bootstrap {
 
 				$install_link = false;
 				if(in_array((string)$reg->guid, $this->getInstalledModuleGuids())){
-					//$install_link = $this->template->createLink('Disable', 'disable_module', array('guid' => $reg->guid), 'Install')."\n";
+					//$install_link = $this->template->link('Disable', 'disable_module', array('guid' => $reg->guid), 'Install')."\n";
 
 					// if disbaled
-					//$install_link = $this->template->createLink('Enable', 'enable_module', array('guid' => $reg->guid), 'Install')."\n";
+					//$install_link = $this->template->link('Enable', 'enable_module', array('guid' => $reg->guid), 'Install')."\n";
 				} else {
 					$install_link = true;
 				}
@@ -297,9 +297,9 @@ class App extends Bootstrap {
 			foreach($controls as $control){
 
 				if($control['install']){
-					$link = $this->template->createLink('Install', 'install_module', array('guid' => $control['guid']), 'Install')."\n";
+					$link = $this->template->link('Install', 'install_module', array('guid' => $control['guid']), 'Install')."\n";
 				} else {
-					$link = $this->template->createLink('Uninstall', 'uninstall_module', array('guid' => $control['guid']), 'Install')."\n";
+					$link = $this->template->link('Uninstall', 'uninstall_module', array('guid' => $control['guid']), 'Install')."\n";
 				}
 
 				$html .= sprintf('<tr><td>%s</td><td>%s</td></tr>' . "\n", $control['name'], $link);

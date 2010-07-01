@@ -2,7 +2,7 @@
 
 <?php print app()->sml->printMessage(); ?>
 
-<form action="<?php print $this->createFormAction('authenticate'); ?>" method="post">
+<form action="<?php print $this->action('authenticate'); ?>" method="post">
 	<fieldset>
 	
 		<p>
@@ -17,7 +17,7 @@
 		
 		<p>
 			<input type="submit" name="submit" id="submit" value="Login" />
-			<?php print $this->createLink($this->text('login:forgot_link'), 'forgot'); ?>
+			<?php print $this->link($this->text('login:forgot_link'), 'forgot'); ?>
 		</p>
 	
 	</fieldset>

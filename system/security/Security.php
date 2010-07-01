@@ -98,11 +98,9 @@ class Security extends Library {
 	 * @access public
 	 */
 	public function generateFormToken(){
-		
 		$token = sha1(time()+rand(0, 1000));
 		$_SESSION['form_token'] = $token;
 		return $token;
-		
 	}
 	
 	
@@ -113,7 +111,6 @@ class Security extends Library {
 	 * @access private
 	 */
 	private function cleanHtml($value){
-		
 		if(app()->isLibraryLoaded('HTMLPurifier')){
 			return app()->html->purify($value);
 		} else {

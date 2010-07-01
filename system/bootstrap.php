@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', true);
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 
 /**
@@ -40,15 +40,11 @@ class Base {
  * @return object
  */
 function &app(){
-
 	$APP = Base::get_instance();
-
 	// set the timezone - we do this here so it's more global than
 	// if it were called from bootstrap
 	date_default_timezone_set($APP->config('timezone'));
-
 	return $APP;
-
 }
 
 
@@ -318,7 +314,7 @@ class Bootstrap extends Base {
 		}
 
 		// throw a db error if the config exists, we're not installing, but the db connection fails
-		if(!$this->db && $this->checkUserConfigExists() && $this->router->getSelectedModule() != "Install_Admin"){
+		if(!$this->db && $this->checkUserConfigExists() && $this->router->module() != "Install_Admin"){
 			// This should only show if config exists but won't work
 			$this->template->resetTemplateQueue();
 	    	$this->template->addView($this->template->getTemplateDir().DS.'header.tpl.php');
@@ -1166,7 +1162,7 @@ class Bootstrap extends Base {
 	 */
 	private function loadCurrentModule(){
 
-		$current = $this->moduleRegistry(false, $this->router->getSelectedModule());
+		$current = $this->moduleRegistry(false, $this->router->module());
 
 		if(is_object($current)){
 

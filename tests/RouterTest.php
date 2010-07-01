@@ -36,50 +36,50 @@ class RouterTest extends TestHelper {
 	}
 
 	/**
-	 * Tests Router->getApplicationUrl()
+	 * Tests Router->appUrl()
 	 */
-	public function testGetApplicationUrl()
+	public function testappUrl()
 	{
-		// TODO Auto-generated RouterTest->testGetApplicationUrl()
-		$this->markTestIncomplete("getApplicationUrl test not implemented");
+		// TODO Auto-generated RouterTest->testappUrl()
+		$this->markTestIncomplete("appUrl test not implemented");
 
-		$this->sharedFixture->router->getApplicationUrl(/* parameters */);
+		$this->sharedFixture->router->appUrl(/* parameters */);
 
 	}
 
 	/**
-	 * Tests Router->getDomainUrl()
+	 * Tests Router->domainUrl()
 	 */
-	public function testGetDomainUrl()
+	public function testdomainUrl()
 	{
-		// TODO Auto-generated RouterTest->testGetDomainUrl()
-		$this->markTestIncomplete("getDomainUrl test not implemented");
+		// TODO Auto-generated RouterTest->testdomainUrl()
+		$this->markTestIncomplete("domainUrl test not implemented");
 
-		$this->sharedFixture->router->getDomainUrl(/* parameters */);
+		$this->sharedFixture->router->domainUrl(/* parameters */);
 
 	}
 
 	/**
-	 * Tests Router->getFullUrl()
+	 * Tests Router->fullUrl()
 	 */
-	public function testGetFullUrl()
+	public function testfullUrl()
 	{
-		// TODO Auto-generated RouterTest->testGetFullUrl()
-		$this->markTestIncomplete("getFullUrl test not implemented");
+		// TODO Auto-generated RouterTest->testfullUrl()
+		$this->markTestIncomplete("fullUrl test not implemented");
 
-		$this->sharedFixture->router->getFullUrl(/* parameters */);
+		$this->sharedFixture->router->fullUrl(/* parameters */);
 
 	}
 
 	/**
-	 * Tests Router->getInterfaceUrl()
+	 * Tests Router->interfaceUrl()
 	 */
-	public function testGetInterfaceUrl()
+	public function testinterfaceUrl()
 	{
-		// TODO Auto-generated RouterTest->testGetInterfaceUrl()
-		$this->markTestIncomplete("getInterfaceUrl test not implemented");
+		// TODO Auto-generated RouterTest->testinterfaceUrl()
+		$this->markTestIncomplete("interfaceUrl test not implemented");
 
-		$this->sharedFixture->router->getInterfaceUrl(/* parameters */);
+		$this->sharedFixture->router->interfaceUrl(/* parameters */);
 
 	}
 
@@ -108,14 +108,14 @@ class RouterTest extends TestHelper {
 	}
 
 	/**
-	 * Tests Router->getModuleUrl()
+	 * Tests Router->moduleUrl()
 	 */
-	public function testGetModuleUrl()
+	public function testmoduleUrl()
 	{
-		// TODO Auto-generated RouterTest->testGetModuleUrl()
-		$this->markTestIncomplete("getModuleUrl test not implemented");
+		// TODO Auto-generated RouterTest->testmoduleUrl()
+		$this->markTestIncomplete("moduleUrl test not implemented");
 
-		$this->sharedFixture->router->getModuleUrl(/* parameters */);
+		$this->sharedFixture->router->moduleUrl(/* parameters */);
 
 	}
 
@@ -144,14 +144,14 @@ class RouterTest extends TestHelper {
 	}
 
 	/**
-	 * Tests Router->getPort()
+	 * Tests Router->port()
 	 */
-	public function testGetPort()
+	public function testport()
 	{
-		// TODO Auto-generated RouterTest->testGetPort()
-		$this->markTestIncomplete("getPort test not implemented");
+		// TODO Auto-generated RouterTest->testport()
+		$this->markTestIncomplete("port test not implemented");
 
-		$this->sharedFixture->router->getPort(/* parameters */);
+		$this->sharedFixture->router->port(/* parameters */);
 
 	}
 
@@ -168,50 +168,50 @@ class RouterTest extends TestHelper {
 	}
 
 	/**
-	 * Tests Router->getSelectedMethod()
+	 * Tests Router->method()
 	 */
-	public function testGetSelectedMethod()
+	public function testmethod()
 	{
-		// TODO Auto-generated RouterTest->testGetSelectedMethod()
-		$this->markTestIncomplete("getSelectedMethod test not implemented");
+		// TODO Auto-generated RouterTest->testmethod()
+		$this->markTestIncomplete("method test not implemented");
 
-		$this->sharedFixture->router->getSelectedMethod(/* parameters */);
+		$this->sharedFixture->router->method(/* parameters */);
 
 	}
 
 	/**
-	 * Tests Router->getSelectedModule()
+	 * Tests Router->module()
 	 */
-	public function testGetSelectedModule()
+	public function testmodule()
 	{
-		// TODO Auto-generated RouterTest->testGetSelectedModule()
-		$this->markTestIncomplete("getSelectedModule test not implemented");
+		// TODO Auto-generated RouterTest->testmodule()
+		$this->markTestIncomplete("model test not implemented");
 
-		$this->sharedFixture->router->getSelectedModule(/* parameters */);
+		$this->sharedFixture->router->module(/* parameters */);
 
 	}
 
 	/**
-	 * Tests Router->getStaticContentUrl()
+	 * Tests Router->staticUrl()
 	 */
-	public function testGetStaticContentUrl()
+	public function teststaticUrl()
 	{
-		// TODO Auto-generated RouterTest->testGetStaticContentUrl()
-		$this->markTestIncomplete("getStaticContentUrl test not implemented");
+		// TODO Auto-generated RouterTest->teststaticUrl()
+		$this->markTestIncomplete("staticUrl test not implemented");
 
-		$this->sharedFixture->router->getStaticContentUrl(/* parameters */);
+		$this->sharedFixture->router->staticUrl(/* parameters */);
 
 	}
 
 	/**
-	 * Tests Router->getUploadsUrl()
+	 * Tests Router->uploadsUrl()
 	 */
-	public function testGetUploadsUrl()
+	public function testuploadsUrl()
 	{
-		// TODO Auto-generated RouterTest->testGetUploadsUrl()
-		$this->markTestIncomplete("getUploadsUrl test not implemented");
+		// TODO Auto-generated RouterTest->testuploadsUrl()
+		$this->markTestIncomplete("uploadsUrl test not implemented");
 
-		$this->sharedFixture->router->getUploadsUrl(/* parameters */);
+		$this->sharedFixture->router->uploadsUrl(/* parameters */);
 
 	}
 

@@ -3,7 +3,7 @@
 <?php print app()->sml->printMessage(); ?>
 
 <table cellspacing="0">
-	<caption>User Accounts | <?php print $this->createLink($this->text('userlist:adduser'), 'add'); ?></caption>
+	<caption>User Accounts | <?php print $this->link($this->text('userlist:adduser'), 'add'); ?></caption>
 	<thead>
 		<tr>
 			<th><?php print $this->text('userlist:th:name'); ?></th>
@@ -17,9 +17,8 @@
 		if($users){
 			foreach($users as $user){
 		?>
-
 		<tr>
-			<td><?php print $this->createLink($user['nice_name'], 'edit', array('id' => $user['id'])) ?></td>
+			<td><?php print $this->link($user['nice_name'], 'edit', array('id' => $user['id'])) ?></td>
 			<td><?php print $user['username'] ?></td>
 			<td><?php print Date::niceDate($user['latest_login']) ?></td>
 			<td><?php print Utils::implode(', ', Utils::extract('Groups.{n}.name', $user)) ?></td>

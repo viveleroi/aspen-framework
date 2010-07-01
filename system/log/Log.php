@@ -236,13 +236,13 @@ class Log extends Library {
 
 			// save all urls/paths to log for debugging
 			$this->section('Router Urls & Paths');
-			$this->write('Router::getDomainUrl set to: ' . app()->router->getDomainUrl());
-			$this->write('Router::getApplicationUrl set to: ' . app()->router->getApplicationUrl());
+			$this->write('Router::domainUrl set to: ' . app()->router->domainUrl());
+			$this->write('Router::appUrl set to: ' . app()->router->appUrl());
 			$this->write('Router::getPath set to: ' . app()->router->getPath());
-			$this->write('Router::getInterfaceUrl set to: ' . app()->router->getInterfaceUrl());
-			//$this->write('Router::getModuleUrl set to: ' . app()->router->getModuleUrl());
-			$this->write('Router::getStaticContentUrl set to: ' . app()->router->getStaticContentUrl());
-			$this->write('Router::getFullUrl set to: ' . app()->router->getFullUrl());
+			$this->write('Router::interfaceUrl set to: ' . app()->router->interfaceUrl());
+			//$this->write('Router::moduleUrl set to: ' . app()->router->moduleUrl());
+			$this->write('Router::staticUrl set to: ' . app()->router->staticUrl());
+			$this->write('Router::fullUrl set to: ' . app()->router->fullUrl());
 
 			$this->section('Bootstrap');
 			$this->write('Installed checks returned ' . (app()->isInstalled() ? 'true' : 'false'));

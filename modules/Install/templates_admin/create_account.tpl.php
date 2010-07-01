@@ -5,7 +5,7 @@
 <?php print $form->printErrors(); ?>
 <?php print app()->sml->printMessage(); ?>
 
-<form action="<?php print $this->createUrl('account') ?>" method="post">
+<form action="<?php print $this->url('account') ?>" method="post">
 
 	<p>
 		<label for="username"><?php print $this->text('s2:email'); ?>:</label><br />

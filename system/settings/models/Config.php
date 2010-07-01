@@ -29,15 +29,11 @@ class ConfigModel extends Model {
 	 * @return boolean
 	 */
 	public function validate($fields = false, $type = false){
-		
 		$clean = parent::validate($fields, $type);
-		
 		if($clean->isEmpty('config_key')){
 			$this->addError('config_key', 'The configuration key may not be empty.');
 		}
-		
 		return !$this->error();
-		
 	}
 }
 ?>
