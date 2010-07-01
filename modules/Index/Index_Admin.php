@@ -21,8 +21,6 @@ class Index_Admin extends Module {
 	 * @access public
 	 */
 	public function view(){
-
-		dump(false)->pre_v();
 		
 		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
 		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'index.tpl.php');
