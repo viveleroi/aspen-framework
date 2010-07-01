@@ -58,7 +58,7 @@ class DebugBase {
 	 */
 	private function dump($trace = false){
 
-		$debug = Debug::called_from();
+		$debug = called_from();
 		$name = ($this->name ? $this->name : $this->print_type );
 
 		print $this->line_end;
@@ -205,106 +205,101 @@ class DebugBase {
 }
 
 
+
+
+
 /**
- * Provides helper methods for debugging
- * @package Aspen_Framework
+ *
+ * @param <type> $val
+ * @param <type> $name
+ * @param <type> $print_type
+ * @param <type> $line_end
+ * @return DebugBase
  */
-class Debug {
+function dump($val, $name = false, $print_type = false, $line_end = false){
+	return new DebugBase($val, $name, $print_type, $line_end);
+}
 
 
-	/**
-	 *
-	 * @param <type> $val
-	 * @param <type> $name
-	 * @param <type> $print_type
-	 * @param <type> $line_end
-	 * @return DebugBase
-	 */
-	static public function dump($val, $name = false, $print_type = false, $line_end = false){
-		return new DebugBase($val, $name, $print_type, $line_end);
-	}
+/**
+ *
+ * @param <type> $obj
+ * @param <type> $name
+ * @param <type> $print_type
+ * @param <type> $line_end
+ * @return DebugBase
+ */
+function funcs($obj, $name = false, $print_type = false, $line_end = false){
+	return new DebugBase(get_class_methods($obj), $name, $print_type, $line_end);
+}
 
 
-	/**
-	 *
-	 * @param <type> $obj
-	 * @param <type> $name
-	 * @param <type> $print_type
-	 * @param <type> $line_end
-	 * @return DebugBase
-	 */
-	static public function funcs($obj, $name = false, $print_type = false, $line_end = false){
-		return new DebugBase(get_class_methods($obj), $name, $print_type, $line_end);
-	}
+/**
+ *
+ * @param <type> $line_end
+ * @param <type> $ignore_phpunit
+ */
+function who_called($line_end = false, $ignore_phpunit = true){
 
+	$line_end = $line_end ? $line_end : "\n";
 
-	/**
-	 *
-	 * @param <type> $line_end
-	 * @param <type> $ignore_phpunit
-	 */
-	static public function who_called($line_end = false, $ignore_phpunit = true){
+	$db = debug_backtrace();
 
-		$line_end = $line_end ? $line_end : "\n";
+	print $line_end;
 
-		$db = debug_backtrace();
-
-		print $line_end;
-
-		foreach($db as $pos => $caller){
-			if($pos > 0){
-				$clean 	= Peregrine::sanitize($caller);
-				if($ignore_phpunit && strpos(strtolower($clean->getPath('file')), 'phpunit') !== false){
-					continue;
-				}
-				print $pos . ': ' . $clean->getPath('file').' - ' . $clean->getInt('line') . ' called ' . $clean->getElemId('class') . '::' . $clean->getElemId('function') . '();' . $line_end;
+	foreach($db as $pos => $caller){
+		if($pos > 0){
+			$clean 	= Peregrine::sanitize($caller);
+			if($ignore_phpunit && strpos(strtolower($clean->getPath('file')), 'phpunit') !== false){
+				continue;
 			}
+			print $pos . ': ' . $clean->getPath('file').' - ' . $clean->getInt('line') . ' called ' . $clean->getElemId('class') . '::' . $clean->getElemId('function') . '();' . $line_end;
 		}
-
-		print ($ignore_phpunit ? ' -- ignoring phpunit -- ' : '') . $line_end;
-
 	}
 
+	print ($ignore_phpunit ? ' -- ignoring phpunit -- ' : '') . $line_end;
 
-	/**
-	 *
-	 * @param <type> $line_end
-	 * @param <type> $ignore_phpunit
-	 */
-	static public function called_from($line_end = false, $ignore_phpunit = true){
+}
 
-		$line_end = $line_end ? $line_end : "\n";
 
-		$db = debug_backtrace();
-		$ret = array('trace'=>'','caller'=>array());
+/**
+ *
+ * @param <type> $line_end
+ * @param <type> $ignore_phpunit
+ */
+function called_from($line_end = false, $ignore_phpunit = true){
 
-		foreach($db as $pos => $caller){
-			if($pos > 0){
-				$clean 	= Peregrine::sanitize($caller);
-				if($ignore_phpunit && strpos(strtolower($clean->getPath('file')), 'phpunit') !== false){
-					continue;
-				}
-				elseif(strpos(strtolower($clean->getPath('file')), 'debug') !== false){
-					continue;
-				}
-				elseif(strpos(strtolower($clean->getElemId('class')), 'debugbase') !== false){
-					continue;
-				}
+	$line_end = $line_end ? $line_end : "\n";
 
-				if(empty($ret['caller'])){
-					$ret['caller']['file'] = $clean->getPath('file');
-					$ret['caller']['line'] = $db[($pos-1)]['line'];
-					$ret['caller']['class'] = $clean->getElemId('class');
-					$ret['caller']['function'] = $clean->getElemId('function');
-				}
+	$db = debug_backtrace();
+	$ret = array('trace'=>'','caller'=>array());
 
-				$ret['trace'] .= $pos . ': ' . $clean->getPath('file').' - ' . $clean->getInt('line') . ' called ' . $clean->getElemId('class') . '::' . $clean->getElemId('function') . '();' . $line_end;
-
+	foreach($db as $pos => $caller){
+		if($pos > 0){
+			$clean 	= Peregrine::sanitize($caller);
+			if($ignore_phpunit && strpos(strtolower($clean->getPath('file')), 'phpunit') !== false){
+				continue;
 			}
+			elseif(strpos(strtolower($clean->getPath('file')), 'debug') !== false){
+				continue;
+			}
+			elseif(strpos(strtolower($clean->getElemId('class')), 'debugbase') !== false){
+				continue;
+			}
+
+			if(empty($ret['caller'])){
+				$ret['caller']['file'] = $clean->getPath('file');
+				$ret['caller']['line'] = $db[($pos-1)]['line'];
+				$ret['caller']['class'] = $clean->getElemId('class');
+				$ret['caller']['function'] = $clean->getElemId('function');
+			}
+
+			$ret['trace'] .= $pos . ': ' . $clean->getPath('file').' - ' . $clean->getInt('line') . ' called ' . $clean->getElemId('class') . '::' . $clean->getElemId('function') . '();' . $line_end;
+
 		}
-
-		return $ret;
-
 	}
+
+	return $ret;
+
 }
 ?>
