@@ -91,6 +91,8 @@ class Template extends Library {
 		// append any css files for loading
 		if(!empty($this->_load_css)){
 
+			ksort($this->_load_css, SORT_STRING);
+
 			// re-arrange to ensure all modules are second
 			$m = array();
 			$i = array();
@@ -134,6 +136,8 @@ class Template extends Library {
 				print 'var INTERFACE_URL = "'.app()->router->interfaceUrl().'";'."\n";
 				print '</script>'."\n";
 			}
+
+			ksort($this->_load_js, SORT_STRING);
 
 			// re-arrange to ensure all modules are second
 			$m = array();
@@ -189,8 +193,10 @@ class Template extends Library {
 					'ext' => 'css'
 				);
 
+		$sort_key = isset($args['order']) ? $args['order'] : $args['file'];
+
 		// merge any incoming args and append the load array
-		$this->_load_css[] = (is_array($args) ? array_merge($base, $args) : $base);
+		$this->_load_css[$sort_key] = (is_array($args) ? array_merge($base, $args) : $base);
 
 	}
 
@@ -224,8 +230,10 @@ class Template extends Library {
 					'ext' => 'js'
 				);
 
+		$sort_key = isset($args['order']) ? $args['order'] : $args['file'];
+
 		// merge any incoming args and append the load array
-		$this->_load_js[] = (is_array($args) ? array_merge($base, $args) : $base);
+		$this->_load_js[$sort_key] = (is_array($args) ? array_merge($base, $args) : $base);
 
 	}
 
