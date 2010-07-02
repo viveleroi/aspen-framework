@@ -1,4 +1,3 @@
-@CHARSET "UTF-8";
 @import 'base.css';
 
 /* blueprint modifications you may want to keep */
@@ -10,9 +9,8 @@ textarea { height: 100px; }
 /***
  * Aspen Demo Design
  */
-
 /* Layout only */
-#header { padding-bottom: 6px; margin: 18px 0 18px 0; } 
+#header { padding-bottom: 6px; margin: 18px 0 18px 0; }
 #header h1 { margin: 0; float: left;}
 span { font-size: 12px; float: right; margin-top: 1.5em; }
 #users_admin_login .container, #users_admin_forgot .container, #users_admin_authenticate .container, #install_admin_view .container, #install_admin_setup .container, #install_admin_paste_config .container, #install_admin_account .container, #install_admin_success .container, #install_admin_upgrade .container {width:470px;}
@@ -36,21 +34,13 @@ code { font-size: 12px; }
 #content a:hover { text-decoration: underline; }
 #nav a { font-family: "Trebuchet MS", Helvetica, sans-serif; }
 
+/* forms */
+form li { list-style: none; padding: 5px 0; }
+fieldset ol { margin: 0; }
+label:first-child { width: 100px; display: block; float: left; }
+input[type=text], input[type=password] { padding: 5px; width: 200px; border:1px solid #bbb; }
+input[type=text]:focus, input[type=password]:focus, textarea:focus, select:focus {border:1px solid #666;}
 
-/**********
- * Theme: Plain Blue
- * Using a plain baby blue, no logo
- ***/
-	/*
-#header { border-bottom: 2px solid #343642; }
-#index_view h1 { border-bottom: 2px solid #343642; }
-#content { background-color: #F3F3F3; border: 2px solid #9BB8CF; }
-
-#nav li { background-color: #B5CCDF; }
-#nav li:hover, #nav li.at { background-color: #9BB8CF; }
-#nav a:link, #nav a:active, #nav a:visited { color: #582601; }
-#nav a:hover { border-bottom: 1px dashed #582601; }
-	*/
 
 
 /**********

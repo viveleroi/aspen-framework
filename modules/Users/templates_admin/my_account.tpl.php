@@ -7,23 +7,20 @@
 	<input id="allow_login_hidden" name="allow_login" type="hidden" value="<?php print $form->cv('allow_login') ?>" />
 	<fieldset>
 		<p class="notice"><?php print $this->text('myaccount:help'); ?></p>
-
-		<p>
-		<label for="username"><?php print $this->text('userform:username'); ?>:</label><br />
-		<input type="text" id="username" name="username" value="<?php print $form->cv('username'); ?>" class="text" />
-		</p>
-	
-		<p>
-			<label for="password"><?php print $this->text('myaccount:label:password'); ?>:</label><br />
-			<input type="password" name="password" id="password" class="text" />
-		</p>
-		
-		<p>
-			<label for="password_confirm"><?php print $this->text('myaccount:label:password_2'); ?>:</label><br />
-			<input type="password" name="password_confirm" id="password_confirm" class="text" />
-		</p>
-		
-		<p><input type="submit" name="user-submit" value="<?php print $this->text('myaccount:button:submit'); ?>" /></p>
-	
+		<ol>
+			<li>
+				<label for="username"><?php print $this->text('userform:username'); ?>:</label>
+				<input type="text" id="username" name="username" value="<?php print $form->cv('username'); ?>" />
+			</li>
+			<li>
+				<label for="password"><?php print $this->text('myaccount:label:password'); ?>:</label>
+				<input type="password" name="password" id="password" />
+			</li>
+			<li>
+				<label for="password_confirm"><?php print $this->text('myaccount:label:password_2'); ?>:</label>
+				<input type="password" name="password_confirm" id="password_confirm" />
+			</li>
+			<li><input type="submit" name="user-submit" value="<?php print $this->text('myaccount:button:submit'); ?>" /></li>
+		</ol>
 	</fieldset>
 </form>

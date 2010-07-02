@@ -203,20 +203,20 @@ $tbody .= "		</tr>\n
 		}
 
 		if(in_array($field->type, app()->config('mysql_field_group_int')) || in_array($field->type, app()->config('mysql_field_group_dec'))){
-			$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" class="text" />', $field->name, $field->name, $value);
+			$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" />', $field->name, $field->name, $value);
 		}
 
 
 		if(in_array($field->type, app()->config('mysql_field_group_text'))){
 			if($field->max_length > 0 && $field->max_length <= 100){
-				$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" class="text" />', $field->name, $field->name, $value);
+				$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" />', $field->name, $field->name, $value);
 			} else {
 				$html .= sprintf('		<textarea rows="20" cols="40" name="%s" id="%s">%s</textarea>', $field->name, $field->name, $value);
 			}
 		}
 
 		if(in_array($field->type, app()->config('mysql_field_group_date'))){
-			$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" class="text" />', $field->name, $field->name, $value);
+			$html .= sprintf('		<input type="text" name="%s" id="%s" value="%s" />', $field->name, $field->name, $value);
 		}
 
 		return $html;
