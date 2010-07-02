@@ -9,7 +9,6 @@
 		<meta name="keywords" content="aspen framework" />
 
 		<?php $this->addCss( array('file'=>'screen.css','mediatype'=>'screen, projection','from'=>'i')); ?>
-		<?php $this->addCss( array('file'=>'print.css','mediatype'=>'print','from'=>'i')); ?>
 		<?php $this->addCss( array('file'=>'ie.css','cdtnl_cmt'=>'if IE','from'=>'i')); ?>
 	  	
 	  	<?php $this->loadModuleHeader(); ?>

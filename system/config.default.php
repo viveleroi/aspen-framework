@@ -381,7 +381,7 @@
 /**
  * LOADING CORE SYSTEM CLASSES
  *
- * The following classes are loaded by default and most are required for the
+ * The following classes are loaded by default and are ALL required for the
  * operation of the framework. You may extend these classes by providing an extension
  * class, following the documentation at:
  *
@@ -403,7 +403,6 @@
  */
 
 	$config['load_core_class'][] = array('classname' => 'Library', 'autoload' => false);
-
 	$config['load_core_class'][] = array('classname' => 'Peregrine', 'folder' => 'security/Peregrine', 'var'=>'params');
 	$config['load_core_class'][] = array('classname' => 'Security');
 	$config['load_core_class'][] = array('classname' => 'Phpass', 'folder' => 'security', 'autoload'=>false);
@@ -413,11 +412,8 @@
 	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'Template');
 	$config['load_core_class'][] = array('classname' => 'DataDisplay','autoload'=>false,'filename'=>'DataDisplay','folder' => 'template');
-	$config['load_core_class'][] = array('classname' => 'Error',
-									'folder' => 'errors',
-									'autoload' => false);
+	$config['load_core_class'][] = array('classname' => 'Error','folder' => 'errors','autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'File', 'folder' => 'files');
-	$config['load_core_class'][] = array('classname' => 'Cache');
 	$config['load_core_class'][] = array('classname' => 'HTMLPurifier',
 									'folder' => 'security/Htmlpurifier',
 									'var' => 'html',
@@ -432,9 +428,6 @@
 	$config['load_core_class'][] = array('classname' => 'Settings');
 	$config['load_core_class'][] = array('classname' => 'Sml');
 	$config['load_core_class'][] = array('classname' => 'Form', 'autoload' => false);
-	$config['load_core_class'][] = array('classname' => 'Scaffold');
-
-	$config['load_core_class'][] = array('classname' => 'Module', 'autoload' => false);
 
 	// if user auth enabled - otherwise this is no use
 	if($config['enable_authentication_support']){
@@ -455,6 +448,12 @@
  */
 
 	/*
+
+	// Cache, required if enable_cache configuration is on
+	$config['load_core_class'][] = array('classname' => 'Cache');
+
+	// Scaffold - required for modadmin to work
+	$config['load_core_class'][] = array('classname' => 'Scaffold');
 
 	// Xml encoding and output functionality
 	$config['load_add_core_class'][] = array('classname' => 'Xml', 'folder' => 'formats');
