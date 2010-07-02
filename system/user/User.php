@@ -204,7 +204,8 @@ class User extends Library {
 						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['username'], $account['id']);
 						$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
 						$_SESSION['username'] 			= $account['username'];
-						$_SESSION['nice_name'] 			= $account['nice_name'];
+						$_SESSION['first_name'] 		= $account['first_name'];
+						$_SESSION['last_name']			= $account['last_name'];
 						$_SESSION['latest_login'] 		= $account['latest_login'];
 						$_SESSION['last_login'] 		= $account['last_login'];
 						$_SESSION['user_id'] 			= $account['id'];

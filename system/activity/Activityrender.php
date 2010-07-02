@@ -80,7 +80,7 @@ class Activityrender extends Library {
 		$this->all_recent_activity = array();
 
 		$ac = app()->model->open('activity');
-		$ac->leftJoin('users', 'id', 'user_id', array('username','nice_name'));
+		$ac->leftJoin('users', 'id', 'user_id', array('username','first_name','last_name'));
 		$ac->inPastXDays('timestamp');
 
 		if($this->table){
@@ -202,7 +202,7 @@ class Activityrender extends Library {
 	public function getRealUser($user){
 		if($user){
 			$user = app()->model->open('users', $user);
-			return $user['nice_name'];
+			return $user['first_name'].' '.$user['last_name'];
 		}
 		return '(empty)';
 	}

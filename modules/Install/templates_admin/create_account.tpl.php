@@ -13,8 +13,13 @@
 	</p>
 
 	<p>
-		<label for="nice_name"><?php print $this->text('s2:name'); ?>:</label><br />
-		<input type="text" name="nice_name" id="nice_name" class="text" />
+		<label for="first_name"><?php print $this->text('s2:first_name'); ?>:</label><br />
+		<input type="text" name="first_name" id="first_name" class="text" />
+	</p>
+
+	<p>
+		<label for="last_name"><?php print $this->text('s2:last_name'); ?>:</label><br />
+		<input type="text" name="last_name" id="last_name" class="text" />
 	</p>
 	
 	<p>

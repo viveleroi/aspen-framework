@@ -18,7 +18,7 @@
 			foreach($users as $user){
 		?>
 		<tr>
-			<td><?php print $this->link($user['nice_name'], 'edit', array('id' => $user['id'])) ?></td>
+			<td><?php print $this->link($user['first_name'].' '.$user['last_name'], 'edit', array('id' => $user['id'])) ?></td>
 			<td><?php print $user['username'] ?></td>
 			<td><?php print Date::niceDate($user['latest_login']) ?></td>
 			<td><?php print Utils::implode(', ', Utils::extract('Groups.{n}.name', $user)) ?></td>

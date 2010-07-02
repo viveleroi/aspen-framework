@@ -102,7 +102,7 @@ class Activityrender_html extends Library {
 		$html = str_replace('{flag-css}',$this->render_base->getActivityCss($ac['activity_type']),$html);
 		$html = str_replace('{date}',$this->render_base->formatDate($ac['timestamp']),$html);
 
-		$user = empty($ac['nice_name']) ? 'Unknown' : $ac['nice_name'];
+		$user = empty($ac['first_name']) ? 'Unknown' : $ac['first_name'];
 		$html = str_replace('{user}',$user,$html);
 
 		return $html;

@@ -58,7 +58,7 @@ class testsSuite extends PHPUnit_Framework_TestSuite {
 		$this->sharedFixture->model->query("TRUNCATE `config`");
 		$this->sharedFixture->model->query("TRUNCATE `error_log`");
 		$this->sharedFixture->model->query("TRUNCATE `authentication`");
-		$this->sharedFixture->model->query("INSERT INTO `authentication` (`id`, `username`, `nice_name`, `password`, `latest_login`, `last_login`, `allow_login`) VALUES (1, 'botsko@gmail.com', 'Mike', 'd033e22ae348aeb5660fc2140aec35850c4da997', '2009-04-27 16:11:57', '2009-04-24 18:43:40', 1);");
+		$this->sharedFixture->model->query("INSERT INTO `authentication` (`id`, `username`, `first_name`, `password`, `latest_login`, `last_login`, `allow_login`) VALUES (1, 'botsko@gmail.com', 'Mike', 'd033e22ae348aeb5660fc2140aec35850c4da997', '2009-04-27 16:11:57', '2009-04-24 18:43:40', 1);");
 
 		$this->setName ( 'testsSuite' );
 		

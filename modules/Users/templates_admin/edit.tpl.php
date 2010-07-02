@@ -17,8 +17,13 @@
 		</p>
 		
 		<p>
-		<label for="nice_name"><?php print $this->text('userform:nicename'); ?>:</label><br />
-		<input type="text" id="nice_name" name="nice_name" value="<?php print $form->cv('nice_name') ?>" class="text" />
+		<label for="first_name"><?php print $this->text('userform:first_name'); ?>:</label><br />
+		<input type="text" id="first_name" name="first_name" value="<?php print $form->cv('first_name') ?>" class="text" />
+		</p>
+
+		<p>
+		<label for="last_name"><?php print $this->text('userform:last_name'); ?>:</label><br />
+		<input type="text" id="last_name" name="last_name" value="<?php print $form->cv('last_name') ?>" class="text" />
 		</p>
 		
 		<p>

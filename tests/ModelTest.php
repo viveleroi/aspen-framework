@@ -491,12 +491,12 @@ class ModelTest extends TestHelper {
 	public function testWhereLike() {
 		$model = $this->sharedFixture->model->open('users');
 		
-		$model->whereLike('nice_name', 'Mike');
+		$model->whereLike('first_name', 'Mike');
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT users.* FROM users WHERE nice_name LIKE "%Mike%"  ORDER BY users.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE first_name LIKE "%Mike%"  ORDER BY users.id ASC ', $qry);
 	
 	}
 	
@@ -506,12 +506,12 @@ class ModelTest extends TestHelper {
 	public function testWhereNot() {
 		$model = $this->sharedFixture->model->open('users');
 		
-		$model->whereNot('nice_name', 'Bobblehead');
+		$model->whereNot('first_name', 'Bobblehead');
 		
 		$qry = $model->getBuildQuery();
 		$model->clearQuery();
 		
-		$this->assertEquals('SELECT users.* FROM users WHERE nice_name != "Bobblehead"  ORDER BY users.id ASC ', $qry);
+		$this->assertEquals('SELECT users.* FROM users WHERE first_name != "Bobblehead"  ORDER BY users.id ASC ', $qry);
 	
 	}
 

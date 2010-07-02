@@ -45,7 +45,8 @@ $lang['admin']['userform:delete_link'] 	= 'Delete Account';
 $lang['admin']['userform:delete_warn'] 	= 'Are you sure you want to delete this user account?';
 $lang['admin']['userform:profile'] 		= 'Profile';
 $lang['admin']['userform:username'] 	= 'Username';
-$lang['admin']['userform:nicename'] 	= 'Nice Name';
+$lang['admin']['userform:first_name'] 	= 'First Name';
+$lang['admin']['userform:last_name'] 	= 'Last Name';
 $lang['admin']['userform:password'] 	= 'Password';
 $lang['admin']['userform:confirm'] 		= 'Confirm';
 $lang['admin']['userform:allowlogin'] 	= 'Allow Login';
@@ -59,7 +60,8 @@ $lang['admin']['denied:title'] 	= 'Permission Denied';
 $lang['admin']['denied:intro'] 	= 'Your user account does not currently have sufficient permission to access this page. Please contact an administrator for assistance.';
 
 // query validation errors
-$lang['admin']['db:error:nice_name']		= 'You must enter your name.';
+$lang['admin']['db:error:first_name']		= 'You must enter your first name.';
+$lang['admin']['db:error:last_name']		= 'You must enter your last name.';
 $lang['admin']['db:error:username']			= 'You must enter a username (E-mail address).';
 $lang['admin']['db:error:username-dup']		= 'The chosen username / email has already been used.';
 $lang['admin']['db:error:password']			= 'You must enter a valid password.';

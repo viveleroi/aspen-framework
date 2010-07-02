@@ -33,9 +33,12 @@ class UsersModel extends Model {
 
 		$clean = parent::validate($fields, $primary_key);
 
-		// nice name
-		if($clean->isEmpty('nice_name')){
-			$this->addError('nice_name', $this->text('db:error:nice_name'));
+		if($clean->isEmpty('first_name')){
+			$this->addError('first_name', $this->text('db:error:first_name'));
+		}
+
+		if($clean->isEmpty('last_name')){
+			$this->addError('last_name', $this->text('db:error:last_name'));
 		}
 
 		// verify username

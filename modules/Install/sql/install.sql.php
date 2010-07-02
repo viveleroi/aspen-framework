@@ -11,7 +11,8 @@ $sql[] = "
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `username` text NOT NULL,
-  `nice_name` varchar(155) NOT NULL default '',
+  `first_name` varchar(155) NOT NULL default '',
+  `last_name` varchar(155) NOT NULL default '',
   `password` text NOT NULL,
   `latest_login` datetime NOT NULL default '0000-00-00 00:00:00',
   `last_login` datetime NOT NULL default '0000-00-00 00:00:00',
