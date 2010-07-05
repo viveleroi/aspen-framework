@@ -372,7 +372,7 @@ class User extends Library {
 						($perm['interface'] == $interface || $perm['interface'] == '*') &&
 						($perm['module'] == $module || $perm['module'] == '*') &&
 						($perm['method'] == $method || $perm['method'] == '*') &&
-						(in_array($perm['group_id'], $groups) || $perm['user_id'] = $user_id)
+						(in_array($perm['group_id'], $groups) || $perm['user_id'] == $user_id)
 					){
 						$authenticated = true;
 					}
