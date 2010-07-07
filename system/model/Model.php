@@ -1263,11 +1263,11 @@ class Model extends Library {
 						}
 					}
 
-					if(is_array($value_array) && count($value_array) && !empty($value_array[0])){
+					if(is_array($value_array) && count($value_array) && $value_array[0] !== ''){
 						$count = 1;
 						$this->parenthStart();
 						foreach($value_array as $match){
-							if(!empty($match)){
+							if($match !== ''){
 
 								$using_filters = true;
 
