@@ -302,4 +302,13 @@ function called_from($line_end = false, $ignore_phpunit = true){
 	return $ret;
 
 }
+
+
+/**
+ *
+ * @param <type> $type
+ */
+function dump_params($type){
+	dump( app()->params->getRawSource($type) )->pre_v();
+}
 ?>
