@@ -825,6 +825,7 @@ class Bootstrap extends Base {
 				if(isset($module->library) && is_object($module->library)){
 					foreach($module->library as $lib){
 						$libs[(string)$lib->classname] = array(
+															'module'=>$module,
 															'classname'=>(string)$lib->classname,
 															'root' => MODULES_PATH.DS.$module->folder,
 															'folder' => 'libs',

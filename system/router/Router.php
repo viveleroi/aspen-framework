@@ -403,7 +403,8 @@ class Router extends Library {
 		$lang_setting 	= app()->config('language');
 
 		// load the interface language library
-		$lang_path	= INTERFACE_PATH . DS . 'language' . DS . $lang_setting . '.php';
+		$path = $interface ? APPLICATION_PATH.DS.strtolower($interface) : INTERFACE_PATH;
+		$lang_path	= $path . DS . 'language' . DS . $lang_setting . '.php';
 		app()->log->write('Seeking interface language library ' . $lang_path);
 		if(file_exists($lang_path)){
 			include($lang_path);
@@ -454,6 +455,29 @@ class Router extends Library {
 
 
 	/**
+	 * Loads all language files for user-created libraries.
+	 * @access private
+	 */
+	protected function loadLibraryLanguages(){
+
+		$langs = array();
+
+		$libs = app()->getLoadedLibraries();
+		foreach($libs as $lib){
+			if(isset($lib['module']) && is_object($lib['module'])){
+				$langs[(string)$lib['module']->classname] = (string)$lib['module']->classname;
+			}
+		}
+		if(!empty($langs)){
+			foreach($langs as $module){
+				$this->loadModuleLanguage($module);
+			}
+		}
+		return $langs;
+	}
+
+
+	/**
 	 * Calls the module/method with arguments from the url
 	 * @access public
 	 */
@@ -479,6 +503,7 @@ class Router extends Library {
 			// load the module language file
 			if(app()->config('enable_languages')){
 				$this->loadInterfaceLanguage();
+				$this->loadLibraryLanguages();
 				$this->loadModuleLanguage();
 			}
 
