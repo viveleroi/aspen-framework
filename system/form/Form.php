@@ -79,7 +79,7 @@ class Form extends Library {
 				define('ADD_OR_EDIT', 'add');
 				define('IS_EDIT_PAGE', false);
 			}
-			$this->loadTable($table);
+			$this->loadTable($table, $contains);
 		}
 	}
 

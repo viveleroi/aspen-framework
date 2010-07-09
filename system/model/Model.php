@@ -412,6 +412,10 @@ class Model extends Library {
 				$this->contains[] = $arg;
 			}
 		}
+		// @todo when moved to 5.3, just use array_walk with a lambda
+		foreach($this->contains as $key => $table){
+			$this->contains[$key] = strtolower($table);
+		}
 	}
 
 
@@ -485,9 +489,9 @@ class Model extends Library {
 			foreach($db_map[$table]['schema'] as $field){
 				if(!$field->primary_key){
 					// If field name matches a table name
-					if(strpos($field->name, '_id')){
+					if(substr($field->name, strlen($field->name)-3, 3) == '_id'){
 						$i = new Inflector();
-						$tmp_tbl_name = $i->pluralize( str_replace('_id', '', $field->name) );
+						$tmp_tbl_name = $i->pluralize( substr_replace($field->name,'', -3) );
 						if(in_array($tmp_tbl_name,$tables)){
 							$db_map[$tmp_tbl_name]['children'][$table] = $table;
 							$db_map[$table]['parents'][$tmp_tbl_name] = $tmp_tbl_name;
@@ -990,6 +994,32 @@ class Model extends Library {
 	 */
 	public function whereIsNotNull($field = false, $match = 'AND'){
 		$this->base_where('%s %s IS NOT NULL', $field, $match);
+	}
+
+
+	/**
+	 * Adds a standard where in condition
+	 * @param string $field
+	 * @param mixed $value
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereIn($field, $values, $match = 'AND'){
+		$vals = is_array($values) ? implode('","', $values) : $values;
+		$this->whereCustom(sprintf('%s IN ("%s")', $field, $vals), $match);
+	}
+
+
+	/**
+	 * Adds a standard where not in condition
+	 * @param string $field
+	 * @param mixed $value
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereNotIn($field, $values, $match = 'AND'){
+		$vals = is_array($values) ? implode('","', $values) : $values;
+		$this->whereCustom(sprintf('%s NOT IN ("%s")', $field, $vals), $match);
 	}
 
 

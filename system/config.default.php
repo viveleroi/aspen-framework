@@ -204,6 +204,9 @@
 	// log errors on 404s: missing modules, methods
 	$config['log_error_on_404'] = true;
 
+	// backtrace queries when they're being logged
+	$config['log_query_backtrace'] = false;
+
 /**
  * Snowy-Evening.com integration
  */
