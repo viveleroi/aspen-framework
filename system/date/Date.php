@@ -81,6 +81,17 @@ class Date {
 
 
 	/**
+	 *
+	 * @param <type> $date
+	 * @return <type>
+	 */
+	static public function isEmptyDate($date){
+		$empty_date = str_replace(array(0, "-", ":", " "), '', $date);
+		return strlen($empty_date) == 0;
+	}
+
+
+	/**
 	 * Prints a nicer date display
 	 * @param string $date
 	 * @param string $date_format_string The format to print the date, if needed
@@ -100,9 +111,8 @@ class Date {
 		$opts = array_merge($opts, $arg_opts);
 
 		$return_date = $opts['empty'];
-		$empty_date = str_replace(array(0, "-", ":", " "), '', $date);
 
-		if(strlen($empty_date) > 0){
+		if(Date::isEmptyDate($return_date)){
 
 			$date = Date::strtotime($date);
 			$days_between = Date::daysBetween(date("Y-m-d"), date("Y-m-d", $date));

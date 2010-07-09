@@ -295,6 +295,22 @@ class User extends Library {
 
 
 	/**
+	 * Returns true if the user has never logged in before
+	 * @param <type> $user_id
+	 * @return <type>
+	 */
+	public function isFirstLogin($user_id = false){
+		if($user_id){
+			$user = app()->model->open('users', $user_id);
+			$last_login = $user['last_login'];
+		} else {
+			$last_login = app()->params->session->getRaw('last_login');
+		}
+		return Date::isEmptyDate($last_login);
+	}
+
+
+	/**
 	 * Checks if user has permissions to access an entire interface
 	 * @param string $interface
 	 * @param integer $user_id
