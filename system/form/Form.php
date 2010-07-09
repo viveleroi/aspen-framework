@@ -227,7 +227,7 @@ class Form extends Library {
 		$data = app()->params->getRawSource($method);
 		if(is_array($data) && count($data)){
 			if($field){
-				$submitted = app()->params->{$method}->keyExists($field);
+				$submitted = app()->{$method}->keyExists($field);
 			} else {
 				$submitted = true;
 			}
@@ -246,9 +246,9 @@ class Form extends Library {
 			// if token authorization is enabled, we must authenticate
 			if(app()->config('require_form_token_auth')){
 
-				$sess_token = app()->params->session->getAlnum('form_token');
+				$sess_token = app()->session->getAlnum('form_token');
 
-				if(empty($sess_token) || $sess_token != app()->params->{$method}->getAlnum('token')){
+				if(empty($sess_token) || $sess_token != app()->{$method}->getAlnum('token')){
 					$_SESSION['form_token'] = false;
 					$this->addError('token', 'An invalid token was provided. The form was not processed.');
 				}
@@ -486,7 +486,7 @@ class Form extends Library {
 
 				// get core array, so we can verify if it's even set
 				$source = app()->params->getRawSource($this->param_type);
-				$get_val = app()->params->{$this->param_type}->{$param_access_type}($field);
+				$get_val = app()->{$this->param_type}->{$param_access_type}($field);
 
 				// if array key not set, we use the current value
 				if(!array_key_exists($field, $source)){

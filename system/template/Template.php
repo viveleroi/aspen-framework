@@ -937,11 +937,11 @@ class Template extends Library {
 
 		$filters = array();
 
-		if(app()->params->get->isArray('filter')){
-			$filters = app()->params->get->getArray('filter');
+		if(app()->get->isArray('filter')){
+			$filters = app()->get->getArray('filter');
 		} else {
 
-			$sess_filters = app()->params->session->getArray('filter');
+			$sess_filters = app()->session->getArray('filter');
 
 			if(isset($sess_filters[app()->router->module() . ':' . app()->router->method()])){
 				$filters = $sess_filters[app()->router->module() . ':' . app()->router->method()];
@@ -966,7 +966,7 @@ class Template extends Library {
 		$format		= $format ? $format : app()->config('date_format');
 
 		// try to get a user timezone setting
-		if($user_id = app()->params->session->getInt('user_id')){
+		if($user_id = app()->session->getInt('user_id')){
 			$timezone = app()->settings->getConfig('timezone', $user_id);
 		}
 

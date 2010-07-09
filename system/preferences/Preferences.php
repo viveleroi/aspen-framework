@@ -23,7 +23,7 @@ class Preferences extends Library {
 
 		$_SESSION['settings'] =  array();
 
-		$user_id = app()->params->session->getInt('user_id');
+		$user_id = app()->session->getInt('user_id');
 
 		if($user_id && app()->checkDbConnection()){
 
@@ -54,7 +54,7 @@ class Preferences extends Library {
 	 */
 	public function addSort($location = false, $field = false, $dir = 'ASC'){
 
-		if($user_id = app()->params->session->getInt('user_id')){
+		if($user_id = app()->session->getInt('user_id')){
 
 			$pref_model = app()->model->open('config');
 
@@ -88,9 +88,9 @@ class Preferences extends Library {
 
 		$sort = array('sort_by'=>$default,'sort_direction'=>strtoupper($dir));
 
-		if(app()->params->session->isArray('settings')){
+		if(app()->session->isArray('settings')){
 
-			$settings = app()->params->session->getArray('settings');
+			$settings = app()->session->getArray('settings');
 
 			$loc_key = 'sort.'.$location;
 			if(isset($settings['sorts'][$loc_key.'.field'])){
@@ -125,10 +125,10 @@ class Preferences extends Library {
 		}
 
 		// process the form if submitted
-		if(app()->params->post->keyExists('preferences-submit')){
+		if(app()->post->keyExists('preferences-submit')){
 			$config = app()->model->open('config');
 			foreach($record as $field => $existing_value){
-				$record[$field] = app()->params->post->getRaw($field);
+				$record[$field] = app()->post->getRaw($field);
 				$config->query( sprintf('DELETE FROM config WHERE config_key = "%s" AND user_id = "%s"', $field, $user_id) );
 				$config->insert( array('current_value'=>$record[$field],'config_key'=>$field,'user_id'=>$user_id));
 			}

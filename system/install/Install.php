@@ -203,7 +203,7 @@ class Install extends Library {
 		}
 
 		// if the config exists and we're not creating an account, attempt to install the base tables
-		if(!app()->params->post->keyExists('submit')){
+		if(!app()->post->keyExists('submit')){
 			if(app()->db){
 
 				// if no tables exist yet

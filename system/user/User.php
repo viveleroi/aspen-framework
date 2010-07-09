@@ -59,7 +59,7 @@ class User extends Library {
 	 * @access public
 	 */
 	public function my_account(){
-		return $this->edit(app()->params->session->getInt('user_id'));
+		return $this->edit(app()->session->getInt('user_id'));
 	}
 
 
@@ -81,7 +81,7 @@ class User extends Library {
 	 */
 	final public function login(){
 
-		$uri = app()->params->server->getPath('REQUEST_URI').app()->params->server->getRaw('QUERY_STRING');
+		$uri = app()->server->getPath('REQUEST_URI').app()->server->getRaw('QUERY_STRING');
 		$uri = strip_tags(urldecode($uri));
 		$uri = preg_replace('/redirected=(.*)/', '', $uri);
 
@@ -170,9 +170,9 @@ class User extends Library {
 	 */
 	final private function getDomainKeyValue(){
 		$string = app()->config('application_guid') . LS;
-		$string .= app()->params->server->getServerName('HTTP_HOST');
-		$string .= app()->params->server->getServerName('HTTP_USER_AGENT');
-		$string .= app()->params->server->getServerName('REMOTE_ADDR');
+		$string .= app()->server->getServerName('HTTP_HOST');
+		$string .= app()->server->getServerName('HTTP_USER_AGENT');
+		$string .= app()->server->getServerName('REMOTE_ADDR');
 		return sha1($string);
 	}
 
@@ -185,8 +185,8 @@ class User extends Library {
 
 		$auth = false;
 		$p	  = new PasswordHash();
-		$user = app()->params->post->getEmail('user');
-		$pass = app()->params->post->getRaw('pass');
+		$user = app()->post->getEmail('user');
+		$pass = app()->post->getRaw('pass');
 
 		if($user && $pass){
 
@@ -256,8 +256,8 @@ class User extends Library {
 	public function postLoginRedirect(){
 
 		$redirect = false;
-		if(app()->params->session->isPath('post-login_redirect')){
-			$redirect = app()->params->session->getPath('post-login_redirect');
+		if(app()->session->isPath('post-login_redirect')){
+			$redirect = app()->session->getPath('post-login_redirect');
 			$lred = strtolower($redirect);
 			if(strpos($lred, 'users/login') !== false || strpos($lred, 'users/authenticate') !== false){
 				$redirect = false;
@@ -277,13 +277,13 @@ class User extends Library {
 	final public function isLoggedIn(){
 
 		$authenticated 	= false;
-		$auth_key 		= sha1(app()->params->session->getEmail('username') . app()->params->session->getInt('user_id'));
+		$auth_key 		= sha1(app()->session->getEmail('username') . app()->session->getInt('user_id'));
 
 		if(app()->checkDbConnection()){
 			if(
-				app()->params->session->getInt('authenticated', false) &&
-				app()->params->session->getAlnum('authentication_key') == $auth_key &&
-				app()->params->session->getAlnum('domain_key') == $this->getDomainKeyValue()
+				app()->session->getInt('authenticated', false) &&
+				app()->session->getAlnum('authentication_key') == $auth_key &&
+				app()->session->getAlnum('domain_key') == $this->getDomainKeyValue()
 				){
 					$authenticated = true;
 			}
@@ -304,7 +304,7 @@ class User extends Library {
 			$user = app()->model->open('users', $user_id);
 			$last_login = $user['last_login'];
 		} else {
-			$last_login = app()->params->session->getRaw('last_login');
+			$last_login = app()->session->getRaw('last_login');
 		}
 		return Date::isEmptyDate($last_login);
 	}
@@ -321,7 +321,7 @@ class User extends Library {
 
 		$authenticated 	= false;
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : app()->params->session->getInt('user_id');
+		$user_id		= $user_id ? $user_id : app()->session->getInt('user_id');
 
 		if(IS_ADMIN){
 			$authenticated = true;
@@ -367,7 +367,7 @@ class User extends Library {
 		$module 		= $module ? $module : app()->router->module();
 		$method 		= $method ? $method : app()->router->method();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : app()->params->session->getInt('user_id');
+		$user_id		= $user_id ? $user_id : app()->session->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
 
 		if(IS_ADMIN || $this->allowAnonymous($module, $method, $interface)){
@@ -513,7 +513,7 @@ class User extends Library {
 		if($this->isLoggedIn()){
 
 			$model = app()->model->open('user_group_link');
-			$model->where('user_id', app()->params->session->getInt('user_id'));
+			$model->where('user_id', app()->session->getInt('user_id'));
 			$model->where('group_id', 1);
 			$groups = $model->results();
 
@@ -556,7 +556,7 @@ class User extends Library {
 		$default = app()->config('default_module');
 
 		if(app()->isInstalled()){
-			if($user_id = app()->params->session->getInt('user_id')){
+			if($user_id = app()->session->getInt('user_id')){
 				$groups = array_keys( $this->usersGroups($user_id) );
 
 				$ug_defs = app()->config('usergroup_default_modules');

@@ -187,7 +187,56 @@ class Bootstrap extends Base {
 	public $xml = false;
 
 
-	// PRIVATE VAR DEFINITIONS
+	/**********************************************
+	 * PUBLIC SUPERGLOBAL/PEREGRINE DEFINITIONS
+	 ****************************/
+
+	/**
+	 * @var object Peregrine object for COOKIE superglobal
+	 * @access public
+	 */
+	public $cookie;
+
+	/**
+	 * @var object Peregrine object for ENV superglobal
+	 * @access public
+	 */
+	public $env;
+
+	/**
+	 * @var object Peregrine object for FILES superglobal
+	 * @access public
+	 */
+	public $files;
+
+	/**
+	 * @var object Peregrine object for GET superglobal
+	 * @access public
+	 */
+	public $get;
+
+	/**
+	 * @var object Peregrine object for POST superglobal
+	 * @access public
+	 */
+	public $post;
+
+	/**
+	 * @var object Peregrine object for SERVER superglobal
+	 * @access public
+	 */
+	public $server;
+
+	/**
+	 * @var object Peregrine object for SESSION superglobal
+	 * @access public
+	 */
+	public $session;
+
+
+	/**********************************************
+	 * PRIVATE VAR DEFINITIONS
+	 ****************************/
 
 	/**
 	 * @var array $config Holds an array of all configuration settings
@@ -605,6 +654,14 @@ class Bootstrap extends Base {
 
     	// assign supercage
     	$this->params->init();
+		// reassign the public vars to our own for easier access
+		$this->post		= $this->params->post;
+		$this->get		= $this->params->get;
+		$this->session	= $this->params->session;
+		$this->env		= $this->params->env;
+		$this->files	= $this->params->files;
+		$this->cookie	= $this->params->cookie;
+		$this->server	= $this->params->server;
 
 		// load database schema
 		if($this->db){

@@ -75,7 +75,7 @@ class Router extends Library {
 		$bits = array();
 
 		// if mod_rewrite enabled, and request doesn't look like a non-rewrite request
-		if(app()->config('enable_mod_rewrite') && strpos(app()->params->server->getQueryString('REQUEST_URI'), '.php?') === false){
+		if(app()->config('enable_mod_rewrite') && strpos(app()->server->getQueryString('REQUEST_URI'), '.php?') === false){
 
 			// we force the entire url as replacement because
 			// an interface app name may be the same as a module
@@ -87,7 +87,7 @@ class Router extends Library {
 				$replace[] = $this->appUrl();
 				$replace[] = $this->getPath();
 			}
-			$uri = $to_map = str_replace($replace, '', $this->domainUrl() . app()->params->server->getQueryString('REQUEST_URI'));
+			$uri = $to_map = str_replace($replace, '', $this->domainUrl() . app()->server->getQueryString('REQUEST_URI'));
 			$uri = explode('/', $uri);
 
 			// If route mapping fails, then we need to parse the url for the default config
@@ -105,8 +105,8 @@ class Router extends Library {
 			}
 		} else {
 
-			$this->map['module'] = app()->params->get->getElemId('module');
-			$this->map['method'] = app()->params->get->getElemId('method');
+			$this->map['module'] = app()->get->getElemId('module');
+			$this->map['method'] = app()->get->getElemId('method');
 
 			// loop additional bits to pass to our arguments
 			$get = app()->params->getRawSource('get');
@@ -114,7 +114,7 @@ class Router extends Library {
 			if(is_array($get)){
 				foreach($get as $key => $value){
 					if($key != 'module' && $key != 'method'){
-						$bits[$key] = $this->stripQuery(app()->params->get->getRaw($key));
+						$bits[$key] = $this->stripQuery(app()->get->getRaw($key));
 					}
 				}
 				$this->map['bits'] = $bits;
@@ -589,7 +589,7 @@ class Router extends Library {
 	public function fullUrl(){
 
 		$url = $this->domainUrl();
-		$url .= app()->params->server->getQueryString('REQUEST_URI');
+		$url .= app()->server->getQueryString('REQUEST_URI');
 		$url = strip_tags(urldecode($url));
 
 		return $url;
@@ -617,7 +617,7 @@ class Router extends Library {
 	 * @access public
 	 */
 	public function port(){
-		return app()->params->server->getInt('SERVER_PORT');
+		return app()->server->getInt('SERVER_PORT');
 	}
 
 
@@ -629,7 +629,7 @@ class Router extends Library {
 	public function domainUrl(){
 
 		$url = $this->port() == 443 ? 'https://' : 'http://';
-		$url .= app()->params->server->getServerName('SERVER_NAME');
+		$url .= app()->server->getServerName('SERVER_NAME');
 
 		if($this->port() != 80 && $this->port() != 443){
 			$url .= ':'.$this->port();
@@ -648,7 +648,7 @@ class Router extends Library {
     public function getPath(){
 
         $adjusted_app_path = str_replace('\\', '/', APPLICATION_PATH);
-        $adjusted_doc_root = str_replace('\\', '/', app()->params->server->getPath('DOCUMENT_ROOT'));
+        $adjusted_doc_root = str_replace('\\', '/', app()->server->getPath('DOCUMENT_ROOT'));
 
         $doc_strlen = strlen($adjusted_doc_root);
         if(substr($adjusted_doc_root, $doc_strlen - 1, $doc_strlen) == '/'){
@@ -666,9 +666,9 @@ class Router extends Library {
         } else {
 
             // if no mod_rewrite, we need to handle the paths appropriately
-            if(app()->config('enable_mod_rewrite') && strpos(app()->params->server->getQueryString('REQUEST_URI'), '.php?') === false){
+            if(app()->config('enable_mod_rewrite') && strpos(app()->server->getQueryString('REQUEST_URI'), '.php?') === false){
 
-                $redirected = stripslashes(app()->params->get->getQueryString('redirected'));
+                $redirected = stripslashes(app()->get->getQueryString('redirected'));
                 $interface = LS ? LS : '';
 
                 $replace = array();
@@ -679,12 +679,12 @@ class Router extends Library {
                     $replace[] = '/'.$redirected;
                 }
 
-                $uri = str_replace($replace, '', urldecode(app()->params->server->getQueryString('REQUEST_URI')));
+                $uri = str_replace($replace, '', urldecode(app()->server->getQueryString('REQUEST_URI')));
 				$uri = $this->stripQuery($uri);
 
             } else {
 
-                $no_qs_url = str_replace('?' . app()->params->server->getQueryString('QUERY_STRING'), '', app()->params->server->getQueryString('REQUEST_URI'));
+                $no_qs_url = str_replace('?' . app()->server->getQueryString('QUERY_STRING'), '', app()->server->getQueryString('REQUEST_URI'));
                 $interface = LS ? LS : '';
                 $uri = str_replace(array("index.php", '/'.$interface), "", $no_qs_url);
 
@@ -873,8 +873,8 @@ class Router extends Library {
 	 */
 	public function setReturnToReferrer(){
 		if(strpos($this->method(), 'ajax') === false){
-			if(app()->params->server->getUri('HTTP_REFERER')){
-				$_SESSION['referring_page'] = app()->params->server->getUri('HTTP_REFERER');
+			if(app()->server->getUri('HTTP_REFERER')){
+				$_SESSION['referring_page'] = app()->server->getUri('HTTP_REFERER');
 			}
 		}
 	}
@@ -885,7 +885,7 @@ class Router extends Library {
 	 * @access public
 	 */
 	public function returnToReferrer(){
-		$location = app()->params->session->getUri('referring_page', app()->template->url('view'));
+		$location = app()->session->getUri('referring_page', app()->template->url('view'));
 		if(!empty($location)){
 			$this->redirectToUrl($location);
 		}

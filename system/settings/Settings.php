@@ -25,7 +25,7 @@ class Settings extends Library {
 	 */
 	public function  aspen_init() {
 		if(app()->checkDbConnection()){
-			$this->loadSettings( app()->params->session->getInt('user_id') );
+			$this->loadSettings( app()->session->getInt('user_id') );
 		}
 	}
 

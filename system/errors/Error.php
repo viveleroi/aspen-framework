@@ -125,10 +125,10 @@ class Error extends Library {
 		// If we need to display this error, do so
 		if($errNo <= app()->config('minimum_displayable_error')){
 			if(
-				!app()->params->env->keyExists('SSH_CLIENT')
-				&& !app()->params->env->keyExists('TERM')
-				&& !app()->params->env->keyExists('SSH_CONNECTION')
-				&& app()->params->server->keyExists('HTTP_HOST')){
+				!app()->env->keyExists('SSH_CLIENT')
+				&& !app()->env->keyExists('TERM')
+				&& !app()->env->keyExists('SSH_CONNECTION')
+				&& app()->server->keyExists('HTTP_HOST')){
 
 				app()->template->resetTemplateQueue();
 				app()->template->addView(app()->template->getTemplateDir().DS . 'error.tpl.php');
@@ -171,7 +171,7 @@ class Error extends Library {
 	private function getServerValue($key, $default = 'N/A'){
 
 		if(isset(app()->params) && is_object(app()->params)){
-			return app()->params->server->getRaw($key);
+			return app()->server->getRaw($key);
 		} else {
 			return isset($_SERVER[$key]) ? $_SERVER[$key] : $default;
 		}

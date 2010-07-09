@@ -53,7 +53,7 @@ class ActivityModel extends Model {
 		$fields['timestamp'] = gmdate('Y-m-d H:i:s');
 
 		// set user_id
-		$fields['user_id'] = app()->params->session->getInt('user_id');
+		$fields['user_id'] = app()->session->getInt('user_id');
 
 		return $fields;
 

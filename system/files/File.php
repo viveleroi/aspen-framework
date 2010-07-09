@@ -258,7 +258,7 @@ class File extends Library {
 	 */
 	public function upload($form_field = false, $overwrite = false, $timestamp = true, $rename = false){
 		if(app()->config('enable_uploads')){
-			if($this->setUploadDirectory() && app()->params->files->isArray($form_field)){
+			if($this->setUploadDirectory() && app()->files->isArray($form_field)){
 				return $this->upload_files($form_field, $rename, $overwrite, $timestamp);
 			}
 		} else {
@@ -309,9 +309,9 @@ class File extends Library {
 		$uploads = array();
 
 		// if form field set
-		if($form_field && app()->params->files->isArray($form_field)){
+		if($form_field && app()->files->isArray($form_field)){
 			
-			$file = app()->params->files->getArray($form_field);
+			$file = app()->files->getArray($form_field);
 			
 			if(isset($file['name'])){
 				// If the file uploads is an array

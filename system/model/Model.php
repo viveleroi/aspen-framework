@@ -1213,7 +1213,7 @@ class Model extends Library {
 			}
 		}
 
-		$user_id				= app()->params->session->getInt('user_id', NULL);
+		$user_id				= app()->session->getInt('user_id', NULL);
 		$using_filters			= false;
 		$location_key			= $location_key ? $location_key : (app()->router->module() . ':' . app()->router->method());
 		$disabled_filters		= $disabled_filters ? $disabled_filters : array();
@@ -1221,13 +1221,13 @@ class Model extends Library {
 
 		// check GET or POST for any filter overrides
 		// otherwise, check the config table
-		if(app()->params->get->getRaw('filter')){
-			$filters = app()->params->get->getRaw('filter');
+		if(app()->get->getRaw('filter')){
+			$filters = app()->get->getRaw('filter');
 		}
-		elseif(app()->params->post->getRaw('filter')){
-			$filters = app()->params->post->getRaw('filter');
+		elseif(app()->post->getRaw('filter')){
+			$filters = app()->post->getRaw('filter');
 		}
-		elseif($named = app()->params->get->getRaw('named-filter')){
+		elseif($named = app()->get->getRaw('named-filter')){
 			$named = app()->router->decodeForRewriteUrl($named);
 			$filters = app()->settings->getConfig('filter.named.'.$named, $user_id);
 			$filters = unserialize($filters);
@@ -1239,11 +1239,11 @@ class Model extends Library {
 		// look for a save-as named variable
 		// if it's set, we'll store this as a named filter
 		$filter_name = false;
-		if(app()->params->get->getRaw('filter-save-as')){
-			$filter_name = app()->params->get->getRaw('filter-save-as');
+		if(app()->get->getRaw('filter-save-as')){
+			$filter_name = app()->get->getRaw('filter-save-as');
 		}
-		elseif(app()->params->post->getRaw('filter-save-as')){
-			$filter_name = app()->params->post->getRaw('filter-save-as');
+		elseif(app()->post->getRaw('filter-save-as')){
+			$filter_name = app()->post->getRaw('filter-save-as');
 		}
 
 		// over-write the table keys with filters

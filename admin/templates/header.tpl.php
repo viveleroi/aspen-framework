@@ -22,7 +22,7 @@
 		<div id="header">
 		<h1><?php print app()->config('application_name'); ?></h1>
 		<?php if(app()->user->isLoggedIn()){ ?>
-		<span>Logged in as <?php print $this->link(app()->params->session->getName('first_name'), 'my_account', false, 'Users'); ?></span>
+		<span>Logged in as <?php print $this->link(app()->session->getName('first_name'), 'my_account', false, 'Users'); ?></span>
 		<?php } ?>
 		<div class="clear clearfix"></div>
 		</div>
