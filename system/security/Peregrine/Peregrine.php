@@ -2,18 +2,12 @@
 /**
  * @package  Peregrine
  * @author   Michael Botsko, Trellis Development, LLC
- * @license  Mozilla Public License, 1.1
- * @version  1.0-rc1-6-g9ce0f77
+ * @version  1.0-rc1-8-g2323965
  *
  * Peregrine is a class that aims to improve PHP superglobal security
  * by transferring the raw incoming values to private member variables.
  * You may then access the data using a wide array of higher security
  * filtering functions.
- *
- * This class was partially inspired by Inspekt by Ed Finkler and Chris Shifflet,
- * two folks who have contributed greatly to the php community. In order to meet
- * some custom needs for both single projects and for the Aspen Framework, this
- * class was created to make structural and use improvements.
  */
 
 /**
