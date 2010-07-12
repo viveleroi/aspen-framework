@@ -447,11 +447,11 @@ class User extends Library {
 
 	/**
 	 * Returns whether a user is in a group
-	 * @param string $group_name
+	 * @param mixed $group
 	 * @param integer $user_id
 	 * @return boolean
 	 */
-	public function inGroup($group_name, $user_id = false){
+	public function inGroup($group, $user_id = false){
 
 		$ingroup = false;
 
@@ -460,7 +460,12 @@ class User extends Library {
 			$model = app()->model->open('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
-			$model->where('groups.name', $group_name);
+			if(is_string($group)){
+				$model->where('groups.name', $group);
+			}
+			if(is_int($group)){
+				$model->where('groups.id', $group);
+			}
 			$groups = $model->results();
 
 			$ingroup = (boolean)$groups;
