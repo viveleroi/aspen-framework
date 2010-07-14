@@ -40,7 +40,7 @@ class Preferences extends Library {
 			}
 		}
 
-		app()->params->refreshCage('session');
+		app()->refreshCage('session');
 
 	}
 

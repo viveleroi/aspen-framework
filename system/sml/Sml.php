@@ -49,7 +49,7 @@ class Sml extends Library {
 		$_SESSION['unread_message_flag'] = true;
 
 		/* refresh the session cage */
-		app()->params->refreshCage('session');
+		app()->refreshCage('session');
 
 		return true;
 	}

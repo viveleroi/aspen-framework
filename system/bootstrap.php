@@ -1447,5 +1447,18 @@ class Bootstrap extends Base {
 	public function latestVersion(){
 		return $this->formatVersionNumber( $this->settings->getConfig('app.database.version') );
 	}
+
+	
+	/**
+	 * Refreshes the cage of a superglobal and re-assigns that to the bootstrap
+	 * shortcut.
+	 * @param string $type
+	 */
+	public function refreshCage($type){
+		app()->params->refreshCage($type);
+		if($type == 'session'){
+			$this->{$type}	= $this->params->{$type};
+		}
+	}
 }
 ?>
