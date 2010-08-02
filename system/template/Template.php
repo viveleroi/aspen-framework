@@ -560,21 +560,22 @@ class Template extends Library {
 	public function encodeTextEntities($string){
 		return str_replace("&", "&#38;", $string);
 	}
-
+	
 
 	/**
 	 * Returns a properly-encoded URL using a method
 	 * @param string $method
 	 * @param string $module
+	 * @param string $interface
 	 * @return string
 	 * @access public
 	 */
-	public function action($method = false, $module = false){
+	public function action($method = false, $module = false, $interface = false){
 		$bits = false;
 		if(app()->router->arg(1)){
 			$bits = array('id' => app()->router->arg(1));
 		}
-		return $this->xhtmlUrl($method, $bits, $module);
+		return $this->xhtmlUrl($method, $bits, $module, $interface);
 	}
 
 
