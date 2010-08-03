@@ -1,4 +1,4 @@
-<h2><?php print $this->text('title'); ?></h2>
+<h2><?php print text('title'); ?></h2>
 
 <?php print app()->sml->printMessage(); ?>
 

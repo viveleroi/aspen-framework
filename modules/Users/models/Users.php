@@ -34,16 +34,16 @@ class UsersModel extends Model {
 		$clean = parent::validate($fields, $primary_key);
 
 		if($clean->isEmpty('first_name')){
-			$this->addError('first_name', $this->text('db:error:first_name'));
+			$this->addError('first_name', text('db:error:first_name'));
 		}
 
 		if($clean->isEmpty('last_name')){
-			$this->addError('last_name', $this->text('db:error:last_name'));
+			$this->addError('last_name', text('db:error:last_name'));
 		}
 
 		// verify username
 		if($clean->isEmpty('username')){
-			$this->addError('username', $this->text('db:error:username'));
+			$this->addError('username', text('db:error:username'));
 		} else {
 
 			// if we're adding the record, check for existing username
@@ -52,7 +52,7 @@ class UsersModel extends Model {
 				$user->where('username', $clean->getEmail('username'));
 				$unique = $user->results();
 				if($unique){
-					$this->addError('username', $this->text('db:error:username-dup'));
+					$this->addError('username', text('db:error:username-dup'));
 				}
 			}
 		}
@@ -60,10 +60,10 @@ class UsersModel extends Model {
 		// verify password
 		if($clean->isSetAndNotEmpty('_raw_password') || $clean->isSetAndNotEmpty('password_confirm')){
 			if($clean->isSetAndEmpty('_raw_password') || $clean->isSetAndEmpty('password_confirm')){
-				$this->addError('password', $this->text('db:error:password'));
+				$this->addError('password', text('db:error:password'));
 			} else {
 				if(!$clean->match('_raw_password', 'password_confirm')){
-					$this->addError('password', $this->text('db:error:password_match'));
+					$this->addError('password', text('db:error:password_match'));
 				}
 			}
 		}
@@ -73,14 +73,14 @@ class UsersModel extends Model {
 			// Make sure an admin isn't removing his own admin status
 			if(defined('IS_ADMIN') && IS_ADMIN && $primary_key == app()->session->getInt('user_id')){
 				if(!$clean->isInArray('Groups', 1)){
-					$this->addError('Groups', $this->text('db:error:groups-noadmin'));
+					$this->addError('Groups', text('db:error:groups-noadmin'));
 				}
 			}
 		}
 
 		// if we're inserting new record, no empty pass
 		if(!$primary_key && $clean->isEmpty('password')){
-			$this->addError('password', $this->text('db:error:password'));
+			$this->addError('password', text('db:error:password'));
 		}
 
 		return !$this->error();

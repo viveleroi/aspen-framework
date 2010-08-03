@@ -700,7 +700,7 @@ class Bootstrap extends Base {
 	    			$classes[] = new $filter['class'];
 	    		}
 
-		    	$html_config->set('Filter', 'Custom', $classes);
+		    	$html_config->set('Filter.Custom', $classes);
 
 	    	}
 

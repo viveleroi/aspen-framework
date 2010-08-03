@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package 	Aspen_Framework
  * @subpackage 	System
@@ -7,6 +6,19 @@
  * @copyright 	2009 Trellis Development, LLC
  * @since 		1.0
  */
+
+
+/**
+ * Shortcut for the language support method
+ * @param string $type
+ * @return string
+ */
+function text($key){
+	// pass any additional arguments straight to text
+	$args = func_get_args();
+	return call_user_func_array(array(app()->template,'text'),$args);
+}
+
 
 /**
  * This class manages our templates and loads them for display
@@ -841,7 +853,7 @@ class Template extends Library {
 		$module = app()->router->cleanModule(app()->router->module());
 		$method = app()->router->method();
 
-		$this->page_title = str_replace('{lang_title}', $this->text(strtolower($module).':'.$method.':head-title'), $this->page_title);
+		$this->page_title = str_replace('{lang_title}', text(strtolower($module).':'.$method.':head-title'), $this->page_title);
 		$this->page_title = str_replace('{module}', ucwords($module), $this->page_title);
 		$this->page_title = str_replace('{method}', ucwords(app()->router->method()), $this->page_title);
 		$this->page_title .= '&nbsp;&ndash;&nbsp;'.app()->config('application_name');

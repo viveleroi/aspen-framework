@@ -112,7 +112,7 @@ class Date {
 
 		$return_date = $opts['empty'];
 
-		if(Date::isEmptyDate($date)){
+		if(!Date::isEmptyDate($date)){
 
 			$date = Date::strtotime($date);
 			$days_between = Date::daysBetween(date("Y-m-d"), date("Y-m-d", $date));

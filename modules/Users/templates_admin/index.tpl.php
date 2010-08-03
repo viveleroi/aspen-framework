@@ -1,15 +1,15 @@
-<h2><?php print $this->text('userlist:title'); ?></h2>
+<h2><?php print text('userlist:title'); ?></h2>
 
 <?php print app()->sml->printMessage(); ?>
 
 <table cellspacing="0">
-	<caption>User Accounts | <?php print $this->link($this->text('userlist:adduser'), 'add'); ?></caption>
+	<caption>User Accounts | <?php print $this->link(text('userlist:adduser'), 'add'); ?></caption>
 	<thead>
 		<tr>
-			<th><?php print $this->text('userlist:th:name'); ?></th>
-			<th><?php print $this->text('userlist:th:username'); ?></th>
-			<th><?php print $this->text('userlist:th:latestlogin'); ?></th>
-			<th><?php print $this->text('userlist:th:groups'); ?></th>
+			<th><?php print text('userlist:th:name'); ?></th>
+			<th><?php print text('userlist:th:username'); ?></th>
+			<th><?php print text('userlist:th:latestlogin'); ?></th>
+			<th><?php print text('userlist:th:groups'); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -26,7 +26,7 @@
 		<?php
 			}
 		} else { ?>
-		<tr><td><?php print $this->text('userlist:noresults'); ?></td></tr>
+		<tr><td><?php print text('userlist:noresults'); ?></td></tr>
 		<?php } ?>
 	</tbody>
 </table>

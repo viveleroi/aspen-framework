@@ -129,7 +129,7 @@ class Scaffold extends Library {
 
 			foreach($schema['schema'] as $field){
 				$this->langs['table:th:'.$field->name] = $this->fieldName($field->name);
-				$thead .= sprintf('			<th><?php print $this->text(\'table:th:%s\'); ?></th>' . "\n", $field->name);
+				$thead .= sprintf('			<th><?php print text(\'table:th:%s\'); ?></th>' . "\n", $field->name);
 			}
 
 			// loop the results
@@ -157,10 +157,10 @@ $tbody .= "		</tr>\n
 
 			// begin building the html
 			$this->langs['index:title'] = ucwords($table);
-			$html .= '<h2><?php print $this->text(\'index:title\'); ?></h2>'."\n\n";
+			$html .= '<h2><?php print text(\'index:title\'); ?></h2>'."\n\n";
 			$html .= '<?php print app()->sml->printMessage(); ?>'."\n\n";
 			$this->langs['add-new'] = 'Add new record';
-			$html .= "<p><?php print \app()->template->link(\$this->text('add-new'), 'add'); ?></p>\n\n";
+			$html .= "<p><?php print \app()->template->link(\text('add-new'), 'add'); ?></p>\n\n";
 
 			// create our table
 			$html .= '<table>' . "\n";
@@ -196,7 +196,7 @@ $tbody .= "		</tr>\n
 		$this->langs['form:'.$field->name] = $this->fieldName($field->name);
 
 		$html = '		';
-		$html .= sprintf('<label for="%s"><?php print $this->text(\'form:%1$s\'); ?>:</label><br />' . "\n", $field->name);
+		$html .= sprintf('<label for="%s"><?php print text(\'form:%1$s\'); ?>:</label><br />' . "\n", $field->name);
 
 		if($return_html){
 			$value = "<?php print \$form->cv('".$field->name."'); ?>";
@@ -274,7 +274,7 @@ $tbody .= "		</tr>\n
 
 		// build the html form
 		$html = '';
-		$html .= '<h2><?php print $this->text(\'form:title-\'.ADD_OR_EDIT); ?></h2>'."\n\n";
+		$html .= '<h2><?php print text(\'form:title-\'.ADD_OR_EDIT); ?></h2>'."\n\n";
 
 		$this->langs['form:title-add'] = 'Add ' . ucwords($table) . ' Record';
 		$this->langs['form:title-edit'] = 'Edit ' . ucwords($table) . ' Record';
@@ -310,7 +310,7 @@ $tbody .= "		</tr>\n
 		$this->langs['form:submit-add'] = 'Add Record';
 		$this->langs['form:submit-edit'] = 'Save Changes';
 
-		$html .= '	<p><input type="submit" name="submit" value="<?php print $this->text(\'form:submit-\'.ADD_OR_EDIT); ?>" /></p>' . "\n";
+		$html .= '	<p><input type="submit" name="submit" value="<?php print text(\'form:submit-\'.ADD_OR_EDIT); ?>" /></p>' . "\n";
 		$html .= '</form>';
 
 		if($return_html){

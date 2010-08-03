@@ -1,5 +1,5 @@
-<h2><?php print $this->text('denied:title'); ?></h2>
+<h2><?php print text('denied:title'); ?></h2>
 
 <?php print app()->sml->printMessage(); ?>
 
-<p class="error"><?php print $this->text('denied:intro'); ?></p>
+<p class="error"><?php print text('denied:intro'); ?></p>

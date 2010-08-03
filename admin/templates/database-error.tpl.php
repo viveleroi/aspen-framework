@@ -1,4 +1,4 @@
-<h2><?php print $this->text('dberror:title'); ?></h2>
+<h2><?php print text('dberror:title'); ?></h2>
 
 
-<p><?php print $this->text('dberror:message'); ?></p>
+<p><?php print text('dberror:message'); ?></p>

@@ -1,34 +1,34 @@
-<h2><?php print $this->text('userform:'.ADD_OR_EDIT.'title'); ?></h2>
+<h2><?php print text('userform:'.ADD_OR_EDIT.'title'); ?></h2>
 
 <?php $form->printErrors(); ?>
 <?php print app()->sml->printMessage(); ?>
 
 <?php if(IS_EDIT_PAGE){ ?>
-<p><a href="<?php print $this->xhtmlUrl('delete', array('id' => $form->cv('id'))) ?>" onclick="return confirm('<?php print $this->text('userform:delete_warn'); ?>')"><?php print $this->text('userform:delete_link'); ?></a></p>
+<p><a href="<?php print $this->xhtmlUrl('delete', array('id' => $form->cv('id'))) ?>" onclick="return confirm('<?php print text('userform:delete_warn'); ?>')"><?php print text('userform:delete_link'); ?></a></p>
 <?php } ?>
 <form method="post" action="<?php print $this->action(); ?>">
 	<fieldset>
-		<legend><?php print $this->text('userform:profile'); ?></legend>
+		<legend><?php print text('userform:profile'); ?></legend>
 		<ol>
 			<li>
-				<label for="username"><?php print $this->text('userform:username'); ?>:</label>
+				<label for="username"><?php print text('userform:username'); ?>:</label>
 				<input type="text" id="username" name="username" value="<?php print $form->cv('username') ?>" />
 			</li>
 			<li>
-				<label for="first_name"><?php print $this->text('userform:first_name'); ?>:</label>
+				<label for="first_name"><?php print text('userform:first_name'); ?>:</label>
 				<input type="text" id="first_name" name="first_name" value="<?php print $form->cv('first_name') ?>" />
 			</li>
 			<li>
-				<label for="last_name"><?php print $this->text('userform:last_name'); ?>:</label>
+				<label for="last_name"><?php print text('userform:last_name'); ?>:</label>
 				<input type="text" id="last_name" name="last_name" value="<?php print $form->cv('last_name') ?>" />
 			</li>
 
 			<li>
-				<label for="password"><?php print $this->text('userform:password'); ?>:</label>
+				<label for="password"><?php print text('userform:password'); ?>:</label>
 				<input type="password" id="password" name="password" value=""  />
 			</li>
 			<li>
-				<label for="password_confirm"><?php print $this->text('userform:confirm'); ?>:</label>
+				<label for="password_confirm"><?php print text('userform:confirm'); ?>:</label>
 				<input type="password" id="password_confirm" name="password_confirm" value="" />
 			</li>
 			<li>
@@ -39,7 +39,7 @@
 		</ol>
 	</fieldset>
 	<fieldset>
-		<legend><?php print $this->text('userform:accessgroup'); ?></legend>
+		<legend><?php print text('userform:accessgroup'); ?></legend>
 		<ol>
 			<?php
 			if($groups){
@@ -56,6 +56,6 @@
 		</ol>
 	</fieldset>
 	<fieldset>
-		<input type="submit" name="submit" value="<?php print $this->text('userform:'.ADD_OR_EDIT.'button'); ?>" />
+		<input type="submit" name="submit" value="<?php print text('userform:'.ADD_OR_EDIT.'button'); ?>" />
 	</fieldset>
 </form>
