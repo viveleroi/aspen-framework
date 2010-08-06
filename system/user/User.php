@@ -453,26 +453,19 @@ class User extends Library {
 	 */
 	public function inGroup($group, $user_id = false){
 
-		$ingroup = false;
+		$user_id = $user_id ? $user_id : app()->session->getInt('user_id');
 
-		if($user_id){
-
-			$model = app()->model->open('user_group_link');
-			$model->leftJoin('groups', 'id', 'group_id', array('name'));
-			$model->where('user_id', $user_id);
-			if(is_string($group)){
-				$model->where('groups.name', $group);
-			}
-			if(is_int($group)){
-				$model->where('groups.id', $group);
-			}
-			$groups = $model->results();
-
-			$ingroup = (boolean)$groups;
-
+		$model = app()->model->open('user_group_link');
+		$model->leftJoin('groups', 'id', 'group_id', array('name'));
+		$model->where('user_id', $user_id);
+		if(is_string($group)){
+			$model->where('groups.name', $group);
 		}
-
-		return $ingroup;
+		if(is_int($group)){
+			$model->where('groups.id', $group);
+		}
+		$groups = $model->results();
+		return (boolean)$groups;
 
 	}
 

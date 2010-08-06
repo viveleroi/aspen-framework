@@ -850,7 +850,7 @@ class Model extends Library {
 		// append the fields we've selected
 		if(is_array($fields)){
 			foreach($fields as $field){
-				if(strpos($field, "SUM") === false){
+				if(strpos($field, "(") === false){
 					$this->sql['FIELDS'] .= sprintf(', %s.%s', $as_table, $field);
 				} else {
 					$this->sql['FIELDS'] .= sprintf(', %s', $field);

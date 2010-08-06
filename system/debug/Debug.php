@@ -64,9 +64,9 @@ class DebugBase {
 		print $this->line_end;
 		printf('%s: from %s::%s() line %d',
 					$name,
-					$debug['caller']['class'],
-					$debug['caller']['function'],
-					$debug['caller']['line']);
+					(isset($debug['caller']['class']) ? $debug['caller']['class'] : 'N/A'),
+					(isset($debug['caller']['function']) ? $debug['caller']['function'] : 'N/A'),
+					(isset($debug['caller']['line']) ? $debug['caller']['line'] : 'N/A'));
 		print $this->line_end;
 
 		if($this->print_type == 'var_dump'){

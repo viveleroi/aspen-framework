@@ -875,6 +875,7 @@ class Router extends Library {
 		if(strpos($this->method(), 'ajax') === false){
 			if(app()->server->getUri('HTTP_REFERER')){
 				$_SESSION['referring_page'] = app()->server->getUri('HTTP_REFERER');
+				app()->refreshCage('session');
 			}
 		}
 	}

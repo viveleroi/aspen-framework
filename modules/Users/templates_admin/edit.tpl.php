@@ -41,18 +41,12 @@
 	<fieldset>
 		<legend><?php print text('userform:accessgroup'); ?></legend>
 		<ol>
-			<?php
-			if($groups){
-				foreach($groups as $group){
-			?>
+			<?php if($groups): foreach($groups as $group): ?>
 			<li>
 				<input type="checkbox" name="Groups[]" value="<?php print $group['id'] ?>" id="group_<?php print $group['id'] ?>"<?php print $form->checked('Groups', $group['id']); ?> />
 				<label for="group_<?php print $group['id'] ?>"><?php print $group['name'] ?></label>
 			</li>
-			<?php
-				}
-			}
-			?>
+			<?php endforeach; endif; ?>
 		</ol>
 	</fieldset>
 	<fieldset>

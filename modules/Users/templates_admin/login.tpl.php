@@ -1,7 +1,5 @@
 <h2><?php print text('login:title'); ?></h2>
-
 <?php print app()->sml->printMessage(); ?>
-
 <form action="<?php print $this->action('authenticate'); ?>" method="post">
 	<fieldset>
 		<ol>

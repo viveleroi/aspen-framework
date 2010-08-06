@@ -13,7 +13,7 @@
  * @param string $type
  * @return string
  */
-function text($key){
+function text(){
 	// pass any additional arguments straight to text
 	$args = func_get_args();
 	return call_user_func_array(array(app()->template,'text'),$args);
