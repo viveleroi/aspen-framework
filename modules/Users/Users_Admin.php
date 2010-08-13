@@ -80,7 +80,7 @@ class Users_Admin extends Module {
 		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
 		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'my_account.tpl.php');
 		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
-		app()->template->display($data);
+		app()->template->display();
 
 	}
 
@@ -165,6 +165,7 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function denied(){
+		$this->setPageTitle(text('users:denied:head-title'));
 		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
 		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'denied.tpl.php');
 		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
