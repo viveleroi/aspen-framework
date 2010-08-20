@@ -205,7 +205,7 @@ class Template extends Library {
 					'ext' => 'css'
 				);
 
-		$sort_key = isset($args['order']) ? $args['order'] : $args['file'];
+		$sort_key = isset($args['order']) ? $args['order'] : (count($this->_load_css)+1);
 
 		// merge any incoming args and append the load array
 		$this->_load_css[$sort_key] = (is_array($args) ? array_merge($base, $args) : $base);
@@ -242,7 +242,7 @@ class Template extends Library {
 					'ext' => 'js'
 				);
 
-		$sort_key = isset($args['order']) ? $args['order'] : $args['file'];
+		$sort_key = isset($args['order']) ? $args['order'] : (count($this->_load_js)+1);
 
 		// merge any incoming args and append the load array
 		$this->_load_js[$sort_key] = (is_array($args) ? array_merge($base, $args) : $base);
@@ -449,7 +449,7 @@ class Template extends Library {
 			$link = sprintf(
 					'<a href="%s" title="%s"%s>%s</a>',
 								$this->xhtmlUrl($method, $bits, $module, $interface),
-								$this->encodeTextEntities($title),
+								$this->encodeTextEntities(strip_tags($title)),
 								($class ? ' class="at"' : ''),
 								$this->encodeTextEntities($text)
 							);
