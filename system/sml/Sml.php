@@ -27,7 +27,7 @@ class Sml extends Library {
 	 * @param string $class CSS Class for display
 	 * @access public
 	 */
-	public function say($msg, $class = 'notice'){
+	public function say($msg, $class = 'success'){
 
 		// Interpret boolean values
 		if($class === 0 || $class === false){

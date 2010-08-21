@@ -638,6 +638,7 @@ class Form extends Library {
 		}
 		return json_encode( array(
 			'success'	=> $res,
+			'msg'		=> text('db:success:'.$this->table.':ajax-say'),
 			'errors'	=> $this->getErrors(),
 			'id'		=> $id,
 			'method'	=> $method,
