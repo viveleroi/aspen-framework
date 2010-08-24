@@ -885,7 +885,7 @@ class Bootstrap extends Base {
 															'module'=>$module,
 															'classname'=>(string)$lib->classname,
 															'root' => MODULES_PATH.DS.$module->folder,
-															'folder' => 'libs',
+															'folder' => 'libs'.(isset($lib->subfolder)?DS.$lib->subfolder:''),
 															'autoload' => (isset($lib->autoload) && $lib->autoload ? true : false),
 															'extends' => (isset($lib->extends) && $lib->extends ? (string)$lib->extends : false)
 														 );

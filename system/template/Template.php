@@ -204,12 +204,14 @@ class Template extends Library {
 					'basepath' => false,
 					'ext' => 'css'
 				);
-
-		$sort_key = isset($args['order']) ? $args['order'] : (count($this->_load_css)+1);
+		$args = (is_array($args) ? array_merge($base, $args) : $base);
 
 		// merge any incoming args and append the load array
-		$this->_load_css[$sort_key] = (is_array($args) ? array_merge($base, $args) : $base);
-
+		if(isset($args['order'])){
+			array_splice($this->_load_css,$args['order'],0,array($args));
+		} else {
+			$this->_load_css[] = $args;
+		}
 	}
 
 
@@ -241,12 +243,14 @@ class Template extends Library {
 					'basepath' => false,
 					'ext' => 'js'
 				);
-
-		$sort_key = isset($args['order']) ? $args['order'] : (count($this->_load_js)+1);
+		$args = (is_array($args) ? array_merge($base, $args) : $base);
 
 		// merge any incoming args and append the load array
-		$this->_load_js[$sort_key] = (is_array($args) ? array_merge($base, $args) : $base);
-
+		if(isset($args['order'])){
+			array_splice($this->_load_js,$args['order'],0,array($args));
+		} else {
+			$this->_load_js[] = $args;
+		}
 	}
 
 
