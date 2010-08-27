@@ -138,6 +138,23 @@ class File extends Library {
 		return $result;
 	}
 	
+
+	/**
+	 * Removes a new directory
+	 * @param string $path
+	 * @return boolean
+	 * @access public
+	 */
+	public function removeDirectory($path){
+		$result = false;
+		if(is_dir($path)){
+			if(!$result = rmdir($path)){
+				app()->error->raise(2, "Failed removing directory: " . $path, __FILE__, __LINE__);
+			}
+		}
+		return $result;
+	}
+	
 	
 //+-----------------------------------------------------------------------+
 //| FILE READ/WRITE FUNCTIONS
@@ -189,8 +206,8 @@ class File extends Library {
 			fclose($fp);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Deletes the file with command appropriate for OS
 	 * @param string $file
@@ -198,10 +215,13 @@ class File extends Library {
 	 * @access public
 	 */
 	public function delete($file = false){
-		
+
 		if($file){ $this->useFile($file); }
-		
-		if(file_exists($this->file_path)){
+
+		if(is_dir($this->file_path)){
+			$this->removeDirectory($this->file_path);
+		}
+		else if(file_exists($this->file_path)){
 			if (substr(php_uname(), 0, 7) == "Windows") {
 				$this->file_path  = str_replace( '/', '\\', $this->file_path);
 				system( 'del /F "'.$this->file_path.'"', $result );

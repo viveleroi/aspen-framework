@@ -57,8 +57,8 @@ class UsersModel extends Model {
 			}
 		}
 
-		// verify password
-		if($clean->isSetAndNotEmpty('_raw_password') || $clean->isSetAndNotEmpty('password_confirm')){
+		// verify password (unless both field are sent, password is ignored entirely)
+		if($clean->keyExists('_raw_password') && $clean->keyExists('password_confirm')){
 			if($clean->isSetAndEmpty('_raw_password') || $clean->isSetAndEmpty('password_confirm')){
 				$this->addError('password', text('db:error:password'));
 			} else {
@@ -119,7 +119,7 @@ class UsersModel extends Model {
 	public function before_update($fields = false){
 
 		// if the password provided =, encode it - otherwise, remove
-		if(!empty($fields['password'])){
+		if(!empty($fields['password']) && isset($fields['password_confirm'])){
 			$fields['_raw_password'] = $fields['password'];
 			$fields['password'] = $this->stringHash($fields['password']);
 		} else {
@@ -127,7 +127,7 @@ class UsersModel extends Model {
 		}
 
 		return $fields;
-		
+
 	}
 
 

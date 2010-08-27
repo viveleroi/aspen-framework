@@ -1077,7 +1077,7 @@ class GdThumb extends ThumbBase
 				break;
 			case 'JPG':
 			case 'PNG':
-				$isCompatible = $gdInfo[$this->format . ' Support'];
+				$isCompatible = isset($gdInfo[$this->format . ' Support']) ? $gdInfo[$this->format . ' Support'] : false;
 				break;
 			default:
 				$isCompatible = false;

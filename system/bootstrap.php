@@ -651,6 +651,7 @@ class Bootstrap extends Base {
 		// specifically
 		$this->error = new Error;
     	set_error_handler(array(&$this->error, 'raise'));
+		set_exception_handler(array(&$this->error, 'raiseException'));
 
     	// assign supercage
     	$this->params->init();

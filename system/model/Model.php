@@ -753,7 +753,11 @@ class Model extends Library {
 		$fields = is_array($fields) ? $fields : array('*');
 		$official_fields = array();
 		foreach($fields as $field){
-			$official_fields[] = sprintf('%s.%s', $this->table, $field);
+			if(strpos($field, '(') !== false){
+				$official_fields[] = $field;
+			} else {
+				$official_fields[] = sprintf('%s.%s', $this->table, $field);
+			}
 		}
 
 		// append fields, append distinct if enabled
@@ -1386,6 +1390,7 @@ class Model extends Library {
 				// remove any table references
 				foreach($fields as $key => $tmp_field){
 					$fields[$key] = preg_replace('/(.*)\./', '', $tmp_field);
+					$fields[$key] = preg_replace('/(.*)as /', '', $tmp_field);
 				}
 
 				// remove any table reference from our field
@@ -1417,8 +1422,10 @@ class Model extends Library {
 		// verify the field exists, if muliple fields present, skip
 		if(strpos($sort['sort_by'], ',') === false && strpos($sort['sort_by'], 'ASC') === false){
 			$schema = $this->getSchema();
-			if(array_key_exists(strtoupper($field), $schema['schema']) || strpos($this->sql['FIELDS'], $field) || strtoupper($field) == 'RAND()'){
-				$sort['sort_by'] = $sort['sort_by'];
+			// remove any table reference from our field
+			$tmp_field = preg_replace('/(.*)\./', '', $field);
+			if(array_key_exists(strtoupper($tmp_field), $schema['schema']) || strpos($this->sql['FIELDS'], $tmp_field) || strtoupper($tmp_field) == 'RAND()'){
+				// we're ok
 			} else {
 				$sort['sort_by'] = $this->table.'.'.$this->getPrimaryKey();
 			}
@@ -1789,17 +1796,16 @@ class Model extends Library {
 
 	/**
 	 * Returns a single field, single-record value from a query
-	 * @param string $sql
 	 * @param string $return_field
+	 * @param string $sql
 	 * @return mixed
 	 * @access public
 	 */
-	public function quickValue($sql = false, $return_field = 'id'){
-		$result = $this->query($sql);
-		if($result->RecordCount()){
-			while($row = $result->FetchRow()){
-				return isset($row[$return_field]) ? $row[$return_field]  : false;
-			}
+	public function quickValue($return_field = 'id', $sql = false){
+		$result = $this->results(false,$sql);
+		if($result){
+			$result = array_shift($result);
+			return isset($result[$return_field]) ? $result[$return_field]  : false;
 		}
 		return false;
 	}
@@ -2192,7 +2198,7 @@ class Model extends Library {
 			// extract any child/parent table data and process those saves separately
 			if($result){
 				foreach($this->schema['children'] as $real_table => $table){
-					if(isset($fields[ucwords($table)])){
+					if(isset($fields[ucwords($table)]) && is_array($fields[ucwords($table)])){
 
 						$rel_model = $this->open($real_table);
 

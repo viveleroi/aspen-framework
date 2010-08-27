@@ -57,6 +57,12 @@ class Template extends Library {
 	private $_load_js;
 
 	/**
+	 * @var array An array of javascript variables queued for loading in the header
+	 * @access private
+	 */
+	private $_load_js_vars = array();
+
+	/**
 	 * @var array $_load_templates An array of templates queued for display
 	 * @access private
 	 */
@@ -146,6 +152,11 @@ class Template extends Library {
 			if(app()->config('print_js_variables')){
 				print '<script type="text/javascript">'."\n";
 				print 'var INTERFACE_URL = "'.app()->router->interfaceUrl().'";'."\n";
+				if(is_array($this->_load_js_vars)){
+					foreach($this->_load_js_vars as $var => $value){
+						print 'var '. strtoupper($var).' = "'.$value.'";'."\n";
+					}
+				}
 				print '</script>'."\n";
 			}
 
@@ -251,6 +262,17 @@ class Template extends Library {
 		} else {
 			$this->_load_js[] = $args;
 		}
+	}
+
+
+	/**
+	 * Adds a javascript variable to the header
+	 * @param string $key
+	 * @param mixed $value
+	 * @access public
+	 */
+	public function addJsVar($key, $value){
+		$this->_load_js_vars[$key] = $value;
 	}
 
 

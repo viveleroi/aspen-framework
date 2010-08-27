@@ -160,6 +160,15 @@ class Error extends Library {
 		}
 	}
 
+	
+	/**
+	 *
+	 * @param <type> $exception
+	 */
+	public function raiseException($exception){
+		$this->raise(2, $exception->getMessage(), $exception->getFile(), $exception->getLine());
+	}
+
 
 	/**
 	 * Returns a server value, uses params class if loaded
