@@ -551,6 +551,7 @@ class Router extends Library {
 			}
 		} else { // not authorized
 			$this->loadModuleLanguage('Users', 'Admin');
+			app()->template->page_title = text('users:denied:head-title');
 			app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
 			app()->template->addView(app()->template->getModuleTemplateDir('Users', 'Admin').DS . 'denied.tpl.php');
 			app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');

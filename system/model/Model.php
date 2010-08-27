@@ -1391,6 +1391,7 @@ class Model extends Library {
 				foreach($fields as $key => $tmp_field){
 					$fields[$key] = preg_replace('/(.*)\./', '', $tmp_field);
 					$fields[$key] = preg_replace('/(.*)as /', '', $tmp_field);
+					$fields[$key] = str_replace(array('DISTINCT '), '', $tmp_field);
 				}
 
 				// remove any table reference from our field

@@ -136,7 +136,7 @@ class Form extends Library {
 			$field = $field ? $field : $this->_primary_key_field;
 
 			$model->select();
-			$model->where($field, app()->security->dbescape($id));
+			$model->where($this->table.'.'.$field, app()->security->dbescape($id));
 			$records = $model->results();
 
 			if($records){
@@ -406,7 +406,7 @@ class Form extends Library {
 		// if field is the name of a child/parent table
 		if($val && (in_array(strtolower($field), $this->schema['children'])
 				|| in_array(strtolower($field), $this->schema['parents']))){
-			return array_key_exists($match, $val) ? $str : '';
+			return array_key_exists($match, $val) || in_array($match, $val) ? $str : '';
 		}
 		elseif(is_array($val)){
 			return in_array($match, $val) ? $str : '';
