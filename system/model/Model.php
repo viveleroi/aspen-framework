@@ -448,7 +448,7 @@ class Model extends Library {
 		foreach($args as $arg){
 			// determine if this is a parent or child or both, so we know where
 			// to get the field vals
-			if($this->hasChild($arg) && $this->hasParent($arg)){
+			if($this->hasChild($arg) && ($this->hasParent($arg) || $this->hasRelation($arg))){
 				// get the real table linking these tables
 				$real_table = array_search($arg, $this->schema['children']);
 				$this->leftJoin($real_table, $i->singularize($this->table).'_id', $this->getPrimaryKey(), '*');
@@ -607,6 +607,20 @@ class Model extends Library {
 
 
 	/**
+	 * Determines if the table has a "link" to another table
+	 * @param string $table
+	 * @return boolean
+	 */
+	public function hasRelation($table){
+		$real_table = array_search($table, $this->schema['children']);
+		if($real_table != $table){
+			return true;
+		}
+		return false;
+	}
+
+
+	/**
 	 * Sets the pagination toggle to true
 	 * @access public
 	 */
@@ -753,7 +767,7 @@ class Model extends Library {
 		$fields = is_array($fields) ? $fields : array('*');
 		$official_fields = array();
 		foreach($fields as $field){
-			if(strpos($field, '(') !== false){
+			if(strpos($field, '(') !== false || strpos($field, '.') !== false){
 				$official_fields[] = $field;
 			} else {
 				$official_fields[] = sprintf('%s.%s', $this->table, $field);
@@ -1380,60 +1394,63 @@ class Model extends Library {
 	 */
 	public function orderBy($field = false, $dir = false, $sort_location = false){
 
-		$field = $field ? $field : $this->table.'.'.$this->getPrimaryKey();
+		if(isset($this->sql['FIELDS'])){
 
-		// ensure sort by field has been selected
-		if(strpos($this->sql['FIELDS'], '*') === false){
-			// explode by fields if any
-			$fields = explode(',', $this->sql['FIELDS']);
-			if(is_array($fields)){
-				// remove any table references
-				foreach($fields as $key => $tmp_field){
-					$fields[$key] = preg_replace('/(.*)\./', '', $tmp_field);
-					$fields[$key] = preg_replace('/(.*)as /', '', $tmp_field);
-					$fields[$key] = str_replace(array('DISTINCT '), '', $tmp_field);
+			$field = $field ? $field : $this->table.'.'.$this->getPrimaryKey();
+
+			// ensure sort by field has been selected
+			if(strpos($this->sql['FIELDS'], '*') === false){
+				// explode by fields if any
+				$fields = explode(',', $this->sql['FIELDS']);
+				if(is_array($fields)){
+					// remove any table references
+					foreach($fields as $key => $tmp_field){
+						$fields[$key] = preg_replace('/(.*)\./', '', $tmp_field);
+						$fields[$key] = preg_replace('/(.*)as /', '', $tmp_field);
+						$fields[$key] = str_replace(array('DISTINCT '), '', $tmp_field);
+					}
+
+					// remove any table reference from our field
+					$tmp_field = preg_replace('/(.*)\./', '', $field);
+
+					// check if our field is in the array of fields
+					if(!in_array($tmp_field, $fields)){
+						// if not, go with the first item
+						$field = $fields[0];
+					}
 				}
+			}
 
+			$sort['sort_by'] 		= $field;
+			$sort['sort_direction'] = $dir = $dir ? $dir : 'ASC';
+
+			if($sort_location){
+				$sort = app()->prefs->getSort($sort_location, false, $field, $dir);
+			}
+
+			if(empty($sort['sort_by'])){
+				$sort['sort_by'] = $field;
+			}
+
+			if(empty($sort['sort_direction'])){
+				$sort['sort_direction'] = $dir;
+			}
+
+			// verify the field exists, if muliple fields present, skip
+			if(strpos($sort['sort_by'], ',') === false && strpos($sort['sort_by'], 'ASC') === false){
+				$schema = $this->getSchema();
 				// remove any table reference from our field
 				$tmp_field = preg_replace('/(.*)\./', '', $field);
-
-				// check if our field is in the array of fields
-				if(!in_array($tmp_field, $fields)){
-					// if not, go with the first item
-					$field = $fields[0];
+				if(array_key_exists(strtoupper($tmp_field), $schema['schema']) || strpos($this->sql['FIELDS'], $tmp_field) || strtoupper($tmp_field) == 'RAND()'){
+					// we're ok
+				} else {
+					$sort['sort_by'] = $this->table.'.'.$this->getPrimaryKey();
 				}
 			}
+
+			$this->sql['ORDER'] = sprintf("ORDER BY %s %s", $sort['sort_by'], $sort['sort_direction']);
+
 		}
-
-		$sort['sort_by'] 		= $field;
-		$sort['sort_direction'] = $dir = $dir ? $dir : 'ASC';
-
-		if($sort_location){
-			$sort = app()->prefs->getSort($sort_location, false, $field, $dir);
-		}
-
-		if(empty($sort['sort_by'])){
-			$sort['sort_by'] = $field;
-		}
-
-		if(empty($sort['sort_direction'])){
-			$sort['sort_direction'] = $dir;
-		}
-
-		// verify the field exists, if muliple fields present, skip
-		if(strpos($sort['sort_by'], ',') === false && strpos($sort['sort_by'], 'ASC') === false){
-			$schema = $this->getSchema();
-			// remove any table reference from our field
-			$tmp_field = preg_replace('/(.*)\./', '', $field);
-			if(array_key_exists(strtoupper($tmp_field), $schema['schema']) || strpos($this->sql['FIELDS'], $tmp_field) || strtoupper($tmp_field) == 'RAND()'){
-				// we're ok
-			} else {
-				$sort['sort_by'] = $this->table.'.'.$this->getPrimaryKey();
-			}
-		}
-
-		$this->sql['ORDER'] = sprintf("ORDER BY %s %s", $sort['sort_by'], $sort['sort_direction']);
-
 	}
 
 
@@ -1803,10 +1820,11 @@ class Model extends Library {
 	 * @access public
 	 */
 	public function quickValue($return_field = 'id', $sql = false){
+		$this->select_single(array($return_field));
 		$result = $this->results(false,$sql);
 		if($result){
-			$result = array_shift($result);
-			return isset($result[$return_field]) ? $result[$return_field]  : false;
+			$return_field = preg_replace('/(.*)\./', '', $return_field);
+			return isset($result[$return_field]) ? $result[$return_field] : false;
 		}
 		return false;
 	}
@@ -1862,6 +1880,9 @@ class Model extends Library {
 	 * @access public
 	 */
 	public function delete($id = false, $field_name = false){
+
+		$result = false;
+
 		$field_name = $field_name ? $field_name : $this->getPrimaryKey();
 		if($this->inSchema($field_name)){
 
@@ -1875,12 +1896,11 @@ class Model extends Library {
 					$result = (bool)$this->query($this->sql['DELETE']);
 					if($result){
 						$this->activity_detect_changes('delete', $del['id'], false);
-						return $result;
 					}
 				}
 			}
 		}
-		return false;
+		return $result;
 	}
 
 
