@@ -81,6 +81,11 @@ class User extends Library {
 	 */
 	final public function login(){
 
+		// if the user is logged in, send to interface
+		if($this->isLoggedIn()){
+			app()->router->redirectToUrl( app()->router->interfaceUrl() );
+		}
+
 		$uri = app()->server->getPath('REQUEST_URI').app()->server->getRaw('QUERY_STRING');
 		$uri = strip_tags(urldecode($uri));
 		$uri = preg_replace('/redirected=(.*)/', '', $uri);

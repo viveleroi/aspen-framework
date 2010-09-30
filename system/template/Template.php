@@ -48,13 +48,13 @@ class Template extends Library {
 	 * @var array An array of css files queued for loading in the header
 	 * @access private
 	 */
-	private $_load_css;
+	private $_load_css = array();
 
 	/**
 	 * @var array An array of javascript files queued for loading in the header
 	 * @access private
 	 */
-	private $_load_js;
+	private $_load_js = array();
 
 	/**
 	 * @var array An array of javascript variables queued for loading in the header

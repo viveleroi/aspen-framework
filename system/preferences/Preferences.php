@@ -13,7 +13,7 @@
  * @package Aspen_Framework
  */
 class Preferences extends Library {
-	
+
 
 	/**
 	 * Loads user preferences into their session
@@ -135,8 +135,57 @@ class Preferences extends Library {
 			app()->sml->say('Your user preferences have been saved successfully.', true);
 		}
 
-		return $record;
+		return new Prefs($record);
 
+	}
+}
+
+
+/**
+ *
+ */
+class Prefs {
+
+	/**
+	 * @var array Preferences
+	 */
+	protected $prefs;
+
+
+	/**
+	 *
+	 * @param <type> $prefs
+	 */
+	public function  __construct($prefs) {
+		$this->prefs = $prefs;
+	}
+
+
+	/**
+	 *
+	 * @param <type> $key
+	 * @param <type> $default
+	 * @return <type>
+	 */
+	public function get($key, $default = false){
+		if(array_key_exists($key, $this->prefs)){
+			return $this->prefs[$key];
+		}
+		return $default;
+	}
+
+
+	/**
+	 *
+	 * @param <type> $key
+	 * @param <type> $val
+	 * @return <type>
+	 */
+	public function checked($key, $val){
+		if(array_key_exists($key, $this->prefs)){
+			return ($this->prefs[$key] == $val ? ' checked="checked"' : '');
+		}
+		return false;
 	}
 }
 ?>
