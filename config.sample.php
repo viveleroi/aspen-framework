@@ -11,26 +11,32 @@
  * http://docs.aspen-framework.org/wiki/Aspen:Config
  */
 
-	/**
-	 * Enter the username for your database.
-	 */
-	$config['db_username'] = 'root';
-
-	/**
-	 * Enter the password for your database.
-	 */
-	$config['db_password'] = '';
-
-	/**
-	 * Enter the name of the database we'll be using.
-	 */
-	$config['db_database'] = 'aspen-framework';
-
-	/**
-	 * Enter the hostname of the database server
-	 * (Most of the time, it's "localhost").
-	 */
-	$config['db_hostname'] = 'localhost';
-
-
+/**
+ * Determine which server we're currently running on
+ */
+switch($_SERVER['SERVER_NAME']){
+	case 'yourwebsite.com':
+	case 'www.yourwebsite.com':
+		define('APP_SERVER', 'production');
+		$config['db_username'] = 'root';
+		$config['db_password'] = '';
+		$config['db_database'] = 'aspen';
+		$config['db_hostname'] = 'localhost';
+		break;
+	case 'dev.yourwebsite.com':
+		define('APP_SERVER', 'staging');
+		$config['db_username'] = 'root';
+		$config['db_password'] = '';
+		$config['db_database'] = 'aspen_dev';
+		$config['db_hostname'] = 'localhost';
+		break;
+	default:
+		define('APP_SERVER', 'development');
+		$config['db_username'] = 'root';
+		$config['db_password'] = '';
+		$config['db_database'] = 'aspen';
+		$config['db_hostname'] = 'localhost';
+		$config['load_add_core_class'][] = array('classname' => 'Debug');
+		break;
+}
 ?>

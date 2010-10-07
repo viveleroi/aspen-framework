@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -11,6 +11,11 @@ class DataDisplay extends Library {
 	 * @var array Will hold an array that we use for data access
 	 */
 	protected $data;
+
+	/**
+	 * @var array Holds all fields which, if empty, return 'Not Provided' text
+	 */
+	protected $not_provided = array();
 
 
 	/**
@@ -31,18 +36,30 @@ class DataDisplay extends Library {
 	 */
 	public function  __call($name, $arguments) {
 		if(array_key_exists($name, $this->data)){
-			return $this->data[$name];
+			if(empty($this->data[$name]) && in_array($name, $this->not_provided)){
+				return $this->na();
+			} else {
+				return $this->data[$name];
+			}
 		} else {
 			if(!method_exists($this, $name)){
 				app()->error->raise(1, text('dberror:datadisplay_call_error', $name), __FILE__, __LINE__);
 			}
 		}
 	}
-	
-	
+
+
 	/*******************************
 	 * FORMATTING FUNCTIONS
 	 */
+
+	/**
+	 * Returns not provided if something is empty
+	 * @return <type>
+	 */
+	public function na(){
+		return text('db:display:not_provided');
+	}
 
 
 	/**
