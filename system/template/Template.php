@@ -213,7 +213,8 @@ class Template extends Library {
 					'mediatype' => 'all',
 					'cdtnl_cmt' => '',
 					'basepath' => false,
-					'ext' => 'css'
+					'ext' => 'css',
+					'interface'=>false
 				);
 		$args = (is_array($args) ? array_merge($base, $args) : $base);
 
@@ -252,7 +253,8 @@ class Template extends Library {
 					'from' => 'm',
 					'cdtnl_cmt' => '',
 					'basepath' => false,
-					'ext' => 'js'
+					'ext' => 'js',
+					'interface'=>false
 				);
 		$args = (is_array($args) ? array_merge($base, $args) : $base);
 
@@ -292,7 +294,7 @@ class Template extends Library {
 		}
 
 		if($args['from'] == 'i'){
-			$interface = isset($args['interface']) ? $args['interface'] : false;
+			$interface = !empty($args['interface']) ? $args['interface'] : false;
 			$filename = $args['file'] ? $args['file'] : strtolower(LS).'.'.$args['ext'];
 			$basepath = $args['basepath'] ? $args['basepath'] : app()->router->staticUrl($interface) . '/'.$args['ext'];
 		}
@@ -540,13 +542,17 @@ class Template extends Library {
 			$route_mask = false;
 			if(is_array($routes)){
 				foreach($routes as $mask => $route){
-					if(
-						strtolower($route['module']) == strtolower($module) &&
-						strtolower($route['method']) == strtolower($method) &&
-					    (isset($route['interface']) && strtolower($route['interface']) == strtolower($interface))
-					 ){
-						$route_mask = $mask;
-						$url .= $mask;
+					if(strtolower($route['module']) == strtolower($module) && strtolower($route['method']) == strtolower($method)){
+						// if the interface is also set, it must match
+						if(isset($route['interface'])){
+							if(strtolower($route['interface']) == strtolower($interface)){
+								$route_mask = $mask;
+								$url .= $mask;
+							}
+						} else {
+							$route_mask = $mask;
+							$url .= $mask;
+						}
 					}
 				}
 			}
