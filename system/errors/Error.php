@@ -155,7 +155,7 @@ class Error extends Library {
 			curl_setopt($ch,CURLOPT_URL,app()->config('error_json_post_url'));
 			curl_setopt($ch,CURLOPT_POST,count($error));
 			curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($params));
-			curl_setopt($ch,CURLOPT_RETURNTRANSFER,false);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 			$result = curl_exec($ch);
 			curl_close($ch);
 		}

@@ -317,6 +317,8 @@ class Router extends Library {
 	 * @todo clean this up now that loadRequestedPagePath exists
 	 */
 	private function identifyAcceptedMethodForLoad(){
+		
+		$default = 'view';
 
 		// do a basic login check as user module is not loaded at this point
 		if(app()->user->isLoggedIn()){
