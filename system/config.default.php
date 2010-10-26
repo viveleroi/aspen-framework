@@ -353,22 +353,6 @@
 
 
 /**
- *  CACHE DIRECTORY SETTINGS
- *
- * Controls how any cache files are stored
- */
-
-	// enable cache features
-	$config['enable_cache'] = false;
-
-	// enable cache of template output
-	$config['cache_template_output'] = false;
-
-	// cache directory
-	$config['cache_dir'] = str_replace("system", '', dirname(__FILE__)) . 'cache';
-
-
-/**
  * LOADING DATABASE MODEL EXTENSIONS
  *
  * The following classes are extensions to the default database models. They're
@@ -451,9 +435,6 @@
  */
 
 	/*
-
-	// Cache, required if enable_cache configuration is on
-	$config['load_core_class'][] = array('classname' => 'Cache');
 
 	// Scaffold - required for modadmin to work
 	$config['load_core_class'][] = array('classname' => 'Scaffold');

@@ -371,54 +371,22 @@ class Template extends Library {
 			if(app()->config('require_form_token_auth')){
 				$token = app()->security->generateFormToken();
 			}
+			
+			foreach($this->_load_templates as $template){
+				if(file_exists($template) && strpos($template, APPLICATION_PATH) !== false){
 
-			$cache = false;
-
-			// if cache of template enabled
-			if(app()->config('enable_cache') && app()->config('cache_template_output')){
-
-				// if we can find any existing cache of this page
-				if($cache = app()->cache->getData($this->selfUrl())){
-					app()->log->write('Returning templates from cache.');
-					print $cache;
-				} else {
-
-					app()->log->write('Beginning output buffering, to capture template html for cache.');
-
-					// begin collecting output
-					ob_start();
-
-				}
-			}
-
-			// if no cache enabled or found, display the templates
-			if(!$cache){
-				foreach($this->_load_templates as $template){
-					if(file_exists($template) && strpos($template, APPLICATION_PATH) !== false){
-
-						// pass through variables
-						if(is_array($this->_data)){
-							foreach($this->_data as $var => $value){
-								$$var = $value;
-							}
+					// pass through variables
+					if(is_array($this->_data)){
+						foreach($this->_data as $var => $value){
+							$$var = $value;
 						}
-
-						app()->log->write('Including template ' . $template);
-						include($template);
-
-
 					}
+
+					app()->log->write('Including template ' . $template);
+					include($template);
+
+
 				}
-			}
-
-			// if cache enabled and cache file not found, save it
-			if(app()->config('enable_cache') && app()->config('cache_template_output') && !$cache){
-
-				app()->cache->put($this->selfUrl(), ob_get_contents());
-				ob_end_flush();
-
-				app()->log->write('Saved output contents to cache, and stopped output buffering.');
-
 			}
 		}
 
