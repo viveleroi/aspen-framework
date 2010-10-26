@@ -206,6 +206,7 @@ class Template extends Library {
 	public function addCss($args){
 
 		$base = array(
+					'url' => false,
 					'file' => false,
 					'rel' => 'stylesheet',
 					'title' => false,
@@ -249,6 +250,7 @@ class Template extends Library {
 	public function addJs($args){
 
 		$base = array(
+					'url' => false,
 					'file' => false,
 					'from' => 'm',
 					'cdtnl_cmt' => '',
@@ -287,19 +289,23 @@ class Template extends Library {
 	private function staticUrl($args){
 
 		$basepath = $filename = '';
-
-		if($args['from'] == 'm'){
+		
+		if($args['url']){
+			$file = $args['url'];
+		}
+		else if($args['from'] == 'm'){
 			$filename = $args['file'] ? $args['file'] : strtolower(app()->router->method()).'.'.$args['ext'];
 			$basepath = $args['basepath'] ? $args['basepath'] : app()->router->moduleUrl() . '/'.$args['ext'];
+			$file = $basepath . '/' . $filename;
 		}
-
-		if($args['from'] == 'i'){
+		else if($args['from'] == 'i'){
 			$interface = !empty($args['interface']) ? $args['interface'] : false;
 			$filename = $args['file'] ? $args['file'] : strtolower(LS).'.'.$args['ext'];
 			$basepath = $args['basepath'] ? $args['basepath'] : app()->router->staticUrl($interface) . '/'.$args['ext'];
+			$file = $basepath . '/' . $filename;
 		}
 
-		return $file = $basepath . '/' . $filename;
+		return $file;
 
 	}
 
