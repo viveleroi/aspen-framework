@@ -108,9 +108,6 @@
 	// default method
 	$config['default_method'] = 'view';
 
-	// force a secure connection
-	$config['force_https'] = false;
-
 	// Allow forwarding to original url after login
 	$config['post_login_redirect'] = true;
 
@@ -183,21 +180,6 @@
 	// save errors to database
 	$config['save_error_to_db'] = true;
 
-	// send emails for error messages
-	$config['send_error_emails'] = false;
-
-	// who to send error emails to
-	$config['error_email_recipient'] = 'webmaster@' .
-			(array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : false);
-
-	// error email from address
-	$config['error_email_sender'] = 'errors@' .
-			(array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : 'yourdomain.com');
-
-	// error email from sender name
-	$config['error_email_sender_name'] = 'errors@' .
-			(array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : 'yourdomain.com');
-
 	// minimum version of php required
 	$config['minimum_version_php'] = '5.1.0';
 
@@ -251,9 +233,6 @@
 	// enabled authentication support
 	$config['enable_authentication_support'] = true;
 
-	// directory (from application root) of system class extensions
-	$config['custom_classes_directory'] = 'custom';
-
 	// require token authorization when forms are submitted
 	$config['require_form_token_auth'] = false;
 
@@ -270,10 +249,6 @@
 	// If off, only the current page will display with prev/next links
 	$config['show_other_page_numbers'] = false;
 
-	// list any tables the activity log needs to be watching
-	// Note, you must enable the activity log by including the class.
-	//$config['activity_watch_tables'] = array('authentication');
-
 	// preference config_keys to load for preference editing function
 	$config['preference_configs_to_edit'] = array();
 
@@ -285,17 +260,6 @@
 	// load custom filters, placed in HTMLPurifier/Filters directory
 	$config['html_purifier_custom_filters'] = false;
 	//$config['html_purifier_custom_filters'] = array( array('name' => 'Vimeo', 'class'=>"HTMLPurifier_Filter_Vimeo"));
-
-
-	// allow for plugin support
-	// toggles:
-	// - directory scanning for plugins
-	// - plugin loading/registration
-	// - plugin hook calls
-	$config['allow_plugins'] = false; // not functional
-
-	// allow checking for database upgrades
-	$config['watch_pending_db_upgrade'] = false;
 
 	// mysql database field type grouping
 	$config['mysql_field_group_dec']  = array('float', 'double', 'decimal');
@@ -390,7 +354,7 @@
  */
 
 	$config['load_core_class'][] = array('classname' => 'Library', 'autoload' => false);
-	$config['load_core_class'][] = array('classname' => 'Peregrine', 'folder' => 'security/Peregrine', 'var'=>'params');
+	$config['load_core_class'][] = array('classname' => 'Peregrine', 'folder' => 'security', 'var'=>'params');
 	$config['load_core_class'][] = array('classname' => 'Security');
 	$config['load_core_class'][] = array('classname' => 'Phpass', 'folder' => 'security', 'autoload'=>false);
 	$config['load_core_class'][] = array('classname' => 'Utils','autoload'=>false);

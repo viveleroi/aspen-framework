@@ -54,11 +54,6 @@ class Router extends Library {
 
 		parent::__construct();
 
-		// force use of ssl if required
-		if(app()->config('force_https')){
-			$this->redirectToUrl(str_replace(array("https", "http"), "https", $this->fullUrl()));
-		}
-
 		// map the url elements and then identify the module/method to load
 		$this->mapRequest();
 		$this->loadRequestedPagePath();
@@ -280,7 +275,7 @@ class Router extends Library {
 
 		if(strtolower(get_class(app())) == "app"){
 
-			if(app()->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account' && !app()->awaitingUpgrade()){
+			if(app()->isInstalled()){
 
 				// do a quick check to see if the user is logged in or not
 				// we need to create our own auth check, as the user module is not loaded at this point
@@ -332,13 +327,8 @@ class Router extends Library {
 			$default = $this->map['method'];
 
 		} else {
-			if(app()->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account' && !app()->awaitingUpgrade()){
+			if(app()->isInstalled()){
 				$default = 'login';
-			} else {
-				if($this->module() == "Install_Admin"){
-					$method = app()->awaitingUpgrade() ? 'upgrade' : 'view';
-					$default = $this->map['method'] ? $this->map['method'] : $method;
-				}
 			}
 		}
 
@@ -493,11 +483,6 @@ class Router extends Library {
 				app()->user->logout();
 				$this->redirect('login', false, 'Users');
 			}
-		}
-
-		// redirect if upgrade pending
-		if(app()->user->isLoggedIn() && $this->module() != 'Install_Admin'){
-			if(app()->awaitingUpgrade()){ $this->redirect('upgrade', false, 'Install'); }
 		}
 
 		if($this->method() && app()->user->userHasAccess()){

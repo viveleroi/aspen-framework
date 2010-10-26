@@ -1331,38 +1331,6 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * Determines whether or not the database is awaiting an auto-upgrade
-	 * @access public
-	 */
-	public function awaitingUpgrade(){
-		if($this->config('watch_pending_db_upgrade') && $this->isInstalled()){
-
-			$build = $this->formatVersionNumber($this->config('application_version'));
-			$latest_build = $this->latestVersion();
-
-			if($this->versionCompare($build, $latest_build) == 'greater'){
-				$sql_path = MODULES_PATH . '/Install/sql/upgrade.sql.php';
-
-				// include file with all upgrade queries
-				if(file_exists($sql_path)){
-					include($sql_path);
-				}
-
-				if(isset($sql) && is_array($sql)){
-					foreach($sql as $new_build => $updates){
-						if($this->versionCompare($new_build, $latest_build) == 'greater'){ return true; }
-					}
-				}
-			}
-			if($this->versionCompare($build, $latest_build) == 'less'){
-				$this->error->raise(1, 'Your database appears to be from a version newer than your current installation.', __FILE__, __LINE__);
-			}
-		}
-		return false;
-	}
-
-
-	/**
 	 * Compared two version strings for similarity
 	 * @param string $build
 	 * @param string $match

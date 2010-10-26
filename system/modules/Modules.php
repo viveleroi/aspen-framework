@@ -45,54 +45,5 @@ class Modules extends Library {
 			}
 		}
 	}
-
-
-	/**
-	 * Returns an array of installed module GUIDs that are not part of the standard install
-	 * @return array
-	 */
-	public function getNonBaseModules(){
-
-		$nonbase = array();
-
-		if(app()->checkDbConnection()){
-
-			// find any modules with autoload set to current guid
-			$model = app()->model->open('modules');
-			$model->orderBy('sort_order');
-			$modules = $model->results();
-
-			if($modules){
-				foreach($modules as $module){
-					$reg = app()->moduleRegistry($module['guid']);
-					if(isset($reg->installable) && $reg->installable){
-						$nonbase[] = $module['guid'];
-					}
-				}
-			}
-		}
-
-		return $nonbase;
-
-	}
-
-
-	/**
-	 * Returns an array of ALL module GUIDs that are not part of the standard install, whether they're installed or not
-	 * @return array
-	 */
-	public function getAllNonBaseModules(){
-
-		$nonbase = array();
-
-		foreach(app()->getModuleRegistry() as $module){
-			if(isset($module->installable) && $module->installable){
-				$nonbase[] = (string)$module->guid;
-			}
-		}
-
-		return $nonbase;
-
-	}
 }
 ?>

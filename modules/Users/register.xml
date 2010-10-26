@@ -1,17 +1,9 @@
 <?xml version="1.0"?>
-
 <package>
-
 	<type>Module</type>
 	<guid>eee1d8c0-d50a-11dc-95ff-0800200c9a66</guid>
 	<classname>Users</classname>
 	<name>Users</name>
-	<description>User authentication.</description>
-	<vendor>Trellis Development, LLC</vendor>
-	<pressUrl>http://www.aspen-framework.org</pressUrl>
-	<updateUrl>http://www.aspen-framework.org</updateUrl>
-
     <model>users</model>
 	<model>groups</model>
-	
 </package>

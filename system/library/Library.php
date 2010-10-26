@@ -18,7 +18,6 @@ class Library {
 	/**
 	 * Constructor
 	 */
-	public function  __construct() {
-	}
+	public function  __construct(){}
 }
 ?>

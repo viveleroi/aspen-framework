@@ -50,8 +50,6 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 	$application = new App($config);
 
 } else {
-
 	trigger_error('This application requires PHP 5.1+. Please upgrade your version of PHP.', E_USER_ERROR);
-
 }
 ?>

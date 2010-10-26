@@ -116,7 +116,6 @@ class Error extends Library {
 			}
 		}
 
-
 		// if logging exists, log this error
 		if(isset(app()->log) && is_object(app()->log)){
 			app()->log->write(sprintf('ERROR (File: %s/%s: %s',$error['file'],$error['line'],$error['error_message']));
@@ -138,12 +137,7 @@ class Error extends Library {
 			}
 		}
 
-        // send the errors to firephp
-        if(app()->isLibraryLoaded('Debug') && app()->config('enable_firephp')){
-            app()->debug->firephp()->error($error['error_message'] . ' Line: ' .$error['line'] . ' - File: ' .$error['file']);
-        }
-
-
+		// post the errors to json-enabled api (snowy evening)
 		if(app()->config('error_json_post_url')){
 
 			$params = array(
@@ -179,7 +173,6 @@ class Error extends Library {
 	 * @access private
 	 */
 	private function getServerValue($key, $default = 'N/A'){
-
 		if(isset(app()->params) && is_object(app()->params)){
 			return app()->server->getRaw($key);
 		} else {

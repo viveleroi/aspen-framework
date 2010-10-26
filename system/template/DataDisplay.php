@@ -75,5 +75,100 @@ class DataDisplay extends Library {
 		$phone = "(".$sArea.") ".$sPrefix."-".$sNumber;
 		return($phone);
 	}
+	
+	
+	/**
+	 * Formats a US address
+	 * @access public
+	 */
+	public function formatAddress($add_1 = '', $add_2 = '', $city = '', $state = '', $zip = '', $country = ''){
+
+		$address = '';
+
+		$address .= empty($add_1) ? '' : $add_1 . "<br />";
+		$address .= empty($add_2) ? '' : $add_2 . "<br />";
+		$address .= empty($city) ? '' : $city;
+
+		if(!empty($city) && !empty($state)){
+			$address .= ", ";
+		} else {
+			if(!empty($city)){
+				$address .= "<br />";
+			}
+		}
+
+		$address .= empty($state) ? '' : $state . "<br />";
+		$address .= empty($zip) ? '' : $zip . "<br />";
+		$address .= empty($country) ? '' : $country . "<br />";
+
+		return $this->na($address);
+
+	}
+	
+	
+//+-----------------------------------------------------------------------+
+//| TEXT-RELATED/HANDLING FUNCTIONS
+//+-----------------------------------------------------------------------+
+	
+	
+	/**
+	 * Truncates a text block and adds a read more link
+	 * @param string $phrase
+	 * @param integer $blurb_word_length
+	 * @param string $more_link
+	 * @return string
+	 * @access public
+	 */
+	public function truncateText($phrase, $blurb_word_length = 40, $more_link = false){
+
+		// replace html elements with spaces
+    	$phrase = preg_replace("/<(\/?)([^>]+)>/i", " ", $phrase);
+    	$phrase = html_entity_decode($phrase, ENT_QUOTES, 'UTF-8');
+		$phrase = $this->encodeTextEntities(strip_tags($phrase));
+		$phrase_array = explode(' ', $phrase);
+		if(count($phrase_array) > $blurb_word_length && $blurb_word_length > 0){
+			$phrase = implode(' ',array_slice($phrase_array, 0, $blurb_word_length))
+													.'&#8230;'.($more_link ? $more_link : '');
+		}
+
+		return $phrase;
+
+	}
+	
+	
+	/**
+	 * Truncates a string to $char_length caracters, and appends an elipse
+	 * @param string $string
+	 * @param integer $char_length
+	 * @return string
+	 * @access public
+	 */
+	public function truncateString($string, $char_length = 40){
+
+		// replace html elements with spaces
+    	$string = preg_replace("/<(\/?)([^>]+)>/i", " ", $string);
+    	$string = html_entity_decode($string, ENT_QUOTES, 'UTF-8');
+		$string = $this->encodeTextEntities(strip_tags($string));
+
+		if(strlen($string) > $char_length){
+			$string = substr($string, 0, $char_length) . '&#8230;';
+		}
+
+		return $string;
+
+	}
+	
+	
+	/**
+	 * Truncates a filename leaving extension intact
+	 * @param string $fileame
+	 * @param integer $char_length
+	 * @param string $separator
+	 * @return string
+	 */
+	public function truncateFilename($fileame, $char_length = 25, $separator = '&#8230;'){
+		$filext = strrchr($fileame, '.');
+		return substr(str_replace($filext, '', $fileame), 0, $char_length) . $separator.$filext;
+	}
 }
 ?>
