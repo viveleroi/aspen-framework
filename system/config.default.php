@@ -466,9 +466,6 @@
 											'folder' => 'formats/rss',
 											'filename' => 'class.RSSBuilder.inc');
 
-	// Image thumbnail generation
-	$config['load_add_core_class'][] = array('classname' => 'Thumbnail', 'autoload' => false);
-
     // Debugging functionality
 	$config['load_add_core_class'][] = array('classname' => 'Debug');
 
