@@ -27,8 +27,6 @@
 		<div class="clear clearfix"></div>
 		</div>
 		
-		<?php print app()->modulesAwaitingInstallAlert(); ?>
-		
 		<?php if(app()->user->isLoggedIn()){ ?>
 		<ul id="nav">
 			<?php print app()->generateInterfaceMenu(false) ?>

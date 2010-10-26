@@ -25,10 +25,9 @@ class Modules extends Library {
 		if($guid && app()->checkDbConnection()){
 
 			$autoload	= array();
-			$installed	= app()->getInstalledModuleGuids();
+			$modules	= app()->getModuleRegistry();
 
-			foreach($installed as $module){
-				$reg = app()->moduleRegistry($module);
+			foreach($modules as $reg){
 				if(isset($reg->hook)){
 					$att = $reg->hook->attributes();
 					if((string)$att->type == "module"){

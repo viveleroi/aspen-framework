@@ -15,12 +15,6 @@
  */
 class App extends Bootstrap {
 
-	/**
-	 * @var array $_modules_awaiting_install Contains a list of modules found on the server, but not yet installed
-	 * @access private
-	 */
-	private $_modules_awaiting_install = false;
-
 
 	/**
 	 * Initializes the entire admin app
@@ -30,9 +24,6 @@ class App extends Bootstrap {
 
 		// call the bootstrap function to initialize everything
 		parent::__construct($config);
-
-		// generate a list of modules on the server awaiting install
-		$this->listModulesAwaitingInstall();
 
 		// if new display settings are set in the url, save them to the database
 		if($this->params->get->getElemId('sort_location') && $this->params->get->getElemId('sort_by')){
@@ -87,9 +78,7 @@ class App extends Bootstrap {
 
 		$menu = $display_ul ? '<ul id="primary_navigation">' : '';
 
-		foreach($this->getInstalledModuleGuids() as $module){
-
-			$reg = $this->moduleRegistry($module);
+		foreach($this->getModuleRegistry() as $reg){
 
 			if(is_object($reg)){
 				if(isset($reg->disable_menu) && $reg->disable_menu){

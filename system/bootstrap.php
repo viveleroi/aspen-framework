@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', false);
+ini_set('display_errors', true);
 error_reporting(E_ALL);
 
 /**
@@ -251,12 +251,6 @@ class Bootstrap extends Base {
 	private $_model_extensions;
 
 	/**
-	 * @var array $_modules Contains a list of modules found in the database.
-	 * @access private
-	 */
-	private $_modules = false;
-
-	/**
 	 * @var array $_module_registry Holds data from the module registry files
 	 * @access private
 	 */
@@ -330,9 +324,6 @@ class Bootstrap extends Base {
 
 		// load in system libraries / classes
 		$this->loadSystemLibraries();
-
-		// generate a list of all available (installed) modules
-		$this->listModules();
 
 		// identify all model extensions
 		$this->_model_extensions = $this->listModelExtensions();
@@ -419,9 +410,8 @@ class Bootstrap extends Base {
 		if($installed){
 			if(isset($this->db) && is_object($this->db)){
 				// attempt a query to see if tables installed
-				$results = $this->db->Execute('SELECT * FROM modules');
-				$installed = $results ? true : false;
-				$installed = $installed ? $results->RecordCount() : false;
+				$results = $this->db->Execute('SHOW TABLES');
+				$installed = $results ? $results->RecordCount() : false;
 			} else {
 
 				$installed = false;
@@ -940,7 +930,7 @@ class Bootstrap extends Base {
 	 */
 	public function checkDbConnection(){
 		if($this->db){
-			if($this->db->Execute('SELECT * FROM modules LIMIT 1')){
+			if($this->db->Execute('SHOW TABLES')){
 				return true;
 			}
 		} else {
@@ -1163,46 +1153,6 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * Gathers a list of installed modules from db, stores it in local array.
-	 * @return boolean
-	 * @access private
-	 */
-	public function listModules(){
-		if($this->checkDbConnection()){
-			$model = $this->model->open('modules');
-			$model->orderBy('sort_order');
-			$modules = $model->results();
-			if($modules){
-				foreach($modules as $module){
-					$this->_modules[] = $module['guid'];
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-	/**
-	 * Returns the module list as an array
-	 * @return array
-	 * @access private
-	 */
-	public function getInstalledModuleGuids(){
-
-		if(is_array($this->_modules)){
-			return $this->_modules;
-		} else {
-			$mod = $this->moduleRegistry(false, $this->config('default_module_no_config'));
-			if(isset($mod->guid)){
-				return array((string)$mod->guid);
-			}
-		}
-		return array();
-	}
-
-
-	/**
 	 * Identifies the current module and it's prereqs to load
 	 * @access private
 	 */
@@ -1247,33 +1197,28 @@ class Bootstrap extends Base {
 
 		if(isset($tmp_reg->classname)){
 
-			if(in_array($tmp_reg->guid, $this->getInstalledModuleGuids())){
+			// check the targetApp is set, if so we need to verify it
+			if(isset($tmp_reg->targetApplication) && isset($tmp_reg->targetApplication->guid)){
+				if($tmp_reg->targetApplication->guid == $this->config('application_guid')){
 
-				// check the targetApp is set, if so we need to verify it
-				if(isset($tmp_reg->targetApplication) && isset($tmp_reg->targetApplication->guid)){
-					if($tmp_reg->targetApplication->guid == $this->config('application_guid')){
+					$this->log->write('targetApplication set and matched for ' . $tmp_reg->classname . ' module.');
 
-						$this->log->write('targetApplication set and matched for ' . $tmp_reg->classname . ' module.');
-
-						// verify the target versions match
-						if($this->registryVersionMatch($tmp_reg->targetApplication->minVersion, $tmp_reg->targetApplication->maxVersion)){
-							$allowed = true;
-							$this->log->write('Target application version requirements matched for ' . $tmp_reg->classname . ' module.');
-						} else {
-							$this->log->write('Target application versions failed to matched for ' . $tmp_reg->classname . ' module.');
-							$this->error->raise(1, 'Target application versions failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
-						}
-
+					// verify the target versions match
+					if($this->registryVersionMatch($tmp_reg->targetApplication->minVersion, $tmp_reg->targetApplication->maxVersion)){
+						$allowed = true;
+						$this->log->write('Target application version requirements matched for ' . $tmp_reg->classname . ' module.');
 					} else {
-						$this->log->write('Target application set but failed to matched for ' . $tmp_reg->classname . ' module.');
-						$this->error->raise(1, 'Target application set but failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
+						$this->log->write('Target application versions failed to matched for ' . $tmp_reg->classname . ' module.');
+						$this->error->raise(1, 'Target application versions failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
 					}
+
 				} else {
-					$allowed = true;
-					$this->log->write('No target application set for ' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . ' module, IGNORING.');
+					$this->log->write('Target application set but failed to matched for ' . $tmp_reg->classname . ' module.');
+					$this->error->raise(1, 'Target application set but failed to matched for ' . $tmp_reg->classname . ' module.', __FILE__, __LINE__);
 				}
 			} else {
-				$this->error->raise(1, 'Attempting to load module ("' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . '") which is not installed.', __FILE__, __LINE__);
+				$allowed = true;
+				$this->log->write('No target application set for ' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . ' module, IGNORING.');
 			}
 
 
