@@ -1148,7 +1148,6 @@ class Bootstrap extends Base {
 				if((string)$module->guid == (string)$guid){
 					return $module;
 				}
-
 			}
 
 			// if name provided
