@@ -139,12 +139,6 @@ class Bootstrap extends Base {
 	public $router = false;
 
 	/**
-	 * @var object $scaffold Holds the scaffolding object
-	 * @access public
-	 */
-	public $scaffold = false;
-
-	/**
 	 * @var object $security Holds the security object
 	 * @access public
 	 */
@@ -167,12 +161,6 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $template = false;
-
-	/**
-	 * @var object $thumbnail Holds the thumbail object
-	 * @access public
-	 */
-	public $thumbnail = false;
 
 	/**
 	 * @var object $user Holds the user object

@@ -405,7 +405,6 @@
 									'folder' => 'security/Htmlpurifier',
 									'var' => 'html',
 									'autoload'=>false);
-	$config['load_core_class'][] = array('classname' => 'Install');
 	$config['load_core_class'][] = array('classname' => 'Log');
 	$config['load_core_class'][] = array('classname' => 'Model');
 	$config['load_core_class'][] = array('classname' => 'Inflector','autoload'=>false,'folder'=>'utils');
@@ -436,20 +435,11 @@
 
 	/*
 
-	// Scaffold - required for modadmin to work
-	$config['load_core_class'][] = array('classname' => 'Scaffold');
-
 	// Xml encoding and output functionality
 	$config['load_add_core_class'][] = array('classname' => 'Xml', 'folder' => 'formats');
 
     // Debugging functionality
 	$config['load_add_core_class'][] = array('classname' => 'Debug');
-
-	// Activity logging functionality
-	$config['load_add_core_class'][] = array('classname' => 'Activity');
-	$config['load_add_core_class'][] = array('classname' => 'Activityrender', 'autoload' => false, 'folder'=>'activity');
-	$config['load_add_core_class'][] = array('classname' => 'Activityrender_html', 'autoload' => false, 'folder'=>'activity');
-	$config['models']['activity'] = array('root'=>SYSTEM_PATH.DIRECTORY_SEPARATOR.'activity');
 
 	*/
 
