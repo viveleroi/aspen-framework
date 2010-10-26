@@ -442,11 +442,6 @@
 	// Xml encoding and output functionality
 	$config['load_add_core_class'][] = array('classname' => 'Xml', 'folder' => 'formats');
 
-	// RSS feed generation tool
-	$config['load_add_core_class'][] = array(	'classname' => 'RSSBuilder',
-											'folder' => 'formats/rss',
-											'filename' => 'class.RSSBuilder.inc');
-
     // Debugging functionality
 	$config['load_add_core_class'][] = array('classname' => 'Debug');
 
