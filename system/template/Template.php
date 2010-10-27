@@ -25,6 +25,12 @@ function text(){
  * @package Aspen_Framework
  */
 class Template extends Library {
+	
+	/**
+	 * @var string Holds the layout template name
+	 * @access public
+	 */
+	public $layout = 'default';
 
 	/**
 	 * @var string Holds the display template of the page title
@@ -63,12 +69,6 @@ class Template extends Library {
 	private $_load_js_vars = array();
 
 	/**
-	 * @var array $_load_templates An array of templates queued for display
-	 * @access private
-	 */
-	private $_load_templates;
-
-	/**
 	 * @var array $lang Holds the current language values
 	 * @access private
 	 */
@@ -82,6 +82,16 @@ class Template extends Library {
 	 */
 	public function getTemplateDir(){
 		return INTERFACE_PATH . DS. 'templates';
+	}
+	
+	
+	/**
+	 * Returns the layouts directory
+	 * @return string
+	 * @access public
+	 */
+	public function getLayoutDir(){
+		return INTERFACE_PATH . DS. 'layouts';
 	}
 
 
@@ -354,10 +364,30 @@ class Template extends Library {
 			$this->_data = array_merge($this->_data, $data);
 		}
 	}
+	
+	
+	/**
+	 * Display all templates that have been primed for output
+	 * @param $data Array of data to be passed
+	 * @access public
+	 */
+	public function page(){
+		$template = $this->getModuleTemplateDir().DS.app()->router->method().'.tpl.php';
+		if(file_exists($template) && strpos($template, APPLICATION_PATH) !== false){
+			// pass through variables
+			if(is_array($this->_data)){
+				foreach($this->_data as $var => $value){
+					$$var = $value;
+				}
+			}
+			app()->log->write('Including template ' . $template);
+			include($template);
+		}
+	}
 
 
 	/**
-	 * Display all templates that have been primed for output
+	 * Display our layout that has been primed for output
 	 * @param $data Array of data to be passed
 	 * @access public
 	 */
@@ -365,45 +395,29 @@ class Template extends Library {
 
 		$this->set($data);
 
-		if(is_array($this->_load_templates)){
+		// if token auth on, we need to generate a token
+		if(app()->config('require_form_token_auth')){
+			$token = app()->security->generateFormToken();
+		}
+		
+		$layout = $this->getLayoutDir().DS.$this->layout.'.tpl.php';
 
-			// if token auth on, we need to generate a token
-			if(app()->config('require_form_token_auth')){
-				$token = app()->security->generateFormToken();
-			}
-			
-			foreach($this->_load_templates as $template){
-				if(file_exists($template) && strpos($template, APPLICATION_PATH) !== false){
+		if(file_exists($layout)){
 
-					// pass through variables
-					if(is_array($this->_data)){
-						foreach($this->_data as $var => $value){
-							$$var = $value;
-						}
-					}
-
-					app()->log->write('Including template ' . $template);
-					include($template);
-
-
+			// pass through variables
+			if(is_array($this->_data)){
+				foreach($this->_data as $var => $value){
+					$$var = $value;
 				}
 			}
-		}
 
+			app()->log->write('Including layout ' . $layout);
+			include($layout);
+
+		}
+		
 		$this->resetTemplateQueue();
 
-	}
-
-
-	/**
-	 * Adds a template to the display stack, so when the display
-	 * function is called, the templates will be output in the
-	 * order they were added.
-	 * @param string $template
-	 * @access public
-	 */
-	public function addView($template){
-		$this->_load_templates[] = $template;
 	}
 
 
@@ -413,7 +427,6 @@ class Template extends Library {
 	 */
 	public function resetTemplateQueue(){
 		$this->_data			= array();
-		$this->_load_templates	= array();
 		$this->_load_css		= array();
 		$this->_load_js			= array();
 	}
