@@ -12,7 +12,7 @@
  * Managers user accounts
  * @package Aspen_Framework
  */
-class User extends Library {
+class User  {
 
 
 	/**

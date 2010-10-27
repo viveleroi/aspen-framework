@@ -12,7 +12,7 @@
  * Manages application settings
  * @package Aspen_Framework
  */
-class Settings extends Library {
+class Settings  {
 
 	/**
 	 * @var array Holds the user settings configurations from the db

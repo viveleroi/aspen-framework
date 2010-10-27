@@ -12,7 +12,7 @@
  * Manages user preferences
  * @package Aspen_Framework
  */
-class Preferences extends Library {
+class Preferences  {
 
 
 	/**

@@ -12,7 +12,7 @@
  * This class manages our mysql sql query generation
  * @package Aspen_Framework
  */
-class Model extends Library {
+class Model  {
 
 	/**
 	 * @var array Holds an array of calculations we need to perform on the results
@@ -142,7 +142,6 @@ class Model extends Library {
 	 * @access private
 	 */
 	public function __construct($table = false){
-		parent::__construct();
 		if($table){ $this->openTable($table); }
 	}
 

@@ -12,7 +12,7 @@
  * Allows messages to be logged to the session and a log of those messages is maintained.
  * @package Aspen_Framework
  */
-class Sml extends Library {
+class Sml  {
 
 	/**
 	 * @var array $sessionMessageArray Holds the array of session messages

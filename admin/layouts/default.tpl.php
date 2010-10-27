@@ -26,11 +26,8 @@
 	<?php endif; ?>
 		
 		
-			<?php $this->page(); ?>
-			
-
-		
-<p class="small"><?= app()->config('application_name'); ?> <?= VERSION ?> &mdash; <em><?= text('copyright'); ?></em></p>
+<?php $this->page(); ?>
+<p><?= text('copyright', VERSION); ?></p>
 	
 </body>
 <?= $this->htmlHide(VERSION_COMPLETE); ?>

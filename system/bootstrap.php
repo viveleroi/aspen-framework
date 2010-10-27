@@ -336,19 +336,9 @@ class Bootstrap extends Base {
 			$this->log->enable();
 		}
 
-		// enable cache
-		if($this->config('enable_cache')){
-			$this->cache->enable();
-		}
-
 		// throw a db error if the config exists, we're not installing, but the db connection fails
 		if(!$this->db && $this->checkUserConfigExists() && $this->router->module() != "Install_Admin"){
-			// This should only show if config exists but won't work
-			$this->template->resetTemplateQueue();
-	    	$this->template->addView($this->template->getTemplateDir().DS.'header.tpl.php');
-			$this->template->addView($this->template->getTemplateDir().DS.'database-error.tpl.php');
-			$this->template->addView($this->template->getTemplateDir().DS.'footer.tpl.php');
-			$this->template->display();
+			trigger_error('General database failure.', E_USER_ERROR);
 			exit;
 		} else {
 			$this->log->write('Database connection is up and running.');
@@ -1100,6 +1090,37 @@ class Bootstrap extends Base {
 			}
 		//}
 	}
+	
+	
+	/**
+	 * Loads any modules that are hooked to current module
+	 * @param string $guid
+	 * @access public
+	 */
+	public function callModuleHooks($guid = false){
+
+		if($guid && app()->checkDbConnection()){
+
+			$autoload	= array();
+			$modules	= app()->getModuleRegistry();
+
+			foreach($modules as $reg){
+				if(isset($reg->hook)){
+					$att = $reg->hook->attributes();
+					if((string)$att->type == "module"){
+						$autoload[] = $module;
+					}
+				}
+			}
+
+			// if modules found, let's load them!
+			if(count($autoload) > 0){
+				foreach($autoload as $load_guid){
+					app()->loadModule($load_guid);
+				}
+			}
+		}
+	}
 
 
 	/**
@@ -1234,7 +1255,7 @@ class Bootstrap extends Base {
 					$this->log->write('Loading Module: ' . $classname);
 
 					// call any module hooks for this module
-					$this->modules->callModuleHooks($tmp_reg->guid);
+					$this->callModuleHooks($tmp_reg->guid);
 					$this->log->write('Calling module hooks for: ' . $classname);
 
 				}

@@ -24,7 +24,7 @@ function text(){
  * This class manages our templates and loads them for display
  * @package Aspen_Framework
  */
-class Template extends Library {
+class Template  {
 	
 	/**
 	 * @var string Holds the layout template name

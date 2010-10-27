@@ -12,7 +12,7 @@
  * Provides data cleaning and escaping functions.
  * @package Aspen_Framework
  */
-class Security extends Library {
+class Security  {
 
 
 	/**

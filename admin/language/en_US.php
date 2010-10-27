@@ -1,5 +1,5 @@
 <?php
-$lang['admin']['copyright'] = 'Copyright &copy; 2008-'.date('Y').' Trellis Development, LLC';
+$lang['admin']['copyright'] = 'Aspen Framework %s &mdash; Copyright &copy; 2008-'.date('Y').' Trellis Development, LLC';
 $lang['admin']['404:title'] = 'Page Not Found';
 $lang['admin']['404:message'] = 'The page (%s/%s) you have requested could not be found.';
 $lang['admin']['db:display:not_provided'] = 'Not Provided';

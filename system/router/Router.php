@@ -12,7 +12,7 @@
  * Manages urls and relation to our application
  * @package Aspen_Framework
  */
-class Router extends Library {
+class Router  {
 
 	/**
 	 * @var array $_loaded_languages Remembers which langs have already been loaded
@@ -51,8 +51,6 @@ class Router extends Library {
 	 * @access private
 	 */
 	public function __construct(){
-
-		parent::__construct();
 
 		// map the url elements and then identify the module/method to load
 		$this->mapRequest();

@@ -12,7 +12,7 @@
  * Validates and handles form data.
  * @package Aspen_Framework
  */
-class Form extends Library {
+class Form  {
 
 	/**
 	 * @var array $_form_fields Holds an array of form fields

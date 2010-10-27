@@ -5,7 +5,7 @@
  */
 
 
-class DataDisplay extends Library {
+class DataDisplay  {
 
 	/**
 	 * @var array Will hold an array that we use for data access

@@ -353,7 +353,6 @@
  * 'extends' => 'Settings'
  */
 
-	$config['load_core_class'][] = array('classname' => 'Library', 'autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'Peregrine', 'folder' => 'security', 'var'=>'params');
 	$config['load_core_class'][] = array('classname' => 'Security');
 	$config['load_core_class'][] = array('classname' => 'Phpass', 'folder' => 'security', 'autoload'=>false);
@@ -373,7 +372,6 @@
 	$config['load_core_class'][] = array('classname' => 'Model');
 	$config['load_core_class'][] = array('classname' => 'Inflector','autoload'=>false,'folder'=>'utils');
 	$config['load_core_class'][] = array('classname' => 'Module');
-	$config['load_core_class'][] = array('classname' => 'Modules');
 	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail', 'filename'=>'class.phpmailer');
 	$config['load_core_class'][] = array('classname' => 'Settings');
 	$config['load_core_class'][] = array('classname' => 'Sml');

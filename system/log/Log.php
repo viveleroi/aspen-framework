@@ -12,7 +12,7 @@
  * Provides a method of writing to a log file.
  * @package Aspen_Framework
  */
-class Log extends Library {
+class Log  {
 
 	/**
 	 * @var boolean $on Whether or not logging  is enabled

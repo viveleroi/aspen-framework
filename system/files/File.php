@@ -13,7 +13,7 @@
  * @package Aspen_Framework
  * @author Antoine Bouet
  */
-class File extends Library {
+class File  {
 
 	/**
 	 * @var string Absolute path to file

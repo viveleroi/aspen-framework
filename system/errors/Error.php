@@ -16,7 +16,7 @@
  *
  * @package Aspen_Framework
  */
-class Error extends Library {
+class Error  {
 
 
 	/**
