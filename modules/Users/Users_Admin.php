@@ -27,9 +27,6 @@ class Users_Admin extends Module {
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
 
-		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
-		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
 		app()->template->display($data);
 
 	}
@@ -58,9 +55,6 @@ class Users_Admin extends Module {
 
 		$data['groups'] = app()->user->groupList();
 
-		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
-		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
 		app()->template->display($data);
 
 	}
@@ -77,9 +71,6 @@ class Users_Admin extends Module {
 			app()->router->redirect('view', false, 'Index');
 		}
 
-		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
-		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'my_account.tpl.php');
-		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
 		app()->template->display();
 
 	}
@@ -106,9 +97,6 @@ class Users_Admin extends Module {
 
 		app()->user->login();
 
-		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
-		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'login.tpl.php');
-		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
 		app()->template->display();
 	}
 
@@ -128,9 +116,6 @@ class Users_Admin extends Module {
 			app()->router->redirect('forgot');
 		}
 
-		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
-		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'forgot.tpl.php');
-		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
 		app()->template->display();
 
 	}
@@ -166,9 +151,6 @@ class Users_Admin extends Module {
 	 */
 	public function denied(){
 		$this->setPageTitle(text('users:denied:head-title'));
-		app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
-		app()->template->addView(app()->template->getModuleTemplateDir().DS . 'denied.tpl.php');
-		app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
 		app()->template->display();
 	}
 }
