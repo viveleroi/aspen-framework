@@ -526,32 +526,20 @@ class Router extends Library {
 					// Call the actual class method for our current page, and pass all arguments to it
 					call_user_func_array(array(app()->{$this->module()}, $this->method()), $this->_selected_arguments);
 
-				} else { // method not found within module
-					if(app()->config('log_error_on_404')){
-						app()->error->raise(2, 'Method ' . $this->method() . ' does not exist in '
-													 . $this->module(), __FILE__, __LINE__);
-					}
-
-					header("HTTP/1.0 404 Not Found");
-					app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+				} else {
+					$this->header_code(404);
 					app()->template->addView(app()->template->getTemplateDir().DS . '404.tpl.php');
-					app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
 					app()->template->display();
 					exit;
 				}
-			} else { // no module found
-				if(app()->config('log_error_on_404')){
-					app()->error->raise(2, 'Module ' . $this->module() . ' does not exist.', __FILE__, __LINE__);
-				}
-
-				header("HTTP/1.0 404 Not Found");
-				app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
+			} else {
+				$this->header_code(404);
 				app()->template->addView(app()->template->getTemplateDir().DS . '404.tpl.php');
-				app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
 				app()->template->display();
 				exit;
 			}
 		} else { // not authorized
+			$this->header_code(403);
 			$this->loadModuleLanguage('Users', 'Admin');
 			app()->template->page_title = text('users:denied:head-title');
 			app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
@@ -940,7 +928,7 @@ class Router extends Library {
 	 * @param integer $status
 	 */
 	public function header_code($status = false){
-
+		
 		$codes = array(
 				100 => 'Continue',
 				101 => 'Switching Protocols',
@@ -983,8 +971,8 @@ class Router extends Library {
 				504 => 'Gateway Time-out'
 			);
 
-		if ($status && isset($codes[$status]) && ($status >= 300 && $status < 400)) {
-			$header = sprinf("HTTP/1.1 %s %s", $status, $codes[$status]);
+		if ($status && isset($codes[$status])) {
+			$header = sprintf("HTTP/1.1 %s %s", $status, $codes[$status]);
 			header($header);
 		}
 	}
