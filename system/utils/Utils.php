@@ -511,7 +511,7 @@ class Utils {
  * @return array
  * @access private
  */
-	function __flatten($results, $key = null) {
+	static public function __flatten($results, $key = null) {
 		$stack = array();
 		foreach ($results as $k => $r) {
 			$id = $k;
@@ -535,7 +535,7 @@ class Utils {
  * @return array
  * @static
  */
-	function sort($data, $path, $dir) {
+	static public function sort($data, $path, $dir) {
 		$result = Utils::__flatten(Utils::extract($data, $path));
 		list($keys, $values) = array(Utils::extract($result, '{n}.id'), Utils::extract($result, '{n}.value'));
 

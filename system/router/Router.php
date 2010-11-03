@@ -460,7 +460,7 @@ class Router extends Library {
 	 * Loads all language files for user-created libraries.
 	 * @access private
 	 */
-	protected function loadLibraryLanguages(){
+	public function loadLibraryLanguages(){
 
 		$langs = array();
 
