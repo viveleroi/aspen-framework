@@ -503,5 +503,57 @@ class Utils {
 		}
 		return $data;
 	}
+/**
+ * Flattens an array for sorting
+ *
+ * @param array $results
+ * @param string $key
+ * @return array
+ * @access private
+ */
+	function __flatten($results, $key = null) {
+		$stack = array();
+		foreach ($results as $k => $r) {
+			$id = $k;
+			if (!is_null($key)) {
+				$id = $key;
+			}
+			if (is_array($r) && count($r)) {
+				$stack = array_merge($stack, Utils::__flatten($r, $id));
+			} else {
+				$stack[] = array('id' => $id, 'value' => $r);
+			}
+		}
+		return $stack;
+	}
+/**
+ * Sorts an array by any value, determined by a Set-compatible path
+ *
+ * @param array $data
+ * @param string $path A Set-compatible path to the array value
+ * @param string $dir asc/desc
+ * @return array
+ * @static
+ */
+	function sort($data, $path, $dir) {
+		$result = Utils::__flatten(Utils::extract($data, $path));
+		list($keys, $values) = array(Utils::extract($result, '{n}.id'), Utils::extract($result, '{n}.value'));
+
+		$dir = strtolower($dir);
+		if ($dir === 'asc') {
+			$dir = SORT_ASC;
+		} elseif ($dir === 'desc') {
+			$dir = SORT_DESC;
+		}
+		array_multisort($values, $dir, $keys, $dir);
+		$sorted = array();
+
+		$keys = array_unique($keys);
+
+		foreach ($keys as $k) {
+			$sorted[] = $data[$k];
+		}
+		return $sorted;
+	}
 }
 ?>

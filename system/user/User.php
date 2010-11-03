@@ -214,6 +214,9 @@ class User extends Library {
 						$_SESSION['latest_login'] 		= $account['latest_login'];
 						$_SESSION['last_login'] 		= $account['last_login'];
 						$_SESSION['user_id'] 			= $account['id'];
+						
+						// is this the very first login?
+						$_SESSION['first_login']		= Date::isEmptyDate($account['latest_login']);
 
 						// run any post-auth logic
 						$this->post_authentication($account);
@@ -304,14 +307,8 @@ class User extends Library {
 	 * @param <type> $user_id
 	 * @return <type>
 	 */
-	public function isFirstLogin($user_id = false){
-		if($user_id){
-			$user = app()->model->open('users', $user_id);
-			$last_login = $user['last_login'];
-		} else {
-			$last_login = app()->session->getRaw('last_login');
-		}
-		return Date::isEmptyDate($last_login);
+	public function isFirstLogin(){
+		return app()->session->getRaw('first_login');
 	}
 
 
