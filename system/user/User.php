@@ -8,6 +8,16 @@
  * @since 		1.0
  */
 
+
+/**
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &user(){
+	return app()->user;
+}
+
+
 /**
  * Managers user accounts
  * @package Aspen_Framework
@@ -26,7 +36,7 @@ class User  {
 	 * @access private
 	 */
 	public function loadPermissions(){
-		$perms = app()->model->open('permissions');
+		$perms = model()->open('permissions');
 		$this->permissions = $perms->results();
 	}
 
@@ -47,7 +57,7 @@ class User  {
 			$result = $form->save($id);
 		}
 
-		app()->template->set(array('form'=>$form));
+		template()->set(array('form'=>$form));
 
 		return $result;
 
@@ -69,7 +79,7 @@ class User  {
 	 * @access public
 	 */
 	public function delete($id = false){
-		$auth = app()->model->open('users');
+		$auth = model()->open('users');
 		return $auth->delete($id);
 	}
 
@@ -83,7 +93,7 @@ class User  {
 
 		// if the user is logged in, send to interface
 		if($this->isLoggedIn()){
-			app()->router->redirectToUrl( app()->router->interfaceUrl() );
+			router()->redirectToUrl( router()->interfaceUrl() );
 		}
 
 		$uri = app()->server->getPath('REQUEST_URI').app()->server->getRaw('QUERY_STRING');
@@ -97,9 +107,9 @@ class User  {
 			!strpos($uri, 'users&method=forgot') && !strpos($uri, 'users/forgot') &&
 			!strpos($uri, 'users&method=authenticate') && !strpos($uri, 'users/authenticate')
 		){
-			$_SESSION['post-login_redirect'] = app()->router->domainUrl().$uri;
+			$_SESSION['post-login_redirect'] = router()->domainUrl().$uri;
 		} else {
-			$_SESSION['post-login_redirect'] = app()->router->interfaceUrl();
+			$_SESSION['post-login_redirect'] = router()->interfaceUrl();
 		}
 	}
 
@@ -109,8 +119,8 @@ class User  {
 	 * @access public
 	 */
 	public function login_failed(){
-		app()->sml->say('Your username and password did not match. Please try again.', false);
-		app()->router->redirect('login',false,'Users');
+		sml()->say('Your username and password did not match. Please try again.', false);
+		router()->redirect('login',false,'Users');
 	}
 
 
@@ -130,7 +140,7 @@ class User  {
 			$new_pass = $this->makePassword();
 
 			// load the account
-			$auth = app()->model->open('users');
+			$auth = model()->open('users');
 			$user = $auth->quickSelectSingle($form->cv('user'), 'username');
 
 			if(is_array($user)){
@@ -160,7 +170,7 @@ class User  {
 			}
 		}
 
-		app()->template->set(array('form'=>$form));
+		template()->set(array('form'=>$form));
 
 		return false;
 
@@ -195,7 +205,7 @@ class User  {
 
 		if($user && $pass){
 
-			$model = app()->model->open('users');
+			$model = model()->open('users');
 			$model->where('username', $user);
 			$model->where('allow_login', 1);
 			$model->limit(0, 1);
@@ -272,7 +282,7 @@ class User  {
 			}
 		}
 
-		return empty($redirect) ? app()->router->interfaceUrl() : $redirect;
+		return empty($redirect) ? router()->interfaceUrl() : $redirect;
 
 	}
 
@@ -332,7 +342,7 @@ class User  {
 			if($this->isLoggedIn()){
 
 				// first identify any groups this user belongs to
-				$model = app()->model->open('user_group_link');
+				$model = model()->open('user_group_link');
 				$model->select(array('group_id'));
 				$model->where('user_id', $user_id);
 				$groups = $model->results();
@@ -366,8 +376,8 @@ class User  {
 	public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
 
        	$authenticated 	= false;
-		$module 		= $module ? $module : app()->router->module();
-		$method 		= $method ? $method : app()->router->method();
+		$module 		= $module ? $module : router()->module();
+		$method 		= $method ? $method : router()->method();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
 		$user_id		= $user_id ? $user_id : app()->session->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
@@ -379,7 +389,7 @@ class User  {
 			if($this->isLoggedIn() && $method != 'logout'){
 
 				// first identify any groups this user belongs to
-				$model = app()->model->open('user_group_link');
+				$model = model()->open('user_group_link');
 				$model->select(array('group_id'));
 				$model->where('user_id', $user_id);
 				$groups = $model->results();
@@ -457,7 +467,7 @@ class User  {
 
 		$user_id = $user_id ? $user_id : app()->session->getInt('user_id');
 
-		$model = app()->model->open('user_group_link');
+		$model = model()->open('user_group_link');
 		$model->leftJoin('groups', 'id', 'group_id', array('name'));
 		$model->where('user_id', $user_id);
 		if(is_string($group)){
@@ -484,7 +494,7 @@ class User  {
 
 		if($user_id){
 
-			$model = app()->model->open('user_group_link');
+			$model = model()->open('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
 			$groups = $model->results();
@@ -512,7 +522,7 @@ class User  {
 
 		if($this->isLoggedIn()){
 
-			$model = app()->model->open('user_group_link');
+			$model = model()->open('user_group_link');
 			$model->where('user_id', app()->session->getInt('user_id'));
 			$model->where('group_id', 1);
 			$groups = $model->results();
@@ -535,7 +545,7 @@ class User  {
 
 		if(app()->checkDbConnection()){
 
-			$model = app()->model->open('users');
+			$model = model()->open('users');
 			$accounts = $model->results();
 			return count($accounts);
 
@@ -610,7 +620,7 @@ class User  {
 	 */
 	public function groupList(){
 
-		$model = app()->model->open('groups');
+		$model = model()->open('groups');
 		$model->orderBy('name');
 		$groups = $model->results();
 		return $groups;

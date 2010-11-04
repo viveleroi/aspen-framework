@@ -8,6 +8,7 @@
  * @since 		1.0
  */
 
+
 /**
  * Provides a method of writing to a log file.
  * @package Aspen_Framework
@@ -50,14 +51,14 @@ class Log  {
 			// verify directory exists and is writeable
 			if(!$this->checkDirectory()){
 				$this->on = false;
-				app()->error->raise(1,
+				error()->raise(1,
 					'Logging is enabled, but directory is not writeable. Dir: ' . $this->dir, __FILE__, __LINE__);
 			}
 
 			// create a log file
 			if(!$this->createLogFile()){
 				$this->on = false;
-				app()->error->raise(1,
+				error()->raise(1,
 					'Failed creating new log file.', __FILE__, __LINE__);
 			}
 
@@ -131,12 +132,12 @@ class Log  {
 	 */
 	public function write($message = '(empty message)', $mode = 'a'){
 		if($this->on){
-			app()->file->useFile($this->full_path);
+			files()->useFile($this->full_path);
 
 			if(is_array($message) || is_object($message)){
-				app()->file->write( print_r($message, true) . "\n", $mode);
+				files()->write( print_r($message, true) . "\n", $mode);
 			} else {
-				app()->file->write( preg_replace('/[\t]+/', '', trim($message)) . "\n", $mode);
+				files()->write( preg_replace('/[\t]+/', '', trim($message)) . "\n", $mode);
 			}
 		}
 	}
@@ -236,13 +237,13 @@ class Log  {
 
 			// save all urls/paths to log for debugging
 			$this->section('Router Urls & Paths');
-			$this->write('Router::domainUrl set to: ' . app()->router->domainUrl());
-			$this->write('Router::appUrl set to: ' . app()->router->appUrl());
-			$this->write('Router::getPath set to: ' . app()->router->getPath());
-			$this->write('Router::interfaceUrl set to: ' . app()->router->interfaceUrl());
-			//$this->write('Router::moduleUrl set to: ' . app()->router->moduleUrl());
-			$this->write('Router::staticUrl set to: ' . app()->router->staticUrl());
-			$this->write('Router::fullUrl set to: ' . app()->router->fullUrl());
+			$this->write('Router::domainUrl set to: ' . router()->domainUrl());
+			$this->write('Router::appUrl set to: ' . router()->appUrl());
+			$this->write('Router::getPath set to: ' . router()->getPath());
+			$this->write('Router::interfaceUrl set to: ' . router()->interfaceUrl());
+			//$this->write('Router::moduleUrl set to: ' . router()->moduleUrl());
+			$this->write('Router::staticUrl set to: ' . router()->staticUrl());
+			$this->write('Router::fullUrl set to: ' . router()->fullUrl());
 
 			$this->section('Bootstrap');
 			$this->write('Installed checks returned ' . (app()->isInstalled() ? 'true' : 'false'));

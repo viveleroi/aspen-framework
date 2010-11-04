@@ -1,5 +1,5 @@
 <h2><?php print text('userlist:title'); ?></h2>
-<?php print app()->sml->printMessage(); ?>
+<?php print sml()->printMessage(); ?>
 <table cellspacing="0">
 	<caption>User Accounts | <?php print $this->link(text('userlist:adduser'), 'add'); ?></caption>
 	<thead>

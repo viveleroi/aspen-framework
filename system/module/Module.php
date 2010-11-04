@@ -26,7 +26,7 @@ class Module {
 	 * @access public
 	 */
 	public function view(){
-		app()->template->display();
+		template()->display();
 	}
 
 
@@ -34,9 +34,9 @@ class Module {
 	 * Activates the default loading of the 404 error
 	 */
 	public function error_404(){
-		app()->router->header_code(404);
-		app()->template->addView(app()->template->getTemplateDir().DS . '404.tpl.php');
-		app()->template->display();
+		router()->header_code(404);
+		template()->addView(template()->getTemplateDir().DS . '404.tpl.php');
+		template()->display();
 		exit;
 	}
 
@@ -46,7 +46,7 @@ class Module {
 	 * @param string $str
 	 */
 	public function setPageTitle($str){
-		app()->template->page_title = $str;
+		template()->page_title = $str;
 	}
 }
 ?>

@@ -1,3 +1,3 @@
 <h2><?= text('index:view:page-title'); ?></h2>
-<?= app()->sml->printMessage(); ?>
+<?= sml()->printMessage(); ?>
 <p><em><?= text('index:view:intro'); ?></em></p>

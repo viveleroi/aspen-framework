@@ -22,12 +22,12 @@ class Users_Admin extends Module {
 	 */
 	public function view(){
 
-		$model = app()->model->open('users');
+		$model = model()->open('users');
 		$model->contains('groups');
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
 
-		app()->template->display($data);
+		template()->display($data);
 
 	}
 
@@ -48,14 +48,14 @@ class Users_Admin extends Module {
 	 */
 	public function edit($id = false){
 
-		if(app()->user->edit($id)){
-			app()->sml->say('User account changes have been saved successfully.', true);
-			app()->router->redirect('view');
+		if(user()->edit($id)){
+			sml()->say('User account changes have been saved successfully.', true);
+			router()->redirect('view');
 		}
 
-		$data['groups'] = app()->user->groupList();
+		$data['groups'] = user()->groupList();
 
-		app()->template->display($data);
+		template()->display($data);
 
 	}
 
@@ -66,12 +66,12 @@ class Users_Admin extends Module {
 	 */
 	public function my_account(){
 
-		if(app()->user->my_account()){
-			app()->sml->say('Your account has been updated successfully.', true);
-			app()->router->redirect('view', false, 'Index');
+		if(user()->my_account()){
+			sml()->say('Your account has been updated successfully.', true);
+			router()->redirect('view', false, 'Index');
 		}
 
-		app()->template->display();
+		template()->display();
 
 	}
 
@@ -82,9 +82,9 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if(app()->user->delete($id)){
-			app()->sml->say('User account has been deleted successfully.', true);
-			app()->router->redirect('view');
+		if(user()->delete($id)){
+			sml()->say('User account has been deleted successfully.', true);
+			router()->redirect('view');
 		}
 	}
 
@@ -95,9 +95,9 @@ class Users_Admin extends Module {
 	 */
 	public function login(){
 
-		app()->user->login();
+		user()->login();
 
-		app()->template->display();
+		template()->display();
 	}
 
 
@@ -107,16 +107,16 @@ class Users_Admin extends Module {
 	 */
 	public function forgot(){
 
-		if(app()->user->forgot() == 1){
-			app()->sml->say('Your password has been reset. Please check your email.', true);
-			app()->router->redirect('login');
+		if(user()->forgot() == 1){
+			sml()->say('Your password has been reset. Please check your email.', true);
+			router()->redirect('login');
 		}
-		elseif(app()->user->forgot() == -1){
-			app()->sml->say('We were unable to find any accounts matching that username.', false);
-			app()->router->redirect('forgot');
+		elseif(user()->forgot() == -1){
+			sml()->say('We were unable to find any accounts matching that username.', false);
+			router()->redirect('forgot');
 		}
 
-		app()->template->display();
+		template()->display();
 
 	}
 
@@ -126,11 +126,11 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function authenticate(){
-		if(app()->user->authenticate()){
-			app()->router->redirectToUrl(app()->user->postLoginRedirect());
+		if(user()->authenticate()){
+			router()->redirectToUrl(user()->postLoginRedirect());
 			exit;
 		} else {
-			app()->user->login_failed();
+			user()->login_failed();
 		}
 	}
 
@@ -140,8 +140,8 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function logout(){
-		app()->user->logout();
-		app()->router->redirectToUrl(app()->router->interfaceUrl());
+		user()->logout();
+		router()->redirectToUrl(router()->interfaceUrl());
 	}
 
 
@@ -151,7 +151,7 @@ class Users_Admin extends Module {
 	 */
 	public function denied(){
 		$this->setPageTitle(text('users:denied:head-title'));
-		app()->template->display();
+		template()->display();
 	}
 }
 ?>

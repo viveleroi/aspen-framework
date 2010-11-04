@@ -8,6 +8,16 @@
  * @since 		1.0
  */
 
+
+/**
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &error(){
+	return app()->error;
+}
+
+
 /**
  * Please note that this class relies
  * as little as possible on other classes
@@ -63,7 +73,7 @@ class Error  {
 
 		// determine uri
 		if(is_object(app()->router) && method_exists(app()->router, 'fullUrl')){
-			$uri = app()->router->fullUrl();
+			$uri = router()->fullUrl();
 		} else {
 			$uri = $this->getServerValue('REQUEST_URI');
 		}
@@ -129,9 +139,9 @@ class Error  {
 				&& !app()->env->keyExists('SSH_CONNECTION')
 				&& app()->server->keyExists('HTTP_HOST')){
 
-				app()->template->resetTemplateQueue();
-				app()->template->addView(app()->template->getTemplateDir().DS . 'error.tpl.php');
-				app()->template->display(array('error'=>$error));
+				template()->resetTemplateQueue();
+				template()->addView(template()->getTemplateDir().DS . 'error.tpl.php');
+				template()->display(array('error'=>$error));
 				exit;
 
 			}

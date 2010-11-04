@@ -8,6 +8,16 @@
  * @since 		1.0
  */
 
+
+/**
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &sml(){
+	return app()->sml;
+}
+
+
 /**
  * Allows messages to be logged to the session and a log of those messages is maintained.
  * @package Aspen_Framework

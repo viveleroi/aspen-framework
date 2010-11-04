@@ -21,7 +21,7 @@ class Index_Admin extends Module {
 	 * @access public
 	 */
 	public function view(){
-		app()->template->display();
+		template()->display();
 	}
 }
 ?>

@@ -1,7 +1,7 @@
 <h2><?php print text('userform:'.ADD_OR_EDIT.'title'); ?></h2>
 
 <?php $form->printErrors(); ?>
-<?php print app()->sml->printMessage(); ?>
+<?php print sml()->printMessage(); ?>
 
 <?php if(IS_EDIT_PAGE){ ?>
 <p><a href="<?php print $this->xhtmlUrl('delete', array('id' => $form->cv('id'))) ?>" onclick="return confirm('<?php print text('userform:delete_warn'); ?>')"><?php print text('userform:delete_link'); ?></a></p>

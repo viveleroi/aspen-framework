@@ -9,6 +9,15 @@
 
 
 /**
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &template(){
+	return app()->template;
+}
+
+
+/**
  * Shortcut for the language support method
  * @param string $type
  * @return string
@@ -103,8 +112,8 @@ class Template  {
 	public function getModuleTemplateDir($module = false, $interface = false){
 		$orig_interface = $interface;
 		$interface = $interface ? strtolower($interface) : LS;
-		$module = app()->router->cleanModule($module);
-        return app()->router->getModulePath($module, $orig_interface) . DS . 'templates' . ($interface == '' ? false : '_' . $interface);
+		$module = router()->cleanModule($module);
+        return router()->getModulePath($module, $orig_interface) . DS . 'templates' . ($interface == '' ? false : '_' . $interface);
     }
 
 
@@ -161,7 +170,7 @@ class Template  {
 			// print some js globals
 			if(app()->config('print_js_variables')){
 				print '<script type="text/javascript">'."\n";
-				print 'var INTERFACE_URL = "'.app()->router->interfaceUrl().'";'."\n";
+				print 'var INTERFACE_URL = "'.router()->interfaceUrl().'";'."\n";
 				if(is_array($this->_load_js_vars)){
 					foreach($this->_load_js_vars as $var => $value){
 						print 'var '. strtoupper($var).' = "'.$value.'";'."\n";
@@ -304,14 +313,14 @@ class Template  {
 			$file = $args['url'];
 		}
 		else if($args['from'] == 'm'){
-			$filename = $args['file'] ? $args['file'] : strtolower(app()->router->method()).'.'.$args['ext'];
-			$basepath = $args['basepath'] ? $args['basepath'] : app()->router->moduleUrl() . '/'.$args['ext'];
+			$filename = $args['file'] ? $args['file'] : strtolower(router()->method()).'.'.$args['ext'];
+			$basepath = $args['basepath'] ? $args['basepath'] : router()->moduleUrl() . '/'.$args['ext'];
 			$file = $basepath . '/' . $filename;
 		}
 		else if($args['from'] == 'i'){
 			$interface = !empty($args['interface']) ? $args['interface'] : false;
 			$filename = $args['file'] ? $args['file'] : strtolower(LS).'.'.$args['ext'];
-			$basepath = $args['basepath'] ? $args['basepath'] : app()->router->staticUrl($interface) . '/'.$args['ext'];
+			$basepath = $args['basepath'] ? $args['basepath'] : router()->staticUrl($interface) . '/'.$args['ext'];
 			$file = $basepath . '/' . $filename;
 		}
 
@@ -372,7 +381,7 @@ class Template  {
 	 * @access public
 	 */
 	public function page(){
-		$template = $this->getModuleTemplateDir().DS.app()->router->method().'.tpl.php';
+		$template = $this->getModuleTemplateDir().DS.router()->method().'.tpl.php';
 		if(file_exists($template) && strpos($template, APPLICATION_PATH) !== false){
 			// pass through variables
 			if(is_array($this->_data)){
@@ -442,8 +451,8 @@ class Template  {
 	public function link($text, $method = false, $bits = false, $module = false, $title = false, $interface = false ){
 
 		// set values, or use default if false.
-		$method = $method ? $method : app()->router->method();
-		$module = app()->router->cleanModule($module);
+		$method = $method ? $method : router()->method();
+		$module = router()->cleanModule($module);
 		$interface = $interface ? $interface : LOADING_SECTION;
 		$interface = empty($interface) ? false : $interface;
 		$title = $title ? $title : $text;
@@ -451,13 +460,13 @@ class Template  {
 		$mi = empty($interface) ? $module : $module.'_'.$interface;
 
 		$link = '';
-		if(app()->user->userHasAccess($module, $method, $interface)){
+		if(user()->userHasAccess($module, $method, $interface)){
 
 			$class = false;
 
 			// highlight the link if the user is at the page
-			if($method == app()->router->method()
-					&& $mi == app()->router->module()){
+			if($method == router()->method()
+					&& $mi == router()->module()){
 				$class = true;
 			}
 
@@ -484,7 +493,7 @@ class Template  {
 	 * @return string
 	 */
 	public function at($module = false, $method = false, $interface = false){
-		return (app()->router->here($module, $method, $interface) ? ' class="at"' : '');
+		return (router()->here($module, $method, $interface) ? ' class="at"' : '');
 	}
 
 
@@ -500,10 +509,10 @@ class Template  {
 
 		// begin url with absolute url to this app
 		$interface = strtolower( $interface ? $interface : (LOADING_SECTION != '' ? LOADING_SECTION : '') );
-		$url = app()->router->interfaceUrl($interface);
+		$url = router()->interfaceUrl($interface);
 
-		$method = $method ? $method : app()->router->method();
-		$module = app()->router->cleanModule($module);
+		$method = $method ? $method : router()->method();
+		$module = router()->cleanModule($module);
 
 		// if mod rewrite/clean urls are off
 		if(!app()->config('enable_mod_rewrite')){
@@ -603,8 +612,8 @@ class Template  {
 	 */
 	public function action($method = false, $module = false, $interface = false){
 		$bits = false;
-		if(app()->router->arg(1)){
-			$bits = array('id' => app()->router->arg(1));
+		if(router()->arg(1)){
+			$bits = array('id' => router()->arg(1));
 		}
 		return $this->xhtmlUrl($method, $bits, $module, $interface);
 	}
@@ -637,7 +646,7 @@ class Template  {
 	 */
 	public function selfLink($text, $bits = false, $method = false){
 
-		$new_params = app()->router->getMappedArguments();
+		$new_params = router()->getMappedArguments();
 
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
@@ -660,7 +669,7 @@ class Template  {
 	 */
 	public function xhtmlSelfUrl($bits = false, $method = false){
 
-		$new_params = app()->router->getMappedArguments();
+		$new_params = router()->getMappedArguments();
 
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
@@ -683,7 +692,7 @@ class Template  {
 	 */
 	public function selfUrl($bits = false, $method = false){
 
-		$new_params = app()->router->getMappedArguments();
+		$new_params = router()->getMappedArguments();
 
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
@@ -746,7 +755,7 @@ class Template  {
 	 */
 	public function paginateLinks($current_page, $per_page, $total_pages){
 
-		$url = app()->router->getCurrentUrl(array('/(\?|&)page=[0-9]+/'));
+		$url = router()->getCurrentUrl(array('/(\?|&)page=[0-9]+/'));
 		$url .= '?';
 
 		// build the html list item
@@ -858,7 +867,7 @@ class Template  {
 	 * @access public
 	 */
 	public function body_id(){
-		return strtolower(app()->router->module().'_'.app()->router->method());
+		return strtolower(router()->module().'_'.router()->method());
 	}
 
 
@@ -869,12 +878,12 @@ class Template  {
 	 */
 	public function page_title(){
 
-		$module = app()->router->cleanModule(app()->router->module());
-		$method = app()->router->method();
+		$module = router()->cleanModule(router()->module());
+		$method = router()->method();
 
 		$this->page_title = str_replace('{lang_title}', text(strtolower($module).':'.$method.':head-title'), $this->page_title);
 		$this->page_title = str_replace('{module}', ucwords($module), $this->page_title);
-		$this->page_title = str_replace('{method}', ucwords(app()->router->method()), $this->page_title);
+		$this->page_title = str_replace('{method}', ucwords(router()->method()), $this->page_title);
 		$this->page_title .= '&nbsp;&ndash;&nbsp;'.app()->config('application_name');
 
 		return $this->page_title;
@@ -898,8 +907,8 @@ class Template  {
 
 			$sess_filters = app()->session->getArray('filter');
 
-			if(isset($sess_filters[app()->router->module() . ':' . app()->router->method()])){
-				$filters = $sess_filters[app()->router->module() . ':' . app()->router->method()];
+			if(isset($sess_filters[router()->module() . ':' . router()->method()])){
+				$filters = $sess_filters[router()->module() . ':' . router()->method()];
 			}
 		}
 
@@ -948,7 +957,7 @@ class Template  {
 		$return_select_array = array();
 
 		if(!$select_id){
-			$tbl = app()->model->open($selectTable);
+			$tbl = model()->open($selectTable);
 			$select_id = $tbl->getPrimaryKey();
 		}
 
@@ -971,7 +980,7 @@ class Template  {
 			$sql = "SELECT DISTINCT ".($select_id ? $select_id . ', ' : false)
 						."$selectField FROM $selectTable $where ORDER BY $orderby";
 
-			$getArray = app()->model->query($sql);
+			$getArray = model()->query($sql);
 
 			if($getArray->RecordCount()){
 				while($getArrayRow = $getArray->FetchRow()){

@@ -35,7 +35,7 @@ class Settings  {
 	 * @param <type> $user_id
 	 */
 	public function loadSettings(){
-		$cfg_model	= app()->model->open('config');
+		$cfg_model	= model()->open('config');
 		$this->settings = $cfg_model->results();
 	}
 
@@ -68,7 +68,7 @@ class Settings  {
 	 */
 	public function setConfig($key = false, $value = false, $user_id = NULL){
 		$new_rc = array('current_value'=>$value,'config_key'=>$key,'user_id'=>$user_id);
-		$cfg_model	= app()->model->open('config');
+		$cfg_model	= model()->open('config');
 		$cfg = $this->configRecord($key, $user_id);
 		return is_array($cfg) ? $cfg_model->update($new_rc, $cfg['id']) : $cfg_model->insert($new_rc);
 	}

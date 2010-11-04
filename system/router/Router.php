@@ -8,6 +8,16 @@
  * @since 		1.0
  */
 
+
+/**
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &router(){
+	return app()->router;
+}
+
+
 /**
  * Manages urls and relation to our application
  * @package Aspen_Framework
@@ -228,7 +238,7 @@ class Router  {
 		$acc_method = false;
 
 		// Check if anonymous access is allowed
-		if(!app()->user->allowAnonymous($req_module, $req_method, LS)){
+		if(!user()->allowAnonymous($req_module, $req_method, LS)){
 			$acc_module = $this->identifyAcceptedModuleForLoad();
 			$acc_method = $this->identifyAcceptedMethodForLoad();
 		}
@@ -249,7 +259,7 @@ class Router  {
 	 * @access private
 	 */
 	private function identifyRequestedModuleForLoad(){
-		return $this->map['module'] ? $this->map['module'] : app()->user->getUserDefaultModule();
+		return $this->map['module'] ? $this->map['module'] : user()->getUserDefaultModule();
 	}
 
 
@@ -277,7 +287,7 @@ class Router  {
 
 				// do a quick check to see if the user is logged in or not
 				// we need to create our own auth check, as the user module is not loaded at this point
-				if(app()->user->isLoggedIn()){
+				if(user()->isLoggedIn()){
 
 					$default = $this->map['module'] ? $this->map['module'] : false;
 
@@ -314,7 +324,7 @@ class Router  {
 		$default = 'view';
 
 		// do a basic login check as user module is not loaded at this point
-		if(app()->user->isLoggedIn()){
+		if(user()->isLoggedIn()){
 
 			$default = $this->map['method'];
 			$default = $default ? $default : app()->config('default_method');
@@ -407,7 +417,7 @@ class Router  {
 			}
 		}
 
-		app()->template->loadLanguageTerms($languages);
+		template()->loadLanguageTerms($languages);
 
 	}
 
@@ -439,7 +449,7 @@ class Router  {
 
 			$this->_loaded_languages[] = $module.'_'.$interface;
 
-			app()->template->loadLanguageTerms($languages);
+			template()->loadLanguageTerms($languages);
 		}
 	}
 
@@ -474,16 +484,16 @@ class Router  {
 	public function loadFromUrl(){
 
 		// If user is logged in, but does not have access to this interface app
-		if(app()->user->isLoggedIn() &&
+		if(user()->isLoggedIn() &&
 				$this->method() != 'login' && $this->method() != 'autehenticate'
 			){
-			if(!app()->user->userHasInterfaceAccess()){
-				app()->user->logout();
+			if(!user()->userHasInterfaceAccess()){
+				user()->logout();
 				$this->redirect('login', false, 'Users');
 			}
 		}
 
-		if($this->method() && app()->user->userHasAccess()){
+		if($this->method() && user()->userHasAccess()){
 
 			// load the module language file
 			if(app()->config('enable_languages')){
@@ -511,24 +521,24 @@ class Router  {
 
 				} else {
 					$this->header_code(404);
-					app()->template->addView(app()->template->getTemplateDir().DS . '404.tpl.php');
-					app()->template->display();
+					template()->addView(template()->getTemplateDir().DS . '404.tpl.php');
+					template()->display();
 					exit;
 				}
 			} else {
 				$this->header_code(404);
-				app()->template->addView(app()->template->getTemplateDir().DS . '404.tpl.php');
-				app()->template->display();
+				template()->addView(template()->getTemplateDir().DS . '404.tpl.php');
+				template()->display();
 				exit;
 			}
 		} else { // not authorized
 			$this->header_code(403);
 			$this->loadModuleLanguage('Users', 'Admin');
-			app()->template->page_title = text('users:denied:head-title');
-			app()->template->addView(app()->template->getTemplateDir().DS . 'header.tpl.php');
-			app()->template->addView(app()->template->getModuleTemplateDir('Users', 'Admin').DS . 'denied.tpl.php');
-			app()->template->addView(app()->template->getTemplateDir().DS . 'footer.tpl.php');
-			app()->template->display();
+			template()->page_title = text('users:denied:head-title');
+			template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+			template()->addView(template()->getModuleTemplateDir('Users', 'Admin').DS . 'denied.tpl.php');
+			template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+			template()->display();
 			exit;
 		}
 	}
@@ -860,7 +870,7 @@ class Router  {
 	 * @access public
 	 */
 	public function returnToReferrer(){
-		$location = app()->session->getUri('referring_page', app()->template->url('view'));
+		$location = app()->session->getUri('referring_page', template()->url('view'));
 		if(!empty($location)){
 			$this->redirectToUrl($location);
 		}
@@ -875,7 +885,7 @@ class Router  {
 	 * @access public
 	 */
 	public function redirect($method = false, $bits = false, $module = false, $interface = false){
-		$this->redirectToUrl( app()->template->url($method, $bits, $module, $interface), false, true);
+		$this->redirectToUrl( template()->url($method, $bits, $module, $interface), false, true);
     }
 
 
@@ -901,7 +911,7 @@ class Router  {
 				exit;
 			}
 		} else {
-			app()->error->raise(1, 'URL for redirect appears to be an invalid resource: '. $url, __FILE__, __LINE__);
+			error()->raise(1, 'URL for redirect appears to be an invalid resource: '. $url, __FILE__, __LINE__);
 		}
 	}
 

@@ -28,7 +28,7 @@ class Preferences  {
 		if($user_id && app()->checkDbConnection()){
 
 			// load sort field
-			$pref_model = app()->model->open('config');
+			$pref_model = model()->open('config');
 			$pref_model->where('user_id', $user_id);
 			$pref_model->where('LEFT(config_key, 4)', 'sort');
 			$sorts = $pref_model->results();
@@ -56,7 +56,7 @@ class Preferences  {
 
 		if($user_id = app()->session->getInt('user_id')){
 
-			$pref_model = app()->model->open('config');
+			$pref_model = model()->open('config');
 
 			// remove any old entry for this location
 			$sql = sprintf('
@@ -126,13 +126,13 @@ class Preferences  {
 
 		// process the form if submitted
 		if(app()->post->keyExists('preferences-submit')){
-			$config = app()->model->open('config');
+			$config = model()->open('config');
 			foreach($record as $field => $existing_value){
 				$record[$field] = app()->post->getRaw($field);
 				$config->query( sprintf('DELETE FROM config WHERE config_key = "%s" AND user_id = "%s"', $field, $user_id) );
 				$config->insert( array('current_value'=>$record[$field],'config_key'=>$field,'user_id'=>$user_id));
 			}
-			app()->sml->say('Your user preferences have been saved successfully.', true);
+			sml()->say('Your user preferences have been saved successfully.', true);
 		}
 
 		return new Prefs($record);

@@ -96,7 +96,7 @@ class Form  {
 
 		if($this->table){
 
-			$model = app()->model->open($this->table);
+			$model = model()->open($this->table);
 			$model->contains($contains);
 			$this->_primary_key_field = $model->getPrimaryKey();
 			$this->schema = $model->getSchema();
@@ -128,7 +128,7 @@ class Form  {
 
 		if($id && $this->table){
 
-			$model = app()->model->open($this->table);
+			$model = model()->open($this->table);
 			$model->contains($contains);
 			$this->_primary_key_field = $model->getPrimaryKey();
 			$this->schema = $model->getSchema();
@@ -162,7 +162,7 @@ class Form  {
 	 */
 	public function save($id = false){
 
-		$model 		= app()->model->open($this->table);
+		$model 		= model()->open($this->table);
 		$success 	= false;
 		$schema		= $model->getSchema();
 
@@ -317,7 +317,7 @@ class Form  {
 
 		if(isset($this->_form_fields[$field])){
 			$value = $this->_form_fields[$field]['default_value'];
-			$value = $escape ? app()->security->dbescape($value, app()->model->getSecurityRule($field, 'allow_html')) : $value;
+			$value = $escape ? app()->security->dbescape($value, model()->getSecurityRule($field, 'allow_html')) : $value;
 		}
 
 		return $value;
@@ -364,7 +364,7 @@ class Form  {
 		if(isset($this->_form_fields[$field])){
 			$value = $this->_form_fields[$field]['current_value'];
 		}
-		return $escape ? app()->security->dbescape($value, app()->model->getSecurityRule($field, 'allow_html')) : $value;
+		return $escape ? app()->security->dbescape($value, model()->getSecurityRule($field, 'allow_html')) : $value;
 	}
 
 
@@ -541,7 +541,7 @@ class Form  {
 		// according to their schema position
 		if(!$custom_sort && app()->isInstalled() && $this->table){
 			$custom_sort = array();
-			$model = app()->model->open($this->table);
+			$model = model()->open($this->table);
 			$schema = $model->getSchema();
 			foreach($schema['schema'] as $field){
 				$custom_sort[$field->name] = false;

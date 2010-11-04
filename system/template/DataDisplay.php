@@ -43,7 +43,7 @@ class DataDisplay  {
 			}
 		} else {
 			if(!method_exists($this, $name)){
-				app()->error->raise(1, text('dberror:datadisplay_call_error', $name), __FILE__, __LINE__);
+				error()->raise(1, text('dberror:datadisplay_call_error', $name), __FILE__, __LINE__);
 			}
 		}
 	}

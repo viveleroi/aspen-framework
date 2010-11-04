@@ -8,6 +8,16 @@
  * @since 		1.0
  */
 
+
+/**
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &model(){
+	return app()->model;
+}
+
+
 /**
  * This class manages our mysql sql query generation
  * @package Aspen_Framework
@@ -179,11 +189,11 @@ class Model  {
 
 			if(class_exists($class)){
 				if($lang_module){
-					app()->router->loadModuleLanguage($lang_module);
+					router()->loadModuleLanguage($lang_module);
 				}
 				$final_obj = new $class($table);
 			} else {
-				app()->error->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
+				error()->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
 				$final_obj = new module($table);
 			}
 
@@ -232,7 +242,7 @@ class Model  {
 		$this->table = $table;
 		$this->generateSchema();
 		if(!is_array($this->schema)){
-			app()->error->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
+			error()->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
 		}
 	}
 
@@ -1232,7 +1242,7 @@ class Model  {
 
 		$user_id				= app()->session->getInt('user_id', NULL);
 		$using_filters			= false;
-		$location_key			= $location_key ? $location_key : (app()->router->module() . ':' . app()->router->method());
+		$location_key			= $location_key ? $location_key : (router()->module() . ':' . router()->method());
 		$disabled_filters		= $disabled_filters ? $disabled_filters : array();
 		$allowed_filter_keys	= $allowed_filter_keys ? $allowed_filter_keys : array();
 
@@ -1245,7 +1255,7 @@ class Model  {
 			$filters = app()->post->getRaw('filter');
 		}
 		elseif($named = app()->get->getRaw('named-filter')){
-			$named = app()->router->decodeForRewriteUrl($named);
+			$named = router()->decodeForRewriteUrl($named);
 			$filters = app()->settings->getConfig('filter.named.'.$named, $user_id);
 			$filters = unserialize($filters);
 		} else {
@@ -1610,7 +1620,7 @@ class Model  {
 				$file = strpos($back[0]['file'], 'Model.php') ? $back[1]['file'] : $back[0]['file'];
 				$line = strpos($back[0]['file'], 'Model.php') ? $back[1]['line'] : $back[0]['line'];
 
-				app()->error->raise(2, app()->db->ErrorMsg() . "\nSQL:\n" . $query, $file, $line);
+				error()->raise(2, app()->db->ErrorMsg() . "\nSQL:\n" . $query, $file, $line);
 
 			} else {
 				if(app()->config('log_verbosity') < 3){
