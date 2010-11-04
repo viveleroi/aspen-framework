@@ -67,7 +67,7 @@ class DataDisplay  {
 	 * @param string $phone
 	 */
 	public function formatPhoneNum($phone){
-		$phone = preg_replace("[^0-9]",'',$phone);
+		$phone = preg_replace("/[^0-9]*/",'',$phone);
 		if(strlen($phone) != 10) return(false);
 		$sArea = substr($phone,0,3);
 		$sPrefix = substr($phone,3,3);
