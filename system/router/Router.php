@@ -521,23 +521,19 @@ class Router  {
 
 				} else {
 					$this->header_code(404);
-					template()->addView(template()->getTemplateDir().DS . '404.tpl.php');
+					template()->setLayout('404');
 					template()->display();
 					exit;
 				}
 			} else {
 				$this->header_code(404);
-				template()->addView(template()->getTemplateDir().DS . '404.tpl.php');
+				template()->setLayout('404');
 				template()->display();
 				exit;
 			}
 		} else { // not authorized
 			$this->header_code(403);
-			$this->loadModuleLanguage('Users', 'Admin');
-			template()->page_title = text('users:denied:head-title');
-			template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-			template()->addView(template()->getModuleTemplateDir('Users', 'Admin').DS . 'denied.tpl.php');
-			template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+			template()->setLayout('403');
 			template()->display();
 			exit;
 		}

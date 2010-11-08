@@ -35,7 +35,7 @@ class Module {
 	 */
 	public function error_404(){
 		router()->header_code(404);
-		template()->addView(template()->getTemplateDir().DS . '404.tpl.php');
+		template()->setLayout('404');
 		template()->display();
 		exit;
 	}

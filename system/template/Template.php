@@ -82,16 +82,6 @@ class Template  {
 	 * @access private
 	 */
 	private $terms;
-
-
-	/**
-	 * Returns the template directory
-	 * @return string
-	 * @access public
-	 */
-	public function getTemplateDir(){
-		return INTERFACE_PATH . DS. 'templates';
-	}
 	
 	
 	/**
@@ -427,6 +417,15 @@ class Template  {
 		
 		$this->resetTemplateQueue();
 
+	}
+	
+	
+	/**
+	 * Set the current layout.
+	 * @param string $layout 
+	 */
+	public function setLayout($layout){
+		$this->layout = $layout;
 	}
 
 

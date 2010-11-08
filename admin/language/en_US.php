@@ -2,6 +2,8 @@
 $lang['admin']['copyright'] = 'Aspen Framework %s &mdash; Copyright &copy; 2008-'.date('Y').' Trellis Development, LLC';
 $lang['admin']['404:title'] = 'Page Not Found';
 $lang['admin']['404:message'] = 'The page (%s/%s) you have requested could not be found.';
+$lang['admin']['403:title'] = 'Permission Denied';
+$lang['admin']['403:message'] = 'You do not have permission to access the requested resource.';
 $lang['admin']['db:display:not_provided'] = 'Not Provided';
 $lang['admin']['dberror:title'] = 'Database Connection Error';
 $lang['admin']['dberror:message'] = 'An error was encountered when trying to connect to the database.';

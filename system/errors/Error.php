@@ -139,8 +139,7 @@ class Error  {
 				&& !app()->env->keyExists('SSH_CONNECTION')
 				&& app()->server->keyExists('HTTP_HOST')){
 
-				template()->resetTemplateQueue();
-				template()->addView(template()->getTemplateDir().DS . 'error.tpl.php');
+				template()->setLayout('error');
 				template()->display(array('error'=>$error));
 				exit;
 
