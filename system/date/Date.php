@@ -9,6 +9,12 @@
  */
 
 /**
+ * Define some common date variables
+ */
+DEFINE('DATE_FORMAT', 'Y-m-d H:i:s');
+DEFINE('DATE_EMPTY', '0000-00-00 00:00:00');
+
+/**
  * Static class containing a collection of useful date methods.
  * @package Aspen_Framework
  */

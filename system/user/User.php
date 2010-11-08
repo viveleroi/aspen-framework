@@ -232,7 +232,7 @@ class User  {
 						$this->post_authentication($account);
 
 						// update last login date
-						$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
+						$upd = array('last_login' => $account['latest_login'], 'latest_login' => date(DATE_FORMAT));
 						$model->update($upd, $account['id']);
 
 						$auth = true;

@@ -453,7 +453,7 @@ class File  {
             		
             		// mark the final upload data, return successful
             		$return_info['upload_success'] 		= true;
-            		$return_info['upload_timestamp'] 	= date("Y-m-d H:i:s");
+            		$return_info['upload_timestamp'] 	= date(DATE_FORMAT);
             		return $return_info;
           		}
         	} else {
