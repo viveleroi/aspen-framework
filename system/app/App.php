@@ -75,17 +75,12 @@ class App extends Bootstrap {
 	 * @access public
 	 */
 	public function generateInterfaceMenu($display_ul = true){
-
 		$menu = $display_ul ? '<ul id="primary_navigation">' : '';
-
 		foreach($this->getModuleRegistry() as $reg){
-
 			if(is_object($reg)){
 				if(isset($reg->disable_menu) && $reg->disable_menu){
 				} else {
-
 					$link = $this->template->link($reg->name, 'view', false, $reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false));
-
 					if(!empty($link)){
 						$menu .= '<li'.($this->router->here($reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false)) ? ' class="at"' : '').'>';
 						$menu .= $link;
@@ -94,11 +89,7 @@ class App extends Bootstrap {
 				}
 			}
 		}
-
-		$menu = $display_ul ? $menu .= '</ul>' : $menu;
-
-		return $menu;
-
+		return ($display_ul ? $menu .= '</ul>' : $menu);
 	}
 }
 ?>

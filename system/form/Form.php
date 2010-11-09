@@ -234,13 +234,11 @@ class Form  {
 		}
 
 		if($submitted){
-			if($submitted){
-				if($method == 'post'){
-					$this->loadPOST();
-				}
-				if($method == 'get'){
-					$this->loadGET();
-				}
+			if($method == 'post'){
+				$this->loadPOST();
+			}
+			if($method == 'get'){
+				$this->loadGET();
 			}
 
 			// if token authorization is enabled, we must authenticate
@@ -267,12 +265,10 @@ class Form  {
 	 * @access public
 	 */
 	public function addField($name, $default_value = '', $current_value = false){
-
 		$this->_form_fields[$name] = array(
 											'default_value' => $default_value,
 											'post_value' => false,
 											'current_value' => ($current_value ? $current_value : $default_value));
-
 	}
 
 
@@ -312,16 +308,12 @@ class Form  {
 	 * @access public
 	 */
 	public function getDefaultValue($field, $escape = true){
-
 		$value = false;
-
 		if(isset($this->_form_fields[$field])){
 			$value = $this->_form_fields[$field]['default_value'];
 			$value = $escape ? app()->security->dbescape($value, model()->getSecurityRule($field, 'allow_html')) : $value;
 		}
-
 		return $value;
-
 	}
 
 
@@ -400,9 +392,7 @@ class Form  {
 	 * @return string
 	 */
 	protected function match_base($field, $match, $str){
-
 		$val = $this->cv($field);
-
 		// if field is the name of a child/parent table
 		if($val && (in_array(strtolower($field), $this->schema['children'])
 				|| in_array(strtolower($field), $this->schema['parents']))){
@@ -536,7 +526,6 @@ class Form  {
 	 * @access public
 	 */
 	public function getErrors($custom_sort = false){
-
 		// if no custom sort provided, we need to sort the errors
 		// according to their schema position
 		if(!$custom_sort && app()->isInstalled() && $this->table){
@@ -552,7 +541,6 @@ class Form  {
 				$custom_sort = array_flip($custom_sort);
 			}
 		}
-
 		if(is_array($custom_sort)){
 			$diff = array_diff_key($this->_form_errors, $custom_sort);
 			$custom_sort = array_merge($custom_sort, $diff);
@@ -568,9 +556,7 @@ class Form  {
 		} else {
 			$final_errors = $this->_form_errors;
 		}
-
 		return $final_errors;
-
 	}
 
 
@@ -592,9 +578,7 @@ class Form  {
 	 * @access public
 	 */
 	public function printErrors($custom_sort = false){
-
 		$lines = '';
-
 		if($this->error()){
 			foreach($this->getErrors($custom_sort) as $errors){
 				foreach($errors as $field => $error){
