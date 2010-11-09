@@ -94,9 +94,7 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function login(){
-
 		user()->login();
-
 		template()->display();
 	}
 
@@ -128,7 +126,6 @@ class Users_Admin extends Module {
 	public function authenticate(){
 		if(user()->authenticate()){
 			router()->redirectToUrl(user()->postLoginRedirect());
-			exit;
 		} else {
 			user()->login_failed();
 		}

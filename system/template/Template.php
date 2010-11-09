@@ -147,7 +147,7 @@ class Template  {
 
 		// append any custom css styles
 		if(!empty($this->_css_styles)){
-			print '<style type="text/css">'."\n";
+			print '<style>'."\n";
 			foreach($this->_css_styles as $style){
 				printf('%s { %s: %s }'."\n", $style['selector'], $style['attr'], $style['value']);
 			}
@@ -159,7 +159,7 @@ class Template  {
 
 			// print some js globals
 			if(app()->config('print_js_variables')){
-				print '<script type="text/javascript">'."\n";
+				print '<script>'."\n";
 				print 'var INTERFACE_URL = "'.router()->interfaceUrl().'";'."\n";
 				if(is_array($this->_load_js_vars)){
 					foreach($this->_load_js_vars as $var => $value){
@@ -179,7 +179,7 @@ class Template  {
 			}
 			$this->_load_js = array_merge($i, $m);
 
-			$js_html_elm = '<script type="text/javascript" src="%s"></script>'."\n";
+			$js_html_elm = '<script src="%s"></script>'."\n";
 
 			foreach($this->_load_js as $js){
 				$file = $this->staticUrl($js);
@@ -552,7 +552,7 @@ class Template  {
 				}
 			}
 
-			// Otherwise, just built it as normal
+			// Otherwise, just build it as normal
 			if(!$route_mask){
 
 				$url .= sprintf('/%s', $module);

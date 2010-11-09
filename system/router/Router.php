@@ -567,13 +567,10 @@ class Router  {
 	 * @access public
 	 */
 	public function fullUrl(){
-
 		$url = $this->domainUrl();
 		$url .= app()->server->getQueryString('REQUEST_URI');
 		$url = strip_tags(urldecode($url));
-
 		return $url;
-
 	}
 
 
@@ -583,11 +580,9 @@ class Router  {
 	 * @return string
 	 */
 	public function appUrl(){
-
 		$url = $this->domainUrl();
 		$url .= app()->config('application_url') ? app()->config('application_url') : $this->getPath();
 		return $url;
-
 	}
 
 
@@ -607,14 +602,11 @@ class Router  {
 	 * @return string
 	 */
 	public function domainUrl(){
-
 		$url = $this->port() == 443 ? 'https://' : 'http://';
 		$url .= app()->server->getServerName('SERVER_NAME');
-
 		if($this->port() != 80 && $this->port() != 443){
 			$url .= ':'.$this->port();
 		}
-
 		return $url;
 
 	}
@@ -709,11 +701,9 @@ class Router  {
 	 * @access public
 	 */
 	public function staticUrl($interface = false){
-
 		if(app()->config('static_content_url')){
 			return app()->config('static_content_url');
 		} else {
-
 			$interface = $interface !== false ? $interface : LS;
 			if(is_array(app()->config('interface_global_folder_replace'))){
 				$replace = app()->config('interface_global_folder_replace');
@@ -721,7 +711,6 @@ class Router  {
 					$interface = $replace[$interface];
 				}
 			}
-
 			return $this->interfaceUrl($interface);
 		}
 	}
@@ -799,11 +788,9 @@ class Router  {
 	 * @return string
 	 */
 	public function cleanModule($module = false, $interface = false){
-
 		$module = $module ? $module : $this->module();
 		$interface = $interface ? $interface : LOADING_SECTION;
 		return str_replace('_'.ucwords($interface), '', $module);
-
 	}
 
 
@@ -959,7 +946,6 @@ class Router  {
 				503 => 'Service Unavailable',
 				504 => 'Gateway Time-out'
 			);
-
 		if ($status && isset($codes[$status])) {
 			$header = sprintf("HTTP/1.1 %s %s", $status, $codes[$status]);
 			header($header);
