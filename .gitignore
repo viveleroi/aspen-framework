@@ -2,7 +2,8 @@ config.php
 .DS_Store
 *.tmproj
 nbproject
-build/aspen-framework
 .buildpath
 .settings
 .project
+config/*
+Capfile
