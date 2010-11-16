@@ -50,6 +50,7 @@ class Error extends Library {
 			512  => "PHP User Warning",
 			1024 => "PHP User Notice",
 			2048 => "Unknown",
+			4096 => "Unknown",
 			8192 => "Deprecated"
 		);
 
