@@ -450,7 +450,7 @@ class File extends Library {
 				if($file['error'] != 4){
 					$msg = $this->uploadError($file['error']);
 					app()->error->raise(2, $msg, __FILE__, __LINE__);
-            		return "The file upload was unsuccessful.";
+            		return $msg;
           		}
         	}
 		} else {
