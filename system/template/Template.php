@@ -469,12 +469,11 @@ class Template  {
 				$class = true;
 			}
 
-			$link = sprintf(
-					'<a href="%s" title="%s"%s>%s</a>',
+			$link = sprintf('<a href="%s" title="%s"%s>%s</a>',
 								$this->xhtmlUrl($method, $bits, $module, $interface),
-								$this->encodeTextEntities(strip_tags($title)),
+								strip_tags($title),
 								($class ? ' class="at"' : ''),
-								$this->encodeTextEntities($text)
+								$text
 							);
 
 		}

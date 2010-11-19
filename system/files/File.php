@@ -460,7 +460,7 @@ class File  {
 				if($file['error'] != 4){
 					$msg = $this->uploadError($file['error']);
 					error()->raise(2, $msg, __FILE__, __LINE__);
-            		return "The file upload was unsuccessful.";
+            		return $msg;
           		}
         	}
 		} else {
