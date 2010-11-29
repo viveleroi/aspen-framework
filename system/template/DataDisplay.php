@@ -23,7 +23,6 @@ class DataDisplay  {
 	 * @param <type> $id
 	 */
 	public function  __construct($data = false) {
-		parent::__construct();
 		$this->data = $data;
 	}
 

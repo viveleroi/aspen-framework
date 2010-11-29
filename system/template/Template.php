@@ -371,7 +371,15 @@ class Template  {
 	 * @access public
 	 */
 	public function page(){
-		$template = $this->getModuleTemplateDir().DS.router()->method().'.tpl.php';
+
+		$page = router()->method();
+		if(router()->method() == 'add'){
+			if(!file_exists($this->getModuleTemplateDir().DS.'add.tpl.php')){
+				$page = 'edit';
+			}
+		}
+		$template = $this->getModuleTemplateDir().DS.$page.'.tpl.php';
+		
 		if(file_exists($template) && strpos($template, APPLICATION_PATH) !== false){
 			// pass through variables
 			if(is_array($this->_data)){

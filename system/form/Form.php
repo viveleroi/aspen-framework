@@ -67,7 +67,6 @@ class Form  {
 	 * @access public
 	 */
 	public function __construct($table = false, $id = false, $contains = array(), $field = false){
-		parent::__construct();
 		if($id){
 			if(!defined('ADD_OR_EDIT')){
 				define('ADD_OR_EDIT', 'edit');
