@@ -1064,6 +1064,11 @@ class Template extends Library {
 	public function optionArray($selectArray = false, $match_value = false, $prepend_blank = false, $blank_text = false){
 
 		print $prepend_blank ? '<option value="">'.$blank_text.'</option>' . "\n" : '';
+		
+		if(is_array($match_value)){
+			$keys = array_keys($match_value);
+			$match_value = $keys[0];
+		}
 
 		if(is_array($selectArray)){
 			foreach($selectArray as $key => $option){
