@@ -65,7 +65,7 @@ class DataDisplay  {
 	 * Formats a phone number
 	 * @param string $phone
 	 */
-	public function formatPhoneNum($phone){
+	static public function formatPhoneNum($phone){
 		$phone = preg_replace("/[^0-9]*/",'',$phone);
 		if(strlen($phone) != 10) return(false);
 		$sArea = substr($phone,0,3);
@@ -80,7 +80,7 @@ class DataDisplay  {
 	 * Formats a US address
 	 * @access public
 	 */
-	public function formatAddress($add_1 = '', $add_2 = '', $city = '', $state = '', $zip = '', $country = ''){
+	static public function formatAddress($add_1 = '', $add_2 = '', $city = '', $state = '', $zip = '', $country = ''){
 
 		$address = '';
 
@@ -118,7 +118,7 @@ class DataDisplay  {
 	 * @return string
 	 * @access public
 	 */
-	public function truncateText($phrase, $blurb_word_length = 40, $more_link = false){
+	static public function truncateText($phrase, $blurb_word_length = 40, $more_link = false){
 
 		// replace html elements with spaces
     	$phrase = preg_replace("/<(\/?)([^>]+)>/i", " ", $phrase);
@@ -142,7 +142,7 @@ class DataDisplay  {
 	 * @return string
 	 * @access public
 	 */
-	public function truncateString($string, $char_length = 40){
+	static public function truncateString($string, $char_length = 40){
 
 		// replace html elements with spaces
     	$string = preg_replace("/<(\/?)([^>]+)>/i", " ", $string);
@@ -165,7 +165,7 @@ class DataDisplay  {
 	 * @param string $separator
 	 * @return string
 	 */
-	public function truncateFilename($fileame, $char_length = 25, $separator = '&#8230;'){
+	static public function truncateFilename($fileame, $char_length = 25, $separator = '&#8230;'){
 		$filext = strrchr($fileame, '.');
 		return substr(str_replace($filext, '', $fileame), 0, $char_length) . $separator.$filext;
 	}
