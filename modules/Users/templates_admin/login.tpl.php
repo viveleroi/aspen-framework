@@ -13,7 +13,7 @@
 			</li>
 			<li>
 				<input type="submit" name="submit" id="submit" value="Login" />
-				<?php print $this->link(text('login:forgot_link'), 'forgot'); ?>
+				<?php print $this->link(text('login:forgot_link'), 'forgot'); ?> or <?php print $this->link(text('signup:signup_link'), 'signup'); ?>
 			</li>
 		</ol>
 	</fieldset>

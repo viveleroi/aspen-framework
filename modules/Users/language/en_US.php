@@ -11,6 +11,18 @@ $lang['admin']['login:username'] 		= 'Username';
 $lang['admin']['login:password'] 		= 'Password';
 $lang['admin']['login:forgot_link'] 	= 'Forgot your password?';
 
+// signup
+$lang['admin']['users:signup:head-title']	= 'Register a new account';
+$lang['admin']['signup:title']				= 'Create Account';
+$lang['admin']['signup:signup_link']		= 'Register';
+$lang['admin']['signup:first_name']			= 'First Name';
+$lang['admin']['signup:last_name']			= 'Last Name';
+$lang['admin']['signup:username']			= 'E-mail';
+$lang['admin']['signup:password']			= 'Password';
+$lang['admin']['signup:password_confirm']	= 'Confirm Password';
+$lang['admin']['signup:submit']				= 'Create Account';
+$lang['admin']['signup:account_success']	= 'Your account has been created successfully. Please login using your registered E-mail address and password.';
+
 // forgotten password
 $lang['admin']['users:forgot:head-title'] = 'Reset Your Password';
 $lang['admin']['forgot:title'] 			= 'Reset Your Password';

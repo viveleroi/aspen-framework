@@ -21,14 +21,25 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function view(){
-
 		$model = model()->open('users');
 		$model->contains('groups');
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
-
 		template()->display($data);
-
+	}
+	
+	
+	/**
+	 * @abstract Displays a permission denied error message
+	 * @access public
+	 */
+	public function signup(){
+		if($user_id = app()->user->signup()){
+			$_SESSION['user_id'] = $user_id;
+			sml()->say(text('signup:account_success'), true);
+			router()->redirect('login');
+		}
+		template()->display();
 	}
 
 

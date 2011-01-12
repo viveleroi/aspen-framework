@@ -39,6 +39,36 @@ class User  {
 		$perms = model()->open('permissions');
 		$this->permissions = $perms->results();
 	}
+	
+	
+	/**
+	 * @abstract Displays and processes the signup form
+	 * @access public
+	 * @param integer $id
+	 */
+	public function signup(){
+
+		// if the user is logged in, send to interface
+		if($this->isLoggedIn()){
+			app()->router->redirectToUrl( app()->router->interfaceUrl() );
+		}
+
+		$result = false;
+		$form = new Form('users', false, array('groups'));
+		$form->addFields(array('password_confirm'));
+
+		// process the form if submitted
+		if($form->isSubmitted()){
+			$form->setCurrentValue('allow_login', 1);
+			$form->setCurrentValue('Groups', array(2));
+			$result = $form->save();
+		}
+
+		app()->template->set(array('form'=>$form));
+
+		return $result;
+
+	}
 
 
 	/**
