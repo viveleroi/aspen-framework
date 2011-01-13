@@ -31,16 +31,13 @@ Links:
   Google Group:
     http://groups.google.com/group/aspen-framework
 
-  PhpDoc:
-    http://docs.aspen-framework.org/API/
-
   GitHub Repository:
     http://github.com/botskonet/aspen-framework
 
 
 Third Party Libraries:
 -------------------------------------------
-  ADOdb V5.10
+  ADOdb V5.11
     http://adodb.sourceforge.net/
 
   HTMLPurifier 4.1.0
