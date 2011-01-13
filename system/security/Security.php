@@ -23,13 +23,8 @@ class Security  {
 	 * @access public
 	 */
 	public function dbescape($data, $allow_html = false) {
-
-		// first, remove all slashes for consistency
 		$data = $this->clean_slashes($data);
-
-		// then run our cleaning function for database
 		return $this->clean_db_input($data, $allow_html);
-
 	}
 
 
@@ -40,18 +35,12 @@ class Security  {
 	 * @access public
 	 */
 	public function clean_slashes($data) {
-
-		// if it's an array, loop it
 		if (is_array($data)) {
-
 			$newArr = array();
-
-	    	foreach( $data as $key => $value ){
-	    		$newArr[ $key ] = $this->clean_slashes($value);
+	    	foreach($data as $key => $value){
+	    		$newArr[$key] = $this->clean_slashes($value);
 	    	}
-
 	    	return $newArr;
-
 		} else {
 			return stripslashes($data);
 		}
@@ -66,30 +55,22 @@ class Security  {
 	 * @access private
 	 */
 	private function clean_db_input($var = false, $allow_html = false){
-
-	  	// escape
 		if (is_array($var)) {
-
 			$newArr = array();
-
-	    	foreach( $var as $key => $value ){
+	    	foreach($var as $key => $value){
 	    		if(is_array($value)){
-	    			$newArr[ $key ] = $this->clean_db_input($value, $allow_html);
+	    			$newArr[$key] = $this->clean_db_input($value, $allow_html);
 	    		} else {
-	    			$newArr[ $key ] = $allow_html ? $this->cleanHtml($value) : strip_tags($value);
-                    $newArr[ $key ] = mysql_real_escape_string($newArr[ $key ]);
+	    			$newArr[$key] = $allow_html ? $this->cleanHtml($value) : strip_tags($value);
+                    $newArr[$key] = mysql_real_escape_string($newArr[ $key ]);
 	    		}
 	    	}
-
 	    	$var = $newArr;
-
 		} else {
 			$var = $allow_html ? $this->cleanHtml($var) : strip_tags($var);
 			$var = mysql_real_escape_string($var);
 		}
-
 	    return $var;
-
 	}
 	
 	

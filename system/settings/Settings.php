@@ -23,7 +23,7 @@ class Settings  {
 	/**
 	 * Constructor
 	 */
-	public function  aspen_init() {
+	public function aspen_init() {
 		if(app()->checkDbConnection()){
 			$this->loadSettings();
 		}

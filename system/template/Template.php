@@ -651,18 +651,14 @@ class Template  {
 	 * @access public
 	 */
 	public function selfLink($text, $bits = false, $method = false){
-
 		$new_params = router()->getMappedArguments();
-
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
 			foreach($bits as $key => $value){
 				$new_params[$key] = $value;
 			}
 		}
-
 		return $this->link($text, false, $new_params, $method);
-
 	}
 
 
@@ -674,18 +670,14 @@ class Template  {
 	 * @access public
 	 */
 	public function xhtmlSelfUrl($bits = false, $method = false){
-
 		$new_params = router()->getMappedArguments();
-
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
 			foreach($bits as $key => $value){
 				$new_params[$key] = $value;
 			}
 		}
-
 		return $this->xhtmlUrl($method, $new_params);
-
 	}
 
 
@@ -697,18 +689,14 @@ class Template  {
 	 * @access public
 	 */
 	public function selfUrl($bits = false, $method = false){
-
 		$new_params = router()->getMappedArguments();
-
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
 			foreach($bits as $key => $value){
 				$new_params[$key] = $value;
 			}
 		}
-
 		return $this->url($method, $new_params);
-
 	}
 
 
