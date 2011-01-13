@@ -71,7 +71,7 @@ class HTMLPurifier_ConfigSchema_Builder_Xml extends XMLWriter
             if ($directive->version) $this->writeElement('version', $directive->version);
             $this->startElement('type');
                 if ($directive->typeAllowsNull) $this->writeAttribute('allow-null', 'yes');
-                text($directive->type);
+                $this->text($directive->type);
             $this->endElement(); // type
             if ($directive->allowed) {
                 $this->startElement('allowed');

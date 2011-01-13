@@ -209,7 +209,7 @@ class HTMLPurifier_Printer_ConfigForm_NullDecorator extends HTMLPurifier_Printer
         $ret = '';
         $ret .= $this->start('label', array('for' => "$name:Null_$ns.$directive"));
         $ret .= $this->element('span', "$ns.$directive:", array('class' => 'verbose'));
-        $ret .= text(' Null/Disabled');
+        $ret .= $this->text(' Null/Disabled');
         $ret .= $this->end('label');
         $attr = array(
             'type' => 'checkbox',
@@ -225,7 +225,7 @@ class HTMLPurifier_Printer_ConfigForm_NullDecorator extends HTMLPurifier_Printer
         }
         if ($value === null) $attr['checked'] = 'checked';
         $ret .= $this->elementEmpty('input', $attr);
-        $ret .= text(' or ');
+        $ret .= $this->text(' or ');
         $ret .= $this->elementEmpty('br');
         $ret .= $this->obj->render($ns, $directive, $value, $name, array($gen_config, $config));
         return $ret;
@@ -303,7 +303,7 @@ class HTMLPurifier_Printer_ConfigForm_default extends HTMLPurifier_Printer {
             $attr['cols'] = $this->cols;
             $attr['rows'] = $this->rows;
             $ret .= $this->start('textarea', $attr);
-            $ret .= text($value);
+            $ret .= $this->text($value);
             $ret .= $this->end('textarea');
         } else {
             $attr['value'] = $value;
@@ -331,7 +331,7 @@ class HTMLPurifier_Printer_ConfigForm_bool extends HTMLPurifier_Printer {
 
         $ret .= $this->start('label', array('for' => "$name:Yes_$ns.$directive"));
         $ret .= $this->element('span', "$ns.$directive:", array('class' => 'verbose'));
-        $ret .= text(' Yes');
+        $ret .= $this->text(' Yes');
         $ret .= $this->end('label');
 
         $attr = array(
@@ -346,7 +346,7 @@ class HTMLPurifier_Printer_ConfigForm_bool extends HTMLPurifier_Printer {
 
         $ret .= $this->start('label', array('for' => "$name:No_$ns.$directive"));
         $ret .= $this->element('span', "$ns.$directive:", array('class' => 'verbose'));
-        $ret .= text(' No');
+        $ret .= $this->text(' No');
         $ret .= $this->end('label');
 
         $attr = array(

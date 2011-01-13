@@ -125,8 +125,6 @@ class HTML5 {
     const EOF      = 5;
 
     public function __construct($data) {
-        $data = str_replace("\r\n", "\n", $data);
-        $data = str_replace("\r", null, $data);
 
         $this->data = $data;
         $this->char = -1;
@@ -3555,7 +3553,7 @@ class HTML5TreeConstructer {
             }
         }
 
-        app()endToRealParent($el);
+        $this->appendToRealParent($el);
         $this->stack[] = $el;
 
         return $el;
@@ -3563,12 +3561,12 @@ class HTML5TreeConstructer {
 
     private function insertText($data) {
         $text = $this->dom->createTextNode($data);
-        app()endToRealParent($text);
+        $this->appendToRealParent($text);
     }
 
     private function insertComment($data) {
         $comment = $this->dom->createComment($data);
-        app()endToRealParent($comment);
+        $this->appendToRealParent($comment);
     }
 
     private function appendToRealParent($node) {
