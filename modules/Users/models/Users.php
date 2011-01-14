@@ -103,7 +103,7 @@ class UsersModel extends Model {
 		}
 
 		// set date created
-		$fields['date_created'] = date(DATE_FORMAT);
+		$fields['date_created'] = gmdate(DATE_FORMAT);
 
 		return $fields;
 

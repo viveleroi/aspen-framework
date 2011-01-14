@@ -49,6 +49,51 @@ function &app(){
 
 
 /**
+ * Shortcut to return an instance of session params
+ * @return object
+ */
+function &session(){
+	return app()->session;
+}
+
+
+/**
+ * Shortcut to return an instance of session params
+ * @return object
+ */
+function &post(){
+	return app()->post;
+}
+
+
+/**
+ * Shortcut to return an instance of session params
+ * @return object
+ */
+function &get(){
+	return app()->get;
+}
+
+
+/**
+ * Shortcut to return an instance of session params
+ * @return object
+ */
+function &server(){
+	return app()->server;
+}
+
+
+/**
+ * Shortcut to return an instance of session params
+ * @return object
+ */
+function &cookie(){
+	return app()->cookie;
+}
+
+
+/**
  * Bootstrap, loads all of our configurations and required classes.
  * @package Aspen_Framework
  */

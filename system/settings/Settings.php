@@ -8,6 +8,16 @@
  * @since 		1.0
  */
 
+
+/**
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &settings(){
+	return app()->settings;
+}
+
+
 /**
  * Manages application settings
  * @package Aspen_Framework

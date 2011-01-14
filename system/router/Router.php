@@ -492,12 +492,16 @@ class Router  {
 				$this->redirect('login', false, 'Users');
 			}
 		}
+		
+		// load the interface language file
+		if(app()->config('enable_languages')){
+			$this->loadInterfaceLanguage();
+		}
 
 		if($this->method() && user()->userHasAccess()){
 
 			// load the module language file
 			if(app()->config('enable_languages')){
-				$this->loadInterfaceLanguage();
 				$this->loadLibraryLanguages();
 				$this->loadModuleLanguage();
 			}

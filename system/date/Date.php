@@ -80,6 +80,8 @@ class Date {
 	 * @return <type>
 	 */
 	static public function tzFormatDate($gmdate, $format = false, $timezone = false){
+		$format = $format ?: DATE_FORMAT;
+		$timezone = $timezone ?: 'UTC';
 		$cnv_date = new DateTime($gmdate);
 		$cnv_date->setTimeZone(new DateTimeZone($timezone));
 		return $cnv_date->format($format);

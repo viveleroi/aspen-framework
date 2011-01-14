@@ -23,7 +23,16 @@ class DataDisplay  {
 	 * @param <type> $id
 	 */
 	public function  __construct($data = false) {
-		$this->data = $data;
+		if(is_array($data)){
+			foreach($data as $key => $val){
+				if(is_array($val)){
+					$data[$key] = new DataDisplay($val);
+				}
+			}
+			$this->data = $data;
+		} else {
+			error()->raise(1, text('dberror:datadisplay_call_error', $name), __FILE__, __LINE__);
+		}
 	}
 
 
@@ -38,7 +47,11 @@ class DataDisplay  {
 			if(empty($this->data[$name]) && in_array($name, $this->not_provided)){
 				return $this->na();
 			} else {
-				return $this->data[$name];
+				if(is_object($this->data[$name]) && ($this->data[$name] instanceof DataDisplay)){
+					return $this->data[$name]->data;
+				} else {
+					return $this->data[$name];
+				}
 			}
 		} else {
 			if(!method_exists($this, $name)){

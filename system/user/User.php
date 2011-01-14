@@ -251,8 +251,8 @@ class User  {
 						$_SESSION['username'] 			= $account['username'];
 						$_SESSION['first_name'] 		= $account['first_name'];
 						$_SESSION['last_name']			= $account['last_name'];
-						$_SESSION['latest_login'] 		= $account['latest_login'];
-						$_SESSION['last_login'] 		= $account['last_login'];
+						$_SESSION['latest_login'] 		= date(DATE_FORMAT);
+						$_SESSION['last_login'] 		= $account['latest_login'];
 						$_SESSION['user_id'] 			= $account['id'];
 						
 						// is this the very first login?
