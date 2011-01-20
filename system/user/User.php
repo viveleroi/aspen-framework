@@ -136,7 +136,7 @@ class User extends Library {
 			if(is_array($user)){
 
 				// update the account
-				$user['password'] = $new_pass;
+				$user['password'] = $user['password_confirm'] = $new_pass;
 				$auth->update($user, $user['id']);
 
 				if(app()->db->Affected_Rows()){
