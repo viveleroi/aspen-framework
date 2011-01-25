@@ -684,18 +684,8 @@ class Model  {
 	 * @return string
 	 * @access public
 	 */
-	public function getLastQuery($output = false){
-		return $this->cleanQuery($this->last_query, $output);
-	}
-
-
-	/**
-	 * Returns the last run query - aliases getLastQuery
-	 * @return string
-	 * @access public
-	 */
 	public function lq($output = false){
-		return $this->getLastQuery($output);
+		return $this->cleanQuery($this->last_query, $output);
 	}
 
 
@@ -704,7 +694,7 @@ class Model  {
 	 * @return string
 	 * @access public
 	 */
-	public function getBuildQuery($output = false){
+	public function bq($output = false){
 		return $this->cleanQuery($this->writeSql(), $output);
 	}
 
@@ -716,7 +706,6 @@ class Model  {
 	 * @access private
 	 */
 	protected function cleanQuery($sql, $output = false){
-
 		switch($output){
 			case 'html':
 				$sep = "<br>";
@@ -725,12 +714,10 @@ class Model  {
 				$sep = "\n";
 				break;
 		}
-
 		$break_words = array('WHERE','AND','OR','LIMIT','ORDER BY','GROUP BY','LEFT JOIN','RIGHT JOIN','UNION');
 		foreach($break_words as $word){
 			$sql = str_replace($word. ' ', $sep.$word.' ', $sql);
 		}
-
 		return $sql;
 	}
 
@@ -921,7 +908,7 @@ class Model  {
 
 
 	public function selectSubquery_end($model, $as){
-		$sq = '('.$model->getBuildQuery().') AS ' . $as;
+		$sq = '('.$model->bq().') AS ' . $as;
 		$this->addSelectField($sq);
 	}
 
@@ -2426,18 +2413,6 @@ class Model  {
 	 */
 	final public function error(){
 		return $this->error;
-	}
-
-
-	/**
-	 * Returns the text value for a key from the selected language
-	 * @param string $key
-	 * @return string
-	 * @access public
-	 */
-	public function text(){
-		$args = func_get_args();
-		return call_user_func_array(array(app()->template, 'text'), $args);
 	}
 }
 ?>
