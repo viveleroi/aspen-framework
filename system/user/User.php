@@ -180,19 +180,15 @@ class User  {
 				$auth->update($user, $user['id']);
 
 				if(app()->db->Affected_Rows()){
-
-					// SEND THE EMAIL TO THE USER
 					app()->mail->AddAddress($form->cv('user'));
 					app()->mail->From      	= app()->config('email_sender');
 					app()->mail->FromName  	= app()->config('email_sender_name');
 					app()->mail->Mailer    	= "mail";
-					app()->mail->ContentType 	= 'text/html';
+					app()->mail->ContentType= 'text/html';
 					app()->mail->Subject   	= app()->config('password_reset_subject');
-					app()->mail->Body 			= str_replace('{new_pass}', $new_pass, app()->config('password_reset_body'));
-
+					app()->mail->Body 		= str_replace('{new_pass}', $new_pass, app()->config('password_reset_body'));
 					app()->mail->Send();
 					app()->mail->ClearAddresses();
-
 					return 1;
 				}
 			} else {
@@ -302,7 +298,6 @@ class User  {
 	 * @access public
 	 */
 	public function postLoginRedirect(){
-
 		$redirect = false;
 		if(session()->isPath('post-login_redirect')){
 			$redirect = session()->getPath('post-login_redirect');
@@ -311,9 +306,7 @@ class User  {
 				$redirect = false;
 			}
 		}
-
 		return empty($redirect) ? router()->interfaceUrl() : $redirect;
-
 	}
 
 
@@ -323,10 +316,8 @@ class User  {
 	 * @access public
 	 */
 	final public function isLoggedIn(){
-
 		$authenticated 	= false;
 		$auth_key 		= sha1(session()->getEmail('username') . session()->getInt('user_id'));
-
 		if(app()->checkDbConnection()){
 			if(
 				session()->getInt('authenticated', false) &&
@@ -336,9 +327,7 @@ class User  {
 					$authenticated = true;
 			}
 		}
-
 		return $authenticated;
-
 	}
 
 
@@ -407,9 +396,9 @@ class User  {
 
        	$authenticated 	= false;
 		$module 		= $module ? ucwords($module) : router()->module();
-		$method 		= $method ? $method : router()->method();
-		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : session()->getInt('user_id');
+		$method 		= $method ?: router()->method();
+		$interface 		= $interface ?: LOADING_SECTION;
+		$user_id		= $user_id ?: session()->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
 
 		if(IS_ADMIN || $this->allowAnonymous($module, $method, $interface)){
@@ -452,11 +441,9 @@ class User  {
 	 * @access public
 	 */
 	public function allowAnonymous($module = false, $method = false, $interface = false){
-
 		if($module == 'Install' &&  $interface == 'Admin'){
 			return true;
 		}
-
 		if(app()->isInstalled()){
 			$module = ucwords(str_replace('_'.$interface, '', strtolower($module)));
 			$interface = ucwords(strtolower($interface));
@@ -473,7 +460,6 @@ class User  {
 			}
 		}
 		return false;
-
 	}
 
 
@@ -495,7 +481,7 @@ class User  {
 	 */
 	public function inGroup($group, $user_id = false){
 
-		$user_id = $user_id ? $user_id : session()->getInt('user_id');
+		$user_id = $user_id ?: session()->getInt('user_id');
 
 		$model = model()->open('user_group_link');
 		$model->leftJoin('groups', 'id', 'group_id', array('name'));
@@ -519,25 +505,19 @@ class User  {
 	 * @access public
 	 */
 	public function usersGroups($user_id = false){
-
 		$ingroups = array();
-
 		if($user_id){
-
 			$model = model()->open('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
 			$groups = $model->results();
-
 			if($groups){
 				foreach($groups as $id => $group){
 					$ingroups[$id] = $group['name'];
 				}
 			}
 		}
-
 		return $ingroups;
-
 	}
 
 
@@ -547,22 +527,15 @@ class User  {
 	 * @access public
 	 */
 	public function userHasGlobalAccess(){
-
 		$has_access = false;
-
 		if($this->isLoggedIn()){
-
 			$model = model()->open('user_group_link');
 			$model->where('user_id', session()->getInt('user_id'));
 			$model->where('group_id', 1);
 			$groups = $model->results();
-
 			$has_access = $groups ? true : false;
-
 		}
-
 		return $has_access;
-
 	}
 
 
@@ -572,17 +545,12 @@ class User  {
 	 * @access public
 	 */
 	public function userAccountCount(){
-
 		if(app()->checkDbConnection()){
-
 			$model = model()->open('users');
 			$accounts = $model->results();
 			return count($accounts);
-
 		} else {
-
 			return 1;
-
 		}
 	}
 
@@ -592,15 +560,11 @@ class User  {
 	 * @access public
 	 */
 	 public function getUserDefaultModule(){
-
 		$default = app()->config('default_module');
-
 		if(app()->isInstalled()){
 			if($user_id = session()->getInt('user_id')){
 				$groups = array_keys( $this->usersGroups($user_id) );
-
 				$ug_defs = app()->config('usergroup_default_modules');
-
 				foreach($groups as $group){
 					if(array_key_exists($group, $ug_defs)){
 						return $ug_defs[$group];
@@ -608,7 +572,6 @@ class User  {
 				}
 			}
 		}
-
 		return $default;
 	}
 
@@ -620,26 +583,17 @@ class User  {
 	 * @access public
 	 */
 	public function makePassword($length = 5){
-
 		$password = "";
 		$possible = "0123456789abcdfghjkmnpqrstvwxyz~!@#$%^&_-+";
 		$i = 0;
-
-		// add random characters to $password until $length is reached
 		while ($i < $length) {
-
-			// pick a random character from the possible ones
 			$char = substr($possible, mt_rand(0, strlen($possible)-1), 1);
-
-			// we don't want this character if it's already in the password
 			if (!strstr($password, $char)) {
 				$password .= $char;
 				$i++;
 			}
     	}
-
 		return $password;
-
 	}
 
 
@@ -649,12 +603,10 @@ class User  {
 	 * @access public
 	 */
 	public function groupList(){
-
 		$model = model()->open('groups');
 		$model->orderBy('name');
 		$groups = $model->results();
 		return $groups;
-
 	}
 }
 ?>

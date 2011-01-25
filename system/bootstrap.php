@@ -319,7 +319,6 @@ class Bootstrap extends Base {
 
 		// assign configuration data
 		$this->_config = $config;
-		$this->forceConfigValues();
 
 		if(!defined('LOADING_SECTION')){
 			define('LOADING_SECTION', '');
@@ -343,7 +342,6 @@ class Bootstrap extends Base {
 		}
 
 		// start the session
-		$this->setSessionId();
 		session_start();
 
 		// load all plugins
@@ -394,22 +392,6 @@ class Bootstrap extends Base {
 			$this->loadCurrentModule();
 		} else {
 			$this->log->write('Skipping loading Application Interface module, INCLUDE_ONLY is true.');
-		}
-	}
-
-
-	/**
-	 * Allows sessions to be loaded by the session_id in the query string
-	 * @access private
-	 */
-	private function setSessionId(){
-		if($this->config('allow_session_id_from_query')){
-			$sess_name = ini_get('session.name');
-			$sess_id = isset($_GET[$sess_name]) ? $_GET[$sess_name] : false;
-			$sess_id = trim(preg_replace('/[^A-Za-z0-9]/', '', $sess_id));
-			if(!empty($sess_id)){
-				session_id($sess_id);
-			}
 		}
 	}
 
@@ -535,25 +517,6 @@ class Bootstrap extends Base {
 
 
 	/**
-	 * Forces values for config options if they conflict with environment settings
-	 * @access private
-	 */
-	private function forceConfigValues(){
-
-		// disable mod_rewrite if it's not present
-		if(!$this->config('bypass_apache_modrewrite_check')){
-			if(function_exists('apache_get_modules')){
-				if(!in_array('mod_rewrite', apache_get_modules())){
-					$this->_config['enable_mod_rewrite'] = false;
-				}
-			} else {
-				$this->_config['enable_mod_rewrite'] = false;
-			}
-		}
-	}
-
-
-	/**
 	 * Returns a configuration value from config files
 	 * @param string $key
 	 * @return mixed
@@ -613,17 +576,14 @@ class Bootstrap extends Base {
 			$this->loadSystemLibraryArray($system_class_array);
 
 			$this->db = ADONewConnection($this->config('db_extension'));
-
 			$this->db->SetFetchMode(ADODB_FETCH_ASSOC);
 
 			if(!$this->db->Connect(
 				$this->config('db_hostname'),
 				$this->config('db_username'),
 				$this->config('db_password'),
-				$this->config('db_database'))) {
-
-				$this->db = false;
-
+				$this->config('db_database'))){
+					$this->db = false;
 			}
 		} else {
 			$this->db = false;
@@ -934,7 +894,6 @@ class Bootstrap extends Base {
 	 * @return boolean
 	 * @access private
 	 */
-
 	public function loadSystemModelExtensions(){
 
 		$load_success = true;
@@ -1007,19 +966,11 @@ class Bootstrap extends Base {
 
 		// open the folder
 		$dir_handle = @opendir(MODULES_PATH);
-
-		// loop through the files
 		while ($file = readdir($dir_handle)) {
-
 			if($file != "." && $file != ".."){
-
-				// push the date folder into the array
 				array_push($files, $file);
-
 			}
 		}
-
-		// close
 		closedir($dir_handle);
 
 		// if files found, begin an array
@@ -1030,10 +981,7 @@ class Bootstrap extends Base {
 		// loop through each folder and look for a register.xml
 		if(is_array($module_registry)){
 			foreach($files as $file){
-
 				$registry_path = MODULES_PATH . DS . $file . DS . 'register.xml';
-
-				// ensure the file exists
 				if(file_exists($registry_path)){
 					$module_registry[$file] = simplexml_load_file($registry_path);
 					$module_registry[$file]->folder = $file;
@@ -1052,53 +1000,38 @@ class Bootstrap extends Base {
 	 */
 	public function parsePluginRegistries(){
 
-		//if($this->config('allow_plugins')){
+		$files = array();
 
-			$files = array();
+		$plugin_registry = false;
 
-			$plugin_registry = false;
-
-			// open the folder
-			if(is_dir(PLUGINS_PATH)){
-				$dir_handle = @opendir(PLUGINS_PATH);
-
-				// loop through the files
-				while ($file = readdir($dir_handle)) {
-
-					if($file != "." && $file != ".."){
-
-						// push the date folder into the array
-						array_push($files, $file);
-
-					}
-				}
-
-				// close
-				closedir($dir_handle);
-			}
-
-			// if files found, begin an array
-			if(count($files) > 0){
-				$plugin_registry = array();
-			}
-
-			// loop through each folder and look for a register.xml
-			if(is_array($plugin_registry)){
-				foreach($files as $file){
-
-					$registry_path = PLUGINS_PATH . DIRECTORY_SEPARATOR . $file . DIRECTORY_SEPARATOR . 'register.xml';
-
-					// ensure the file exists
-					if(file_exists($registry_path)){
-						$plugin_registry[$file] = simplexml_load_file($registry_path);
-						$plugin_registry[$file]->folder = $file;
-					}
+		// open the folder
+		if(is_dir(PLUGINS_PATH)){
+			$dir_handle = @opendir(PLUGINS_PATH);
+			while ($file = readdir($dir_handle)) {
+				if($file != "." && $file != ".."){
+					array_push($files, $file);
 				}
 			}
+			closedir($dir_handle);
+		}
 
-			return $plugin_registry;
+		// if files found, begin an array
+		if(count($files) > 0){
+			$plugin_registry = array();
+		}
 
-		//}
+		// loop through each folder and look for a register.xml
+		if(is_array($plugin_registry)){
+			foreach($files as $file){
+				$registry_path = PLUGINS_PATH . DIRECTORY_SEPARATOR . $file . DIRECTORY_SEPARATOR . 'register.xml';
+				if(file_exists($registry_path)){
+					$plugin_registry[$file] = simplexml_load_file($registry_path);
+					$plugin_registry[$file]->folder = $file;
+				}
+			}
+		}
+
+		return $plugin_registry;
 	}
 
 
@@ -1109,41 +1042,38 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function callPluginHook($hook_to_call = false, $plugins = false){
-
-		//if($this->config('allow_plugins')){
-
-			// if plugins array coming from external source, use it
-			// otherwise, try to use our own
-			if(!$plugins){
-				if(isset($this) && is_object($this)){
-					$plugins = $this->_plugins;
-				}
+		
+		// if plugins array coming from external source, use it
+		// otherwise, try to use our own
+		if(!$plugins){
+			if(isset($this) && is_object($this)){
+				$plugins = $this->_plugins;
 			}
+		}
 
-			// if we have any, load them and call them
-			if(is_array($plugins)){
-				foreach($plugins as $plugin){
-					if(isset($plugin->add_hook_func)){
-						if($hook_to_call == $plugin->add_hook_func['hook']){
+		// if we have any, load them and call them
+		if(is_array($plugins)){
+			foreach($plugins as $plugin){
+				if(isset($plugin->add_hook_func)){
+					if($hook_to_call == $plugin->add_hook_func['hook']){
 
-							$path = PLUGINS_PATH . DIRECTORY_SEPARATOR .
-										$plugin->folder . DIRECTORY_SEPARATOR . $plugin->folder .'.php';
+						$path = PLUGINS_PATH . DIRECTORY_SEPARATOR .
+									$plugin->folder . DIRECTORY_SEPARATOR . $plugin->folder .'.php';
 
-							// include the plugin
-							if(file_exists($path)){
+						// include the plugin
+						if(file_exists($path)){
 
-								include($path);
+							include($path);
 
-								// call the function
-								$function = (string)$plugin->add_hook_func->function;
-								$function();
+							// call the function
+							$function = (string)$plugin->add_hook_func->function;
+							$function();
 
-							}
 						}
 					}
 				}
 			}
-		//}
+		}
 	}
 	
 	
@@ -1206,7 +1136,6 @@ class Bootstrap extends Base {
 
 			// if name provided
 			if($name){
-
 				$interface	= $interface ? $interface : LOADING_SECTION;
 				$classname	= (string)$module->classname;
 				$name		= $this->router->cleanModule($name);
@@ -1239,7 +1168,6 @@ class Bootstrap extends Base {
 		if(is_object($current)){
 
 			$modules_to_load = array($current->guid);
-
 			if(isset($current->prerequisites->required)){
 				foreach($current->prerequisites->required as $depend){
 					array_push($modules_to_load, $depend->guid);
@@ -1247,9 +1175,7 @@ class Bootstrap extends Base {
 			}
 
 			foreach($modules_to_load as $module){
-
 				$this->loadModule($module);
-
 			}
 			return true;
 		}
@@ -1297,7 +1223,6 @@ class Bootstrap extends Base {
 				$this->log->write('No target application set for ' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . ' module, IGNORING.');
 			}
 
-
 			// if we are allowed now
 			if($allowed){
 
@@ -1315,14 +1240,10 @@ class Bootstrap extends Base {
 
 				}
 			} else {
-
 				$this->error->raise(1, 'The module "' . (isset($tmp_reg->classname) ? $tmp_reg->classname : 'unknown') . '" is not compatible with this version of this application.', __FILE__, __LINE__);
-
 			}
 		} else {
-
 			$this->error->raise(1, 'Failure to load module "'.$module.'" - classname was empty.', __FILE__, __LINE__);
-
 		}
 		return true;
 	}
