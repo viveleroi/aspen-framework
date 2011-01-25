@@ -468,6 +468,26 @@ class Model  {
 			}
 			elseif($this->hasParent($arg)){
 				$this->leftJoin($arg, $this->getPrimaryKey($arg), $i->singularize($arg).'_id', '*');
+			} else {
+				// attempt to join this table to a table that has been joined - it may not always be primary table
+				$j = app()->model->open($arg);
+				foreach($args as $s_arg){
+					if($s_arg != $arg){
+						// re-attempt the join, but on the joined tables instead
+						if($j->hasChild($s_arg) && ($j->hasParent($s_arg) || $j->hasRelation($s_arg))){
+							// get the real table linking these tables
+							$real_table = array_search($s_arg, $j->schema['children']);
+							$this->leftJoin($real_table, $i->singularize($s_arg).'_id', $j->getPrimaryKey(), '*', $s_arg);
+							$this->leftJoin($arg, $j->getPrimaryKey($arg), $i->singularize($arg).'_id', '*', $real_table);
+						}
+						elseif($j->hasChild($s_arg)){
+							$this->leftJoin($arg, $i->singularize($s_arg).'_id', $j->getPrimaryKey(), '*', $s_arg);
+						}
+						elseif($this->hasParent($s_arg)){
+							$this->leftJoin($arg, $i->singularize($s_arg).'_id', $j->getPrimaryKey($arg), '*', $s_arg);
+						}
+					}
+				}
 			}
 		}
 	}
