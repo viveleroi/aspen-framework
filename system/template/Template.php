@@ -83,6 +83,24 @@ class Template  {
 	 */
 	private $terms;
 	
+	/**
+	 * @var string CDTNL_CMT Holds the template string for a conditional comment
+	 * @access private
+	 */
+	const CDTNL_CMT = '<!--[%s]>%s<![endif]-->';
+	
+	/**
+	 * @var string CSS_ELM Holds the template string for a css include
+	 * @access private
+	 */
+	const CSS_ELM = '<link rel="%s" href="%s" media="%s"%s />';
+	
+	/**
+	 * @var string SCRIPT_ELM Holds the template string for a javascript include
+	 * @access private
+	 */
+	const SCRIPT_ELM = '<script src="%s"></script>';
+	
 	
 	/**
 	 * Returns the layouts directory
@@ -105,6 +123,35 @@ class Template  {
 		$module = router()->cleanModule($module);
         return router()->getModulePath($module, $orig_interface) . DS . 'templates' . ($interface == '' ? false : '_' . $interface);
     }
+	
+	
+	/**
+	 * Sorts and re-arranges css/javascript includes
+	 */
+	public function prepareMediaIncludes(){
+		if(!empty($this->_load_css)){
+			ksort($this->_load_css, SORT_STRING);
+			// re-arrange to ensure all modules are second
+			$m = array();
+			$i = array();
+			foreach($this->_load_css as $css){
+				${$css['from']}[] = $css;
+			}
+			$this->_load_css = array_merge($i, $m);
+		}
+		
+		// append any js files for loading
+		if(!empty($this->_load_js)){
+			ksort($this->_load_js, SORT_STRING);
+			// re-arrange to ensure all modules are second
+			$m = array();
+			$i = array();
+			foreach($this->_load_js as $js){
+				${$js['from']}[] = $js;
+			}
+			$this->_load_js = array_merge($i, $m);
+		}
+	}
 
 
 	/**
@@ -113,35 +160,16 @@ class Template  {
 	 */
 	public function loadModuleHeader(){
 
-		$cdtnl_cmt = '<!--[%s]>%s<![endif]-->';
-
 		// append any css files for loading
 		if(!empty($this->_load_css)){
-
-			ksort($this->_load_css, SORT_STRING);
-
-			// re-arrange to ensure all modules are second
-			$m = array();
-			$i = array();
-			foreach($this->_load_css as $css){
-				${$css['from']}[] = $css;
-			}
-			$this->_load_css = array_merge($i, $m);
-
-			$css_html_elm = '<link rel="%s" href="%s" type="text/css" media="%s"%s />';
-
 			foreach($this->_load_css as $css){
 				$file = $this->staticUrl($css);
-				$link = sprintf($css_html_elm, $css['rel'], $file, $css['mediatype'], ($css['title'] ? ' title="'.$css['title'].'"' : ''));
-
+				$link = sprintf(self::CSS_ELM, $css['rel'], $file, $css['media'], ($css['title'] ? ' title="'.$css['title'].'"' : ''));
 				if(!empty($css['cdtnl_cmt'])){
-					printf($cdtnl_cmt, $css['cdtnl_cmt'], $link);
+					printf(self::CDTNL_CMT, $css['cdtnl_cmt']."\n", $link);
 				} else {
-					print $link;
+					print $link."\n";
 				}
-
-				print "\n";
-
 			}
 		}
 
@@ -156,8 +184,6 @@ class Template  {
 
 		// append any js files for loading
 		if(!empty($this->_load_js)){
-
-			// print some js globals
 			if(app()->config('print_js_variables')){
 				print '<script>'."\n";
 				print 'var INTERFACE_URL = "'.router()->interfaceUrl().'";'."\n";
@@ -168,39 +194,50 @@ class Template  {
 				}
 				print '</script>'."\n";
 			}
-
-			ksort($this->_load_js, SORT_STRING);
-
-			// re-arrange to ensure all modules are second
-			$m = array();
-			$i = array();
 			foreach($this->_load_js as $js){
-				${$js['from']}[] = $js;
-			}
-			$this->_load_js = array_merge($i, $m);
-
-			$js_html_elm = '<script src="%s"></script>'."\n";
-
-			foreach($this->_load_js as $js){
-				$file = $this->staticUrl($js);
-				$link = sprintf($js_html_elm, $file);
-
-				if(!empty($js['cdtnl_cmt'])){
-					printf($cdtnl_cmt, $js['cdtnl_cmt'], $link);
-				} else {
-					print $link;
+				if($js['in'] == 'header'){
+					$this->printJs($js);
 				}
 			}
 		}
 
 		// include any header templates (header.tpl.php)
 		$path = $this->getModuleTemplateDir().DS . 'header.tpl.php';
-
 		if(file_exists($path)){
 			define('MODULE_HEADER_TPL_PATH', $path);
 			include(MODULE_HEADER_TPL_PATH);
 		} else {
 			define('MODULE_HEADER_TPL_PATH', '');
+		}
+	}
+	
+	
+	/**
+	 * Loads a header file for the currently loaded module, if that file exists
+	 * @access public
+	 */
+	public function loadModuleFooter(){
+		if(!empty($this->_load_js)){
+			foreach($this->_load_js as $js){
+				if($js['in'] == 'footer'){
+					$this->printJs($js);
+				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * Prints the javascript file include
+	 * @param type $js
+	 */
+	public function printJs($js){
+		$file = $this->staticUrl($js);
+		$link = sprintf(self::SCRIPT_ELM, $file);
+		if(!empty($js['cdtnl_cmt'])){
+			printf(self::CDTNL_CMT."\n", $js['cdtnl_cmt'], $link);
+		} else {
+			print $link."\n";
 		}
 	}
 
@@ -212,7 +249,7 @@ class Template  {
 	 * @access public
 	 * @return string
 	 */
-	public function addCss($args){
+	public function addCss($path, $args = false){
 
 		$base = array(
 					'url' => false,
@@ -220,12 +257,15 @@ class Template  {
 					'rel' => 'stylesheet',
 					'title' => false,
 					'from' => 'm',
-					'mediatype' => 'all',
+					'media' => 'all',
 					'cdtnl_cmt' => '',
 					'basepath' => false,
 					'ext' => 'css',
 					'interface'=>false
 				);
+		
+		$path = $this->parseMediaFilePath($path);
+		$base = array_merge($base, $path);
 		$args = (is_array($args) ? array_merge($base, $args) : $base);
 
 		// merge any incoming args and append the load array
@@ -256,8 +296,8 @@ class Template  {
 	 * @access public
 	 * @return string
 	 */
-	public function addJs($args){
-
+	public function addJs($path, $args = false){
+		
 		$base = array(
 					'url' => false,
 					'file' => false,
@@ -265,8 +305,12 @@ class Template  {
 					'cdtnl_cmt' => '',
 					'basepath' => false,
 					'ext' => 'js',
-					'interface'=>false
+					'interface'=>false,
+					'in' => 'header'
 				);
+		
+		$path = $this->parseMediaFilePath($path);
+		$base = array_merge($base, $path);
 		$args = (is_array($args) ? array_merge($base, $args) : $base);
 
 		// merge any incoming args and append the load array
@@ -316,6 +360,26 @@ class Template  {
 
 		return $file;
 
+	}
+	
+	
+	/**
+	 *
+	 * @param type $path
+	 * @return type 
+	 */
+	public function parseMediaFilePath($path){
+		$base = array();
+		$path_arr = explode('/', $path);
+		if(is_array($path_arr)){
+			$path_arr = array_reverse($path_arr);
+			$base['file'] = (isset($path_arr[0]) ? $path_arr[0] : false);
+			$base['from'] = (isset($path_arr[1]) ? 'i' : 'm');
+			$base['interface'] = (isset($path_arr[1]) ? $path_arr[1] : false);
+		} else {
+			$base['file'] = $path;
+		}
+		return $base;
 	}
 
 
@@ -401,6 +465,7 @@ class Template  {
 	public function display($data = false){
 
 		$this->set($data);
+		$this->prepareMediaIncludes();
 
 		// if token auth on, we need to generate a token
 		if(app()->config('require_form_token_auth')){
