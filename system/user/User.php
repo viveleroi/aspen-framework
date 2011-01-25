@@ -406,7 +406,7 @@ class User  {
 	public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
 
        	$authenticated 	= false;
-		$module 		= $module ? $module : router()->module();
+		$module 		= $module ? ucwords($module) : router()->module();
 		$method 		= $method ? $method : router()->method();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
 		$user_id		= $user_id ? $user_id : session()->getInt('user_id');

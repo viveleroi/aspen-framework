@@ -805,14 +805,13 @@ class Router  {
 	 * @return boolean
 	 * @access public
 	 */
-	public function here($module = false, $method = false, $interface = false){
+	public function here($path){
 
 		$here = false;
-
+		
+		$r = template()->parseNamespacePath($path);
+		$r['module'] = $r['module'] . ($r['interface'] ? '_' . $r['interface']  : false);
 		$selected_module = $this->module();
-		$interface = $interface ? $interface : LOADING_SECTION;
-		$module = $this->cleanModule($module);
-		$module = $module . ($interface ? '_' . $interface  : false);
 
 		if(isset(app()->{$this->module()})){
 			if(method_exists(app()->{$this->module()}, 'whosYourDaddy')){
@@ -821,12 +820,12 @@ class Router  {
 			}
 		}
 
-		if($module && $selected_module == $module){
-			if($method){
-				if(is_array($method)){
-					$here = in_array($this->method(), $method);
+		if($r['module'] && $selected_module == $r['module']){
+			if($r['method']){
+				if(is_array($r['method'])){
+					$here = in_array($this->method(), $r['method']);
 				} else {
-					$here = $this->method() == $method;
+					$here = $this->method() == $r['method'];
 				}
 			} else {
 				$here = true;

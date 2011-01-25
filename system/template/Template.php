@@ -455,30 +455,23 @@ class Template  {
 	 * @param string $method
 	 * @param string $text
 	 */
-	public function link($text, $method = false, $bits = false, $module = false, $title = false, $interface = false ){
-
-		// set values, or use default if false.
-		$method = $method ? $method : router()->method();
-		$module = router()->cleanModule($module);
-		$interface = $interface ? $interface : LOADING_SECTION;
-		$interface = empty($interface) ? false : $interface;
+	public function link($text, $path = false, $bits = false, $title = false){
+		
+		$r = $this->parseNamespacePath($path);
 		$title = $title ? $title : $text;
 
-		$mi = empty($interface) ? $module : $module.'_'.$interface;
-
 		$link = '';
-		if(user()->userHasAccess($module, $method, $interface)){
-
-			$class = false;
+		if(user()->userHasAccess($r['module'], $r['method'], $r['interface'])){
 
 			// highlight the link if the user is at the page
-			if($method == router()->method()
-					&& $mi == router()->module()){
+			$class = false;
+			if($r['method'] == router()->method()
+					&& ucwords($r['module']) == router()->cleanModule(router()->module())){
 				$class = true;
 			}
 
 			$link = sprintf('<a href="%s" title="%s"%s>%s</a>',
-								$this->xhtmlUrl($method, $bits, $module, $interface),
+								$this->xhtmlUrl($path, $bits),
 								strip_tags($title),
 								($class ? ' class="at"' : ''),
 								$text
@@ -498,8 +491,43 @@ class Template  {
 	 * @param string $interface
 	 * @return string
 	 */
-	public function at($module = false, $method = false, $interface = false){
-		return (router()->here($module, $method, $interface) ? ' class="at"' : '');
+	public function at($path = false){
+		return (router()->here($path) ? ' class="at"' : '');
+	}
+	
+	
+	/**
+	 * Parses an interface/module/method path for the individual parts
+	 * @param string $path
+	 * @return string 
+	 */
+	public function parseNamespacePath($path = false){
+		$r = array();
+		$path = array_reverse(explode('/',$path));
+		$r['method'] = isset($path[0]) ? $path[0] : router()->method();
+		$r['module'] = isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module()));
+		$r['interface'] = isset($path[2]) ? strtolower($path[2]) : (LS != '' ? LS : '');
+		return $r;
+	}
+	
+	
+	/**
+	 * Generates an interface/module/method path string
+	 * @param string $method
+	 * @param string $module
+	 * @param string $interface
+	 * @return string 
+	 */
+	public function getNamespacePath($method, $module = false, $interface = false){
+		$path = '';
+		if(!empty($interface)){
+			$path .= $interface.'/';
+		}
+		if(!empty($module)){
+			$path .= strtolower($module).'/';
+		}
+		$path .= $method;
+		return $path;
 	}
 
 
@@ -511,19 +539,15 @@ class Template  {
 	 * @return string
 	 * @access public
 	 */
-	public function url($method = false, $bits = false, $module = false, $interface = false){
-
-		// begin url with absolute url to this app
-		$interface = strtolower( $interface ? $interface : (LOADING_SECTION != '' ? LOADING_SECTION : '') );
-		$url = router()->interfaceUrl($interface);
-
-		$method = $method ? $method : router()->method();
-		$module = router()->cleanModule($module);
-
+	public function url($path = false, $bits = false){
+		
+		$r = $this->parseNamespacePath($path);
+		$url = router()->interfaceUrl($r['interface']);
+		
 		// if mod rewrite/clean urls are off
 		if(!app()->config('enable_mod_rewrite')){
 
-			$url .= sprintf('/index.php?module=%s&method=%s', $module, $method);
+			$url .= sprintf('/index.php?module=%s&method=%s', $r['module'], $r['method']);
 
 			if(is_array($bits)){
 				foreach($bits as $bit => $value){
@@ -544,10 +568,10 @@ class Template  {
 			$route_mask = false;
 			if(is_array($routes)){
 				foreach($routes as $mask => $route){
-					if(strtolower($route['module']) == strtolower($module) && strtolower($route['method']) == strtolower($method)){
+					if(strtolower($route['module']) == strtolower($r['module']) && strtolower($route['method']) == strtolower($r['method'])){
 						// if the interface is also set, it must match
 						if(isset($route['interface'])){
-							if(strtolower($route['interface']) == strtolower($interface)){
+							if(strtolower($route['interface']) == strtolower($r['interface'])){
 								$route_mask = $mask;
 								$url .= $mask;
 							}
@@ -562,8 +586,8 @@ class Template  {
 			// Otherwise, just build it as normal
 			if(!$route_mask){
 
-				$url .= sprintf('/%s', $module);
-				$url .= $method != app()->config('default_method') || is_array($bits) ? sprintf('/%s', $method) : '';
+				$url .= sprintf('/%s', $r['module']);
+				$url .= $r['method'] != app()->config('default_method') || is_array($bits) ? sprintf('/%s', $r['method']) : '';
 
 				if(is_array($bits)){
 					foreach($bits as $bit => $value){
@@ -592,8 +616,8 @@ class Template  {
 	 * @return string
 	 * @access public
 	 */
-	public function xhtmlUrl($method = false, $bits = false, $module = false, $interface = false){
-		return $this->encodeTextEntities($this->url($method, $bits, $module, $interface));
+	public function xhtmlUrl($path = false, $bits = false){
+		return $this->encodeTextEntities($this->url($path, $bits));
 	}
 
 
@@ -616,12 +640,12 @@ class Template  {
 	 * @return string
 	 * @access public
 	 */
-	public function action($method = false, $module = false, $interface = false){
+	public function action($path = false){
 		$bits = false;
 		if(router()->arg(1)){
 			$bits = array('id' => router()->arg(1));
 		}
-		return $this->xhtmlUrl($method, $bits, $module, $interface);
+		return $this->xhtmlUrl($path, $bits);
 	}
 
 
@@ -633,10 +657,10 @@ class Template  {
 	 * @return string
 	 * @access public
 	 */
-	public function ajaxUrl($method = false, $bits = false, $module = false, $interface = false){
+	public function ajaxUrl($path = false, $bits = false){
 		$orig_config = app()->config('enable_mod_rewrite');
 		app()->setConfig('enable_mod_rewrite', false); // turn off rewrite urls
-		$url = $this->url($method, $bits, $module, $interface);
+		$url = $this->url($path, $bits);
 		app()->setConfig('enable_mod_rewrite', $orig_config); // turn them back to what they were
 		return $url;
 	}
@@ -650,7 +674,7 @@ class Template  {
 	 * @return string
 	 * @access public
 	 */
-	public function selfLink($text, $bits = false, $method = false){
+	public function selfLink($text, $bits = false, $path = false){
 		$new_params = router()->getMappedArguments();
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
@@ -658,7 +682,7 @@ class Template  {
 				$new_params[$key] = $value;
 			}
 		}
-		return $this->link($text, false, $new_params, $method);
+		return $this->link($text, $path, $new_params);
 	}
 
 
@@ -669,7 +693,7 @@ class Template  {
 	 * @return string
 	 * @access public
 	 */
-	public function xhtmlSelfUrl($bits = false, $method = false){
+	public function xhtmlSelfUrl($bits = false, $path = false){
 		$new_params = router()->getMappedArguments();
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
@@ -677,7 +701,7 @@ class Template  {
 				$new_params[$key] = $value;
 			}
 		}
-		return $this->xhtmlUrl($method, $new_params);
+		return $this->xhtmlUrl($path, $new_params);
 	}
 
 
@@ -688,7 +712,7 @@ class Template  {
 	 * @return string
 	 * @access public
 	 */
-	public function selfUrl($bits = false, $method = false){
+	public function selfUrl($bits = false, $path = false){
 		$new_params = router()->getMappedArguments();
 		// remove any options from the url that are in our new params
 		if(is_array($bits) && count($bits)){
@@ -696,7 +720,7 @@ class Template  {
 				$new_params[$key] = $value;
 			}
 		}
-		return $this->url($method, $new_params);
+		return $this->url($path, $new_params);
 	}
 
 

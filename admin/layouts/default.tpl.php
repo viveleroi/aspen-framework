@@ -13,13 +13,13 @@
 
 	<h1><?= app()->config('application_name'); ?></h1>
 <?php if(user()->isLoggedIn()): ?>
-	<span>Logged in as <?= $this->link(session()->getName('first_name'), 'my_account', false, 'Users'); ?></span>
+	<span>Logged in as <?= $this->link(session()->getName('first_name'), 'users/my_account'); ?></span>
 <?php endif ?>
 
 <?php if(user()->isLoggedIn()): ?>
 	<ul id="nav">
 		<?= app()->generateInterfaceMenu(false) ?>
-		<li><?= $this->link('Logout', 'logout', false, 'Users'); ?></li>
+		<li><?= $this->link('Logout', 'users/logout'); ?></li>
 	</ul>
 <?php endif; ?>
 		

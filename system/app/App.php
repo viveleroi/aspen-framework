@@ -80,9 +80,10 @@ class App extends Bootstrap {
 			if(is_object($reg)){
 				if(isset($reg->disable_menu) && $reg->disable_menu){
 				} else {
-					$link = $this->template->link($reg->name, 'view', false, $reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false));
+					$p = $this->template->getNamespacePath('view', $reg->classname, LS);
+					$link = $this->template->link($reg->name, $p);
 					if(!empty($link)){
-						$menu .= '<li'.($this->router->here($reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false)) ? ' class="at"' : '').'>';
+						$menu .= '<li'.($this->router->here($p) ? ' class="at"' : '').'>';
 						$menu .= $link;
 						$menu .= '</li>';
 					}
