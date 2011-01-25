@@ -23,7 +23,7 @@ class Preferences  {
 
 		$_SESSION['settings'] =  array();
 
-		$user_id = app()->session->getInt('user_id');
+		$user_id = session()->getInt('user_id');
 
 		if($user_id && app()->checkDbConnection()){
 
@@ -54,7 +54,7 @@ class Preferences  {
 	 */
 	public function addSort($location = false, $field = false, $dir = 'ASC'){
 
-		if($user_id = app()->session->getInt('user_id')){
+		if($user_id = session()->getInt('user_id')){
 
 			$pref_model = model()->open('config');
 
@@ -88,9 +88,9 @@ class Preferences  {
 
 		$sort = array('sort_by'=>$default,'sort_direction'=>strtoupper($dir));
 
-		if(app()->session->isArray('settings')){
+		if(session()->isArray('settings')){
 
-			$settings = app()->session->getArray('settings');
+			$settings = session()->getArray('settings');
 
 			$loc_key = 'sort.'.$location;
 			if(isset($settings['sorts'][$loc_key.'.field'])){

@@ -99,7 +99,7 @@ class User  {
 	 * @access public
 	 */
 	public function my_account(){
-		return $this->edit(app()->session->getInt('user_id'));
+		return $this->edit(session()->getInt('user_id'));
 	}
 
 
@@ -304,8 +304,8 @@ class User  {
 	public function postLoginRedirect(){
 
 		$redirect = false;
-		if(app()->session->isPath('post-login_redirect')){
-			$redirect = app()->session->getPath('post-login_redirect');
+		if(session()->isPath('post-login_redirect')){
+			$redirect = session()->getPath('post-login_redirect');
 			$lred = strtolower($redirect);
 			if(strpos($lred, 'users/login') !== false || strpos($lred, 'users/authenticate') !== false){
 				$redirect = false;
@@ -325,13 +325,13 @@ class User  {
 	final public function isLoggedIn(){
 
 		$authenticated 	= false;
-		$auth_key 		= sha1(app()->session->getEmail('username') . app()->session->getInt('user_id'));
+		$auth_key 		= sha1(session()->getEmail('username') . session()->getInt('user_id'));
 
 		if(app()->checkDbConnection()){
 			if(
-				app()->session->getInt('authenticated', false) &&
-				app()->session->getAlnum('authentication_key') == $auth_key &&
-				app()->session->getAlnum('domain_key') == $this->getDomainKeyValue()
+				session()->getInt('authenticated', false) &&
+				session()->getAlnum('authentication_key') == $auth_key &&
+				session()->getAlnum('domain_key') == $this->getDomainKeyValue()
 				){
 					$authenticated = true;
 			}
@@ -348,7 +348,7 @@ class User  {
 	 * @return <type>
 	 */
 	public function isFirstLogin(){
-		return app()->session->getRaw('first_login');
+		return session()->getRaw('first_login');
 	}
 
 
@@ -363,7 +363,7 @@ class User  {
 
 		$authenticated 	= false;
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : app()->session->getInt('user_id');
+		$user_id		= $user_id ? $user_id : session()->getInt('user_id');
 
 		if(IS_ADMIN){
 			$authenticated = true;
@@ -409,7 +409,7 @@ class User  {
 		$module 		= $module ? $module : router()->module();
 		$method 		= $method ? $method : router()->method();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : app()->session->getInt('user_id');
+		$user_id		= $user_id ? $user_id : session()->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
 
 		if(IS_ADMIN || $this->allowAnonymous($module, $method, $interface)){
@@ -495,7 +495,7 @@ class User  {
 	 */
 	public function inGroup($group, $user_id = false){
 
-		$user_id = $user_id ? $user_id : app()->session->getInt('user_id');
+		$user_id = $user_id ? $user_id : session()->getInt('user_id');
 
 		$model = model()->open('user_group_link');
 		$model->leftJoin('groups', 'id', 'group_id', array('name'));
@@ -553,7 +553,7 @@ class User  {
 		if($this->isLoggedIn()){
 
 			$model = model()->open('user_group_link');
-			$model->where('user_id', app()->session->getInt('user_id'));
+			$model->where('user_id', session()->getInt('user_id'));
 			$model->where('group_id', 1);
 			$groups = $model->results();
 
@@ -596,7 +596,7 @@ class User  {
 		$default = app()->config('default_module');
 
 		if(app()->isInstalled()){
-			if($user_id = app()->session->getInt('user_id')){
+			if($user_id = session()->getInt('user_id')){
 				$groups = array_keys( $this->usersGroups($user_id) );
 
 				$ug_defs = app()->config('usergroup_default_modules');

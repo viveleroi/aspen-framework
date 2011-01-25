@@ -899,7 +899,7 @@ class Template  {
 			$filters = app()->get->getArray('filter');
 		} else {
 
-			$sess_filters = app()->session->getArray('filter');
+			$sess_filters = session()->getArray('filter');
 
 			if(isset($sess_filters[router()->module() . ':' . router()->method()])){
 				$filters = $sess_filters[router()->module() . ':' . router()->method()];
@@ -924,7 +924,7 @@ class Template  {
 		$format		= $format ? $format : app()->config('date_format');
 
 		// try to get a user timezone setting
-		if($user_id = app()->session->getInt('user_id')){
+		if($user_id = session()->getInt('user_id')){
 			$timezone = app()->settings->getConfig('timezone', $user_id);
 		}
 

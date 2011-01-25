@@ -82,7 +82,7 @@ class Sml  {
      * @access public
      */
 	public function getMessageLog(){
-    	$message_log = app()->session->getRaw('message_log');
+    	$message_log = session()->getRaw('message_log');
     	$this->sessionMessageArray = is_string($message_log) ? unserialize($message_log) : array();
     	return $this->sessionMessageArray;
     }
@@ -93,7 +93,7 @@ class Sml  {
      * @access public
      */
 	public function printMessage(){
-		if(app()->session->getInt('unread_message_flag')){
+		if(session()->getInt('unread_message_flag')){
 			$message = $this->getMostRecentMessage();
 			printf(app()->config('sml_message_html'), $message['message'], $message['class']);
 			$_SESSION['unread_message_flag'] = false;

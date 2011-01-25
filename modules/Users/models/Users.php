@@ -71,7 +71,7 @@ class UsersModel extends Model {
 		// verify groups
 		if(!$clean->isEmpty('Groups')){
 			// Make sure an admin isn't removing his own admin status
-			if(defined('IS_ADMIN') && IS_ADMIN && $primary_key == app()->session->getInt('user_id')){
+			if(defined('IS_ADMIN') && IS_ADMIN && $primary_key == session()->getInt('user_id')){
 				if(!$clean->isInArray('Groups', 1)){
 					$this->addError('Groups', text('db:error:groups-noadmin'));
 				}

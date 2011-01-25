@@ -243,7 +243,7 @@ class Form  {
 			// if token authorization is enabled, we must authenticate
 			if(app()->config('require_form_token_auth')){
 
-				$sess_token = app()->session->getAlnum('form_token');
+				$sess_token = session()->getAlnum('form_token');
 
 				if(empty($sess_token) || $sess_token != app()->{$method}->getAlnum('token')){
 					$_SESSION['form_token'] = false;

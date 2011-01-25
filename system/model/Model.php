@@ -1260,7 +1260,7 @@ class Model  {
 			}
 		}
 
-		$user_id				= app()->session->getInt('user_id', NULL);
+		$user_id				= session()->getInt('user_id', NULL);
 		$using_filters			= false;
 		$location_key			= $location_key ? $location_key : (router()->module() . ':' . router()->method());
 		$disabled_filters		= $disabled_filters ? $disabled_filters : array();

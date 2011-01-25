@@ -857,7 +857,7 @@ class Router  {
 	 * @access public
 	 */
 	public function returnToReferrer(){
-		$location = app()->session->getUri('referring_page', template()->url('view'));
+		$location = session()->getUri('referring_page', template()->url('view'));
 		if(!empty($location)){
 			$this->redirectToUrl($location);
 		}

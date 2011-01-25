@@ -13,7 +13,7 @@
 
 	<h1><?= app()->config('application_name'); ?></h1>
 <?php if(user()->isLoggedIn()): ?>
-	<span>Logged in as <?= $this->link(app()->session->getName('first_name'), 'my_account', false, 'Users'); ?></span>
+	<span>Logged in as <?= $this->link(session()->getName('first_name'), 'my_account', false, 'Users'); ?></span>
 <?php endif ?>
 
 <?php if(user()->isLoggedIn()): ?>
