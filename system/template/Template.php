@@ -139,7 +139,6 @@ class Template  {
 			}
 			$this->_load_css = array_merge($i, $m);
 		}
-		
 		// append any js files for loading
 		if(!empty($this->_load_js)){
 			ksort($this->_load_js, SORT_STRING);
@@ -159,7 +158,6 @@ class Template  {
 	 * @access public
 	 */
 	public function loadModuleHeader(){
-
 		// append any css files for loading
 		if(!empty($this->_load_css)){
 			foreach($this->_load_css as $css){
@@ -172,7 +170,6 @@ class Template  {
 				}
 			}
 		}
-
 		// append any custom css styles
 		if(!empty($this->_css_styles)){
 			print '<style>'."\n";
@@ -181,7 +178,6 @@ class Template  {
 			}
 			print '</style>'."\n";
 		}
-
 		// append any js files for loading
 		if(!empty($this->_load_js)){
 			if(app()->config('print_js_variables')){
@@ -199,15 +195,6 @@ class Template  {
 					$this->printJs($js);
 				}
 			}
-		}
-
-		// include any header templates (header.tpl.php)
-		$path = $this->getModuleTemplateDir().DS . 'header.tpl.php';
-		if(file_exists($path)){
-			define('MODULE_HEADER_TPL_PATH', $path);
-			include(MODULE_HEADER_TPL_PATH);
-		} else {
-			define('MODULE_HEADER_TPL_PATH', '');
 		}
 	}
 	

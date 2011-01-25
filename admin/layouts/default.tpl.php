@@ -3,10 +3,8 @@
 <head>
 	<title><?= $this->page_title(); ?></title>
 	<meta charset="utf-8">
-	<meta name="description" content="">
-	<meta name="keywords" content="">
-	<?php //$this->addCss( array('file'=>'screen.css','mediatype'=>'screen, projection','from'=>'i')); ?>
-	<?php //$this->addCss( array('file'=>'ie.css','cdtnl_cmt'=>'if IE','from'=>'i')); ?>
+	<?php //$this->addCss('admin/screen.css'); ?>
+	<?php //$this->addCss('admin/ie.css',array('cdtnl_cmt'=>'if IE')); ?>
 	<?php $this->loadModuleHeader(); ?>
 </head>
 <body id="<?= $this->body_id(); ?>">
@@ -26,6 +24,7 @@
 <?php $this->page(); ?>
 	
 	<p><?= text('copyright', VERSION); ?></p>
+	<?php $this->loadModuleFooter(); ?>
 </body>
 <?= $this->htmlHide(VERSION_COMPLETE); ?>
 </html>
