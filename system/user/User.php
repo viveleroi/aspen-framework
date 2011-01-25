@@ -230,8 +230,8 @@ class User  {
 
 		$auth = false;
 		$p	  = new PasswordHash();
-		$user = app()->post->getEmail('user');
-		$pass = app()->post->getRaw('pass');
+		$user = post()->getEmail('user');
+		$pass = post()->getRaw('pass');
 
 		if($user && $pass){
 

@@ -1271,8 +1271,8 @@ class Model  {
 		if(get()->getRaw('filter')){
 			$filters = get()->getRaw('filter');
 		}
-		elseif(app()->post->getRaw('filter')){
-			$filters = app()->post->getRaw('filter');
+		elseif(post()->getRaw('filter')){
+			$filters = post()->getRaw('filter');
 		}
 		elseif($named = get()->getRaw('named-filter')){
 			$named = router()->decodeForRewriteUrl($named);
@@ -1289,8 +1289,8 @@ class Model  {
 		if(get()->getRaw('filter-save-as')){
 			$filter_name = get()->getRaw('filter-save-as');
 		}
-		elseif(app()->post->getRaw('filter-save-as')){
-			$filter_name = app()->post->getRaw('filter-save-as');
+		elseif(post()->getRaw('filter-save-as')){
+			$filter_name = post()->getRaw('filter-save-as');
 		}
 
 		// over-write the table keys with filters

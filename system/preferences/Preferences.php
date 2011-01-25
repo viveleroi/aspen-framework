@@ -125,10 +125,10 @@ class Preferences  {
 		}
 
 		// process the form if submitted
-		if(app()->post->keyExists('preferences-submit')){
+		if(post()->keyExists('preferences-submit')){
 			$config = model()->open('config');
 			foreach($record as $field => $existing_value){
-				$record[$field] = app()->post->getRaw($field);
+				$record[$field] = post()->getRaw($field);
 				$config->query( sprintf('DELETE FROM config WHERE config_key = "%s" AND user_id = "%s"', $field, $user_id) );
 				$config->insert( array('current_value'=>$record[$field],'config_key'=>$field,'user_id'=>$user_id));
 			}
