@@ -259,7 +259,7 @@ class Router  {
 	 * @access private
 	 */
 	private function identifyRequestedModuleForLoad(){
-		return $this->map['module'] ? $this->map['module'] : user()->getUserDefaultModule();
+		return $this->map['module'] ?: user()->getUserDefaultModule();
 	}
 
 
@@ -269,7 +269,7 @@ class Router  {
 	 * @access private
 	 */
 	private function identifyRequestedMethodForLoad(){
-		return $this->map['method'] ? $this->map['method'] : app()->config('default_method');
+		return $this->map['method'] ?: app()->config('default_method');
 	}
 
 
@@ -381,14 +381,11 @@ class Router  {
 	 * @access public
 	 */
 	public function getParentModule(){
-
 		$module = $this->module();
-
 		if(method_exists(app()->{$this->module()}, 'whosYourDaddy')){
 			$daddy = app()->{$this->module()}->whosYourDaddy();
 			$module = empty($daddy) ? $module : $daddy;
 		}
-
 		return $module;
 	}
 
@@ -772,10 +769,8 @@ class Router  {
 	 * @access public
 	 */
 	public function getModulePath($module = false, $interface = false){
-
 		$module = $this->cleanModule($module);
 		$registry = app()->moduleRegistry(false, $module, $interface);
-
 		if(isset($registry->folder)){
 			return MODULES_PATH . DS . $registry->folder;
 		}
@@ -865,13 +860,12 @@ class Router  {
 
 	/**
 	 * Redirects user to an inner-application module/method address.
-	 * @param string $method
+	 * @param string $path
 	 * @param array $bits
-	 * @param string $module
 	 * @access public
 	 */
-	public function redirect($method = false, $bits = false, $module = false, $interface = false){
-		$this->redirectToUrl( template()->url($method, $bits, $module, $interface), false, true);
+	public function redirect($path = false, $bits = false){
+		$this->redirectToUrl( template()->url($path, $bits), false, true);
     }
 
 
