@@ -108,8 +108,8 @@ class Router  {
 			}
 		} else {
 
-			$this->map['module'] = app()->get->getElemId('module');
-			$this->map['method'] = app()->get->getElemId('method');
+			$this->map['module'] = get()->getElemId('module');
+			$this->map['method'] = get()->getElemId('method');
 
 			// loop additional bits to pass to our arguments
 			$get = app()->params->getRawSource('get');
@@ -117,7 +117,7 @@ class Router  {
 			if(is_array($get)){
 				foreach($get as $key => $value){
 					if($key != 'module' && $key != 'method'){
-						$bits[$key] = $this->stripQuery(app()->get->getRaw($key));
+						$bits[$key] = $this->stripQuery(get()->getRaw($key));
 					}
 				}
 				$this->map['bits'] = $bits;
@@ -644,7 +644,7 @@ class Router  {
             // if no mod_rewrite, we need to handle the paths appropriately
             if(app()->config('enable_mod_rewrite') && strpos(app()->server->getQueryString('REQUEST_URI'), '.php?') === false){
 
-                $redirected = stripslashes(app()->get->getQueryString('redirected'));
+                $redirected = stripslashes(get()->getQueryString('redirected'));
                 $interface = LS ? LS : '';
 
                 $replace = array();

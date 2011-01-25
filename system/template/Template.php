@@ -895,8 +895,8 @@ class Template  {
 
 		$filters = array();
 
-		if(app()->get->isArray('filter')){
-			$filters = app()->get->getArray('filter');
+		if(get()->isArray('filter')){
+			$filters = get()->getArray('filter');
 		} else {
 
 			$sess_filters = session()->getArray('filter');

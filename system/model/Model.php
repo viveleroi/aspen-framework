@@ -1268,13 +1268,13 @@ class Model  {
 
 		// check GET or POST for any filter overrides
 		// otherwise, check the config table
-		if(app()->get->getRaw('filter')){
-			$filters = app()->get->getRaw('filter');
+		if(get()->getRaw('filter')){
+			$filters = get()->getRaw('filter');
 		}
 		elseif(app()->post->getRaw('filter')){
 			$filters = app()->post->getRaw('filter');
 		}
-		elseif($named = app()->get->getRaw('named-filter')){
+		elseif($named = get()->getRaw('named-filter')){
 			$named = router()->decodeForRewriteUrl($named);
 			$filters = app()->settings->getConfig('filter.named.'.$named, $user_id);
 			$filters = unserialize($filters);
@@ -1286,8 +1286,8 @@ class Model  {
 		// look for a save-as named variable
 		// if it's set, we'll store this as a named filter
 		$filter_name = false;
-		if(app()->get->getRaw('filter-save-as')){
-			$filter_name = app()->get->getRaw('filter-save-as');
+		if(get()->getRaw('filter-save-as')){
+			$filter_name = get()->getRaw('filter-save-as');
 		}
 		elseif(app()->post->getRaw('filter-save-as')){
 			$filter_name = app()->post->getRaw('filter-save-as');
