@@ -10,6 +10,7 @@ $lang['admin']['login:title'] 			= 'Login';
 $lang['admin']['login:username'] 		= 'Username';
 $lang['admin']['login:password'] 		= 'Password';
 $lang['admin']['login:forgot_link'] 	= 'Forgot your password?';
+$lang['admin']['users:login:say:error'] = 'Your username and password did not match. Please try again.';
 
 // signup
 $lang['admin']['users:signup:head-title']	= 'Register a new account';
@@ -29,6 +30,8 @@ $lang['admin']['forgot:title'] 			= 'Reset Your Password';
 $lang['admin']['forgot:username'] 		= 'Username';
 $lang['admin']['forgot:button'] 		= 'Send New Password';
 $lang['admin']['forgot:login'] 			= 'Back to Login';
+$lang['admin']['users:forgot:say:success']= 'Your password has been reset. Please check your email.';
+$lang['admin']['users:forgot:say:error']= 'We were unable to find any accounts matching that username.';
 
 // my account
 $lang['admin']['users:my_account:head-title'] = 'My Account';
@@ -37,6 +40,7 @@ $lang['admin']['myaccount:help']				= 'Enter in your password twice to change it
 $lang['admin']['myaccount:label:password'] 		= 'Password';
 $lang['admin']['myaccount:label:password_2'] 	= 'Confirm';
 $lang['admin']['myaccount:button:submit'] 		= 'Save Changes';
+$lang['admin']['users:myaccount:say:success']= 'Your account has been updated successfully.';
 
 // user list
 $lang['admin']['users:view:head-title']		= 'Users';
@@ -65,6 +69,10 @@ $lang['admin']['userform:allowlogin'] 	= 'Allow Login';
 $lang['admin']['userform:accessgroup'] 	= 'Access Groups';
 $lang['admin']['userform:addbutton'] 	= 'Create New User';
 $lang['admin']['userform:editbutton'] 	= 'Save Changes';
+$lang['admin']['users:edit:say:success']= 'User account changes have been saved successfully.';
+
+// delete
+$lang['admin']['users:delete:say:success']= 'User account has been deleted successfully.';
 
 // permission denied
 $lang['admin']['users:denied:head-title'] = 'Permission Denied';

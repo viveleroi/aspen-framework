@@ -58,16 +58,12 @@ class Users_Admin extends Module {
 	 * @param $id The id of the user record
 	 */
 	public function edit($id = false){
-
 		if(user()->edit($id)){
-			sml()->say('User account changes have been saved successfully.', true);
+			sml()->say(text('users:edit:say:success'), true);
 			router()->redirect('view');
 		}
-
 		$data['groups'] = user()->groupList();
-
 		template()->display($data);
-
 	}
 
 
@@ -76,14 +72,11 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function my_account(){
-
 		if(user()->my_account()){
-			sml()->say('Your account has been updated successfully.', true);
+			sml()->say(text('users:myaccount:say:success'), true);
 			router()->redirect('view', false, 'Index');
 		}
-
 		template()->display();
-
 	}
 
 
@@ -94,7 +87,7 @@ class Users_Admin extends Module {
 	 */
 	public function delete($id = false){
 		if(user()->delete($id)){
-			sml()->say('User account has been deleted successfully.', true);
+			sml()->say(text('users:delete:say:success'), true);
 			router()->redirect('view');
 		}
 	}
@@ -115,18 +108,15 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function forgot(){
-
 		if(user()->forgot() == 1){
-			sml()->say('Your password has been reset. Please check your email.', true);
+			sml()->say(text('users:forgot:say:success'), true);
 			router()->redirect('login');
 		}
 		elseif(user()->forgot() == -1){
-			sml()->say('We were unable to find any accounts matching that username.', false);
+			sml()->say(text('users:forgot:say:error'), false);
 			router()->redirect('forgot');
 		}
-
 		template()->display();
-
 	}
 
 

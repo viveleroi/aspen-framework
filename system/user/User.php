@@ -149,7 +149,7 @@ class User  {
 	 * @access public
 	 */
 	public function login_failed(){
-		sml()->say('Your username and password did not match. Please try again.', false);
+		sml()->say(text('users:login:say:error'), false);
 		router()->redirect('login',false,'Users');
 	}
 
