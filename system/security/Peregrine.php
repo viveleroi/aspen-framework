@@ -2,7 +2,7 @@
 /**
  * @package  Peregrine
  * @author   Michael Botsko, Trellis Development, LLC
- * @version  1.0-rc2-3-gf76251f
+ * @version  1.0
  *
  * Peregrine is a class that aims to improve PHP superglobal security
  * by transferring the raw incoming values to private member variables.
@@ -39,14 +39,14 @@ class CageBase {
 			$this->_raw = $arr;
 		}
 	}
-
-
+	
+	
 	/**
 	 * Allows the user to combine fields into a specified printf string
 	 * and then validate the entire string with any Peregrine method.
 	 *
      * Example: this allows the user to combine three-field-phone numbers
- 	 * and validate the entire string.
+ 	 * and validate the entire string. 
 	 *
 	 * $p->post->combine('%s%s%s', array('area','prefix','suffix'), 'getPhone'));
 	 *
@@ -274,8 +274,8 @@ class CageBase {
 		}
 		return false;
 	}
-
-
+	
+	
 	/**
 	 * Compare two values
 	 *
@@ -602,8 +602,8 @@ class CageBase {
 		}
 		return $default;
 	}
-
-
+	
+	
 	/**
 	 * Returns a string of characters allowed within addresses
 	 *
@@ -831,8 +831,8 @@ class CageBase {
 		}
 		return $default;
 	}
-
-
+	
+	
 	/**
 	 * Returns a phone number if it passes, with an optional strip argument
 	 * allowing the user to return the digits only (for use with db storage)
@@ -847,7 +847,7 @@ class CageBase {
 		if($this->isSetAndNotEmpty($key)){
 			return $this->isPhone($key) ? ($strip ? $this->getDigits($key) : $this->getKey($key)) : $default;
 		}
-		return $default;
+		return $default;	
 	}
 }
 
