@@ -507,7 +507,7 @@ class Template  {
 	 * @param string $method
 	 * @param string $text
 	 */
-	public function link($text, $path = false, $bits = false, $title = false){
+	public function link($text, $path, $bits = false, $title = false){
 		
 		$r = $this->parseNamespacePath($path);
 		$title = $title ? $title : $text;

@@ -16,12 +16,6 @@ class Module {
 
 
 	/**
-	 * Constructor
-	 */
-	public function  __construct() {}
-
-
-	/**
 	 * Loads our default dashboard screen
 	 * @access public
 	 */
