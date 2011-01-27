@@ -74,7 +74,7 @@ class Users_Admin extends Module {
 	public function my_account(){
 		if(user()->my_account()){
 			sml()->say(text('users:myaccount:say:success'), true);
-			router()->redirect('view', false, 'Index');
+			app()->router->redirect('index/view');
 		}
 		template()->display();
 	}

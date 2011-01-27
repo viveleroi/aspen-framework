@@ -158,6 +158,9 @@ class Template  {
 	 * @access public
 	 */
 	public function loadModuleHeader(){
+		
+		$this->prepareMediaIncludes();
+		
 		// append any css files for loading
 		if(!empty($this->_load_css)){
 			foreach($this->_load_css as $css){
@@ -204,6 +207,7 @@ class Template  {
 	 * @access public
 	 */
 	public function loadModuleFooter(){
+		$this->prepareMediaIncludes();
 		if(!empty($this->_load_js)){
 			foreach($this->_load_js as $js){
 				if($js['in'] == 'footer'){
@@ -452,7 +456,6 @@ class Template  {
 	public function display($data = false){
 
 		$this->set($data);
-		$this->prepareMediaIncludes();
 
 		// if token auth on, we need to generate a token
 		if(app()->config('require_form_token_auth')){
@@ -554,11 +557,13 @@ class Template  {
 	 * @return string 
 	 */
 	public function parseNamespacePath($path = false){
-		$r = array();
-		$path = array_reverse(explode('/',$path));
-		$r['method'] = isset($path[0]) ? $path[0] : router()->method();
-		$r['module'] = isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module()));
-		$r['interface'] = isset($path[2]) ? strtolower($path[2]) : (LS != '' ? LS : '');
+		if($path){
+			$path = explode('/',$path);
+			$path = is_array($path) ? array_reverse($path) : $path;
+		}
+		$r['method'] = (is_array($path) && isset($path[0]) ? $path[0] : router()->method());
+		$r['module'] = (is_array($path) && isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module())));
+		$r['interface'] = (is_array($path) && isset($path[2]) ? strtolower($path[2]) : (LS != '' ? LS : ''));
 		return $r;
 	}
 	

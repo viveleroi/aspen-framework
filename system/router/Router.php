@@ -486,7 +486,7 @@ class Router  {
 			){
 			if(!user()->userHasInterfaceAccess()){
 				user()->logout();
-				$this->redirect('login', false, 'Users');
+				$this->redirect('users/login');
 			}
 		}
 		

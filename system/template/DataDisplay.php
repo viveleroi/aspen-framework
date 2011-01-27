@@ -136,7 +136,7 @@ class DataDisplay  {
 		// replace html elements with spaces
     	$phrase = preg_replace("/<(\/?)([^>]+)>/i", " ", $phrase);
     	$phrase = html_entity_decode($phrase, ENT_QUOTES, 'UTF-8');
-		$phrase = $this->encodeTextEntities(strip_tags($phrase));
+		$phrase = strip_tags($phrase);
 		$phrase_array = explode(' ', $phrase);
 		if(count($phrase_array) > $blurb_word_length && $blurb_word_length > 0){
 			$phrase = implode(' ',array_slice($phrase_array, 0, $blurb_word_length))
@@ -160,7 +160,7 @@ class DataDisplay  {
 		// replace html elements with spaces
     	$string = preg_replace("/<(\/?)([^>]+)>/i", " ", $string);
     	$string = html_entity_decode($string, ENT_QUOTES, 'UTF-8');
-		$string = $this->encodeTextEntities(strip_tags($string));
+		$string = strip_tags($string);
 
 		if(strlen($string) > $char_length){
 			$string = substr($string, 0, $char_length) . '&#8230;';

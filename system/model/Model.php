@@ -2320,39 +2320,33 @@ class Model  {
 
 			// if old vals is an array, we're running an update
 			if($type == 'update' && is_array($old_values)){
+				// log the initial change
+				// even though no values may have changed, we'll record an activity so
+				// that we have a new hash to record that this save action
+				// took place. This assists with child activities when the child
+				// changes but the parent does not.
+				$activity_id = $this->activity_log_change($key, $type, $this->table, $record_id, $parent_token);
 				foreach($old_values as $old_key => $old_val){
 					if(in_array($old_key, $watch_fields)){
 						if(isset($new_values[$old_key])){
 							if((!empty($old_val) || !empty($new_values[$old_key]))){
 								if($old_val !== $new_values[$old_key]){
-									$res = $this->activity_log_change($key, $type, $this->table, $record_id, $old_key, $old_val, $new_values[$old_key], $parent_token);
+									$res = $this->activity_log_change_delta($activity_id, $old_key, $old_val, $new_values[$old_key]);
 								}
 							}
 						}
 					}
 				}
-
-				// even though no values have changed, we'll record an activity so
-				// that we have a new hash to record that this save action
-				// took place. This assists with child activities when the child
-				// changes but the parent does not.
-				if(!$res){
-				  $res = $this->activity_log_change($key, $type, $this->table, $record_id, $this->getPrimaryKey(), $record_id, $record_id, $parent_token);
-				}
 			}
 
 			// if we're running an insert
 			if($type == 'insert' && is_array($new_values)){
-				foreach($new_values as $field => $val){
-					if(in_array($field, $watch_fields)){
-						$res = $this->activity_log_change($key, $type, $this->table, $record_id, $field, false, $val, $parent_token);
-					}
-				}
+				$res = $this->activity_log_change($key, $type, $this->table, $record_id, $parent_token);
 			}
 
 			// if we're running an delete
 			if($type == 'delete'){
-				$res = $this->activity_log_change($key, $type, $this->table, $record_id, $this->getPrimaryKey(), false, false, $parent_token);
+				$res = $this->activity_log_change($key, $type, $this->table, $record_id, $parent_token);
 			}
 		}
 		return $res;
@@ -2365,10 +2359,27 @@ class Model  {
 	 * @param <type> $old_value
 	 * @param <type> $new_value
 	 */
-	public function activity_log_change($key, $type, $table, $record_id, $field, $old_value, $new_value, $parent_token){
+	public function activity_log_change($key, $type, $table, $record_id, $parent_token){
 		$res = false;
 		if(app()->isLibraryLoaded('Activity')){
-			$res = app()->activity->logChange($key, $type, $table, $record_id, $field, $old_value, $new_value, $parent_token);
+			$res = app()->activity->logChange($key, $type, $table, $record_id, $parent_token);
+		}
+		return $res;
+	}
+	
+	
+	/**
+	 *
+	 * @param type $activity_id
+	 * @param type $field
+	 * @param type $old_value
+	 * @param type $new_value
+	 * @return type 
+	 */
+	public function activity_log_change_delta($activity_id, $field, $old_value, $new_value){
+		$res = false;
+		if(app()->isLibraryLoaded('Activity')){
+			$res = app()->activity->logChangeDelta($activity_id, $field, $old_value, $new_value);
 		}
 		return $res;
 	}

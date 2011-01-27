@@ -150,7 +150,7 @@ class User  {
 	 */
 	public function login_failed(){
 		sml()->say(text('users:login:say:error'), false);
-		router()->redirect('login',false,'Users');
+		router()->redirect('users/login');
 	}
 
 
