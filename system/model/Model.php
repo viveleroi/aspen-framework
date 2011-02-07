@@ -1016,7 +1016,7 @@ class Model  {
 	 * @access public
 	 */
 	public function whereIsNull($field = false, $match = 'AND'){
-		$this->base_where('%s %s IS NULL', $field, $match);
+		$this->base_where('%s %s IS NULL', $field, NULL, $match);
 	}
 
 
