@@ -642,19 +642,18 @@ class Template  {
 
 			// Otherwise, just build it as normal
 			if(!$route_mask){
-
 				$url .= sprintf('/%s', $r['module']);
 				$url .= $r['method'] != app()->config('default_method') || is_array($bits) ? sprintf('/%s', $r['method']) : '';
+			}
 
-				if(is_array($bits)){
-					foreach($bits as $bit => $value){
-						if(is_array($value)){
-							foreach($value as $key => $val){
-								$url .= '/' . $bit . '[' . $key . ']=' . urlencode($val);
-							}
-						} else {
-							$url .= '/' . urlencode($value);
+			if(is_array($bits)){
+				foreach($bits as $bit => $value){
+					if(is_array($value)){
+						foreach($value as $key => $val){
+							$url .= '/' . $bit . '[' . $key . ']=' . urlencode($val);
 						}
+					} else {
+						$url .= '/' . urlencode($value);
 					}
 				}
 			}

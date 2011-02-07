@@ -948,5 +948,14 @@ class Router  {
 			header($header);
 		}
 	}
+		
+	
+	/**
+	 * Is the request an ajax-based request?
+	 * @return type 
+	 */
+	public function isAjax(){
+		return server()->equals('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest');
+	}
 }
 ?>
