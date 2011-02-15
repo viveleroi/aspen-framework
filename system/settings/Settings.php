@@ -45,8 +45,10 @@ class Settings  {
 	 * @param <type> $user_id
 	 */
 	public function loadSettings(){
-		$cfg_model	= model()->open('config');
-		$this->settings = $cfg_model->results();
+		if(model()->tableExists('config')){
+			$cfg_model	= model()->open('config');
+			$this->settings = $cfg_model->results();
+		}
 	}
 
 

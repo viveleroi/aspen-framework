@@ -215,6 +215,17 @@ class Model  {
 		return $final_obj;
 
 	}
+	
+	
+	/**
+	 * Does a table exist?
+	 * @param type $table
+	 * @return type 
+	 */
+	public function tableExists($table){
+		$tables = app()->db->MetaTables('TABLES');
+		return in_array($table, $tables);
+	}
 
 
 	/**
@@ -240,9 +251,13 @@ class Model  {
 	 */
 	private function openTable($table = false){
 		$this->table = $table;
-		$this->generateSchema();
-		if(!is_array($this->schema)){
-			error()->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
+		if($this->tableExists($this->table)){
+			$this->generateSchema();
+			if(!is_array($this->schema)){
+				error()->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
+			}
+		} else {
+			error()->raise(1, 'Database table ' . $this->table . ' does not exist.', __FILE__, __LINE__);
 		}
 	}
 
@@ -1709,6 +1724,7 @@ class Model  {
 										&& (in_array($child_table, $this->contains) || in_array($join_table, $this->contains))){
 
 									$child = $this->open($child_table);
+									$child->dataDisplay($this->data_display);
 									$this->ignore($child_table);
 									$this->ignore($join_table);
 									$child->ignore($this->get_ignore());
@@ -1734,6 +1750,7 @@ class Model  {
 									$field = $i->singularize($child_table).'_id';
 									if(isset($result[$field])){
 										$child = $this->open($child_table);
+										$child->dataDisplay($this->data_display);
 										$child->ignore($this->ignore_tables);
 										$child->where($child->getPrimaryKey(), $result[$field]);
 										$result[ucwords($child_table)] = $child->results();

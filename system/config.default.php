@@ -129,8 +129,7 @@
 	// This folder change will not impact any anchors within it.
 	//
 	// In an array, define the actual name of the interface and then it's replacement folder.
-	// example: $config['interface_global_folder_replace'] = array(''=>'frontend');
-	$config['interface_global_folder_replace'] = array();
+	$config['interface_global_folder_replace'] = array(''=>'frontend');
 
 	// Define custom URL path handling, called 'routes'. We can map custom
 	// url handlers to modules->methods(args). Routing can be applied using

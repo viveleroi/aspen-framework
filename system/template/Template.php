@@ -182,17 +182,17 @@ class Template  {
 			print '</style>'."\n";
 		}
 		// append any js files for loading
-		if(!empty($this->_load_js)){
-			if(app()->config('print_js_variables')){
-				print '<script>'."\n";
-				print 'var INTERFACE_URL = "'.router()->interfaceUrl().'";'."\n";
-				if(is_array($this->_load_js_vars)){
-					foreach($this->_load_js_vars as $var => $value){
-						print 'var '. strtoupper($var).' = "'.addslashes($value).'";'."\n";
-					}
+		if(app()->config('print_js_variables')){
+			print '<script>'."\n";
+			print 'var INTERFACE_URL = "'.router()->interfaceUrl().'";'."\n";
+			if(is_array($this->_load_js_vars)){
+				foreach($this->_load_js_vars as $var => $value){
+					print 'var '. strtoupper($var).' = "'.addslashes($value).'";'."\n";
 				}
-				print '</script>'."\n";
 			}
+			print '</script>'."\n";
+		}
+		if(!empty($this->_load_js)){
 			foreach($this->_load_js as $js){
 				if($js['in'] == 'header'){
 					$this->printJs($js);

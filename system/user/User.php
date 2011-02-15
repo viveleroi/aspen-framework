@@ -545,7 +545,7 @@ class User  {
 	 * @access public
 	 */
 	public function userAccountCount(){
-		if(app()->checkDbConnection()){
+		if(app()->checkDbConnection() && model()->tableExists('users')){
 			$model = model()->open('users');
 			$accounts = $model->results();
 			return count($accounts);

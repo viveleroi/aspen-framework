@@ -24,11 +24,6 @@ class DataDisplay  {
 	 */
 	public function  __construct($data = false) {
 		if(is_array($data)){
-			foreach($data as $key => $val){
-				if(is_array($val)){
-					$data[$key] = new DataDisplay($val);
-				}
-			}
 			$this->data = $data;
 		} else {
 			error()->raise(1, text('dberror:datadisplay_call_error', $name), __FILE__, __LINE__);

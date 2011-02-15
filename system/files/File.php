@@ -14,7 +14,7 @@
  * @return object
  */
 function &files(){
-	return app()->files;
+	return app()->file;
 }
 
 
