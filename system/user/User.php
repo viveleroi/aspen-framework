@@ -416,7 +416,7 @@ class User  {
 
 				foreach($this->permissions as $perm){
 					if(
-						($perm['interface'] == $interface || $perm['interface'] == '*') &&
+						($perm['interface'] == ucwords($interface) || $perm['interface'] == '*') &&
 						($perm['module'] == $module || $perm['module'] == '*') &&
 						($perm['method'] == $method || $perm['method'] == '*') &&
 						(in_array($perm['group_id'], $groups) || $perm['user_id'] == $user_id)
