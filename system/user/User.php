@@ -50,7 +50,7 @@ class User  {
 
 		// if the user is logged in, send to interface
 		if($this->isLoggedIn()){
-			app()->router->redirectToUrl( app()->router->interfaceUrl() );
+			router()->redirectToUrl( app()->router->interfaceUrl() );
 		}
 
 		$result = false;
@@ -64,7 +64,7 @@ class User  {
 			$result = $form->save();
 		}
 
-		app()->template->set(array('form'=>$form));
+		template()->set(array('form'=>$form));
 
 		return $result;
 
@@ -306,7 +306,7 @@ class User  {
 				$redirect = false;
 			}
 		}
-		return empty($redirect) ? router()->interfaceUrl() : $redirect;
+		return (empty($redirect) ? router()->interfaceUrl() : $redirect);
 	}
 
 

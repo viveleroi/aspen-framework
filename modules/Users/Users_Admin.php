@@ -34,7 +34,7 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function signup(){
-		if($user_id = app()->user->signup()){
+		if($user_id = user()->signup()){
 			$_SESSION['user_id'] = $user_id;
 			sml()->say(text('signup:account_success'), true);
 			router()->redirect('login');

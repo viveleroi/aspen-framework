@@ -25,7 +25,7 @@ define('MODULES_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'modules');
 define('PLUGINS_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'plugins');
 
 // here we'll quicly check for absolute minimal php5 support
-if(version_compare(phpversion(), "5.1.0", 'ge')){
+if(version_compare(phpversion(), "5.3.0", 'ge')){
 
 	// include the bootstrap file
 	include(SYSTEM_PATH . DIRECTORY_SEPARATOR . 'bootstrap.php');
@@ -50,6 +50,6 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 	$application = new App($config);
 
 } else {
-	trigger_error('This application requires PHP 5.1+. Please upgrade your version of PHP.', E_USER_ERROR);
+	trigger_error('This application requires PHP 5.3+. Please upgrade your version of PHP.', E_USER_ERROR);
 }
 ?>
