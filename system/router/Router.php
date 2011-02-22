@@ -127,6 +127,15 @@ class Router  {
 		// we need to remove any left over query string from malformed mod_rewrite query
 		$this->map['method'] = $this->stripQuery($this->map['method']);
 
+		// If method provided in place of module, use it with default module
+		if(empty($this->map['method'])){
+			$modules = array_keys(app()->getModuleRegistry());
+			if(!in_array(ucwords($this->map['module']), $modules)){
+				$this->map['method'] = $this->map['module'];
+				$this->map['module'] = app()->config('default_module');
+			}
+		}
+
 		// append interface to module
 		if(!empty($this->map['module'])){
 			$this->map['module'] .= (LOADING_SECTION != '' ? '_'.LOADING_SECTION : '');
@@ -244,8 +253,8 @@ class Router  {
 		}
 
 		// Override if access to requested path not allowed
-		$acc_module = $acc_module ? $acc_module : $req_module;
-		$acc_method = $acc_method ? $acc_method : $req_method;
+		$acc_module = $acc_module ?: $req_module;
+		$acc_method = $acc_method ?: $req_method;
 
 		$this->_selected_module = ucfirst($acc_module);
 		$this->_selected_method = $acc_method;

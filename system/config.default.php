@@ -97,7 +97,7 @@
 	$config['bypass_apache_modrewrite_check'] = false;
 
 	// default module if none specific in URL
-	$config['default_module'] = 'Index' . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
+	$config['default_module'] = 'Index';
 
 	// default modules for specific user groups (overrides default_module)
 	$config['usergroup_default_modules'] = array();

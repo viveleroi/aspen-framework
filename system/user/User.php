@@ -561,7 +561,7 @@ class User  {
 	 */
 	 public function getUserDefaultModule(){
 		$default = app()->config('default_module');
-		if(app()->isInstalled()){
+		if(app()->isInstalled() && model()->tableExists('config')){
 			if($user_id = session()->getInt('user_id')){
 				$groups = array_keys( $this->usersGroups($user_id) );
 				$ug_defs = app()->config('usergroup_default_modules');
