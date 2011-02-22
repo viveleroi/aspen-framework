@@ -23,10 +23,5 @@ class Index_Admin extends Module {
 	public function view(){
 		template()->display();
 	}
-	
-	
-	public function test(){
-		print 'hello';
-	}
 }
 ?>
