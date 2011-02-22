@@ -25,7 +25,7 @@ class Preferences  {
 
 		$user_id = session()->getInt('user_id');
 
-		if($user_id && app()->checkDbConnection()){
+		if($user_id && app()->checkDbConnection() && model()->tableExists('config')){
 
 			// load sort field
 			$pref_model = model()->open('config');

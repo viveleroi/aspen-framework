@@ -506,7 +506,7 @@ class User  {
 	 */
 	public function usersGroups($user_id = false){
 		$ingroups = array();
-		if($user_id){
+		if($user_id && model()->tableExists('user_group_link')){
 			$model = model()->open('user_group_link');
 			$model->leftJoin('groups', 'id', 'group_id', array('name'));
 			$model->where('user_id', $user_id);
@@ -528,7 +528,7 @@ class User  {
 	 */
 	public function userHasGlobalAccess(){
 		$has_access = false;
-		if($this->isLoggedIn()){
+		if($this->isLoggedIn() && model()->tableExists('user_group_link')){
 			$model = model()->open('user_group_link');
 			$model->where('user_id', session()->getInt('user_id'));
 			$model->where('group_id', 1);
