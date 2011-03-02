@@ -36,6 +36,14 @@ class User  {
 	 * @access private
 	 */
 	public function loadPermissions(){
+		// first identify any groups this user belongs to
+		if(app()->session->keyExists('user_id')){
+			$model = model()->open('user_group_link');
+			$model->select(array('group_id'));
+			$model->where('user_id', session()->getInt('user_id'));
+			$groups = $model->results();
+			$this->users_groups = Utils::extract('/group_id', $groups);
+		}
 		$perms = model()->open('permissions');
 		$this->permissions = $perms->results();
 	}
@@ -408,11 +416,15 @@ class User  {
 			if($this->isLoggedIn() && $method != 'logout'){
 
 				// first identify any groups this user belongs to
-				$model = model()->open('user_group_link');
-				$model->select(array('group_id'));
-				$model->where('user_id', $user_id);
-				$groups = $model->results();
-				$groups = Utils::extract('/group_id', $groups);
+				if(is_array($this->users_groups)){
+					$groups = $this->users_groups;
+				} else {
+					$model = model()->open('user_group_link');
+					$model->select(array('group_id'));
+					$model->where('user_id', $user_id);
+					$groups = $model->results();
+					$groups = Utils::extract('/group_id', $groups);
+				}
 
 				foreach($this->permissions as $perm){
 					if(

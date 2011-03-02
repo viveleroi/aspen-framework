@@ -867,7 +867,7 @@ class Model  {
 	 * @param string $foreign_key
 	 * @param array $fields Fields you want to return
 	 */
-	public function leftJoin($table, $key, $foreign_key, $fields = false, $from_table = false){
+	public function leftJoin($table, $key, $foreign_key, $fields = false, $from_table = false, $conditions = false){
 
 		$from_table = $from_table ? $from_table : $this->table;
 
@@ -885,7 +885,7 @@ class Model  {
 		}
 
 		// append the left join statement itself
-		$this->sql['LEFT_JOIN'][] = sprintf('LEFT JOIN %s ON %s = %s.%s', $table . $as, $as_table.'.'.$key, $from_table, $foreign_key);
+		$this->sql['LEFT_JOIN'][] = sprintf('LEFT JOIN %s ON %s = %s.%s%s', $table . $as, $as_table.'.'.$key, $from_table, $foreign_key, ($conditions ? ' '.$conditions : ''));
 
 		// if wildcard supplied, load all fields for joined table
 		if($fields == '*'){
