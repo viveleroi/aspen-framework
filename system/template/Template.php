@@ -642,7 +642,7 @@ class Template  {
 
 			// Otherwise, just build it as normal
 			if(!$route_mask){
-				if($r['module'] != strtolower(app()->config('default_module'))){
+				if($r['module'] != strtolower(app()->config('default_module')) || !empty($bits)){
 					$url .= sprintf('/%s', $r['module']);
 				}
 				$url .= $r['method'] != app()->config('default_method') || is_array($bits) ? sprintf('/%s', $r['method']) : '';
