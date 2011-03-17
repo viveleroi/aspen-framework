@@ -94,7 +94,7 @@ class Settings  {
 	 * @access private
 	 */
 	private function configRecord($key, $user_id = NULL){
-		$user_id = $user_id ? $user_id : session()->getInt('user_id');
+		$user_id = (is_null($user_id) || $user_id ? $user_id : session()->getInt('user_id'));
 		if(is_array($this->settings)){
 			foreach($this->settings as $setting){
 				if($setting['config_key'] == $key && $setting['user_id'] == $user_id ){

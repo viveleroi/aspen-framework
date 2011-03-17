@@ -549,7 +549,7 @@ class Model  {
 		foreach($db_map as $name => $table){
 			if( isset($table['parents']) &&
 				count($table['parents']) == 2 &&
-				count($table['schema']) <= 3){
+				substr($name, -5) == '_link'){
 					$db_map[$name]['relation_only'] = true;
 					$k = array_keys($table['parents']);
 					$db_map[ $k[0] ]['children'][$name] = $k[1];

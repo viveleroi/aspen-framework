@@ -1,5 +1,5 @@
 <h2><?= text('signup:title'); ?></h2>
-<?= app()->sml->printMessage(); ?>
+<?= sml()->printMessage(); ?>
 <?= $form->printErrors(); ?>
 <form id="frm-signup" action="<?= $this->action(); ?>" method="post">
 	<fieldset>
