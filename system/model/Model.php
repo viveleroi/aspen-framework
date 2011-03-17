@@ -430,15 +430,14 @@ class Model  {
 	public function contains(){
 		$args = func_get_args();
 		foreach($args as $arg){
-			if(is_array($arg)){
-				$this->contains = array_merge($this->contains, $arg);
-			} else {
-				$this->contains[] = $arg;
+			if(!empty($arg)){
+				if(is_array($arg)){
+					$key = array_keys($arg);
+					$this->contains[strtolower($key[0])] = $arg[$key[0]];
+				} else {
+					$this->contains[strtolower($arg)] = false;
+				}
 			}
-		}
-		// @todo when moved to 5.3, just use array_walk with a lambda
-		foreach($this->contains as $key => $table){
-			$this->contains[$key] = strtolower($table);
 		}
 	}
 
@@ -1717,43 +1716,58 @@ class Model  {
 
 						$i = new Inflector();
 
-						if(isset($schema['children'])){
-							foreach($schema['children'] as $join_table => $child_table){
+						if(count($this->contains)){
+							if(isset($schema['children'])){
+								foreach($schema['children'] as $join_table => $child_table){
 
-								if(!in_array($child_table, $this->ignore_tables)
-										&& (in_array($child_table, $this->contains) || in_array($join_table, $this->contains))){
+									if(!in_array($child_table, $this->ignore_tables)
+											&& (array_key_exists($child_table, $this->contains) || array_key_exists($join_table, $this->contains))){
 
-									$child = $this->open($child_table);
-									$child->dataDisplay($this->data_display);
-									$this->ignore($child_table);
-									$this->ignore($join_table);
-									$child->ignore($this->get_ignore());
+										$child = $this->open($child_table);
+										$child->dataDisplay($this->data_display);
+										$this->ignore($child_table);
+										$this->ignore($join_table);
+										$child->ignore($this->get_ignore());
+									
+										$val = $this->contains[$child_table];
+										if($val){
+											$child->contains($val);
+										}
 
-									if($child_table != $join_table){
-										$field = $i->singularize($child_table).'_id';
-										$child->leftJoin($join_table, $field, 'id', array($field));
-										$field = $i->singularize($this->table).'_id';
-										$child->where($join_table.'.'.$field, $result[$key]);
-										$result[ucwords($child_table)] = $child->results();
-									} else {
-										$field = $i->singularize($this->table).'_id';
-										$child->where($field, $result[$key]);
-										$result[ucwords($child_table)] = $child->results();
+										if($child_table != $join_table){
+											$field = $i->singularize($child_table).'_id';
+											$child->leftJoin($join_table, $field, 'id', array($field));
+											$field = $i->singularize($this->table).'_id';
+											$child->where($join_table.'.'.$field, $result[$key]);
+											$result[ucwords($child_table)] = $child->results();
+										} else {
+											$field = $i->singularize($this->table).'_id';
+											$child->where($field, $result[$key]);
+											$result[ucwords($child_table)] = $child->results();
+										}
 									}
 								}
 							}
-						}
-						if(isset($schema['parents'])){
-							foreach($schema['parents'] as $child_table){
-								if(!in_array($child_table, $this->ignore_tables) && (in_array($child_table, $this->contains))){
-									$this->ignore($child_table);
-									$field = $i->singularize($child_table).'_id';
-									if(isset($result[$field])){
-										$child = $this->open($child_table);
-										$child->dataDisplay($this->data_display);
-										$child->ignore($this->ignore_tables);
-										$child->where($child->getPrimaryKey(), $result[$field]);
-										$result[ucwords($child_table)] = $child->results();
+							if(isset($schema['parents'])){
+								foreach($schema['parents'] as $child_table){
+									if(!in_array($child_table, $this->ignore_tables) && (array_key_exists($child_table, $this->contains))){
+										
+										$val = $this->contains[$child_table];
+										var_dump($val);
+										
+										$this->ignore($child_table);
+										$field = $i->singularize($child_table).'_id';
+										if(isset($result[$field])){
+											$child = $this->open($child_table);
+											$val = $this->contains[$child_table];
+											if($val){
+												$child->contains($val);
+											}
+											$child->dataDisplay($this->data_display);
+											$child->ignore($this->ignore_tables);
+											$child->where($child->getPrimaryKey(), $result[$field]);
+											$result[ucwords($child_table)] = $child->results();
+										}
 									}
 								}
 							}

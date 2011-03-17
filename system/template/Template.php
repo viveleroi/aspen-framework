@@ -36,6 +36,12 @@ function text(){
 class Template  {
 	
 	/**
+	 * @var string Holds the page template name
+	 * @access public
+	 */
+	public $page;
+	
+	/**
 	 * @var string Holds the layout template name
 	 * @access public
 	 */
@@ -426,8 +432,8 @@ class Template  {
 	 * @access public
 	 */
 	public function page(){
-
-		$page = router()->method();
+	
+		$page = $this->page ? $this->page : router()->method();
 		if(router()->method() == 'add'){
 			if(!file_exists($this->getModuleTemplateDir().DS.'add.tpl.php')){
 				$page = 'edit';
@@ -489,6 +495,15 @@ class Template  {
 	 */
 	public function setLayout($layout){
 		$this->layout = $layout;
+	}
+	
+	
+	/**
+	 * Set the current page template.
+	 * @param string $page 
+	 */
+	public function setPage($page){
+		$this->page = $page;
 	}
 
 
