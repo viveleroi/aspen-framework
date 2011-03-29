@@ -431,9 +431,12 @@ class Model  {
 		$args = func_get_args();
 		foreach($args as $arg){
 			if(!empty($arg)){
-				if(is_array($arg)){
+				if(is_array($arg) && !isset($arg[0])){
 					$key = array_keys($arg);
 					$this->contains[strtolower($key[0])] = $arg[$key[0]];
+				}
+				elseif(is_array($arg)){
+					$this->contains[strtolower($arg[0])] = false;
 				} else {
 					$this->contains[strtolower($arg)] = false;
 				}
@@ -1751,10 +1754,7 @@ class Model  {
 							if(isset($schema['parents'])){
 								foreach($schema['parents'] as $child_table){
 									if(!in_array($child_table, $this->ignore_tables) && (array_key_exists($child_table, $this->contains))){
-										
-										$val = $this->contains[$child_table];
-										var_dump($val);
-										
+		
 										$this->ignore($child_table);
 										$field = $i->singularize($child_table).'_id';
 										if(isset($result[$field])){

@@ -80,13 +80,13 @@ $lang['admin']['denied:title'] 	= 'Permission Denied';
 $lang['admin']['denied:intro'] 	= 'Your user account does not currently have sufficient permission to access this page. Please contact an administrator for assistance.';
 
 // query validation errors
-$lang['admin']['db:error:first_name']		= 'You must enter your first name.';
-$lang['admin']['db:error:last_name']		= 'You must enter your last name.';
-$lang['admin']['db:error:username']			= 'You must enter a username (E-mail address).';
-$lang['admin']['db:error:username-dup']		= 'The chosen username / email has already been used.';
-$lang['admin']['db:error:password']			= 'You must enter a valid password.';
-$lang['admin']['db:error:password_match']	= 'Your passwords do not match.';
-$lang['admin']['db:error:groupname']		= 'You must enter a name.';
-$lang['admin']['db:error:groups']			= 'You must select at least one group.';
-$lang['admin']['db:error:groups-noadmin']	= 'You may not remove your own administrator status.';
+$lang['*']['db:error:first_name']		= 'You must enter your first name.';
+$lang['*']['db:error:last_name']		= 'You must enter your last name.';
+$lang['*']['db:error:username']			= 'You must enter a username (E-mail address).';
+$lang['*']['db:error:username-dup']		= 'The chosen username / email has already been used.';
+$lang['*']['db:error:password']			= 'You must enter a valid password.';
+$lang['*']['db:error:password_match']	= 'Your passwords do not match.';
+$lang['*']['db:error:groupname']		= 'You must enter a name.';
+$lang['*']['db:error:groups']			= 'You must select at least one group.';
+$lang['*']['db:error:groups-noadmin']	= 'You may not remove your own administrator status.';
 ?>
