@@ -88,7 +88,7 @@ class DebugBase {
 	 *
 	 */
 	public function pre($trace = false){
-		print '<pre>';
+		print '<pre style="background-color:#fff;white-space:pre;color:000;font:12px/1.5 Consolas,monospace">';
 		$this->line_end = "\n";
 		$this->p($trace);
 		print '</pre>';
@@ -99,7 +99,7 @@ class DebugBase {
 	 *
 	 */
 	public function pre_v($trace = false){
-		print '<pre>';
+		print '<pre style="background-color:#fff;white-space:pre;color:000;font:12px/1.5 Consolas,monospace">';
 		$this->line_end = "\n";
 		$this->v($trace);
 		print '</pre>';

@@ -13,7 +13,13 @@
  * @package Aspen_Framework
  */
 class Form  {
-
+	
+	/**
+	 * @var array $_form_fields Holds an array of tables to contain
+	 * @access private
+	 */
+	private $_contains;
+	
 	/**
 	 * @var array $_form_fields Holds an array of form fields
 	 * @access private
@@ -67,6 +73,7 @@ class Form  {
 	 * @access public
 	 */
 	public function __construct($table = false, $id = false, $contains = array(), $field = false){
+		$this->_contains = $contains;
 		if($id){
 			if(!defined('ADD_OR_EDIT')){
 				define('ADD_OR_EDIT', 'edit');
@@ -179,11 +186,17 @@ class Form  {
 		}
 
 		// load in any child/parent data
-		foreach($schema['children'] as $table){
-			$fields[ucwords($table)] = $this->cv(ucwords($table));
-		}
-		foreach($schema['parents'] as $table){
-			$fields[ucwords($table)] = $this->cv(ucwords($table));
+		if(!empty($this->_contains)){
+			foreach($schema['children'] as $table){
+				if(in_array($table, $this->_contains)){
+					$fields[ucwords($table)] = $this->cv(ucwords($table));
+				}
+			}
+			foreach($schema['parents'] as $table){
+				if(in_array($table, $this->_contains)){
+					$fields[ucwords($table)] = $this->cv(ucwords($table));
+				}
+			}
 		}
 
 		// If there are no form errors, then attempt to process the database action.

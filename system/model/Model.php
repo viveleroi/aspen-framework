@@ -2171,6 +2171,13 @@ class Model  {
 								$rec = array($field_1=>$result,$field_2=>$val);
 								$rel_model->insert($rec);
 							}
+						} else {
+							// save contained items which are not relation only
+							foreach($arr as $row){
+								$rec = array( (rtrim($this->table, 's').'_id') =>$result);
+								$rec = array_merge($rec,$row);
+								$rel_model->insert($rec);
+							}
 						}
 					}
 				}

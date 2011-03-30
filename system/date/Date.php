@@ -97,6 +97,18 @@ class Date {
 		$empty_date = str_replace(array(0, "-", ":", " "), '', $date);
 		return strlen($empty_date) == 0;
 	}
+	
+	
+	/**
+	 * Alias for a simple formatting of the date
+	 * @param type $date
+	 * @param type $format
+	 * @return type 
+	 */
+	static public function format($date, $format){
+		$arg_opts = array('date_only'=>true,'format'=>$format);
+		return Date::niceDate($date, $arg_opts);
+	}
 
 
 	/**
