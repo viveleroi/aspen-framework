@@ -14,12 +14,13 @@
  */
 class UsersModel extends Model {
 
+	
 	/**
 	 * We must allow the parent constructor to run properly
 	 * @param string $table
 	 * @access public
 	 */
-	public function __construct($table = false){ parent::__construct($table); }
+	public function __construct($table = false,$db = false){ parent::__construct($table,$db); }
 
 
 	/**

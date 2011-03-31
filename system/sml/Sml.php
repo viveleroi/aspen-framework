@@ -14,7 +14,7 @@
  * @return object
  */
 function &sml(){
-	return sml();
+	return app()->sml;
 }
 
 

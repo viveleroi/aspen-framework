@@ -23,6 +23,12 @@ function &model(){
  * @package Aspen_Framework
  */
 class Model  {
+	
+	/**
+	 * @var array Holds a database connection
+	 * @access private
+	 */
+	private $_db = false;
 
 	/**
 	 * @var array Holds an array of calculations we need to perform on the results
@@ -151,7 +157,8 @@ class Model  {
 	 * @return Model
 	 * @access private
 	 */
-	public function __construct($table = false){
+	public function __construct($table = false,$db = false){
+		$this->loadDb($db);
 		if($table){ $this->openTable($table); }
 	}
 
@@ -159,6 +166,28 @@ class Model  {
 //+-----------------------------------------------------------------------+
 //| OPEN / SET / GET FUNCTIONS
 //+-----------------------------------------------------------------------+
+	
+	
+	/**
+	 * Sets a temporary database handler
+	 * @param type $db
+	 * @return Model 
+	 */
+	public function setDb($db = false){
+		$this->_tmpdb = is_object($db) ? $db : false;
+		return $this;
+	}
+	
+	
+	/**
+	 * Loads the temporary database handler
+	 * @param type $db
+	 * @return Model 
+	 */
+	public function loadDb($db = false){
+		$this->_db = is_object($db) ? $db : app()->db;
+		return $this;
+	}
 
 
 	/**
@@ -191,11 +220,12 @@ class Model  {
 				if($lang_module){
 					router()->loadModuleLanguage($lang_module);
 				}
-				$final_obj = new $class($table);
+				$final_obj = new $class($table, $this->_tmpdb);
 			} else {
 				error()->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
-				$final_obj = new module($table);
+				$final_obj = new module($table, $this->_tmpdb);
 			}
+			$this->setDb(false);
 
 			if($contains){
 				$final_obj->contains($contains);
@@ -223,7 +253,7 @@ class Model  {
 	 * @return type 
 	 */
 	public function tableExists($table){
-		$tables = app()->db->MetaTables('TABLES');
+		$tables = $this->_db->MetaTables('TABLES');
 		return in_array($table, $tables);
 	}
 
@@ -257,7 +287,7 @@ class Model  {
 				error()->raise(1, 'Failed generating schema for ' . $this->table . ' table.', __FILE__, __LINE__);
 			}
 		} else {
-			error()->raise(1, 'Database table ' . $this->table . ' does not exist.', __FILE__, __LINE__);
+			error()->raise(1, 'Table ' . $this->table . ' does not exist in database '.$this->_db->database.'.', __FILE__, __LINE__);
 		}
 	}
 
@@ -520,9 +550,9 @@ class Model  {
 		$db_map = array();
 
 		// pull a list of all tables
-		$tables = app()->db->MetaTables();
+		$tables = $this->_db->MetaTables();
 		foreach($tables as $table){
-			$db_map[$table]['schema'] = app()->db->MetaColumns($table, false);
+			$db_map[$table]['schema'] = $this->_db->MetaColumns($table, false);
 			$db_map[$table]['relation_only'] = false;
 
 			if(!isset($db_map[$table]['children'])){
@@ -571,6 +601,10 @@ class Model  {
 	 */
 	private function generateSchema(){
 		$this->schema = app()->getDatabaseSchema($this->table);
+		if(!$this->schema){
+			$this->schema = $this->loadDatabaseSchema();
+			$this->schema = (isset($this->schema[$this->table]) ? $this->schema[$this->table] : false);
+		}
 	}
 
 
@@ -614,6 +648,10 @@ class Model  {
 	final public function getPrimaryKey($table = false){
 		$table = $table ? $table : $this->table;
 		$db = app()->getDatabaseSchema($table);
+		if(!$db){
+			$db = $this->loadDatabaseSchema();
+			$db = (isset($db[$table]) ? $db[$table] : false);
+		}
 		$key = false;
 		if(isset($db['schema'])){
 			foreach($db['schema'] as $field => $vals){
@@ -1638,13 +1676,13 @@ class Model  {
 
 			$this->last_query = $query;
 
-			if(!$results = app()->db->Execute($query)){
+			if(!$results = $this->_db->Execute($query)){
 				// we don't want every query to show as failure here, so we use the true last location
 				$back = debug_backtrace();
 				$file = strpos($back[0]['file'], 'Model.php') ? $back[1]['file'] : $back[0]['file'];
 				$line = strpos($back[0]['file'], 'Model.php') ? $back[1]['line'] : $back[0]['line'];
 
-				error()->raise(2, app()->db->ErrorMsg() . "\nSQL:\n" . $query, $file, $line);
+				error()->raise(2, $this->_db->ErrorMsg() . "\nSQL:\n" . $query, $file, $line);
 
 			} else {
 				if(app()->config('log_verbosity') < 3){
@@ -1828,7 +1866,7 @@ class Model  {
 		// if we're doing an INSERT
 		if($this->query_type == 'insert'){
 			if($this->query($sql)){
-				return app()->db->Insert_ID();
+				return $this->_db->Insert_ID();
 			}
 		}
 
@@ -1996,7 +2034,7 @@ class Model  {
 
 		$this->query($sql);
 
-		return app()->db->Insert_ID();
+		return $this->_db->Insert_ID();
 
 	}
 

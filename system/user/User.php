@@ -28,7 +28,7 @@ class User  {
 	/**
 	 * @var array Holds the permissions table results
 	 */
-	private $permissions = array();
+	protected $permissions = array();
 
 
 	/**
@@ -217,7 +217,7 @@ class User  {
 	 * @return string
 	 * @access private
 	 */
-	private function getDomainKeyValue(){
+	protected function getDomainKeyValue(){
 		$string = app()->config('application_guid') . LS;
 		$string .= app()->server->getServerName('HTTP_HOST');
 		$string .= app()->server->getServerName('HTTP_USER_AGENT');
