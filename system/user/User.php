@@ -217,7 +217,7 @@ class User  {
 	 * @return string
 	 * @access private
 	 */
-	final private function getDomainKeyValue(){
+	private function getDomainKeyValue(){
 		$string = app()->config('application_guid') . LS;
 		$string .= app()->server->getServerName('HTTP_HOST');
 		$string .= app()->server->getServerName('HTTP_USER_AGENT');
@@ -230,7 +230,7 @@ class User  {
 	 * Handles authenticating the user
 	 * @access public
 	 */
-	final public function authenticate(){
+	public function authenticate(){
 
 		$auth = false;
 		$p	  = new PasswordHash();
