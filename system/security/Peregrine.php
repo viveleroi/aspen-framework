@@ -2,7 +2,7 @@
 /**
  * @package  Peregrine
  * @author   Michael Botsko, Trellis Development, LLC
- * @version  1.0
+ * @version  1.0-2-g24c6e1a
  *
  * Peregrine is a class that aims to improve PHP superglobal security
  * by transferring the raw incoming values to private member variables.
@@ -193,7 +193,8 @@ class CageBase {
 	/**
 	 * Determines whether or not a value is empty. You may provide
 	 * an array of additional characters that should be counted as
-	 * empty values.
+	 * empty values. Arrays are imploded and checked for empty values
+	 * so array('') will be caught.
 	 *
 	 * Empty returns true if the key does not exist at all.
 	 *
@@ -208,9 +209,34 @@ class CageBase {
 			return true;
 		} else {
 			$val = $this->getRaw($key);
+			if(is_array($val)){
+				$val = $this->multi_implode('',$val);
+			}
 			$val = $count_as_empty ? str_replace($count_as_empty, '', $val) : $val;
+			$val = trim($val);
 			return empty($val);
 		}
+	}
+	
+	
+	/**
+	 * Implodes a multi-dimensional array, which is useful for
+	 * checking if the array contains any data, at any point.
+	 * @param string $glue
+	 * @param array $pieces
+	 * @return string 
+	 */
+	protected function multi_implode($glue, $pieces){
+		$string='';
+		if(is_array($pieces)){
+			reset($pieces);
+			while(list($key,$value)=each($pieces)){
+				$string.=$glue.$this->multi_implode($glue, $value);
+			}
+		} else {
+			return $pieces;
+		}
+		return trim($string, $glue);
 	}
 
 
@@ -664,7 +690,7 @@ class CageBase {
 	 */
 	public function getDigits($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key) && !$this->equals($key, '', true)){
+		if($this->keyExists($key) && !$this->equals($key, '', true) && !$this->equals($key, NULL, true)){
 			// We need to mimic the type back to the user that they gave us
 			$type = gettype($this->getKey($key));
 			$clean = preg_replace('/[^\d]/', '', $this->getKey($key));
@@ -686,7 +712,7 @@ class CageBase {
 	 */
 	public function getFloat($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key) && !$this->equals($key, '', true)){
+		if($this->keyExists($key) && !$this->equals($key, '', true) && !$this->equals($key, NULL, true)){
 			// We need to mimic the type back to the user that they gave us
 			$type = gettype($this->getKey($key));
 			$clean = preg_replace('/[^\d\.]/', '', $this->getKey($key));
@@ -707,7 +733,7 @@ class CageBase {
 	 */
 	public function getCurrency($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
-		if($this->keyExists($key) && !$this->equals($key, '', true)){
+		if($this->keyExists($key) && !$this->equals($key, '', true) && !$this->equals($key, NULL, true)){
 			// We need to mimic the type back to the user that they gave us
 			$type = gettype($this->getKey($key));
 			$clean = preg_replace('/[^\d\.,\$]/', '', $this->getKey($key));
