@@ -528,9 +528,9 @@ class Model  {
 							$this->leftJoin($arg, $j->getPrimaryKey($arg), $i->singularize($arg).'_id', '*', $real_table);
 						}
 						elseif($j->hasChild($s_arg)){
-							$this->leftJoin($arg, $i->singularize($s_arg).'_id', $j->getPrimaryKey(), '*', $s_arg);
+							$this->leftJoin($arg, $j->getPrimaryKey(), $i->singularize($arg).'_id', '*', $s_arg);
 						}
-						elseif($this->hasParent($s_arg)){
+						elseif($j->hasParent($s_arg)){
 							$this->leftJoin($arg, $i->singularize($s_arg).'_id', $j->getPrimaryKey($arg), '*', $s_arg);
 						}
 					}

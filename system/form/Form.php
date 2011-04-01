@@ -413,7 +413,7 @@ class Form  {
 		elseif(is_array($val)){
 			return in_array($match, $val) ? $str : '';
 		}
-		elseif(!$match) {
+		elseif($match === false){
 			return $val ? $str : '';
 		} else {
 			return $val == $match ? $str : '';
