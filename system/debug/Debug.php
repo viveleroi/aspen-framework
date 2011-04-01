@@ -75,12 +75,27 @@ class DebugBase {
 		if($this->print_type == 'print_r'){
 			print_r($this->val);
 		}
+		if($this->print_type == 'print'){
+			print_r($this->val);
+		}
 		print $this->line_end;
 
 		if($trace){
 			print $name.' Backtrace: '.$this->line_end;
 			print $debug['trace'];
 		}
+	}
+	
+	
+	/**
+	 *
+	 */
+	public function pr($trace = false){
+		print '<pre style="background-color:#fff;white-space:pre;color:000;font:12px/1.5 Consolas,monospace">';
+		$this->line_end = "<br>";
+		$this->print_type = 'print';
+		$this->dump($trace);
+		print '</pre>';
 	}
 
 
@@ -310,5 +325,14 @@ function called_from($line_end = false, $ignore_phpunit = true){
  */
 function dump_params($type){
 	dump( app()->params->getRawSource($type) )->pre_v();
+}
+
+
+/**
+ *
+ * @param type $model 
+ */
+function dump_query($model){
+	dump($model->lq('html'))->pr();
 }
 ?>

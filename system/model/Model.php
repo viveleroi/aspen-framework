@@ -144,6 +144,12 @@ class Model  {
 	 * @access private
 	 */
 	private $sql;
+	
+	/**
+	 * @var string Holds a temporary db object
+	 * @access private
+	 */
+	private $_tmpdb;
 
 	/**
 	 * @var string Identifies our currently select table
@@ -252,8 +258,11 @@ class Model  {
 	 * @param type $table
 	 * @return type 
 	 */
-	public function tableExists($table){
-		$tables = $this->_db->MetaTables('TABLES');
+	public function tableExists($table, $db = false){
+		if(!is_object($db)){
+			$db = $this->_db;
+		}
+		$tables = $db->MetaTables('TABLES');
 		return in_array($table, $tables);
 	}
 
@@ -592,6 +601,21 @@ class Model  {
 		return $db_map;
 
 	}
+	
+	
+	/**
+	 * Wrapper for db schema, that properly handles secondary database handlers
+	 * @param type $table
+	 * @return type 
+	 */
+	private function getDatabaseSchema($table){
+		$schema = app()->getDatabaseSchema($table);
+		if(!$schema){
+			$schema = $this->loadDatabaseSchema();
+			$schema = (isset($schema[$table]) ? $schema[$table] : false);
+		}
+		return $schema;
+	}
 
 
 	/**
@@ -600,11 +624,7 @@ class Model  {
 	 * @return array
 	 */
 	private function generateSchema(){
-		$this->schema = app()->getDatabaseSchema($this->table);
-		if(!$this->schema){
-			$this->schema = $this->loadDatabaseSchema();
-			$this->schema = (isset($this->schema[$this->table]) ? $this->schema[$this->table] : false);
-		}
+		$this->schema = $this->getDatabaseSchema($this->table);
 	}
 
 
@@ -647,7 +667,7 @@ class Model  {
 	 */
 	final public function getPrimaryKey($table = false){
 		$table = $table ? $table : $this->table;
-		$db = app()->getDatabaseSchema($table);
+		$db = $this->getDatabaseSchema($table);
 		if(!$db){
 			$db = $this->loadDatabaseSchema();
 			$db = (isset($db[$table]) ? $db[$table] : false);
@@ -929,7 +949,7 @@ class Model  {
 
 		// if wildcard supplied, load all fields for joined table
 		if($fields == '*'){
-			$schema = app()->getDatabaseSchema($table);
+			$schema = $this->getDatabaseSchema($table);
 			$fields = array();
 			foreach($schema['schema'] as $field){
 				$fields[] = $field->primary_key ? $field->name.' as '.$table.'_'.$field->name : $field->name;
