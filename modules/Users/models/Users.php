@@ -32,7 +32,7 @@ class UsersModel extends Model {
 	 */
 	public function validate($fields = false, $primary_key = false){
 
-		$clean = parent::validate($fields, $primary_key);
+		$clean = parent::pre_validate($fields, $primary_key);
 
 		if($clean->isEmpty('first_name')){
 			$this->addError('first_name', text('db:error:first_name'));

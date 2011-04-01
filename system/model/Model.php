@@ -308,7 +308,7 @@ class Model  {
 	 * @return object
 	 * @access public
 	 */
-	public function validate($fields = false, $primary_key = false){
+	public function pre_validate($fields = false, $primary_key = false){
 
 		$clean = false;
 
@@ -402,6 +402,17 @@ class Model  {
 
 		return $clean;
 
+	}
+	
+	
+	/**
+	 *
+	 * @param type $fields
+	 * @param type $primary_key 
+	 */
+	public function validate($fields = false, $primary_key = false){
+		$clean = $this->pre_validate($fields,$primary_key);
+		return $fields;
 	}
 
 
@@ -2222,23 +2233,28 @@ class Model  {
 				foreach($this->schema['children'] as $real_table => $table){
 					if(isset($fields[ucwords($table)]) && is_array($fields[ucwords($table)])){
 						$arr = $fields[ucwords($table)];
+						
+						$_tmp_arr = array('vals'=>$arr);
+						$_tmp_arr = Peregrine::sanitize($_tmp_arr);
+						if(!$_tmp_arr->isEmpty('vals')){
 
-						$rel_model = $this->open($real_table);
+							$rel_model = $this->open($real_table);
 
-						$field_1 = rtrim($this->table, 's').'_id';
-						$field_2 = rtrim($table, 's').'_id';
+							$field_1 = rtrim($this->table, 's').'_id';
+							$field_2 = rtrim($table, 's').'_id';
 
-						if($rel_model->is_relation_only()){
-							foreach($arr as $val){
-								$rec = array($field_1=>$result,$field_2=>$val);
-								$rel_model->insert($rec);
-							}
-						} else {
-							// save contained items which are not relation only
-							foreach($arr as $row){
-								$rec = array( (rtrim($this->table, 's').'_id') =>$result);
-								$rec = array_merge($rec,$row);
-								$rel_model->insert($rec);
+							if($rel_model->is_relation_only()){
+								foreach($arr as $val){
+									$rec = array($field_1=>$result,$field_2=>$val);
+									$rel_model->insert($rec);
+								}
+							} else {
+								// save contained items which are not relation only
+								foreach($arr as $row){
+									$rec = array( (rtrim($this->table, 's').'_id') =>$result);
+									$rec = array_merge($rec,$row);
+									$rel_model->insert($rec);
+								}
 							}
 						}
 					}

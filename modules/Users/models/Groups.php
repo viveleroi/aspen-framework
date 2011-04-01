@@ -30,7 +30,7 @@ class GroupsModel extends Model {
 	 */
 	public function validate($fields = false, $primary_key = false){
 
-		$clean = parent::validate($fields, $primary_key);
+		$clean = parent::pre_validate($fields, $primary_key);
 
 		// verify username
 		if($clean->isEmpty('name')){
