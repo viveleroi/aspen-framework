@@ -84,7 +84,7 @@ class UsersModel extends Model {
 			$this->addError('password', text('db:error:password'));
 		}
 
-		return !$this->error();
+		return $fields;
 
 	}
 

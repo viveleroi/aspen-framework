@@ -37,7 +37,7 @@ class GroupsModel extends Model {
 			$this->addError('name', text('db:error:groupname'));
 		}
 
-		return !$this->error();
+		return $fields;
 
 	}
 }

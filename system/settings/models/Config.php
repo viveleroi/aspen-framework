@@ -34,7 +34,7 @@ class ConfigModel extends Model {
 		if($clean->isEmpty('config_key')){
 			$this->addError('config_key', 'The configuration key may not be empty.');
 		}
-		return !$this->error();
+		return $fields;
 	}
 }
 ?>

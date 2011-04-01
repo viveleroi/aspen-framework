@@ -328,7 +328,8 @@ class Model  {
 			}
 
 			// make an inspekt cage so we can verify data
-			$clean 	= Peregrine::sanitize($fields);
+			$_tmp_fields = $fields;
+			$clean 	= Peregrine::sanitize($_tmp_fields);
 			$schema = $this->getSchema();
 
 			foreach($schema['schema'] as $column){
@@ -2172,8 +2173,11 @@ class Model  {
 
 		// Pass through the before_insert function
 		$fields = $this->before_insert($fields);
+		
+		// validate & filter fields
+		$fields = $this->validate($fields);
 
-		if($this->validate($fields)){
+		if(!$this->error()){
 
 			if($this->table && is_array($fields)){
 
@@ -2299,10 +2303,11 @@ class Model  {
 			$where_field = $this->getPrimaryKey();
 			$update_id = $where_value;
 		}
+		
+		// validate & filter fields
+		$fields = $this->validate($fields,$update_id);
 
-		// if validation passes, build and run the query
-		if($this->validate($fields, $update_id)){
-
+		if(!$this->error()){
 			if($this->table && is_array($fields)){
 
 				$upd_fields = '';
