@@ -11,8 +11,8 @@
 		<legend><?php print text('userform:profile'); ?></legend>
 		<ol>
 			<li>
-				<label for="username"><?php print text('userform:username'); ?>:</label>
-				<input type="text" id="username" name="username" value="<?php print $form->cv('username') ?>" />
+				<label for="email"><?php print text('userform:email'); ?>:</label>
+				<input type="text" id="email" name="email" value="<?php print $form->cv('email') ?>" />
 			</li>
 			<li>
 				<label for="first_name"><?php print text('userform:first_name'); ?>:</label>

@@ -179,7 +179,7 @@ class User  {
 
 			// load the account
 			$auth = model()->open('users');
-			$user = $auth->quickSelectSingle($form->cv('user'), 'username');
+			$user = $auth->quickSelectSingle($form->cv('user'), 'email');
 
 			if(is_array($user)){
 
@@ -240,7 +240,7 @@ class User  {
 		if($user && $pass){
 
 			$model = model()->open('users');
-			$model->where('username', $user);
+			$model->where('email', $user);
 			$model->where('allow_login', 1);
 			$model->limit(0, 1);
 			$result = $model->results();
@@ -250,9 +250,9 @@ class User  {
 					if($p->CheckPassword($pass, $account['password'])){
 
 						$_SESSION['authenticated']		= true;
-						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['username'], $account['id']);
+						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['email'], $account['id']);
 						$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
-						$_SESSION['username'] 			= $account['username'];
+						$_SESSION['email'] 			= $account['email'];
 						$_SESSION['first_name'] 		= $account['first_name'];
 						$_SESSION['last_name']			= $account['last_name'];
 						$_SESSION['latest_login'] 		= date(DATE_FORMAT);
@@ -292,12 +292,12 @@ class User  {
 
 	/**
 	 * Generates a unique authentication key.
-	 * @param string $username
+	 * @param string $email
 	 * @param string $user_id
 	 * @return string
 	 */
-	public function getAuthenticationKey($username, $user_id){
-		return sha1($username . $user_id);
+	public function getAuthenticationKey($email, $user_id){
+		return sha1($email . $user_id);
 	}
 
 
@@ -325,7 +325,7 @@ class User  {
 	 */
 	final public function isLoggedIn(){
 		$authenticated 	= false;
-		$auth_key 		= sha1(session()->getEmail('username') . session()->getInt('user_id'));
+		$auth_key 		= sha1(session()->getEmail('email') . session()->getInt('user_id'));
 		if(app()->checkDbConnection()){
 			if(
 				session()->getInt('authenticated', false) &&

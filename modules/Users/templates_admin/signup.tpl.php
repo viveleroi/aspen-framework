@@ -5,8 +5,8 @@
 	<fieldset>
 		<ol>
 			<li>
-				<label for="username"><?= text('signup:username'); ?>:</label>
-				<input type="text" id="username" name="username" value="<?= $form->cv('username') ?>" class="text" />
+				<label for="email"><?= text('signup:email'); ?>:</label>
+				<input type="text" id="email" name="email" value="<?= $form->cv('email') ?>" class="text" />
 			</li>
 			<li>
 				<label for="first_name"><?= text('signup:first_name'); ?>:</label>

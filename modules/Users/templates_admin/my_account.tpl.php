@@ -11,6 +11,10 @@
 				<input type="text" id="username" name="username" value="<?php print $form->cv('username'); ?>" />
 			</li>
 			<li>
+				<label for="email"><?php print text('userform:email'); ?>:</label>
+				<input type="text" id="email" name="email" value="<?php print $form->cv('email'); ?>" />
+			</li>
+			<li>
 				<label for="password"><?php print text('myaccount:label:password'); ?>:</label>
 				<input type="password" name="password" id="password" />
 			</li>

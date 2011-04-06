@@ -23,7 +23,7 @@ class Users_Admin extends Module {
 	public function view(){
 		$model = model()->open('users');
 		$model->contains('groups');
-		$model->orderBy('username', 'ASC');
+		$model->orderBy('last_name', 'ASC');
 		$data['users'] = $model->results();
 		template()->display($data);
 	}

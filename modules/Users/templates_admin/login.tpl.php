@@ -4,7 +4,7 @@
 	<fieldset>
 		<ol>
 			<li>
-				<label for="user"><?php print text('login:username'); ?></label>
+				<label for="user"><?php print text('login:email'); ?></label>
 				<input type="text" name="user" id="user" value="" />
 			</li>
 			<li>

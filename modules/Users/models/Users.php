@@ -41,19 +41,37 @@ class UsersModel extends Model {
 		if($clean->isEmpty('last_name')){
 			$this->addError('last_name', text('db:error:last_name'));
 		}
-
+		
 		// verify username
-		if($clean->isEmpty('username')){
-			$this->addError('username', text('db:error:username'));
+		if(!$clean->isEmpty('username')){
+			if(!$clean->isElemId('username')){
+				$this->addError('username', text('db:error:username'));
+			} else {
+
+				// if we're adding the record, check for existing username
+				if(!$primary_key){
+					$user = $this->open('users');
+					$user->where('username', $clean->getElemId('username'));
+					$unique = $user->results();
+					if($unique){
+						$this->addError('username', text('db:error:username-dup'));
+					}
+				}
+			}
+		}
+
+		// verify email
+		if(!$clean->isEmail('email')){
+			$this->addError('email', text('db:error:email'));
 		} else {
 
-			// if we're adding the record, check for existing username
+			// if we're adding the record, check for existing email
 			if(!$primary_key){
 				$user = $this->open('users');
-				$user->where('username', $clean->getEmail('username'));
+				$user->where('email', $clean->getEmail('email'));
 				$unique = $user->results();
 				if($unique){
-					$this->addError('username', text('db:error:username-dup'));
+					$this->addError('email', text('db:error:email-dup'));
 				}
 			}
 		}

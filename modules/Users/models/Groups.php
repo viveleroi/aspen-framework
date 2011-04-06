@@ -32,7 +32,6 @@ class GroupsModel extends Model {
 
 		$clean = parent::pre_validate($fields, $primary_key);
 
-		// verify username
 		if($clean->isEmpty('name')){
 			$this->addError('name', text('db:error:groupname'));
 		}

@@ -183,9 +183,12 @@ class DataDisplay  {
 	 * @param string $separator
 	 * @return string
 	 */
-	static public function truncateFilename($fileame, $char_length = 25, $separator = '&#8230;'){
-		$filext = strrchr($fileame, '.');
-		return substr(str_replace($filext, '', $fileame), 0, $char_length) . $separator.$filext;
+	static public function truncateFilename($filename, $char_length = 25, $separator = '&#8230;'){
+		$filext = pathinfo($filename, PATHINFO_EXTENSION);
+		if(strlen($filename) > ($char_length)){
+			return substr(str_replace($filext, '', $filename), 0, $char_length) . $separator.$filext;
+		}
+		return $filename;
 	}
 }
 ?>
