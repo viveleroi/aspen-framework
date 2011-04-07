@@ -252,10 +252,10 @@ class User  {
 						$_SESSION['authenticated']		= true;
 						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['email'], $account['id']);
 						$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
-						$_SESSION['email'] 			= $account['email'];
+						$_SESSION['email']				= $account['email'];
 						$_SESSION['first_name'] 		= $account['first_name'];
 						$_SESSION['last_name']			= $account['last_name'];
-						$_SESSION['latest_login'] 		= date(DATE_FORMAT);
+						$_SESSION['latest_login'] 		= gmdate(DATE_FORMAT);
 						$_SESSION['last_login'] 		= $account['latest_login'];
 						$_SESSION['user_id'] 			= $account['id'];
 						
@@ -266,9 +266,10 @@ class User  {
 						$this->post_authentication($account);
 
 						// update last login date
-						$upd = array('last_login' => $account['latest_login'], 'latest_login' => date(DATE_FORMAT));
-						$model->update($upd, $account['id']);
-
+						$sql = sprintf('UPDATE users SET last_login = "%s", latest_login = "%s" WHERE id = "%s"', 
+											$account['latest_login'], gmdate(DATE_FORMAT), $account['id'] );
+						$res = $model->query($sql);
+	
 						$auth = true;
 
 					}
