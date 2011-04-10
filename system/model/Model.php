@@ -1603,13 +1603,26 @@ class Model  {
 	 * @param integer $per_page
 	 * @access public
 	 */
-	public function paginate($per_page = 25,$current_page = false){
+	public function paginate(){
+		
+		$this->paginate = true;
+		
+		// determine current page
+		$this->current_page = 1;
+		if(get()->isDigits('page')){
+			$this->current_page = get()->getInt('page');
+		}
+		
+		// determine per page
+		$this->per_page = settings()->getConfig('pagination_per_page');
+		if(get()->isDigits('per_page')){
+			$this->per_page = get()->getInt('per_page');
+		}
 
-		$this->current_page = $current_page ? $current_page : 1;
-		$this->per_page = $per_page;
-
-		$query_offset = ($current_page - 1) * abs($per_page);
-		$this->limit($query_offset,$per_page);
+		// limit query
+		$query_offset = ($this->current_page - 1) * abs($this->per_page);
+		$this->limit($query_offset,$this->per_page);
+		
 	}
 
 

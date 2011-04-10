@@ -246,7 +246,13 @@
 
 	// Toggle the display of other page numbers in pagination.
 	// If off, only the current page will display with prev/next links
-	$config['show_other_page_numbers'] = false;
+	$config['pagination_show_page_numbers'] = true;
+	
+	// Pagination link limit, besides current
+	$config['pagination_link_limit'] = 5;
+	
+	// Pagination per page limit
+	$config['pagination_per_page'] = 25;
 
 	// preference config_keys to load for preference editing function
 	$config['preference_configs_to_edit'] = array();
