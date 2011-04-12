@@ -234,20 +234,23 @@ class User  {
 
 		$auth = false;
 		$p	  = new PasswordHash();
-		$user = post()->getEmail('user');
-		$pass = post()->getRaw('pass');
 
-		if($user && $pass){
+		if((post()->isEmail('user') || post()->isElemId('user')) && !post()->isEmpty('pass')){
 
 			$model = model()->open('users');
-			$model->where('email', $user);
+			if(post()->isEmail('user')){
+				$model->where('username', post()->getEmail('user'));
+			}
+			elseif(post()->isElemId('user')){
+				$model->where('username', post()->getElemId('user'));
+			}
 			$model->where('allow_login', 1);
 			$model->limit(0, 1);
 			$result = $model->results();
 
 			if($result){
 				foreach($result as $account){
-					if($p->CheckPassword($pass, $account['password'])){
+					if($p->CheckPassword(post()->getRaw('pass'), $account['password'])){
 
 						$_SESSION['authenticated']		= true;
 						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['email'], $account['id']);

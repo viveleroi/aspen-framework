@@ -1586,7 +1586,7 @@ class Model  {
 
 			foreach($this->schema['schema'] as $field){
 				if(in_array($field->type, app()->config('mysql_field_group_text'))){
-					$fields[] = $field->name;
+					$fields[] = $this->table.'.'.$field->name;
 				}
 			}
 		}
