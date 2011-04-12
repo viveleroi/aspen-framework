@@ -108,6 +108,12 @@ class Model  {
 	 * @access private
 	 */
 	private $paginate = false;
+	
+	/**
+	 * @var array Holds all data about pagination results
+	 * @access private
+	 */
+	private $_pagination;
 
 	/**
 	 * @var string undocumented class variable
@@ -737,15 +743,6 @@ class Model  {
 
 
 	/**
-	 * Sets the pagination toggle to true
-	 * @access public
-	 */
-	public function enablePagination(){
-		$this->paginate = true;
-	}
-
-
-	/**
 	 * Returns the table status info
 	 * @param string $table
 	 * @return array
@@ -863,8 +860,8 @@ class Model  {
 	 */
 	private function select_base($fields = false, $distinct = false){
 
-		// begin the select, append SQL_CALC_FOUND_ROWS is pagination is enabled
-		$this->sql['SELECT'] = $this->paginate ? 'SELECT SQL_CALC_FOUND_ROWS' : 'SELECT';
+		// begin the select
+		$this->sql['SELECT'] = 'SELECT';
 
 		// determine fields if any set
 		$fields = is_array($fields) ? $fields : array('*');
@@ -1606,13 +1603,26 @@ class Model  {
 	 * @param integer $per_page
 	 * @access public
 	 */
-	public function paginate($per_page = 25,$current_page = false){
+	public function paginate(){
+		
+		$this->paginate = true;
+		
+		// determine current page
+		$this->current_page = 1;
+		if(get()->isDigits('page')){
+			$this->current_page = get()->getInt('page');
+		}
+		
+		// determine per page
+		$this->per_page = settings()->getConfig('pagination_per_page');
+		if(get()->isDigits('per_page')){
+			$this->per_page = get()->getInt('per_page');
+		}
 
-		$this->current_page = $current_page ? $current_page : 1;
-		$this->per_page = $per_page;
-
-		$query_offset = ($current_page - 1) * abs($per_page);
-		$this->limit($query_offset,$per_page);
+		// limit query
+		$query_offset = ($this->current_page - 1) * abs($this->per_page);
+		$this->limit($query_offset,$this->per_page);
+		
 	}
 
 
@@ -1657,6 +1667,7 @@ class Model  {
 
 			$this->query_type = 'select';
 
+			$this->sql['SELECT'] = $this->paginate ? str_replace('SELECT', 'SELECT SQL_CALC_FOUND_ROWS', $this->sql['SELECT']) : $this->sql['SELECT'];
 			$sql .= '' . $this->sql['SELECT'];
 			$sql .= ' ' . $this->sql['FIELDS'];
 			$sql .= ' ' . $this->sql['FROM'];
@@ -1873,16 +1884,15 @@ class Model  {
 			}
 
 			// if any pagination, return found rows
-			// // @todo fix this
-//			if($this->paginate){
-//				$results = $this->query('SELECT FOUND_ROWS()');
-//				$records['TOTAL_RECORDS_FOUND'] = $results->fields['FOUND_ROWS()'];
-//				$records['CURRENT_PAGE'] = $this->current_page;
-//				$records['RESULTS_PER_PAGE'] = $this->per_page;
-//				$records['TOTAL_PAGE_COUNT'] = ceil($records['TOTAL_RECORDS_FOUND'] / $this->per_page);
-//			} else {
-//				$records['TOTAL_RECORDS_FOUND'] = ($records ? count($records) : 0);
-//			}
+			if($this->paginate){
+				$results = $this->query('SELECT FOUND_ROWS()');
+				$this->_pagination['total_records'] = $results->fields['FOUND_ROWS()'];
+				$this->_pagination['current_page'] = $this->current_page;
+				$this->_pagination['per_page'] = $this->per_page;
+				$this->_pagination['total_pages'] = ceil($this->_pagination['total_records'] / $this->per_page);
+			} else {
+				$this->_pagination['total_records'] = ($records ? count($records) : 0);
+			}
 
 			// If return single set, grab first array item
 			if($this->return_single){
@@ -1926,6 +1936,21 @@ class Model  {
 		if(class_exists($class)){
 			$this->data_display = $class;
 		}
+	}
+	
+	
+	/**
+	 * Returns pagination data, or a specific key
+	 * @param type $key
+	 * @return type 
+	 */
+	public function pagination($key = false){
+		if($key){
+			if(array_key_exists($key, $this->_pagination)){
+				return $this->_pagination[$key];
+			}
+		}
+		return $this->_pagination;
 	}
 
 
