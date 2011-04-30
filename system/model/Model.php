@@ -493,7 +493,9 @@ class Model  {
 					$this->contains[strtolower($key[0])] = $arg[$key[0]];
 				}
 				elseif(is_array($arg)){
-					$this->contains[strtolower($arg[0])] = false;
+					foreach($arg as $table){
+						$this->contains[strtolower($table)] = false;
+					}
 				} else {
 					$this->contains[strtolower($arg)] = false;
 				}
@@ -1890,6 +1892,10 @@ class Model  {
 				$this->_pagination['current_page'] = $this->current_page;
 				$this->_pagination['per_page'] = $this->per_page;
 				$this->_pagination['total_pages'] = ceil($this->_pagination['total_records'] / $this->per_page);
+				$this->_pagination['showing_start'] = ($this->current_page - 1) * abs($this->per_page);
+				$show_end = $this->_pagination['showing_start']+$this->per_page;
+				$show_end = ($show_end >= $this->_pagination['total_records'] ? $this->_pagination['total_records'] : $show_end);
+				$this->_pagination['showing_end'] = $show_end;
 			} else {
 				$this->_pagination['total_records'] = ($records ? count($records) : 0);
 			}

@@ -27,7 +27,8 @@ class DataDisplay  {
 			foreach($data as $key => $val){
 				if(is_array($val)){
 					// Ensure this is not an array of objects
-					$first = array_shift($val);
+					$tmp = $val;
+					$first = array_shift($tmp);
 					if(!is_object($first)){
 						$classname = get_class($this);
 						$data[$key] = new $classname($val);
