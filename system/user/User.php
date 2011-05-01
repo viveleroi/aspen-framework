@@ -239,7 +239,7 @@ class User  {
 
 			$model = model()->open('users');
 			if(post()->isEmail('user')){
-				$model->where('username', post()->getEmail('user'));
+				$model->where('email', post()->getEmail('user'));
 			}
 			elseif(post()->isElemId('user')){
 				$model->where('username', post()->getElemId('user'));
