@@ -256,6 +256,7 @@ class User  {
 						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['email'], $account['id']);
 						$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
 						$_SESSION['email']				= $account['email'];
+						$_SESSION['username']			= $account['username'];
 						$_SESSION['first_name'] 		= $account['first_name'];
 						$_SESSION['last_name']			= $account['last_name'];
 						$_SESSION['latest_login'] 		= gmdate(DATE_FORMAT);

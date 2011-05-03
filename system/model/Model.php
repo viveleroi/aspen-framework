@@ -1963,13 +1963,14 @@ class Model  {
 	/**
 	 * Returns a single field, single-record value from a query
 	 * @param string $return_field
-	 * @param string $sql
+	 * @param string $where_id
 	 * @return mixed
 	 * @access public
 	 */
-	public function quickValue($return_field = 'id', $sql = false){
+	public function quickValue($return_field = 'id', $where_id = false){
 		$this->select_single(array($return_field));
-		$result = $this->results(false,$sql);
+		$this->where($this->getPrimaryKey(), $where_id);
+		$result = $this->results();
 		if($result){
 			$return_field = preg_replace('/(.*)\./', '', $return_field);
 			return isset($result[$return_field]) ? $result[$return_field] : false;

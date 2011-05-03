@@ -713,9 +713,8 @@ class Template  {
 	 * @return string
 	 * @access public
 	 */
-	public function action($path = false){
-		$bits = false;
-		if(router()->arg(1)){
+	public function action($path = false, $bits = false){
+		if(router()->arg(1) && !$bits){
 			$bits = array('id' => router()->arg(1));
 		}
 		return $this->xhtmlUrl($path, $bits);
