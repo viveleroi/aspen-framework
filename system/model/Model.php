@@ -1465,8 +1465,18 @@ class Model  {
 		}
 
 		// append filter name to source filter data
-		$filters['saved-name'] = !empty($named) ? $named : (!empty($filter_name) ? $filter_name : isset($filters['saved-name']) ? $filters['saved-name'] : false );
-
+		// if named in url, use existing name
+		if(!empty($named)){
+			$filters['saved-name'] = $named;
+		} else {
+			// look for save-as name instead
+			if(!empty($filter_name)){
+				$filters['saved-name'] = $filter_name;
+			}
+			// if neither existing, or save-as names are called, leave
+			// any stored name as-is.
+		}
+		
 		// save the filters to the config table
 		app()->settings->setConfig('filter.'.$location_key, serialize($filters), $user_id);
 

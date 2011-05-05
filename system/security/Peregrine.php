@@ -2,7 +2,7 @@
 /**
  * @package  Peregrine
  * @author   Michael Botsko, Trellis Development, LLC
- * @version  1.0-2-g24c6e1a
+ * @version  1.0-3-gce4140e
  *
  * Peregrine is a class that aims to improve PHP superglobal security
  * by transferring the raw incoming values to private member variables.
@@ -523,7 +523,97 @@ class CageBase {
 
 		return ($mod == $value[$length - 1]);
 	}
+	
+	
+	/**
+	 * Check for a valid currency
+	 * @param string $key
+	 * @param <type> $type
+	 * @return <type>
+	 */
+	public function isCurrency($key){
+		$val = $this->getRaw($key);
+		return (bool) preg_match('/^(?!\x{00a2})\p{Sc}?(?!0,?\d)(?:\d{1,3}(?:([, .])\d{3})?(?:\1\d{3})*|(?:\d+))((?!\1)[,.]\d{2})?$/u', $val);
+	}
+	
+	
+	/**
+	 * Compare the ssn numerically, allowing for hyphens and spaces only
+	 * @param string $key
+	 * @param <type> $type
+	 * @return <type>
+	 */
+	public function isSsn($key){
+		$value = str_replace(array('-',' '), '', $this->getRaw($key));
+		return ($value == $this->getSsn($key));
+	}
+	
+	
+	/**
+	 * Check for a valid UUID
+	 * @param string $key
+	 * @param <type> $type
+	 * @return <type>
+	 */
+	public function isUuid($key){
+		$val = $this->getRaw($key);
+		return (bool) preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $val);
+	}
+	
+	
+	/**
+	 * Determines if a string is a valid date representation. Please note, this
+	 * only verifies the format, not the validity of the actual date.
+	 * 
+	 * Formats:
+	 *  dmy 27-12-2006 or 27-12-06 separators can be a space, period, dash, forward slash
+	 * 	mdy 12-27-2006 or 12-27-06 separators can be a space, period, dash, forward slash
+	 * 	ymd 2006-12-27 or 06-12-27 separators can be a space, period, dash, forward slash
+	 * 	dMy 27 December 2006 or 27 Dec 2006
+	 * 	Mdy December 27, 2006 or Dec 27, 2006 comma is optional
+	 * 	My December 2006 or Dec 2006
+	 * 	my 12/2006 separators can be a space, period, dash, forward slash
+	 *
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function isDate($key, $format = false){
+		$val = $this->getRaw($key);
 
+		if($format){
+			$regex['dmy'] = '%^(?:(?:31(\\/|-|\\.|\\x20)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.|\\x20)(?:0?[1,3-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.|\\x20)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.|\\x20)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$%';
+			$regex['mdy'] = '%^(?:(?:(?:0?[13578]|1[02])(\\/|-|\\.|\\x20)31)\\1|(?:(?:0?[13-9]|1[0-2])(\\/|-|\\.|\\x20)(?:29|30)\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:0?2(\\/|-|\\.|\\x20)29\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\\/|-|\\.|\\x20)(?:0?[1-9]|1\\d|2[0-8])\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$%';
+			$regex['ymd'] = '%^(?:(?:(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00)))(\\/|-|\\.|\\x20)(?:0?2\\1(?:29)))|(?:(?:(?:1[6-9]|[2-9]\\d)?\\d{2})(\\/|-|\\.|\\x20)(?:(?:(?:0?[13578]|1[02])\\2(?:31))|(?:(?:0?[1,3-9]|1[0-2])\\2(29|30))|(?:(?:0?[1-9])|(?:1[0-2]))\\2(?:0?[1-9]|1\\d|2[0-8]))))$%';
+			$regex['dMy'] = '/^((31(?!\\ (Feb(ruary)?|Apr(il)?|June?|(Sep(?=\\b|t)t?|Nov)(ember)?)))|((30|29)(?!\\ Feb(ruary)?))|(29(?=\\ Feb(ruary)?\\ (((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00)))))|(0?[1-9])|1\\d|2[0-8])\\ (Jan(uary)?|Feb(ruary)?|Ma(r(ch)?|y)|Apr(il)?|Ju((ly?)|(ne?))|Aug(ust)?|Oct(ober)?|(Sep(?=\\b|t)t?|Nov|Dec)(ember)?)\\ ((1[6-9]|[2-9]\\d)\\d{2})$/';
+			$regex['Mdy'] = '/^(?:(((Jan(uary)?|Ma(r(ch)?|y)|Jul(y)?|Aug(ust)?|Oct(ober)?|Dec(ember)?)\\ 31)|((Jan(uary)?|Ma(r(ch)?|y)|Apr(il)?|Ju((ly?)|(ne?))|Aug(ust)?|Oct(ober)?|(Sept|Nov|Dec)(ember)?)\\ (0?[1-9]|([12]\\d)|30))|(Feb(ruary)?\\ (0?[1-9]|1\\d|2[0-8]|(29(?=,?\\ ((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00)))))))\\,?\\ ((1[6-9]|[2-9]\\d)\\d{2}))$/';
+			$regex['My'] = '%^(Jan(uary)?|Feb(ruary)?|Ma(r(ch)?|y)|Apr(il)?|Ju((ly?)|(ne?))|Aug(ust)?|Oct(ober)?|(Sep(?=\\b|t)t?|Nov|Dec)(ember)?)[ /]((1[6-9]|[2-9]\\d)\\d{2})$%';
+			$regex['my'] = '%^(((0[123456789]|10|11|12)([- /.])(([1][9][0-9][0-9])|([2][0-9][0-9][0-9]))))$%';
+
+			$format = (is_array($format)) ? array_values($format) : array($format);
+			foreach($format as $key){
+				if(preg_match($regex[$key], $val)){
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return (bool)$this->getDate($key);
+		}
+	}
+
+	
+	/**
+	 * Determines if a string is a valid time representation. Please note, this
+	 * only verifies the format, not the validity of the actual time.
+	 *
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function isTime($key){
+		$val = $this->getRaw($key);
+		return (bool) preg_match('%^((0?[1-9]|1[012])(:[0-5]\d){0,2}([AP]M|[ap]m))$|^([01]\d|2[0-3])(:[0-5]\d){0,2}$%', $val);
+	}
+	
 
 	/**
 	 * Determines if the string is a valid web address.
@@ -766,7 +856,12 @@ class CageBase {
 	/**
 	 * Returns a US postal code. In the form of either five digits, or nine
 	 * with a hyphen.
-	 *
+	 * 
+	 * @todo Implement alternate countries:
+	 *	uk - '/\\A\\b[A-Z]{1,2}[0-9][A-Z0-9]? [0-9][ABD-HJLNP-UW-Z]{2}\\b\\z/i'
+	 *  ca - '/\\A\\b[ABCEGHJKLMNPRSTVXY][0-9][A-Z] ?[0-9][A-Z][0-9]\\b\\z/i'
+	 *  de - '/^[0-9]{5}$/i'
+	 *  be - '/^[1-9]{1}[0-9]{3}$/i'
 	 * @param string $key
 	 * @param string $default
 	 * @return string
@@ -774,7 +869,27 @@ class CageBase {
 	public function getZip($key = false, $default = NULL){
 		$default = $default === NULL ? false : $default;
 		if($this->isSetAndNotEmpty($key)){
-			preg_match('/(^\d{5}$)|(^\d{5}-\d{4}$)/', $this->getDigits($key), $matches);
+			preg_match('/\\A\\b[0-9]{5}(?:-[0-9]{4})?\\b\\z/i', $this->getDigits($key), $matches);
+			if(is_array($matches) && !empty($matches)){
+				return $matches[0];
+			}
+		}
+		return $default;
+	}
+	
+	
+	/**
+	 * Returns a US postal code. In the form of either five digits, or nine
+	 * with a hyphen.
+	 *
+	 * @param string $key
+	 * @param string $default
+	 * @return string
+	 */
+	public function getSsn($key = false, $default = NULL){
+		$default = $default === NULL ? false : $default;
+		if($this->isSetAndNotEmpty($key)){
+			preg_match('/\\A\\b[0-9]{3}[0-9]{2}[0-9]{4}\\b\\z/i', $this->getDigits($key), $matches);
 			if(is_array($matches) && !empty($matches)){
 				return $matches[0];
 			}
