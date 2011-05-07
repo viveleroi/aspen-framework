@@ -193,7 +193,11 @@ class Template  {
 			print 'var INTERFACE_URL = "'.router()->interfaceUrl().'";'."\n";
 			if(is_array($this->_load_js_vars)){
 				foreach($this->_load_js_vars as $var => $value){
-					print 'var '. strtoupper($var).' = "'.addslashes($value).'";'."\n";
+					if(is_array($value)){
+						print 'var '. strtoupper($var).' = '.json_encode($value).';'."\n";
+					} else {
+						print 'var '. strtoupper($var).' = "'.addslashes($value).'";'."\n";
+					}
 				}
 			}
 			print '</script>'."\n";
