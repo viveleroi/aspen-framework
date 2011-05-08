@@ -854,7 +854,6 @@ class Template  {
 
 		// build the html list item
 		$html = '';
-		$html .= sprintf('<li>Page %s of %s</li>', $current_page, $total_pages);
 
 		if($total_pages > 1){
 
