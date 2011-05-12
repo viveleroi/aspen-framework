@@ -529,7 +529,7 @@ class Template  {
 	 * @param string $method
 	 * @param string $text
 	 */
-	public function link($text, $path, $bits = false, $title = false){
+	public function link($text, $path, $bits = false, $title = false, $add_class = false){
 		
 		$r = $this->parseNamespacePath($path);
 		$title = $title ? $title : $text;
@@ -538,16 +538,16 @@ class Template  {
 		if(user()->userHasAccess($r['module'], $r['method'], $r['interface'])){
 
 			// highlight the link if the user is at the page
-			$class = false;
+			$class = ($add_class?$add_class:'');
 			if($r['method'] == router()->method()
 					&& ucwords($r['module']) == router()->cleanModule(router()->module())){
-				$class = true;
+				$class = ' at';
 			}
 
 			$link = sprintf('<a href="%s" title="%s"%s>%s</a>',
 								$this->xhtmlUrl($path, $bits),
 								strip_tags($title),
-								($class ? ' class="at"' : ''),
+								(!empty($class) ? ' class="'.$class.'"' : ''),
 								$text
 							);
 
