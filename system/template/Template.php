@@ -807,13 +807,16 @@ class Template  {
 	 * @param string $sort_by
 	 * @return string
 	 */
-	public function sortLink($title, $location, $sort_by){
+	public function sortLink($title, $location, $sort_by, $add_class = false){
 
 		$base = $this->xhtmlSelfUrl();
 		$sort = app()->prefs->getSort($location, $sort_by);
 
 		// determine the sort direction
 		$new_direction = $sort['sort_direction'] == "ASC" ? "DESC" : "ASC";
+		
+		// add class
+		$add_class = $add_class ? ' '.$add_class : '';
 
 		// determine the proper class, if any
 		$class = 'sortable';
@@ -831,7 +834,7 @@ class Template  {
 		$html = sprintf('<a href="%s" title="%s" class="%s">%s</a>',
 								$url,
 								'Sort ' . $this->encodeTextEntities($title) . ' column ' . ($new_direction == 'ASC' ? 'ascending' : 'descending'),
-								$class,
+								$class.$add_class,
 								$this->encodeTextEntities($title)
 							);
 

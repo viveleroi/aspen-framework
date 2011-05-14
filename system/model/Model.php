@@ -2489,7 +2489,7 @@ class Model  {
 					if(in_array($old_key, $watch_fields)){
 						if(isset($new_values[$old_key])){
 							if((!empty($old_val) || !empty($new_values[$old_key]))){
-								if($old_val !== $new_values[$old_key]){
+								if(str_replace(array("\r\n", "\r", "\n", "\t"), ' ', trim($old_val)) !== str_replace(array("\r\n", "\r", "\n", "\t"), ' ', trim($new_values[$old_key]))){
 									$res = $this->activity_log_change_delta($activity_id, $old_key, $old_val, $new_values[$old_key]);
 								}
 							}
