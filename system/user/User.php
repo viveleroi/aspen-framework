@@ -71,6 +71,28 @@ class User  {
 			$form->setCurrentValue('Groups', array(2));
 			$result = $form->save();
 		}
+		
+		// send the confirmation email
+		if($result){
+			app()->mail->AddAddress($form->cv('email'));
+			app()->mail->From      	= app()->config('email_sender');
+			app()->mail->FromName  	= app()->config('email_sender_name');
+			app()->mail->Mailer    	= "mail";
+			app()->mail->ContentType= 'text/html';
+			app()->mail->Subject   	= text('signup:email:subject', app()->config('application_name'));
+			
+			$body = text('signup:email:body');
+			$body = str_replace('{first_name}', $form->cv('first_name'), $body);
+			$body = str_replace('{username}', $form->cv('username'), $body);
+			$body = str_replace('{email}', $form->cv('email'), $body);
+			$body = str_replace('{app}', app()->config('application_name'), $body);
+			$body = str_replace('{url}', template()->url('users/login'), $body);
+			$body = str_replace('{forgot}', template()->url('users/forgot'), $body);
+			app()->mail->Body 		= $body;
+
+			app()->mail->Send();
+			app()->mail->ClearAddresses();
+		}
 
 		template()->set(array('form'=>$form));
 
