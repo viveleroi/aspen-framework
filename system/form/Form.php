@@ -408,7 +408,16 @@ class Form  {
 		// if field is the name of a child/parent table
 		if($val && (in_array(strtolower($field), $this->schema['children'])
 				|| in_array(strtolower($field), $this->schema['parents']))){
-			return array_key_exists($match, $val) || in_array($match, $val) ? $str : '';
+			$sub_arr = false;
+			foreach($val as $a){
+				$sub_arr = is_array($a);
+				break;
+			}
+			if($sub_arr){
+				return array_key_exists($match, $val) ? $str : '';
+			} else {
+				return in_array($match, $val) ? $str : '';
+			}
 		}
 		elseif(is_array($val)){
 			return in_array($match, $val) ? $str : '';
