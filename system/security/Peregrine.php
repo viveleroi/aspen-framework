@@ -2,7 +2,7 @@
 /**
  * @package  Peregrine
  * @author   Michael Botsko, Trellis Development, LLC
- * @version  1.0-3-gce4140e
+ * @version  1.0-4-g7b32b2b
  *
  * Peregrine is a class that aims to improve PHP superglobal security
  * by transferring the raw incoming values to private member variables.
@@ -989,6 +989,24 @@ class CageBase {
 			return $this->isPhone($key) ? ($strip ? $this->getDigits($key) : $this->getKey($key)) : $default;
 		}
 		return $default;	
+	}
+	
+	
+	
+	/**
+	 * Returns data formatted to a custom expression
+	 * 
+	 * @param type $key
+	 * @param type $regex
+	 * @param type $default
+	 * @return type mixed
+	 */
+	public function getCustom($key = false, $regex = false, $default = NULL){
+		$default = $default === NULL ? false : $default;
+		if($this->isSetAndNotEmpty($key) && $regex){
+			return preg_replace($regex, '', $this->getKey($key));
+		}
+		return $default;
 	}
 }
 

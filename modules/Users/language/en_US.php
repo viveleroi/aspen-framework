@@ -23,6 +23,8 @@ $lang['admin']['signup:password']			= 'Password';
 $lang['admin']['signup:password_confirm']	= 'Confirm Password';
 $lang['admin']['signup:submit']				= 'Create Account';
 $lang['admin']['signup:account_success']	= 'Your account has been created successfully. Please login using your registered E-mail address and password.';
+$lang['admin']['signup:email:subject']		= 'Welcome to %s - Here\'s Your  Account Details';
+$lang['admin']['signup:email:body']			= 'Welcome to {app} {first_name}!<br /><br />Please login at {url} using either your username ({username}) or your email address ({email}), and the password you created during signup.<br /><br />If you forget your password, please use the forgotten password form at {forgot} to reset it.<br /><br />Thank you!';
 
 // forgotten password
 $lang['admin']['users:forgot:head-title'] = 'Reset Your Password';
