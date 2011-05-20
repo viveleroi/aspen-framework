@@ -530,18 +530,21 @@ class Router  {
 					call_user_func_array(array(app()->{$this->module()}, $this->method()), $this->_selected_arguments);
 
 				} else {
+					app()->log->write('Method doesn\'t exist in module. ' . $this->module() . '->' . $this->method());
 					$this->header_code(404);
 					template()->setLayout('404');
 					template()->display();
 					exit;
 				}
 			} else {
+				app()->log->write('Module not loaded or doesn\'t exist. ' . $this->module());
 				$this->header_code(404);
 				template()->setLayout('404');
 				template()->display();
 				exit;
 			}
 		} else { // not authorized
+			app()->log->write('User not authorized. ' . $this->module());
 			$this->header_code(403);
 			template()->setLayout('403');
 			template()->display();
