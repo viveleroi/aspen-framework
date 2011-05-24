@@ -1059,7 +1059,8 @@ class Model  {
 	 * @access public
 	 */
 	public function whereCustom($where = false, $match = 'AND'){
-		$prefix = (isset($this->sql['WHERE']) ? $match : 'WHERE'.($this->parenth_start ? ' (' : '') );
+		$match = $this->parenth_start ? $match.' (' : $match;
+		$prefix = (isset($this->sql['WHERE']) ? $match : 'WHERE' );
 		$this->sql['WHERE'][] =  $prefix.' '.$where;
 		$this->parenth_start = false;
 	}

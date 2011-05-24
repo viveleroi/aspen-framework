@@ -649,11 +649,11 @@ class Template  {
 						if(isset($route['interface'])){
 							if(strtolower($route['interface']) == strtolower($r['interface'])){
 								$route_mask = $mask;
-								$url .= $mask;
+								$url .= '/'.$route['uri'];
 							}
 						} else {
 							$route_mask = $mask;
-							$url .= $mask;
+							$url .= '/'.$route['uri'];
 						}
 					}
 				}
@@ -677,6 +677,7 @@ class Template  {
 						$url .= '/' . urlencode($value);
 					}
 				}
+				$url .= '/'; // always use a trailing slash
 			}
 		}
 
