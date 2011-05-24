@@ -491,7 +491,7 @@ class Router  {
 
 		// If user is logged in, but does not have access to this interface app
 		if(user()->isLoggedIn() &&
-				$this->method() != 'login' && $this->method() != 'autehenticate'
+				$this->method() != 'login' && $this->method() != 'authenticate'
 			){
 			if(!user()->userHasInterfaceAccess()){
 				user()->logout();
