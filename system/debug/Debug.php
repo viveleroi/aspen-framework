@@ -212,8 +212,10 @@ class DebugBase {
 	 * @return <type>
 	 */
 	private function is_md_array($a) {
-		foreach ($a as $v) {
-			if (is_array($v)) return $v;
+		if(is_array($a)){
+			foreach($a as $v){
+				if(is_array($v)) return $v;
+			}
 		}
 		return false;
 	}

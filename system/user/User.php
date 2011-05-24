@@ -587,7 +587,7 @@ class User  {
 		if(app()->checkDbConnection() && model()->tableExists('users')){
 			$model = model()->open('users');
 			$accounts = $model->results();
-			return count($accounts);
+			return $accounts ? count($accounts) : 0;
 		} else {
 			return 1;
 		}

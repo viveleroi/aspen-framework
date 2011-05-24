@@ -103,7 +103,7 @@
 	$config['usergroup_default_modules'] = array();
 
 	// default module if no user config exists
-	$config['default_module_no_config'] = 'Install_Admin';
+	$config['default_module_no_config'] = 'Index_Admin';
 
 	// default method
 	$config['default_method'] = 'view';
