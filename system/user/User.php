@@ -333,7 +333,7 @@ class User  {
 	 * @access public
 	 */
 	public function postLoginRedirect(){
-		$redirect = false;
+		$lred = $redirect = false;
 		// custom redirects override default
 		if(session()->isPath('custom_post-login_redirect')){
 			$redirect = session()->getPath('custom_post-login_redirect');
