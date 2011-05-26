@@ -334,12 +334,18 @@ class User  {
 	 */
 	public function postLoginRedirect(){
 		$redirect = false;
-		if(session()->isPath('post-login_redirect')){
-			$redirect = session()->getPath('post-login_redirect');
+		// custom redirects override default
+		if(session()->isPath('custom_post-login_redirect')){
+			$redirect = session()->getPath('custom_post-login_redirect');
 			$lred = strtolower($redirect);
-			if(strpos($lred, 'users/login') !== false || strpos($lred, 'users/authenticate') !== false){
-				$redirect = false;
+		} else {
+			if(session()->isPath('post-login_redirect')){
+				$redirect = session()->getPath('post-login_redirect');
+				$lred = strtolower($redirect);
 			}
+		}
+		if(strpos($lred, 'users/login') !== false || strpos($lred, 'users/authenticate') !== false){
+			$redirect = false;
 		}
 		return (empty($redirect) ? router()->interfaceUrl() : $redirect);
 	}
