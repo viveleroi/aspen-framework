@@ -44,14 +44,14 @@ class UsersModel extends Model {
 		
 		// verify username
 		if(!$clean->isEmpty('username')){
-			if(!$clean->isElemId('username')){
+			if(!$clean->getUsername('username')){
 				$this->addError('username', text('db:error:username'));
 			} else {
 
 				// if we're adding the record, check for existing username
 				if(!$primary_key){
 					$user = $this->open('users');
-					$user->where('username', $clean->getElemId('username'));
+					$user->where('username', $clean->getUsername('username'));
 					$unique = $user->results();
 					if($unique){
 						$this->addError('username', text('db:error:username-dup'));
@@ -120,6 +120,11 @@ class UsersModel extends Model {
 			$fields['_raw_password'] = $fields['password'];
 			$fields['password'] = $this->stringHash($fields['password']);
 		}
+		
+		if(!isset($fields['username'])){
+			$fields['username'] = $fields['email'];
+		}
+		$fields['username'] = strtolower($fields['username']);
 
 		// set date created
 		$fields['date_created'] = gmdate(DATE_FORMAT);
@@ -136,6 +141,11 @@ class UsersModel extends Model {
 	 * @access public
 	 */
 	public function before_update($fields = false){
+		
+		if(!isset($fields['username'])){
+			$fields['username'] = $fields['email'];
+		}
+		$fields['username'] = strtolower($fields['username']);
 
 		// if the password provided =, encode it - otherwise, remove
 		if(!empty($fields['password']) && isset($fields['password_confirm'])){

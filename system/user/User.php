@@ -263,8 +263,8 @@ class User  {
 			if(post()->isEmail('user')){
 				$model->where('LOWER(email)', strtolower(post()->getEmail('user')));
 			}
-			elseif(post()->isElemId('user')){
-				$model->where('LOWER(username)', strtolower(post()->getElemId('user')));
+			elseif(post()->getUsername('user')){
+				$model->where('LOWER(username)', strtolower(post()->getUsername('user')));
 			}
 			$model->where('allow_login', 1);
 			$model->limit(0, 1);
