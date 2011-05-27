@@ -29,6 +29,12 @@ class Model  {
 	 * @access private
 	 */
 	private $_db = false;
+	
+	/**
+	 * @var array Whether or not the query is distinct
+	 * @access private
+	 */
+	private $_distinct = false;
 
 	/**
 	 * @var array Holds an array of calculations we need to perform on the results
@@ -861,6 +867,8 @@ class Model  {
 	 * @access private
 	 */
 	private function select_base($fields = false, $distinct = false){
+		
+		$this->_distinct = $distinct;
 
 		// begin the select
 		$this->sql['SELECT'] = 'SELECT';
@@ -968,7 +976,7 @@ class Model  {
 		}
 
 		// append the fields we've selected
-		if(is_array($fields)){
+		if(is_array($fields) && !$this->_distinct){
 			foreach($fields as $field){
 				if(strpos($field, "(") === false){
 					$this->sql['FIELDS'] .= sprintf(', %s.%s', $as_table, $field);

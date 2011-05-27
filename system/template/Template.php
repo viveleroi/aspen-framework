@@ -677,9 +677,10 @@ class Template  {
 						$url .= '/' . urlencode($value);
 					}
 				}
-				$url .= '/'; // always use a trailing slash
 			}
 		}
+		
+		$url = rtrim($url, '/').'/'; // always use a trailing slash but never more
 
 		return app()->config('lowercase_urls') ? strtolower($url) : $url;
 
@@ -778,6 +779,10 @@ class Template  {
 				$new_params[$key] = $value;
 			}
 		}
+		if(!$path){
+			$map = router()->getOriginalMap();
+			$path = $map['module'].'/'.$map['method'];
+		}
 		return $this->xhtmlUrl($path, $new_params);
 	}
 
@@ -796,6 +801,10 @@ class Template  {
 			foreach($bits as $key => $value){
 				$new_params[$key] = $value;
 			}
+		}
+		if(!$path){
+			$map = router()->getOriginalMap();
+			$path = $map['module'].'/'.$map['method'];
 		}
 		return $this->url($path, $new_params);
 	}

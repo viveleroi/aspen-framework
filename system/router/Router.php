@@ -28,31 +28,37 @@ class Router  {
 	 * @var array $_loaded_languages Remembers which langs have already been loaded
 	 * @access private
 	 */
-	private $_loaded_languages = array();
+	protected $_loaded_languages = array();
+	
+	/**
+	 * @var array $_original_map Holds the original mapped data
+	 * @access private
+	 */
+	protected $_original_map = array();
 
 	/**
 	 * @var string $_selected_module Lists the currently selected module
 	 * @access private
 	 */
-	private $_selected_module = false;
+	protected $_selected_module = false;
 
 	/**
 	 * @var string $_selected_method Lists the currently selected method
 	 * @access private
 	 */
-	private $_selected_method = false;
+	protected $_selected_method = false;
 
 	/**
 	 * @var array $_selected_arguments An array of arguments to pass to a function
 	 * @access private
 	 */
-	private $_selected_arguments = array();
+	protected $_selected_arguments = array();
 
 	/**
 	 * @var array $map Holds our array of mapped URL routes
 	 * @access private
 	 */
-	private $map = array('module'=>false,'method'=>false,'bits'=>false);
+	protected $map = array('module'=>false,'method'=>false,'bits'=>false);
 
 
 	/**
@@ -73,7 +79,7 @@ class Router  {
 	 * Maps URI elements to an internal array - either GET or clean urls
 	 * @access private
 	 */
-	private function mapRequest(){
+	protected function mapRequest(){
 
 		$bits = array();
 
@@ -140,6 +146,8 @@ class Router  {
 		if(!empty($this->map['module'])){
 			$this->map['module'] .= (LOADING_SECTION != '' ? '_'.LOADING_SECTION : '');
 		}
+		
+		$this->_original_map = $this->map;
 	}
 
 
@@ -148,7 +156,7 @@ class Router  {
 	 * @param string $str
 	 * @return string
 	 */
-	private function stripQuery($str){
+	protected function stripQuery($str){
 		return preg_replace('/\?(.*)/', '', $str);
 	}
 
@@ -159,7 +167,7 @@ class Router  {
 	 * @access private
 	 * @return boolean
 	 */
-	private function applyRouteMap($path){
+	protected function applyRouteMap($path){
 
 		$path			= $this->stripQuery($path);
 		$routes			= app()->config('routes');
@@ -237,7 +245,7 @@ class Router  {
 	 * checks for approval for that request (permissions, install, etc).
 	 * @access private
 	 */
-	private function loadRequestedPagePath(){
+	protected function loadRequestedPagePath(){
 
 		// requested
 		$req_module = $this->identifyRequestedModuleForLoad();
@@ -267,7 +275,7 @@ class Router  {
 	 * @return string
 	 * @access private
 	 */
-	private function identifyRequestedModuleForLoad(){
+	protected function identifyRequestedModuleForLoad(){
 		return $this->map['module'] ?: user()->getUserDefaultModule();
 	}
 
@@ -277,7 +285,7 @@ class Router  {
 	 * @return string
 	 * @access private
 	 */
-	private function identifyRequestedMethodForLoad(){
+	protected function identifyRequestedMethodForLoad(){
 		return $this->map['method'] ?: app()->config('default_method');
 	}
 
@@ -288,7 +296,7 @@ class Router  {
 	 * @access public
 	 * @todo clean this up now that loadRequestedPagePath exists
 	 */
-	private function identifyAcceptedModuleForLoad(){
+	protected function identifyAcceptedModuleForLoad(){
 
 		if(strtolower(get_class(app())) == "app"){
 
@@ -328,7 +336,7 @@ class Router  {
 	 * @access private
 	 * @todo clean this up now that loadRequestedPagePath exists
 	 */
-	private function identifyAcceptedMethodForLoad(){
+	protected function identifyAcceptedMethodForLoad(){
 		
 		$default = 'view';
 
@@ -584,6 +592,16 @@ class Router  {
 		$url .= app()->server->getQueryString('REQUEST_URI');
 		$url = strip_tags(urldecode($url));
 		return $url;
+	}
+	
+	
+	/**
+	 * Returns the original map data, usually useful if there's
+	 * an alias url
+	 * @return array
+	 */
+	public function getOriginalMap(){
+		return $this->_original_map;
 	}
 
 

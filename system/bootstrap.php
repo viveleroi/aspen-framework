@@ -648,7 +648,14 @@ class Bootstrap extends Base {
 		}
 
     	// router has been used already, so we need to force it to load
-    	$this->router = new Router;
+		// determine if anything extends router
+		$_router_class = 'Router';
+		foreach($all_classes as $_class => $_tmp_c){
+			if(isset($_tmp_c['extends']) && $_tmp_c['extends'] == 'Router'){
+				$_router_class = $_class;
+			}
+		}
+    	$this->router = new $_router_class;
 
     	// set framework-related html purifier settings
     	if($this->isLibraryLoaded('HTMLPurifier')){
