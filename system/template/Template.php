@@ -838,7 +838,7 @@ class Template  {
 		$url = $base.'?'.http_build_query(array(
 									'sort_location'=>$location,
 									'sort_by'=>$sort_by,
-									'sort_direction'=>$new_direction));
+									'sort_direction'=>$new_direction), '', '&amp;');
 
 		// create the link
 		$html = sprintf('<a href="%s" title="%s" class="%s">%s</a>',
