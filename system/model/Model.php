@@ -806,7 +806,7 @@ class Model  {
 				$sep = "\n";
 				break;
 		}
-		$break_words = array('WHERE','AND','OR','LIMIT','ORDER BY','GROUP BY','LEFT JOIN','RIGHT JOIN','UNION');
+		$break_words = array('WHERE','AND','OR','LIMIT','ORDER BY','GROUP BY','LEFT JOIN','RIGHT JOIN','UNION','HAVING');
 		foreach($break_words as $word){
 			$sql = str_replace($word. ' ', $sep.$word.' ', $sql);
 		}
@@ -1027,9 +1027,9 @@ class Model  {
 	 * @return void
 	 * @access private
 	 **/
-	public function parenthEnd(){
-		if(isset($this->sql['WHERE']) ){
-			$this->sql['WHERE'][ (count($this->sql['WHERE'])-1) ] .= ')';
+	public function parenthEnd($type = 'WHERE'){
+		if(isset($this->sql[$type]) ){
+			$this->sql[$type][ (count($this->sql[$type])-1) ] .= ')';
 		}
 		$this->parenth_start = false;
 	}
@@ -1313,6 +1313,48 @@ class Model  {
 	 */
 	public function inPastXDays($field, $day_count = 7, $include_range = true, $match = 'AND'){
 		$this->base_where('%s TO_DAYS(NOW()) - TO_DAYS(%s) '.($include_range ? '<' : '').'= ' . $day_count, $field, false, $match);
+	}
+	
+	
+	/**
+	 * Forms the basis of the having clauses
+	 * @param string $sprint_string
+	 * @param string $field
+	 * @param string $value
+	 * @param string $match
+	 * @access private
+	 */
+	protected function base_having($sprint_string = false, $field = false, $value = false, $match = 'AND'){
+
+		$field = $field ? $field : $this->getPrimaryKey();
+		$match = $match ? $match : 'AND';
+		$match = $this->parenth_start ? $match.' (' : $match;
+
+		$this->sql['HAVING'][] = sprintf($sprint_string,
+											(isset($this->sql['HAVING']) ? $match : 'HAVING'.($this->parenth_start ? ' (' : '') ),
+											$field,
+											app()->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
+										);
+
+		$this->parenth_start = false;
+
+	}
+	
+	
+	/**
+	 * Adds a standard having condition
+	 * @param string $field
+	 * @param mixed $value
+	 * @param string $match
+	 * @access public
+	 */
+	public function having($field = false, $value = false, $match = 'AND', $val_is_column_name = false){
+		if($value === NULL){
+//			$this->whereIsNull($field, $match);
+		} else {
+			$str = $val_is_column_name ? '%s %s = %s' : '%s %s = "%s"';
+			$this->base_having($str, $field, $value, $match);
+		}
 	}
 
 
@@ -1702,6 +1744,10 @@ class Model  {
 			}
 
 			$sql .= ' ' . (isset($this->sql['GROUP']) ? $this->sql['GROUP'] : '');
+			
+			if(isset($this->sql['HAVING']) && array($this->sql['HAVING'])){
+				$sql .= ' ' . implode(" ", $this->sql['HAVING']);
+			}
 
 			// if no order set, generate one
 			if(!isset($this->sql['ORDER'])){
