@@ -257,7 +257,7 @@ class User  {
 		$auth = false;
 		$p	  = new PasswordHash();
 
-		if((post()->isEmail('user') || post()->isElemId('user')) && !post()->isEmpty('pass')){
+		if((post()->isEmail('user') || post()->getUsername('user')) && !post()->isEmpty('pass')){
 
 			$model = model()->open('users');
 			if(post()->isEmail('user')){

@@ -707,7 +707,7 @@ class Router  {
 	 * @access public
 	 */
 	public function interfaceUrl($interface = false){
-        $interface = $interface ? $interface : LS;
+        $interface = ($interface !== false ? $interface : LS);
         return $this->appUrl() . (empty($interface) ? '' : '/' . $interface);
     }
 
