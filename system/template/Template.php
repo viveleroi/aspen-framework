@@ -1046,7 +1046,7 @@ class Template  {
 	 */
 	public function selectArray(
 								$selectTable, $selectField, $method = "ENUM",
-								$orderby = 'id', $select_id = false, $where = false){
+								$orderby = 'id', $select_id = false, $where = false, $text_as_vals = false){
 
 		$return_select_array = array();
 
@@ -1079,7 +1079,12 @@ class Template  {
 			if($getArray->RecordCount()){
 				while($getArrayRow = $getArray->FetchRow()){
 					if($select_id){
-						$return_select_array[] = array($select_id=>$getArrayRow[$select_id], $selectField=>$getArrayRow[$selectField]);
+						if($select_id == $selectField){
+							$val = $getArrayRow[$selectField];
+							$return_select_array[$val] = $val;
+						} else {
+							$return_select_array[] = array($select_id=>$getArrayRow[$select_id], $selectField=>$getArrayRow[$selectField]);
+						}
 					} else {
 						$return_select_array[] = array('key'=>$getArrayRow[$selectField], $selectField=>$getArrayRow[$selectField]);
 					}

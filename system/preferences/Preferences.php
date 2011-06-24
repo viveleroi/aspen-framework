@@ -71,6 +71,13 @@ class Preferences  {
 			$pref_model->insert(array('user_id' => $user_id, 'config_key' => 'sort.'.$location.'.field', 'current_value' => $field));
 			$pref_model->insert(array('user_id' => $user_id, 'config_key' => 'sort.'.$location.'.dir', 'current_value' => $dir));
 
+		} else {
+			
+			// the user is not logged in, so we'll store it temporarily in their session
+			$_SESSION['settings']['sorts']['sort.'.$location.'.field']['current_value'] = $field;
+			$_SESSION['settings']['sorts']['sort.'.$location.'.dir']['current_value'] = $dir;
+			app()->refreshCage('session');
+			
 		}
 	}
 
