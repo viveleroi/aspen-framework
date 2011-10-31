@@ -117,7 +117,9 @@ class User  {
 			$result = $form->save($id);
 		}
 
-		template()->set(array('form'=>$form));
+		template()->set(array('form'		=>$form));
+		template()->set(array('preferences'	=>app()->prefs->edit( session()->getInt('user_id') )));
+		template()->set(array('timezones'	=>Date::timezone_list('america')));
 
 		return $result;
 
