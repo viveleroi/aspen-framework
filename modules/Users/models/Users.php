@@ -140,7 +140,7 @@ class UsersModel extends Model {
 	 * @return mixed
 	 * @access public
 	 */
-	public function before_update($fields = false){
+	public function before_update($fields, $where_value, $where_field){
 		
 		if(!isset($fields['username'])){
 			$fields['username'] = $fields['email'];

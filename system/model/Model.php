@@ -2376,7 +2376,7 @@ class Model  {
 	 * @param array $fields
 	 * @return array
 	 */
-	public function before_update($fields){
+	public function before_update($fields, $where_value, $where_field){
 		return $fields;
 	}
 
@@ -2407,7 +2407,7 @@ class Model  {
 		$fields = $this->getDefaults($fields);
 
 		// Pass value through to the before update function
-		$fields = $this->before_update($fields);
+		$fields = $this->before_update($fields, $where_value, $where_field);
 
 		// if where_value is our primary key, we should load the record first
 		// so that we can use those existing values to pass validation more quickly
