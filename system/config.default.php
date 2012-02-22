@@ -231,6 +231,9 @@
 
 	// enabled authentication support
 	$config['enable_authentication_support'] = true;
+	
+	// authentication cookie expiration
+	$config['authentication_cookie_expires'] = time()+2592000;
 
 	// require token authorization when forms are submitted
 	$config['require_form_token_auth'] = false;

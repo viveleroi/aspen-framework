@@ -276,19 +276,7 @@ class User  {
 				foreach($result as $account){
 					if($p->CheckPassword(post()->getRaw('pass'), $account['password'])){
 
-						$_SESSION['authenticated']		= true;
-						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['email'], $account['id']);
-						$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
-						$_SESSION['email']				= $account['email'];
-						$_SESSION['username']			= $account['username'];
-						$_SESSION['first_name'] 		= $account['first_name'];
-						$_SESSION['last_name']			= $account['last_name'];
-						$_SESSION['latest_login'] 		= gmdate(DATE_FORMAT);
-						$_SESSION['last_login'] 		= $account['latest_login'];
-						$_SESSION['user_id'] 			= $account['id'];
-						
-						// is this the very first login?
-						$_SESSION['first_login']		= Date::isEmptyDate($account['latest_login']);
+						$this->_registerAuthentication( $account );
 
 						// run any post-auth logic
 						$this->post_authentication($account);
@@ -296,7 +284,7 @@ class User  {
 						// update last login date
 						$sql = sprintf('UPDATE users SET last_login = "%s", latest_login = "%s" WHERE id = "%s"', 
 											$account['latest_login'], gmdate(DATE_FORMAT), $account['id'] );
-						$res = $model->query($sql);
+						$model->query($sql);
 	
 						$auth = true;
 
@@ -307,6 +295,67 @@ class User  {
 
 		return $auth;
 
+	}
+	
+	
+	/**
+	 *
+	 * @param type $user_id 
+	 */
+	protected function _registerAuthentication( $account ){
+		
+		if($account){
+
+			$_SESSION['authenticated']		= true;
+			$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['email'], $account['id']);
+			$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
+			$_SESSION['email']				= $account['email'];
+			$_SESSION['username']			= $account['username'];
+			$_SESSION['first_name'] 		= $account['first_name'];
+			$_SESSION['last_name']			= $account['last_name'];
+			$_SESSION['latest_login'] 		= gmdate(DATE_FORMAT);
+			$_SESSION['last_login'] 		= $account['latest_login'];
+			$_SESSION['user_id'] 			= $account['id'];
+
+			// is this the very first login?
+			$_SESSION['first_login']		= Date::isEmptyDate($account['latest_login']);
+
+			// set an authentication cookie
+			$this->_setAuthenticationCookie( 'authentication_key', $this->getAuthenticationKey($account['email'], $account['id']) );
+			$this->_setAuthenticationCookie( 'user_id', $account['id'] );
+
+		}
+	}
+	
+	
+	/**
+	 *
+	 * @param type $key
+	 * @param type $value 
+	 */
+	protected function _setAuthenticationCookie( $key, $value ){
+		setcookie( $key, $value, app()->config('authentication_cookie_expires'), '/' );
+	}
+	
+	
+	/**
+	 * Authenticates a user based on their cookie
+	 * @return boolean 
+	 */
+	protected function authenticateCookie(){
+		
+		if( cookie()->keyExists('user_id') ){
+
+			$account = model()->open('users', cookie()->getInt('user_id'));
+			if($account){
+				$auth_key = $this->getAuthenticationKey($account['email'], $account['id']);
+				if($auth_key === cookie()->getAlnum('authentication_key')){
+					$this->_registerAuthentication( $account );
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 
@@ -368,6 +417,9 @@ class User  {
 				session()->getAlnum('domain_key') == $this->getDomainKeyValue()
 				){
 					$authenticated = true;
+			}
+			elseif( $this->authenticateCookie() ){
+				$authenticated = true;
 			}
 		}
 		return $authenticated;
