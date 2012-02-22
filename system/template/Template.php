@@ -364,7 +364,7 @@ class Template  {
 	}
 	
 	
-	/**
+		/**
 	 *
 	 * @param type $path
 	 * @return type 
@@ -373,10 +373,11 @@ class Template  {
 		$base = array();
 		$path_arr = explode('/', $path);
 		if(is_array($path_arr)){
+			$i = count($path_arr) - 1;
 			$path_arr = array_reverse($path_arr);
-			$base['file'] = (isset($path_arr[0]) ? $path_arr[0] : false);
-			$base['from'] = (isset($path_arr[1]) ? 'i' : 'm');
-			$base['interface'] = (isset($path_arr[1]) ? $path_arr[1] : false);
+			$base['from'] = (isset($path_arr[$i]) ? 'i' : 'm');
+			$base['interface'] = (isset($path_arr[$i]) ? $path_arr[$i] : false);
+			$base['file'] = (isset($path_arr[$i]) ? str_replace($path_arr[$i].'/', '', $path) : $path);
 		} else {
 			$base['file'] = $path;
 		}
