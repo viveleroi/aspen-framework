@@ -7,3 +7,4 @@ nbproject
 .project
 config/*
 Capfile
+build/aspen-framework
