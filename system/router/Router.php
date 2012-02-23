@@ -845,7 +845,7 @@ class Router  {
 			}
 		}
 
-		if($r['module'] && $selected_module == $r['module']){
+		if($r['module'] && strtolower($selected_module) == strtolower($r['module'])){
 			if($r['method']){
 				if(is_array($r['method'])){
 					$here = in_array($this->method(), $r['method']);

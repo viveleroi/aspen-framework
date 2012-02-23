@@ -571,7 +571,7 @@ class Template  {
 	}
 	
 	
-	/**
+		/**
 	 * Parses an interface/module/method path for the individual parts
 	 * @param string $path
 	 * @return string 
@@ -581,9 +581,17 @@ class Template  {
 			$path = explode('/',$path);
 			$path = is_array($path) ? array_reverse($path) : $path;
 		}
-		$r['method'] = (is_array($path) && isset($path[0]) ? $path[0] : router()->method());
-		$r['module'] = (is_array($path) && isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module())));
-		$r['interface'] = (is_array($path) && isset($path[2]) ? strtolower($path[2]) : (LS != '' ? LS : ''));
+		
+		if(count($path) > 1){
+		
+			$r['method'] = (is_array($path) && isset($path[0]) ? $path[0] : router()->method());
+			$r['module'] = (is_array($path) && isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module())));
+			$r['interface'] = (is_array($path) && isset($path[2]) ? strtolower($path[2]) : (LS != '' ? LS : ''));
+		} else {
+			$r['module'] = router()->cleanModule($path[0]);
+			$r['method'] = false;
+			$r['interface'] = (LS != '' ? LS : '');
+		}
 		return $r;
 	}
 	
