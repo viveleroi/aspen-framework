@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', false);
+ini_set('display_errors', true);
 error_reporting(E_ALL);
 
 /**
@@ -100,12 +100,6 @@ function &cookie(){
 class Bootstrap extends Base {
 
 	/**
-	 * @var object $cache Holds the cache control object
-	 * @access public
-	 */
-	public $cache = false;
-
-	/**
 	 * @var object $db Holds the database object
 	 * @access public
 	 */
@@ -134,12 +128,6 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $html = false;
-
-	/**
-	 * @var object $install Holds our installer object
-	 * @access public
-	 */
-	public $install = false;
 
 	/**
 	 * @var object $log System logging methods
@@ -212,12 +200,6 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $user = false;
-
-	/**
-	 * @var object $xml Holds the xml format object
-	 * @access public
-	 */
-	public $xml = false;
 
 
 	/**********************************************
@@ -321,21 +303,13 @@ class Bootstrap extends Base {
 		$this->_config = $config;
 
 		if(!defined('LOADING_SECTION')){
-			define('LOADING_SECTION', '');
+			define('LOADING_SECTION', 'app');
 		}
 
 		// set a few constants
 		define('LS', strtolower(LOADING_SECTION));
 		define('DS', DIRECTORY_SEPARATOR);
-
-		$interface = LS;
-		if(is_array($this->config('interface_global_folder_replace'))){
-			$replace = $this->config('interface_global_folder_replace');
-			if(array_key_exists(LS, $replace)){
-				$interface = $replace[LS];
-			}
-		}
-		define('INTERFACE_PATH', APPLICATION_PATH . DS . strtolower($interface));
+		define('INTERFACE_PATH', APPLICATION_PATH . DS . strtolower(LS));
 
 		if(!defined('INCLUDE_ONLY')){
 			define('INCLUDE_ONLY', false);
@@ -437,81 +411,6 @@ class Bootstrap extends Base {
 		}
 
 		return (bool)$installed;
-
-	}
-
-
-	/**
-	 * Loads the default config file
-	 * @return array
-	 * @access private
-	 */
-	static public function loadDefaultConfig(){
-
-		$config = false;
-
-		include(SYSTEM_PATH . DIRECTORY_SEPARATOR . 'config.default.php');
-
-		if(!defined('APP_CONFIG_PATH')){
-			define('APP_CONFIG_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . "app.default.config.php");
-		}
-
-		if(file_exists(APP_CONFIG_PATH)){
-			include(APP_CONFIG_PATH);
-		}
-
-		return $config;
-
-	}
-
-
-	/**
-	 * Verifies whether or not the user config file exists
-	 * @param string $config_path Path to configuration location
-	 * @return boolean
-	 * @access public
-	 */
-	static public function checkUserConfigExists($config_path = false){
-
-		if(!$config_path){
-
-			// set user config file location, using config prefix if set by server
-			// (allows multiple "instances" of single install)
-			if(!defined('CONFIG_PREFIX')){ define('CONFIG_PREFIX', ''); }
-			$config_path = APPLICATION_PATH . DIRECTORY_SEPARATOR . CONFIG_PREFIX . 'config.php';
-
-		}
-
-		return file_exists($config_path) ? $config_path : false;
-
-	}
-
-
-	/**
-	 * Loads all config files
-	 * @return array
-	 * @access private
-	 */
-	static public function loadAllConfigs(){
-
-		// load the default first
-		$all_config = Bootstrap::loadDefaultConfig();
-
-		// then try to load the user config file
-		if($config_path = Bootstrap::checkUserConfigExists()){
-
-			include($config_path);
-
-			// update our config with the user-set params
-			if(isset($config) && is_array($config)){
-				foreach($config as $param => $value){
-					$all_config[$param] = $value;
-				}
-				define('USER_CONFIG_LOADED', true);
-			}
-		}
-
-		return $all_config;
 
 	}
 
@@ -1234,8 +1133,7 @@ class Bootstrap extends Base {
 			if($allowed){
 
 				$classname = $tmp_reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
-				$file = MODULES_PATH . DS . $tmp_reg->folder . DS . $classname. '.php';
-
+				$file = MODULES_PATH . DS . strtolower(LOADING_SECTION) . DS . $tmp_reg->folder . DS . $classname. '.php';
 				if(file_exists($file)){
 					include($file);
 					$this->{$classname} = new $classname;

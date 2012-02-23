@@ -736,12 +736,6 @@ class Router  {
 			return app()->config('static_content_url');
 		} else {
 			$interface = $interface !== false ? $interface : LS;
-			if(is_array(app()->config('interface_global_folder_replace'))){
-				$replace = app()->config('interface_global_folder_replace');
-				if(array_key_exists($interface, $replace)){
-					$interface = $replace[$interface];
-				}
-			}
 			return $this->interfaceUrl($interface);
 		}
 	}

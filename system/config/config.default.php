@@ -122,15 +122,6 @@
 	// when any js files included.
 	$config['print_js_variables'] = true;
 
-	// Interface support files folder.
-	// Any files that are global to the interface (images, js, css, templates)
-	// may be stored in a different folder than the interface. If so,
-	// define that folder here and it will be used in place of the actual interface app name.
-	// This folder change will not impact any anchors within it.
-	//
-	// In an array, define the actual name of the interface and then it's replacement folder.
-	$config['interface_global_folder_replace'] = array(''=>'frontend');
-
 	// Define custom URL path handling, called 'routes'. We can map custom
 	// url handlers to modules->methods(args). Routing can be applied using
 	// either exact matches or regex patterns.
