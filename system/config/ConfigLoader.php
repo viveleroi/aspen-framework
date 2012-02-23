@@ -10,6 +10,7 @@
 
 require( dirname(__FILE__) . DS . 'Config.php' );
 require( dirname(__FILE__) . DS . 'UserConfigurable.php' );
+require( dirname(__FILE__) . DS . 'AppConfigurable.php' );
 
 /**
  * Description of Config
@@ -18,56 +19,31 @@ require( dirname(__FILE__) . DS . 'UserConfigurable.php' );
  */
 class ConfigLoader {
 	
-	/**
-	 * Holds the config object
-	 * @var type 
-	 */
-	protected $config;
-	
 	
 	/**
 	 * 
 	 */
-	public function __construct(){
+	public static function load(){
 		
 		$config = new Config();
 		
 		// Load base configurations, add to config
-		$base_config = $this->_loadDefaultConfig();
+		$base_config = self::_loadDefaultConfig();
 		foreach($base_config as $key => $val){
 			$config->set( $key, $val );
 		}
 		
 		// Load Application Base Config
-		
-		
-		
+		$config = self::_loadAppDefaultConfig( $config );
 		
 		// then try to load the user config file
-		$config_path = $this->__getUserConfigPath();
-		if($this->checkUserConfigExists($config_path)){
-
-			require_once($config_path);
-			if(class_exists('UserConfig')){
-				// Pass config object to userconfig
-				$uc = new UserConfig( $config, $config->determineHostname() );
-				$uc = $uc->getObject();
-				define('USER_CONFIG_LOADED', true);
-				$this->config = $uc;
-			}
+		$config_path = self::_getUserConfigPath();
+		if(self::checkUserConfigExists( $config_path )){
+			return self::_loadUserConfig ($config_path, $config );
 		}
 		
-		$this->config =  $config;
+		return $config;
 		
-	}
-	
-	
-	/**
-	 *
-	 * @return type 
-	 */
-	public function getObject(){
-		return $this->config;
 	}
 	
 	
@@ -86,15 +62,19 @@ class ConfigLoader {
 	 *
 	 * @return boolean 
 	 */
-	protected function _loadAppDefaultConfig(){
+	protected function _loadAppDefaultConfig( $config ){
 
-		$config = false;
-		
 		if(!defined('APP_CONFIG_PATH')){
 			define('APP_CONFIG_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . "app.default.config.php");
 		}
 		if(file_exists(APP_CONFIG_PATH)){
-			include(APP_CONFIG_PATH);
+			require_once(APP_CONFIG_PATH);
+			if(class_exists('AppConfig')){
+				// Pass config object to userconfig
+				$ac = AppConfig::load( $config );
+				define('APP_CONFIG_LOADED', true);
+				return $ac;
+			}
 		}
 
 		return $config;
@@ -108,7 +88,7 @@ class ConfigLoader {
 	 * @return boolean
 	 * @access public
 	 */
-	public function checkUserConfigExists($config_path = false){
+	public static function checkUserConfigExists($config_path = false){
 		return file_exists($config_path);
 	}
 	
@@ -118,7 +98,7 @@ class ConfigLoader {
 	 * @param string $config_path
 	 * @return string 
 	 */
-	protected function __getUserConfigPath( $config_path = false ){
+	protected function _getUserConfigPath( $config_path = false ){
 		if(!$config_path){
 			// set user config file location, using config prefix if set by server
 			// (allows multiple "instances" of single install)
@@ -127,5 +107,22 @@ class ConfigLoader {
 
 		}
 		return $config_path;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	protected function _loadUserConfig( $config_path, $config ){
+		
+		require_once($config_path);
+		if(class_exists('UserConfig')){
+			// Pass config object to userconfig
+			$uc = new UserConfig( $config, $config->determineHostname() );
+			$uc = $uc->getObject();
+			define('USER_CONFIG_LOADED', true);
+			return $uc;
+		}
+		return $config;
 	}
 }

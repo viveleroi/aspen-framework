@@ -45,8 +45,7 @@ if(version_compare(phpversion(), "5.3.0", 'ge')){
 
 	// Run the config loader - which returns complete Default -> App -> Config object.
 	include(SYSTEM_PATH . DS . 'config' . DS . 'ConfigLoader.php');
-	$config = new ConfigLoader();
-	$config = $config->getObject();
+	$config = ConfigLoader::load();
 	
 	print_r($config);
 				exit;

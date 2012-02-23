@@ -327,10 +327,10 @@ class Bootstrap extends Base {
 
 		// check whether or not the config file exists
 		// if not, route to default
-//		if(!Bootstrap::checkUserConfigExists()){
+		if(!ConfigLoader::checkUserConfigExists()){
 			$this->router->_selected_module = $this->config('default_module_no_config');
 			$this->router->_selected_method = $this->config('default_method');
-//		}
+		}
 
 		$this->setVersionConstants();
 
