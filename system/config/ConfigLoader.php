@@ -1,79 +1,104 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @package 	Aspen_Framework
+ * @subpackage 	System
+ * @author 		Michael Botsko
+ * @copyright 	2012 Trellis Development, LLC
+ * @since 		2.0
  */
+
+require( dirname(__FILE__) . DS . 'Config.php' );
+require( dirname(__FILE__) . DS . 'UserConfigurable.php' );
 
 /**
  * Description of Config
  *
  * @author botskonet
  */
-class Config {
+class ConfigLoader {
 	
 	/**
-	 *
+	 * Holds the config object
 	 * @var type 
 	 */
-	private $_config = array();
+	protected $config;
+	
 	
 	/**
 	 * 
 	 */
-	public function __contruct(){
+	public function __construct(){
 		
-		$this->_load();
+		$config = new Config();
 		
-	}
-	
-	
-	/**
-	 *
-	 * @param type $key 
-	 */
-	public function get( $key ){
-		if(isset($this->_config[$key])){
-			return $this->_config[$key];
+		// Load base configurations, add to config
+		$base_config = $this->_loadDefaultConfig();
+		foreach($base_config as $key => $val){
+			$config->set( $key, $val );
 		}
-	}
-	
-	
-	/**
-	 *
-	 * @param type $key
-	 * @param type $value 
-	 */
-	public function set( $key, $value ){
-		$this->_config[$key] = $value;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	protected function _load(){
 		
-		// Load the default config file
-		$all_config = $this->_loadDefaultConfig();
+		// Load Application Base Config
+		
+		
+		
 		
 		// then try to load the user config file
-		$config_path = $this->__getUserConfigPath($config_path);
+		$config_path = $this->__getUserConfigPath();
 		if($this->checkUserConfigExists($config_path)){
 
 			require_once($config_path);
-
-			// update our config with the user-set params
-			if(isset($config) && is_array($config)){
-				foreach($config as $param => $value){
-					$all_config[$param] = $value;
-				}
+			if(class_exists('UserConfig')){
+				// Pass config object to userconfig
+				$uc = new UserConfig( $config, $config->determineHostname() );
+				$uc = $uc->getObject();
 				define('USER_CONFIG_LOADED', true);
+				$this->config = $uc;
 			}
 		}
 		
-		$this->_config = $all_config;
+		$this->config =  $config;
 		
+	}
+	
+	
+	/**
+	 *
+	 * @return type 
+	 */
+	public function getObject(){
+		return $this->config;
+	}
+	
+	
+	/**
+	 *
+	 * @return boolean 
+	 */
+	protected function _loadDefaultConfig(){
+		$config = false;
+		include('config.default.php');
+		return $config;
+	}
+	
+	
+	/**
+	 *
+	 * @return boolean 
+	 */
+	protected function _loadAppDefaultConfig(){
+
+		$config = false;
+		
+		if(!defined('APP_CONFIG_PATH')){
+			define('APP_CONFIG_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . "app.default.config.php");
+		}
+		if(file_exists(APP_CONFIG_PATH)){
+			include(APP_CONFIG_PATH);
+		}
+
+		return $config;
+
 	}
 	
 	
@@ -103,55 +128,4 @@ class Config {
 		}
 		return $config_path;
 	}
-	
-	
-	/**
-	 *
-	 * @return boolean 
-	 */
-	protected function _loadDefaultConfig(){
-
-		$config = false;
-
-		include('config.default.php');
-
-		if(!defined('APP_CONFIG_PATH')){
-			define('APP_CONFIG_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . "app.default.config.php");
-		}
-
-		if(file_exists(APP_CONFIG_PATH)){
-			include(APP_CONFIG_PATH);
-		}
-
-		return $config;
-
-	}
-	
-	
-	/**
-	 *
-	 * @return type 
-	 */
-	protected function _determineHostname(){
-	
-		// Determine which var we'll use to figure out where we are, because
-		// SERVER_NAME isn't set when using anything from command line (i.e. cron)
-		$Server = false;
-		if(isset($_SERVER['SERVER_NAME'])){
-			$Server = $_SERVER['SERVER_NAME'];
-		} else {
-			if(isset($_SERVER['HOSTNAME'])){
-				$Server = $_SERVER['HOSTNAME'];
-			} else {
-				// attempt to gather the hostname from the network settings, usually
-				// only when run from cli/cron
-				preg_match('/HOSTNAME=(.*)/', file_get_contents('/etc/sysconfig/network'), $network);
-				$hostname = explode("=", $network[0]);
-				$Server = (isset($hostname[1]) ? $hostname[1] : false);
-			}
-		}
-		return $Server;
-	}
 }
-
-?>

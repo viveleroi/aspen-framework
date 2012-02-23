@@ -298,6 +298,8 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public function __construct($config){
+		
+		exit;
 
 		// assign configuration data
 		$this->_config = $config;
@@ -308,7 +310,6 @@ class Bootstrap extends Base {
 
 		// set a few constants
 		define('LS', strtolower(LOADING_SECTION));
-		define('DS', DIRECTORY_SEPARATOR);
 		define('INTERFACE_PATH', APPLICATION_PATH . DS . strtolower(LS));
 
 		if(!defined('INCLUDE_ONLY')){
@@ -326,10 +327,10 @@ class Bootstrap extends Base {
 
 		// check whether or not the config file exists
 		// if not, route to default
-		if(!Bootstrap::checkUserConfigExists()){
+//		if(!Bootstrap::checkUserConfigExists()){
 			$this->router->_selected_module = $this->config('default_module_no_config');
 			$this->router->_selected_method = $this->config('default_method');
-		}
+//		}
 
 		$this->setVersionConstants();
 

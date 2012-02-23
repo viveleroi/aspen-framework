@@ -6,6 +6,7 @@
 $folder = explode( "/", dirname(__FILE__) );
 $app_name = $folder[ (count($folder) - 2) ];
 define('LOADING_SECTION', ucwords( $app_name ));
+define('DS', DIRECTORY_SEPARATOR);
 
 // set execution start time
 define('EXECUTION_START', microtime());
@@ -24,31 +25,35 @@ if(file_exists(BASE_PATH . '/system')){
 }
 
 // define the file path to our root application directory
-define('APPLICATION_PATH', str_replace(DIRECTORY_SEPARATOR . "system", '', SYSTEM_PATH)); // path to the entire application root
-define('MODULES_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'modules');
-define('PLUGINS_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'plugins');
+define('APPLICATION_PATH', str_replace(DS . "system", '', SYSTEM_PATH)); // path to the entire application root
+define('MODULES_PATH', APPLICATION_PATH . DS . 'modules');
+define('PLUGINS_PATH', APPLICATION_PATH . DS . 'plugins');
 
 // here we'll quicly check for absolute minimal php5 support
 if(version_compare(phpversion(), "5.3.0", 'ge')){
 
 	// include the bootstrap file
-	include(SYSTEM_PATH . DIRECTORY_SEPARATOR . 'bootstrap.php');
+	include(SYSTEM_PATH . DS . 'bootstrap.php');
 
 	// quickly, we need to run any pre-bootstrap plugin hooks
 
 		// pull a list of plugins
-		$plugins = Bootstrap::parsePluginRegistries();
+//		$plugins = Bootstrap::parsePluginRegistries();
 
 		// load plugins with hooks we're calling next
-		Bootstrap::callPluginHook('before_bootstrap_execute', $plugins);
+//		Bootstrap::callPluginHook('before_bootstrap_execute', $plugins);
 
-	// load our config files
-	include(SYSTEM_PATH . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'ConfigLoader.php');
+	// Run the config loader - which returns complete Default -> App -> Config object.
+	include(SYSTEM_PATH . DS . 'config' . DS . 'ConfigLoader.php');
 	$config = new ConfigLoader();
+	$config = $config->getObject();
+	
+	print_r($config);
+				exit;
 
 	// load the application system class
 	if(!class_exists('App')){
-		require(SYSTEM_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'App.php');
+		require(SYSTEM_PATH . DS . 'app' . DS . 'App.php');
 	}
 
 	// create an instance of our entire app
