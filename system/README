@@ -37,11 +37,11 @@ Links:
 
 Third Party Libraries:
 -------------------------------------------
-  ADOdb V5.11
+  ADOdb V5.15
     http://adodb.sourceforge.net/
 
-  HTMLPurifier 4.2.0
+  HTMLPurifier 4.4.0
     http://htmlpurifier.org/
 
-  PHPMailer 5.0
+  PHPMailer 5.2.1
     http://phpmailer.sourceforge.net
