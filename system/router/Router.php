@@ -830,11 +830,11 @@ class Router  {
 	 * @return boolean
 	 * @access public
 	 */
-	public function here($path){
+	public function here($path, $type = 'method'){
 
 		$here = false;
 		
-		$r = template()->parseNamespacePath($path);
+		$r = template()->parseNamespacePath($path, $type);
 		$r['module'] = $r['module'] . ($r['interface'] ? '_' . $r['interface']  : false);
 		$selected_module = $this->module();
 

@@ -566,17 +566,17 @@ class Template  {
 	 * @param string $interface
 	 * @return string
 	 */
-	public function at($path = false){
-		return (router()->here($path) ? ' class="at"' : '');
+	public function at($path = false, $type = 'method'){
+		return (router()->here($path,$type) ? ' class="at"' : '');
 	}
 	
 	
-		/**
+	/**
 	 * Parses an interface/module/method path for the individual parts
 	 * @param string $path
 	 * @return string 
 	 */
-	public function parseNamespacePath($path = false){
+	public function parseNamespacePath($path = false, $type = 'method'){
 		if($path){
 			$path = explode('/',$path);
 			$path = is_array($path) ? array_reverse($path) : $path;
@@ -588,8 +588,13 @@ class Template  {
 			$r['module'] = (is_array($path) && isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module())));
 			$r['interface'] = (is_array($path) && isset($path[2]) ? strtolower($path[2]) : (LS != '' ? LS : ''));
 		} else {
-			$r['module'] = router()->cleanModule($path[0]);
-			$r['method'] = false;
+			if($type == 'module'){
+				$r['module'] = router()->cleanModule($path[0]);
+				$r['method'] = false;
+			} else {
+				$r['module'] = router()->module();
+				$r['method'] = $path[0];
+			}
 			$r['interface'] = (LS != '' ? LS : '');
 		}
 		return $r;
