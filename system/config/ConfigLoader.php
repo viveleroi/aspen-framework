@@ -90,6 +90,9 @@ class ConfigLoader {
 	 * @access public
 	 */
 	public static function checkUserConfigExists($config_path = false){
+		if(!$config_path){
+			$config_path = self::_getUserConfigPath();
+		}
 		return file_exists($config_path);
 	}
 	
