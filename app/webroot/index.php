@@ -38,17 +38,14 @@ if(version_compare(phpversion(), "5.3.0", 'ge')){
 	// quickly, we need to run any pre-bootstrap plugin hooks
 
 		// pull a list of plugins
-//		$plugins = Bootstrap::parsePluginRegistries();
+		$plugins = Bootstrap::parsePluginRegistries();
 
 		// load plugins with hooks we're calling next
-//		Bootstrap::callPluginHook('before_bootstrap_execute', $plugins);
+		Bootstrap::callPluginHook('before_bootstrap_execute', $plugins);
 
 	// Run the config loader - which returns complete Default -> App -> Config object.
 	include(SYSTEM_PATH . DS . 'config' . DS . 'ConfigLoader.php');
 	$config = ConfigLoader::load();
-	
-	print_r($config);
-				exit;
 
 	// load the application system class
 	if(!class_exists('App')){

@@ -355,7 +355,7 @@ class Model  {
 					/**
 					 * Validate INTEGERs along with unsigned and maxlengths
 					 */
-					if(in_array($column->type, app()->config('mysql_field_group_int'))){
+					if(in_array($column->type, config()->get('mysql_field_group_int'))){
 						if(!$clean->getInt( $column->name )){
 							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' should be an integer.');
 						} else {
@@ -369,7 +369,7 @@ class Model  {
 					/**
 					 * Validate FLOATs along with unsigned and maxlengths
 					 */
-					if(in_array($column->type, app()->config('mysql_field_group_dec'))){
+					if(in_array($column->type, config()->get('mysql_field_group_dec'))){
 						if(!$clean->getFloat( $column->name )){
 							$this->addError($column->name, 'Invalid db value. ' . $column->name . ' should be a decimal or float.');
 						} else {
@@ -383,7 +383,7 @@ class Model  {
 					/**
 					 * Validate DATEs
 					 */
-					if(in_array($column->type, app()->config('mysql_field_group_date'))){
+					if(in_array($column->type, config()->get('mysql_field_group_date'))){
 						//if(!$clean->isDate( $date )){
 							//$this->addError($column->name, 'Invalid db value. ' . $column->name . ' must be a date.');
 						//}
@@ -1645,7 +1645,7 @@ class Model  {
 			$fields = array();
 
 			foreach($this->schema['schema'] as $field){
-				if(in_array($field->type, app()->config('mysql_field_group_text'))){
+				if(in_array($field->type, config()->get('mysql_field_group_text'))){
 					$fields[] = $this->table.'.'.$field->name;
 				}
 			}
@@ -1795,9 +1795,9 @@ class Model  {
 				error()->raise(2, $this->_db->ErrorMsg() . "\nSQL:\n" . $query, $file, $line);
 
 			} else {
-				if(app()->config('log_verbosity') < 3){
+				if(config()->get('log_verbosity') < 3){
 					$wr = $query;
-					if(app()->config('log_query_backtrace')){
+					if(config()->get('log_query_backtrace')){
 						$trace = $this->queryBacktrace(true);
 						$wr .= " (".basename($trace['file'])."/".$trace['line'].")";
 					}
@@ -2523,7 +2523,7 @@ class Model  {
 
 		$res = false;
 
-		$watch_tables = app()->config('activity_watch_tables');
+		$watch_tables = config()->get('activity_watch_tables');
 
 		if(app()->isLibraryLoaded('Activity') && array_key_exists($this->table, $watch_tables)){
 

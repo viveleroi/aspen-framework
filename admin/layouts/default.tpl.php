@@ -9,7 +9,7 @@
 </head>
 <body id="<?= $this->body_id(); ?>">
 
-	<h1><?= app()->config('application_name'); ?></h1>
+	<h1><?= config()->get('application_name'); ?></h1>
 <?php if(user()->isLoggedIn()): ?>
 	<span>Logged in as <?= $this->link(session()->getName('first_name'), 'users/my_account'); ?></span>
 <?php endif ?>

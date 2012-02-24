@@ -26,7 +26,7 @@ class UserConfig extends UserConfigurable {
 	 */
 	protected $production	= array('your-domain.com');
 	protected $staging		= array('beta.your-domain.com');
-
+	
 	
 	/**
 	 * Production Server
@@ -70,7 +70,7 @@ class UserConfig extends UserConfigurable {
 		$config->set('db_username', 'root');
 		$config->set('db_password', '');
 		$config->set('db_database', 'aspen-framework');
-		
+
 		return $config;
 		
 	}

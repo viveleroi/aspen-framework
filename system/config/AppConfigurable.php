@@ -1,8 +1,11 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @package 	Aspen_Framework
+ * @subpackage 	System
+ * @author 		Michael Botsko
+ * @copyright 	2012 Trellis Development, LLC
+ * @since 		2.0
  */
 
 /**

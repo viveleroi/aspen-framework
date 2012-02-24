@@ -80,7 +80,7 @@ class Error  {
 		}
 
 		$error = array(
-				'application' => app()->config('application'),
+				'application' => config()->get('application'),
 				'version_complete' => VERSION_COMPLETE,
 				'version' => VERSION,
 				'build' => BUILD,
@@ -99,7 +99,7 @@ class Error  {
 			);
 
 		// if we're going to save to a db
-		if(app()->config('save_error_to_db') && app()->checkDbConnection()){
+		if(config()->get('save_error_to_db') && app()->checkDbConnection()){
 
 			$error_sql = sprintf('
 				INSERT INTO error_log (
@@ -133,7 +133,7 @@ class Error  {
 		}
 
 		// If we need to display this error, do so
-		if($errNo <= app()->config('minimum_displayable_error')){
+		if($errNo <= config()->get('minimum_displayable_error')){
 			if(
 				!app()->env->keyExists('SSH_CLIENT')
 				&& !app()->env->keyExists('TERM')
@@ -148,15 +148,15 @@ class Error  {
 		}
 
 		// post the errors to json-enabled api (snowy evening)
-		if(app()->config('error_json_post_url')){
+		if(config()->get('error_json_post_url')){
 
 			$params = array(
-					'api_key'=>app()->config('error_json_post_api_key'),
-					'project_id'=>app()->config('error_json_post_proj_id'),
+					'api_key'=>config()->get('error_json_post_api_key'),
+					'project_id'=>config()->get('error_json_post_proj_id'),
 					'payload'=>json_encode($error));
 
 			$ch = curl_init();
-			curl_setopt($ch,CURLOPT_URL,app()->config('error_json_post_url'));
+			curl_setopt($ch,CURLOPT_URL,config()->get('error_json_post_url'));
 			curl_setopt($ch,CURLOPT_POST,count($error));
 			curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($params));
 			curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);

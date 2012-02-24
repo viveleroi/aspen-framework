@@ -33,7 +33,7 @@ class App extends Bootstrap {
 				$this->params->get->getElemId('sort_direction'));
 		}
 
-		if($this->config('enable_authentication_support')){
+		if(config()->get('enable_authentication_support')){
 
 			// load all default user preferences
 			if($this->params->session->getInt('user_id')){

@@ -21,7 +21,8 @@ class ConfigLoader {
 	
 	
 	/**
-	 * 
+	 * Loads all configuration files and returns a combined
+	 * Config object.
 	 */
 	public static function load(){
 		
@@ -48,7 +49,7 @@ class ConfigLoader {
 	
 	
 	/**
-	 *
+	 * Loads default config (included)
 	 * @return boolean 
 	 */
 	protected function _loadDefaultConfig(){
@@ -59,7 +60,7 @@ class ConfigLoader {
 	
 	
 	/**
-	 *
+	 * Loads application default config
 	 * @return boolean 
 	 */
 	protected function _loadAppDefaultConfig( $config ){
@@ -94,7 +95,7 @@ class ConfigLoader {
 	
 	
 	/**
-	 *
+	 * Determines user config path
 	 * @param string $config_path
 	 * @return string 
 	 */
@@ -111,7 +112,10 @@ class ConfigLoader {
 	
 	
 	/**
-	 * 
+	 * Loads user config
+	 * @param type $config_path
+	 * @param type $config
+	 * @return type 
 	 */
 	protected function _loadUserConfig( $config_path, $config ){
 		

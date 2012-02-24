@@ -188,7 +188,7 @@ class Template  {
 			print '</style>'."\n";
 		}
 		// append any js files for loading
-		if(app()->config('print_js_variables')){
+		if(config()->get('print_js_variables')){
 			print '<script>'."\n";
 			print 'var INTERFACE_URL = "'.router()->interfaceUrl().'";'."\n";
 			if(is_array($this->_load_js_vars)){
@@ -469,7 +469,7 @@ class Template  {
 		$this->set($data);
 
 		// if token auth on, we need to generate a token
-		if(app()->config('require_form_token_auth')){
+		if(config()->get('require_form_token_auth')){
 			$token = app()->security->generateFormToken();
 		}
 		
@@ -635,7 +635,7 @@ class Template  {
 		$url = router()->interfaceUrl($r['interface']);
 		
 		// if mod rewrite/clean urls are off
-		if(!app()->config('enable_mod_rewrite')){
+		if(!config()->get('enable_mod_rewrite')){
 
 			$url .= sprintf('/index.php?module=%s&method=%s', $r['module'], $r['method']);
 
@@ -653,7 +653,7 @@ class Template  {
 		} else {
 
 			// Determine if there are any routes that need to be used instead
-			$routes = app()->config('routes');
+			$routes = config()->get('routes');
 
 			$route_mask = false;
 			if(is_array($routes)){
@@ -675,10 +675,10 @@ class Template  {
 
 			// Otherwise, just build it as normal
 			if(!$route_mask){
-				if($r['module'] != strtolower(app()->config('default_module')) || !empty($bits)){
+				if($r['module'] != strtolower(config()->get('default_module')) || !empty($bits)){
 					$url .= sprintf('/%s', $r['module']);
 				}
-				$url .= $r['method'] != app()->config('default_method') || is_array($bits) ? sprintf('/%s', $r['method']) : '';
+				$url .= $r['method'] != config()->get('default_method') || is_array($bits) ? sprintf('/%s', $r['method']) : '';
 			}
 
 			if(is_array($bits)){
@@ -696,7 +696,7 @@ class Template  {
 		
 		$url = rtrim($url, '/').'/'; // always use a trailing slash but never more
 
-		return app()->config('lowercase_urls') ? strtolower($url) : $url;
+		return config()->get('lowercase_urls') ? strtolower($url) : $url;
 
 	}
 
@@ -750,7 +750,7 @@ class Template  {
 	 * @access public
 	 */
 	public function ajaxUrl($path = false, $bits = false){
-		$orig_config = app()->config('enable_mod_rewrite');
+		$orig_config = config()->get('enable_mod_rewrite');
 		app()->setConfig('enable_mod_rewrite', false); // turn off rewrite urls
 		$url = $this->url($path, $bits);
 		app()->setConfig('enable_mod_rewrite', $orig_config); // turn them back to what they were
@@ -884,7 +884,7 @@ class Template  {
 
 		if($total_pages > 1){
 
-            $link_limit = app()->config('pagination_link_limit');
+            $link_limit = config()->get('pagination_link_limit');
             $limit_balance = ceil(($link_limit / 2));
 
 			// previous
@@ -893,7 +893,7 @@ class Template  {
 			}
 
 			// if we need to display the other page numbers
-			if(app()->config('pagination_show_page_numbers')){
+			if(config()->get('pagination_show_page_numbers')){
 
 				// add in the first page
 				$selected = $current_page == 1 ? ' at' : '';
@@ -992,7 +992,7 @@ class Template  {
 		$this->page_title = str_replace('{lang_title}', text(strtolower($module).':'.$method.':head-title'), $this->page_title);
 		$this->page_title = str_replace('{module}', ucwords($module), $this->page_title);
 		$this->page_title = str_replace('{method}', ucwords(router()->method()), $this->page_title);
-		$this->page_title .= '&nbsp;&ndash;&nbsp;'.app()->config('application_name');
+		$this->page_title .= '&nbsp;&ndash;&nbsp;'.config()->get('application_name');
 
 		return $this->page_title;
 
@@ -1034,8 +1034,8 @@ class Template  {
 	 */
 	public function pref_date($gmdate, $format = false, $timezone = false){
 
-		$timezone	= $timezone ? $timezone : app()->config('timezone');
-		$format		= $format ? $format : app()->config('date_format');
+		$timezone	= $timezone ? $timezone : config()->get('timezone');
+		$format		= $format ? $format : config()->get('date_format');
 
 		// try to get a user timezone setting
 		if($user_id = session()->getInt('user_id')){

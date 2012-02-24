@@ -123,7 +123,7 @@ class Preferences  {
 	public function edit($user_id = NULL){
 
 		// Load the prefs we're allowed to edit
-		$edit_prefs = app()->config('preference_configs_to_edit');
+		$edit_prefs = config()->get('preference_configs_to_edit');
 
 		// Set the current/default values
 		$record = array();

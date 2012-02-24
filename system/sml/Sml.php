@@ -95,7 +95,7 @@ class Sml  {
 	public function printMessage(){
 		if(session()->getInt('unread_message_flag')){
 			$message = $this->getMostRecentMessage();
-			printf(app()->config('sml_message_html'), $message['message'], $message['class']);
+			printf(config()->get('sml_message_html'), $message['message'], $message['class']);
 			$_SESSION['unread_message_flag'] = false;
 		}
 	}

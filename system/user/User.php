@@ -75,17 +75,17 @@ class User  {
 		// send the confirmation email
 		if($result){
 			app()->mail->AddAddress($form->cv('email'));
-			app()->mail->From      	= app()->config('email_sender');
-			app()->mail->FromName  	= app()->config('email_sender_name');
+			app()->mail->From      	= config()->get('email_sender');
+			app()->mail->FromName  	= config()->get('email_sender_name');
 			app()->mail->Mailer    	= "mail";
 			app()->mail->ContentType= 'text/html';
-			app()->mail->Subject   	= text('signup:email:subject', app()->config('application_name'));
+			app()->mail->Subject   	= text('signup:email:subject', config()->get('application_name'));
 			
 			$body = text('signup:email:body');
 			$body = str_replace('{first_name}', $form->cv('first_name'), $body);
 			$body = str_replace('{username}', $form->cv('username'), $body);
 			$body = str_replace('{email}', $form->cv('email'), $body);
-			$body = str_replace('{app}', app()->config('application_name'), $body);
+			$body = str_replace('{app}', config()->get('application_name'), $body);
 			$body = str_replace('{url}', template()->url('users/login'), $body);
 			$body = str_replace('{forgot}', template()->url('users/forgot'), $body);
 			app()->mail->Body 		= $body;
@@ -164,7 +164,7 @@ class User  {
 
 		// set the forwarding url if any set pre-login
 		if(
-			app()->config('post_login_redirect') && !strpos($uri, 'install') &&
+			config()->get('post_login_redirect') && !strpos($uri, 'install') &&
 			!strpos($uri, 'users&method=login') && !strpos($uri, 'users/login') &&
 			!strpos($uri, 'users&method=forgot') && !strpos($uri, 'users/forgot') &&
 			!strpos($uri, 'users&method=authenticate') && !strpos($uri, 'users/authenticate')
@@ -213,12 +213,12 @@ class User  {
 
 				if(app()->db->Affected_Rows()){
 					app()->mail->AddAddress($form->cv('user'));
-					app()->mail->From      	= app()->config('email_sender');
-					app()->mail->FromName  	= app()->config('email_sender_name');
+					app()->mail->From      	= config()->get('email_sender');
+					app()->mail->FromName  	= config()->get('email_sender_name');
 					app()->mail->Mailer    	= "mail";
 					app()->mail->ContentType= 'text/html';
-					app()->mail->Subject   	= app()->config('password_reset_subject');
-					app()->mail->Body 		= str_replace('{new_pass}', $new_pass, app()->config('password_reset_body'));
+					app()->mail->Subject   	= config()->get('password_reset_subject');
+					app()->mail->Body 		= str_replace('{new_pass}', $new_pass, config()->get('password_reset_body'));
 					app()->mail->Send();
 					app()->mail->ClearAddresses();
 					return 1;
@@ -242,7 +242,7 @@ class User  {
 	 * @access private
 	 */
 	protected function getDomainKeyValue(){
-		$string = app()->config('application_guid') . LS;
+		$string = config()->get('application_guid') . LS;
 		$string .= app()->server->getServerName('HTTP_HOST');
 		$string .= app()->server->getServerName('HTTP_USER_AGENT');
 		$string .= app()->server->getServerName('REMOTE_ADDR');
@@ -334,7 +334,7 @@ class User  {
 	 * @param type $value 
 	 */
 	protected function _setAuthenticationCookie( $key, $value ){
-		setcookie( $key, $value, app()->config('authentication_cookie_expires'), '/' );
+		setcookie( $key, $value, config()->get('authentication_cookie_expires'), '/' );
 	}
 	
 	
@@ -659,11 +659,11 @@ class User  {
 	 * @access public
 	 */
 	 public function getUserDefaultModule(){
-		$default = app()->config('default_module');
+		$default = config()->get('default_module');
 		if(app()->isInstalled() && model()->tableExists('config')){
 			if($user_id = session()->getInt('user_id')){
 				$groups = array_keys( $this->usersGroups($user_id) );
-				$ug_defs = app()->config('usergroup_default_modules');
+				$ug_defs = config()->get('usergroup_default_modules');
 				foreach($groups as $group){
 					if(array_key_exists($group, $ug_defs)){
 						return $ug_defs[$group];
