@@ -582,7 +582,7 @@ class Template  {
 			$path = is_array($path) ? array_reverse($path) : $path;
 		}
 		
-		if(count($path) > 1){
+		if(count($path) > 1 || empty($path)){
 		
 			$r['method'] = (is_array($path) && isset($path[0]) ? $path[0] : router()->method());
 			$r['module'] = (is_array($path) && isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module())));
