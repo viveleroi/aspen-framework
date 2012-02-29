@@ -3,6 +3,9 @@
 <head>
 	<title><?= $this->page_title(); ?></title>
 	<meta charset="utf-8">
+	
+	<?php $this->add( new Aspen_Css('css/base.css') ); ?>
+	
 	<?php //$this->addCss('admin/screen.css'); ?>
 	<?php //$this->addCss('admin/ie.css',array('cdtnl_cmt'=>'if IE')); ?>
 	<?php $this->loadModuleHeader(); ?>

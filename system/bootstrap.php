@@ -376,6 +376,15 @@ class Bootstrap extends Base {
 			$this->log->write('Skipping loading Application Interface module, INCLUDE_ONLY is true.');
 		}
 	}
+	
+	
+	/**
+	 * Returns the current configuration object in use.
+	 * @return type 
+	 */
+	public function getConfig(){
+		return $this->config;
+	}
 
 
 	/**
@@ -1106,7 +1115,7 @@ class Bootstrap extends Base {
 			if($allowed){
 
 				$classname = $tmp_reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
-				$file = MODULES_PATH . DS . strtolower(LOADING_SECTION) . DS . $tmp_reg->folder . DS . $classname. '.php';
+				$file = MODULES_PATH . DS . $tmp_reg->folder . DS . $classname. '.php';
 				if(file_exists($file)){
 					include($file);
 					$this->{$classname} = new $classname;

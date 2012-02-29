@@ -193,7 +193,7 @@ class Log  {
 
 			// record all configurations
 			$this->section('Configurations');
-			$config = app()->getConfig();
+			$config = app()->getConfig()->_getConfigArray();
 			foreach($config as $config => $value){
 				$this->write('Config ' . $config . ' was set to a value of: ' . $this->logValue($value));
 			}
@@ -248,7 +248,7 @@ class Log  {
 			$this->section('Bootstrap');
 			$this->write('Installed checks returned ' . (app()->isInstalled() ? 'true' : 'false'));
 
-			if(app()->checkUserConfigExists()){
+			if(ConfigLoader::checkUserConfigExists()){
 				$this->write('Found user config file.');
 			} else {
 				$this->write('User config was NOT FOUND.');

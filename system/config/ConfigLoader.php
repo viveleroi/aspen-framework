@@ -102,7 +102,7 @@ class ConfigLoader {
 	 * @param string $config_path
 	 * @return string 
 	 */
-	protected function _getUserConfigPath( $config_path = false ){
+	protected static function _getUserConfigPath( $config_path = false ){
 		if(!$config_path){
 			// set user config file location, using config prefix if set by server
 			// (allows multiple "instances" of single install)

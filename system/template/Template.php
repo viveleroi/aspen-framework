@@ -89,24 +89,6 @@ class Template  {
 	 */
 	private $terms;
 	
-	/**
-	 * @var string CDTNL_CMT Holds the template string for a conditional comment
-	 * @access private
-	 */
-	const CDTNL_CMT = '<!--[%s]>%s<![endif]-->';
-	
-	/**
-	 * @var string CSS_ELM Holds the template string for a css include
-	 * @access private
-	 */
-	const CSS_ELM = '<link rel="%s" href="%s" media="%s"%s />';
-	
-	/**
-	 * @var string SCRIPT_ELM Holds the template string for a javascript include
-	 * @access private
-	 */
-	const SCRIPT_ELM = '<script src="%s"></script>';
-	
 	
 	/**
 	 * Returns the layouts directory
@@ -132,31 +114,64 @@ class Template  {
 	
 	
 	/**
-	 * Sorts and re-arranges css/javascript includes
+	 * This method allows you to add resources to the page. Every resource
+	 * should be passed here, as an appropriate object. The template will
+	 * print/use the resource depending its type.
 	 */
-	public function prepareMediaIncludes(){
-		if(!empty($this->_load_css)){
-			ksort($this->_load_css, SORT_STRING);
-			// re-arrange to ensure all modules are second
-			$m = array();
-			$i = array();
-			foreach($this->_load_css as $css){
-				${$css['from']}[] = $css;
+	public function add( $resource ){
+		
+		if( is_object($resource) ){
+			
+			// Handle javascript objects by printing their script elements
+			if( $resource instanceof Aspen_JavaScript){
+				$this->_load_js[] = $resource;
 			}
-			$this->_load_css = array_merge($i, $m);
-		}
-		// append any js files for loading
-		if(!empty($this->_load_js)){
-			ksort($this->_load_js, SORT_STRING);
-			// re-arrange to ensure all modules are second
-			$m = array();
-			$i = array();
-			foreach($this->_load_js as $js){
-				${$js['from']}[] = $js;
+			
+			// Handle css objects by printing their link/style elements
+			if( $resource instanceof Aspen_Css){
+				$this->_load_css[] = $resource;
 			}
-			$this->_load_js = array_merge($i, $m);
 		}
 	}
+	
+	
+	/**
+	 * Allows the user to add custom styles which will be printed with module header
+	 * @param string $selector
+	 * @param string $attr
+	 * @param string $value
+	 */
+	public function setCssStyle($selector, $attr, $value){
+		$this->_css_styles[] = array('selector'=>$selector,'attr'=>$attr,'value'=>$value);
+	}
+	
+	
+//	/**
+//	 * Sorts and re-arranges css/javascript includes
+//	 */
+//	public function prepareMediaIncludes(){
+//		if(!empty($this->_load_css)){
+//			ksort($this->_load_css, SORT_STRING);
+//			// re-arrange to ensure all modules are second
+//			$m = array();
+//			$i = array();
+//			foreach($this->_load_css as $css){
+//				${$css['from']}[] = $css;
+//			}
+//			$this->_load_css = array_merge($i, $m);
+//		}
+//		// append any js files for loading
+//		if(!empty($this->_load_js)){
+//			ksort($this->_load_js, SORT_STRING);
+//			// re-arrange to ensure all modules are second
+//			$m = array();
+//			$i = array();
+//			foreach($this->_load_js as $js){
+//				${$js['from']}[] = $js;
+//			}
+//			$this->_load_js = array_merge($i, $m);
+//		}
+//	}
 
 
 	/**
@@ -165,18 +180,12 @@ class Template  {
 	 */
 	public function loadModuleHeader(){
 		
-		$this->prepareMediaIncludes();
+//		$this->prepareMediaIncludes();
 		
 		// append any css files for loading
 		if(!empty($this->_load_css)){
 			foreach($this->_load_css as $css){
-				$file = $this->staticUrl($css);
-				$link = sprintf(self::CSS_ELM, $css['rel'], $file, $css['media'], ($css['title'] ? ' title="'.$css['title'].'"' : ''));
-				if(!empty($css['cdtnl_cmt'])){
-					printf(self::CDTNL_CMT, $css['cdtnl_cmt']."\n", $link);
-				} else {
-					print $link."\n";
-				}
+				print $css->write();
 			}
 		}
 		// append any custom css styles
@@ -205,7 +214,7 @@ class Template  {
 		if(!empty($this->_load_js)){
 			foreach($this->_load_js as $js){
 				if($js['in'] == 'header'){
-					$this->printJs($js);
+					print $js->write();
 				}
 			}
 		}
@@ -224,101 +233,6 @@ class Template  {
 					$this->printJs($js);
 				}
 			}
-		}
-	}
-	
-	
-	/**
-	 * Prints the javascript file include
-	 * @param type $js
-	 */
-	public function printJs($js){
-		$file = $this->staticUrl($js);
-		$link = sprintf(self::SCRIPT_ELM, $file);
-		if(!empty($js['cdtnl_cmt'])){
-			printf(self::CDTNL_CMT."\n", $js['cdtnl_cmt'], $link);
-		} else {
-			print $link."\n";
-		}
-	}
-
-
-	/**
-	 * CSS2 Supported types are: all, braille, embossed, handheld, print, projection, screen, speech, tty, tv
-	 * http://www.w3.org/TR/CSS2/media.html
-	 * @param array $args
-	 * @access public
-	 * @return string
-	 */
-	public function addCss($path, $args = false){
-
-		$base = array(
-					'url' => false,
-					'file' => false,
-					'rel' => 'stylesheet',
-					'title' => false,
-					'from' => 'm',
-					'media' => 'all',
-					'cdtnl_cmt' => '',
-					'basepath' => false,
-					'ext' => 'css',
-					'interface'=>false
-				);
-		
-		$path = $this->parseMediaFilePath($path);
-		$base = array_merge($base, $path);
-		$args = (is_array($args) ? array_merge($base, $args) : $base);
-
-		// merge any incoming args and append the load array
-		if(isset($args['order'])){
-			array_splice($this->_load_css,$args['order'],0,array($args));
-		} else {
-			$this->_load_css[] = $args;
-		}
-	}
-
-
-	/**
-	 * Allows the user to add custom styles which will be printed with module header
-	 * @param string $selector
-	 * @param string $attr
-	 * @param string $value
-	 */
-	public function setCssStyle($selector, $attr, $value){
-		$this->_css_styles[] = array('selector'=>$selector,'attr'=>$attr,'value'=>$value);
-	}
-
-
-	/**
-	 * Adds a javascript include to the header, from either the header template or the current module
-	 * @param string $filename
-	 * @param string $type
-	 * @param string $basepath
-	 * @access public
-	 * @return string
-	 */
-	public function addJs($path, $args = false){
-		
-		$base = array(
-					'url' => false,
-					'file' => false,
-					'from' => 'm',
-					'cdtnl_cmt' => '',
-					'basepath' => false,
-					'ext' => 'js',
-					'interface'=>false,
-					'in' => 'header'
-				);
-		
-		$path = $this->parseMediaFilePath($path);
-		$base = array_merge($base, $path);
-		$args = (is_array($args) ? array_merge($base, $args) : $base);
-
-		// merge any incoming args and append the load array
-		if(isset($args['order'])){
-			array_splice($this->_load_js,$args['order'],0,array($args));
-		} else {
-			$this->_load_js[] = $args;
 		}
 	}
 
