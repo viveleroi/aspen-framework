@@ -345,7 +345,7 @@ class Bootstrap extends Base {
 		session_start();
 
 		// load all plugins
-		$this->_plugins = $this->parsePluginRegistries();
+		$this->_plugins = self::parsePluginRegistries();
 
 		// run the base class
 		parent::Base();
@@ -1005,7 +1005,7 @@ class Bootstrap extends Base {
 	 * Scans the file system for any plugins
 	 * @access private
 	 */
-	public function parsePluginRegistries(){
+	public static function parsePluginRegistries(){
 
 		$files = array();
 
@@ -1048,7 +1048,7 @@ class Bootstrap extends Base {
 	 * @param array $plugins
 	 * @access public
 	 */
-	public function callPluginHook($hook_to_call = false, $plugins = false){
+	public static function callPluginHook($hook_to_call = false, $plugins = false){
 		
 		// if plugins array coming from external source, use it
 		// otherwise, try to use our own
