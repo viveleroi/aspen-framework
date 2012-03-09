@@ -686,8 +686,8 @@ class Bootstrap extends Base {
 	    	}
 			
 			// add new attributes
-			$html_config->set('HTML.DefinitionID', 'xxxx');
-			$html_config->set('HTML.DefinitionRev', 2);
+//			$html_config->set('HTML.DefinitionID', 'xxxx');
+//			$html_config->set('HTML.DefinitionRev', 2);
 			$def = $html_config->getHTMLDefinition(true);
 	    	if(is_array($this->config('html_purifier_new_attributes')) && count($this->config('html_purifier_new_attributes')) > 0){
 	    		foreach($this->config('html_purifier_new_attributes') as $attr){
