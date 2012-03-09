@@ -16,6 +16,11 @@
 class Aspen_Javascript extends Aspen_Resource {
 	
 	/**
+	 * @var type 
+	 */
+	protected $_load_in = 'header';
+	
+	/**
 	 * @var string SCRIPT_ELM Holds the template string for a javascript include
 	 * @access private
 	 */
@@ -23,52 +28,41 @@ class Aspen_Javascript extends Aspen_Resource {
 	
 	
 	/**
-	 * Prints the javascript file include
-	 * @param type $js
+	 * Adds a new css resource
+	 * @param string $path 
 	 */
-	public function printJs($js){
-		$file = $this->staticUrl($js);
-		$link = sprintf(self::SCRIPT_ELM, $file);
-		if(!empty($js['cdtnl_cmt'])){
-			printf(self::CDTNL_CMT."\n", $js['cdtnl_cmt'], $link);
-		} else {
-			print $link."\n";
-		}
+	public function __construct( $path ) {
+		$this->path = $this->getFullUrl($path);
 	}
 	
 	
 	/**
-	 * Adds a javascript include to the header, from either the header template or the current module
-	 * @param string $filename
-	 * @param string $type
-	 * @param string $basepath
-	 * @access public
-	 * @return string
+	 * 
+	 * @param type $type 
 	 */
-	public function addJs($path, $args = false){
-		
-		$base = array(
-					'url' => false,
-					'file' => false,
-					'from' => 'm',
-					'cdtnl_cmt' => '',
-					'basepath' => false,
-					'ext' => 'js',
-					'interface'=>false,
-					'in' => 'header'
-				);
-		
-		$path = $this->parseMediaFilePath($path);
-		$base = array_merge($base, $path);
-		$args = (is_array($args) ? array_merge($base, $args) : $base);
-
-		// merge any incoming args and append the load array
-		if(isset($args['order'])){
-			array_splice($this->_load_js,$args['order'],0,array($args));
-		} else {
-			$this->_load_js[] = $args;
-		}
+	public function setLoadIn( $type = 'header' ){
+		$this->_load_in = $type;
 	}
 	
 	
+	/**
+	 *
+	 * @return type 
+	 */
+	public function getLoadIn(){
+		return $this->_load_in;
+	}
+	
+	
+	/**
+	 * Builds the output based on the parameters 
+	 */
+	public function write(){
+		$link = sprintf(self::SCRIPT_ELM, $this->path, $this->media, $this->rel);
+		if($this->cdtnl_cmt){
+			printf(self::CDTNL_CMT, $this->cdtnl_cmt."\n", $link);
+		} else {
+			print $link."\n";
+		}
+	}
 }

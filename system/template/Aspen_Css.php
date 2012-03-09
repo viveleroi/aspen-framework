@@ -46,7 +46,8 @@ class Aspen_Css extends Aspen_Resource {
 	 * @param string $path 
 	 */
 	public function __construct( $path ) {
-		$this->path = $this->ensureFullUri($path);
+		$this->path = $path;
+		$this->path = $this->getFullUrl();
 	}
 	
 	

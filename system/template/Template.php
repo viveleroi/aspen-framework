@@ -118,7 +118,7 @@ class Template  {
 	 * should be passed here, as an appropriate object. The template will
 	 * print/use the resource depending its type.
 	 */
-	public function add( $resource ){
+	public function add_resource( $resource ){
 		
 		if( is_object($resource) ){
 			
@@ -146,32 +146,18 @@ class Template  {
 	}
 	
 	
-//	/**
-//	 * Sorts and re-arranges css/javascript includes
-//	 */
-//	public function prepareMediaIncludes(){
-//		if(!empty($this->_load_css)){
-//			ksort($this->_load_css, SORT_STRING);
-//			// re-arrange to ensure all modules are second
-//			$m = array();
-//			$i = array();
-//			foreach($this->_load_css as $css){
-//				${$css['from']}[] = $css;
-//			}
-//			$this->_load_css = array_merge($i, $m);
-//		}
-//		// append any js files for loading
-//		if(!empty($this->_load_js)){
-//			ksort($this->_load_js, SORT_STRING);
-//			// re-arrange to ensure all modules are second
-//			$m = array();
-//			$i = array();
-//			foreach($this->_load_js as $js){
-//				${$js['from']}[] = $js;
-//			}
-//			$this->_load_js = array_merge($i, $m);
-//		}
-//	}
+	/**
+	 * Sorts and re-arranges css/javascript includes
+	 */
+	public function prepareMediaIncludes(){
+		if(!empty($this->_load_css)){
+			ksort($this->_load_css, SORT_STRING);
+		}
+		// append any js files for loading
+		if(!empty($this->_load_js)){
+			ksort($this->_load_js, SORT_STRING);
+		}
+	}
 
 
 	/**
@@ -180,7 +166,7 @@ class Template  {
 	 */
 	public function loadModuleHeader(){
 		
-//		$this->prepareMediaIncludes();
+		$this->prepareMediaIncludes();
 		
 		// append any css files for loading
 		if(!empty($this->_load_css)){
@@ -213,7 +199,7 @@ class Template  {
 		}
 		if(!empty($this->_load_js)){
 			foreach($this->_load_js as $js){
-				if($js['in'] == 'header'){
+				if($js->getLoadIn() == 'header'){
 					print $js->write();
 				}
 			}
@@ -278,7 +264,7 @@ class Template  {
 	}
 	
 	
-		/**
+	/**
 	 *
 	 * @param type $path
 	 * @return type 

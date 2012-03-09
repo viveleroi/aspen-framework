@@ -33,16 +33,6 @@ class Aspen_Resource {
 	const CDTNL_CMT = '<!--[%s]>%s<![endif]-->';
 	
 	
-//	/**
-//	 * Static caller for Aspen_Css
-//	 * @param string $path
-//	 * @return \Aspen_Css 
-//	 */
-//	public static function Css( $path ){
-//		return new Aspen_Css($path);
-//	}
-	
-	
 	/**
 	 * Set the conditional comment
 	 * @param string $cond 
@@ -57,12 +47,20 @@ class Aspen_Resource {
 	 * @param string $path
 	 * @return string 
 	 */
-	protected function ensureFullUri( $path ){
+	protected function getFullUrl(){
 		
-		if(strpos($path, "http") !== false){
-			return router()->staticUrl();
+		if(strpos($this->path, "http") !== false){
+			return router()->staticUrl() . $this->path;
 		} else {
-			return $path;
+			return $this->path;
 		}
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public function write(){
+		// placeholder
 	}
 }

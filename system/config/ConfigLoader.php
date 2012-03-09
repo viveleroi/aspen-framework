@@ -52,7 +52,7 @@ class ConfigLoader {
 	 * Loads default config (included)
 	 * @return boolean 
 	 */
-	protected function _loadDefaultConfig(){
+	protected static function _loadDefaultConfig(){
 		$config = false;
 		include('config.default.php');
 		return $config;
@@ -63,7 +63,7 @@ class ConfigLoader {
 	 * Loads application default config
 	 * @return boolean 
 	 */
-	protected function _loadAppDefaultConfig( $config ){
+	protected static function _loadAppDefaultConfig( $config ){
 
 		if(!defined('APP_CONFIG_PATH')){
 			define('APP_CONFIG_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . "app.default.config.php");
@@ -120,7 +120,7 @@ class ConfigLoader {
 	 * @param type $config
 	 * @return type 
 	 */
-	protected function _loadUserConfig( $config_path, $config ){
+	protected static function _loadUserConfig( $config_path, $config ){
 		
 		require_once($config_path);
 		if(class_exists('UserConfig')){
