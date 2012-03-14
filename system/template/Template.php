@@ -486,7 +486,7 @@ class Template  {
 		
 			$r['method'] = (is_array($path) && isset($path[0]) ? $path[0] : router()->method());
 			$r['module'] = (is_array($path) && isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module())));
-			$r['interface'] = (is_array($path) && isset($path[2]) ? strtolower($path[2]) : (LS != '' ? LS : ''));
+			$r['interface'] = (is_array($path) && isset($path[2]) ? strtolower($path[2]) : (LS != '' && LS != 'app' ? LS : ''));
 		} else {
 			if($type == 'module'){
 				$r['module'] = router()->cleanModule($path[0]);
@@ -495,7 +495,7 @@ class Template  {
 				$r['module'] = router()->module();
 				$r['method'] = $path[0];
 			}
-			$r['interface'] = (LS != '' ? LS : '');
+			$r['interface'] = (LS != '' && LS != 'app' ? LS : '');
 		}
 		return $r;
 	}

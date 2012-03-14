@@ -317,7 +317,15 @@ class Bootstrap extends Base {
 
 		// set a few constants
 		define('LS', strtolower(LOADING_SECTION));
-		define('INTERFACE_PATH', APPLICATION_PATH . DS . strtolower(LS));
+		
+		$interface = LS;
+		if(is_array($this->config->get('interface_global_folder_replace'))){
+			$replace = $this->config->get('interface_global_folder_replace');
+			if(array_key_exists(LS, $replace)){
+				$interface = $replace[LS];
+			}
+		}
+		define('INTERFACE_PATH', APPLICATION_PATH . DS . strtolower($interface));
 
 		if(!defined('INCLUDE_ONLY')){
 			define('INCLUDE_ONLY', false);
