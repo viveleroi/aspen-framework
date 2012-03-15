@@ -595,8 +595,13 @@ class Template  {
 		}
 		
 		$url = rtrim($url, '/').'/'; // always use a trailing slash but never more
-
-		return config()->get('lowercase_urls') ? strtolower($url) : $url;
+		$url = config()->get('lowercase_urls') ? strtolower($url) : $url;
+		
+		if($r['interface'] == "app" || $r['interface'] == ""){
+			$url = str_replace("_app", "", $url);
+		}
+		
+		return $url;
 
 	}
 
