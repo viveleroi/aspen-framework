@@ -569,6 +569,8 @@ class User  {
 	public function logout(){
 		$_SESSION = array();
 		session_destroy();
+		setcookie( 'authentication_key', false, time() - 3600, '/' );
+		setcookie( 'user_id', false, time() - 3600, '/' );
 	}
 
 
