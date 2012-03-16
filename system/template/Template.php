@@ -372,7 +372,7 @@ class Template  {
 	public function parseMediaFilePath($path){
 		$base = array();
 		$path_arr = explode('/', $path);
-		if(is_array($path_arr)){
+		if(is_array($path_arr) && count($path_arr) > 1){
 			$i = count($path_arr) - 1;
 			$path_arr = array_reverse($path_arr);
 			$base['from'] = (isset($path_arr[$i]) ? 'i' : 'm');
