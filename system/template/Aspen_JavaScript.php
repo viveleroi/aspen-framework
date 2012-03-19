@@ -32,7 +32,8 @@ class Aspen_Javascript extends Aspen_Resource {
 	 * @param string $path 
 	 */
 	public function __construct( $path ) {
-		$this->path = $this->getFullUrl($path);
+		$this->path = $path;
+		$this->path = $this->getFullUrl();
 	}
 	
 	
@@ -58,7 +59,7 @@ class Aspen_Javascript extends Aspen_Resource {
 	 * Builds the output based on the parameters 
 	 */
 	public function write(){
-		$link = sprintf(self::SCRIPT_ELM, $this->path, $this->media, $this->rel);
+		$link = sprintf(self::SCRIPT_ELM, $this->path);
 		if($this->cdtnl_cmt){
 			printf(self::CDTNL_CMT, $this->cdtnl_cmt."\n", $link);
 		} else {
