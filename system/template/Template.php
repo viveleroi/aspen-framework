@@ -150,13 +150,13 @@ class Template  {
 	 * Sorts and re-arranges css/javascript includes
 	 */
 	public function prepareMediaIncludes(){
-		if(!empty($this->_load_css)){
-			ksort($this->_load_css, SORT_STRING);
-		}
-		// append any js files for loading
-		if(!empty($this->_load_js)){
-			ksort($this->_load_js, SORT_STRING);
-		}
+//		if(!empty($this->_load_css)){
+//			ksort($this->_load_css, SORT_STRING);
+//		}
+//		// append any js files for loading
+//		if(!empty($this->_load_js)){
+//			ksort($this->_load_js, SORT_STRING);
+//		}
 	}
 
 

@@ -50,7 +50,7 @@ class Aspen_Resource {
 	protected function getFullUrl(){
 		
 		if(strpos($this->path, "http") === false){
-			return router()->staticUrl() . "/" . $this->path;
+			return router()->staticUrl() . $this->path;
 		} else {
 			return $this->path;
 		}
