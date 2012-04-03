@@ -503,7 +503,7 @@ class User  {
 			if($this->isLoggedIn() && $method != 'logout'){
 
 				// first identify any groups this user belongs to
-				if(is_array($this->users_groups)){
+				if(isset($this->users_groups) && is_array($this->users_groups)){
 					$groups = $this->users_groups;
 				} else {
 					$model = model()->open('user_group_link');
