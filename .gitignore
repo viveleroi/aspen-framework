@@ -5,6 +5,4 @@ nbproject
 .buildpath
 .settings
 .project
-config/*
-Capfile
 build/aspen-framework
