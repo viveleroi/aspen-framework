@@ -1,4 +1,5 @@
 <?php
+$lang['*']['index:view:head-title'] = "Welcome";
 $lang['*']['copyright'] = 'Aspen Framework %s &mdash; Copyright &copy; 2008-'.date('Y').' Trellis Development, LLC';
 $lang['*']['404:title'] = 'Page Not Found';
 $lang['*']['404:message'] = 'The page (%s/%s) you have requested could not be found.';
