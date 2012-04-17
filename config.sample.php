@@ -45,7 +45,7 @@ class UserConfig extends UserConfigurable {
 	
 	
 	/**
-	 * Production Server
+	 * Staging Server
 	 * @return type 
 	 */
 	protected function staging($config){
@@ -61,7 +61,7 @@ class UserConfig extends UserConfigurable {
 	
 	
 	/**
-	 * Production Server
+	 * Development Server
 	 * @return type 
 	 */
 	protected function development($config){

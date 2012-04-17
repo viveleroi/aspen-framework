@@ -3,7 +3,7 @@
 <head>
 	<title><?= $this->page_title(); ?></title>
 	<meta charset="utf-8">
-	<?php $this->add_resource( new Aspen_Css('css/base.css') ); ?>
+	<?php //$this->add_resource( new Aspen_Css('css/base.css') ); ?>
 	<?php $this->loadModuleHeader(); ?>
 </head>
 <body id="<?= $this->body_id(); ?>">

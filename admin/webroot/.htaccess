@@ -1,8 +1,0 @@
-<IfModule mod_rewrite.c>
-	RewriteEngine on
-	Options +FollowSymlinks
-	RewriteRule ^\.htaccess$ - [F]
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.*)$  index.php?redirected=$1 [QSA,L]
-</IfModule>
