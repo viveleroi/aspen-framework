@@ -65,7 +65,7 @@ class Settings  {
 			if(is_array($cfg)){
 				return $cfg['current_value'] === '' ? $cfg['default_value'] : $cfg['current_value'];
 			} else {
-				return app()->config($key);
+				return config()->get($key);
 			}
 		}
 		return NULL;

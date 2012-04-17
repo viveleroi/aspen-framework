@@ -254,7 +254,7 @@ class Form  {
 			}
 
 			// if token authorization is enabled, we must authenticate
-			if(app()->config('require_form_token_auth')){
+			if(config()->get('require_form_token_auth')){
 
 				$sess_token = session()->getAlnum('form_token');
 
@@ -486,10 +486,10 @@ class Form  {
 				// determine security method
 				$param_access_type	= 'getRaw';
 				if(is_object($field_model) && isset($field_model->type)){
-					if(in_array($field_model->type, app()->config('mysql_field_group_dec'))){
+					if(in_array($field_model->type, config()->get('mysql_field_group_dec'))){
 						$param_access_type = 'getFloat';
 					}
-					elseif(in_array($field_model->type, app()->config('mysql_field_group_int'))){
+					elseif(in_array($field_model->type, config()->get('mysql_field_group_int'))){
 						$param_access_type = 'getDigits';
 					}
 				}
@@ -603,10 +603,10 @@ class Form  {
 		if($this->error()){
 			foreach($this->getErrors($custom_sort) as $errors){
 				foreach($errors as $field => $error){
-					$lines .= sprintf(app()->config('form_error_line_html'), $error);
+					$lines .= sprintf(config()->get('form_error_line_html'), $error);
 				}
 			}
-			printf(app()->config('form_error_wrapping_html'), $lines);
+			printf(config()->get('form_error_wrapping_html'), $lines);
 		}
 		print '';
 	}

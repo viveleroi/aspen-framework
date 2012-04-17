@@ -42,9 +42,9 @@ class Log  {
 
 		$loaded = false;
 
-		$this->on 		= app()->config('enable_logging');
-		$this->dir 		= app()->config('log_dir');
-		$this->level 	= app()->config('log_verbosity');
+		$this->on 		= config()->get('enable_logging');
+		$this->dir 		= config()->get('log_dir');
+		$this->level 	= config()->get('log_verbosity');
 
 		if($this->on && $this->dir){
 
@@ -110,7 +110,7 @@ class Log  {
 
 		$new_filename = 'log';
 
-		if(app()->config('timestamp_log_file')){
+		if(config()->get('timestamp_log_file')){
 			$new_filename .= '-' . Date::formatMicrotime(Date::microtime(EXECUTION_START));
 		}
 
@@ -193,7 +193,7 @@ class Log  {
 
 			// record all configurations
 			$this->section('Configurations');
-			$config = app()->getConfig();
+			$config = app()->getConfig()->_getConfigArray();
 			foreach($config as $config => $value){
 				$this->write('Config ' . $config . ' was set to a value of: ' . $this->logValue($value));
 			}
@@ -248,7 +248,7 @@ class Log  {
 			$this->section('Bootstrap');
 			$this->write('Installed checks returned ' . (app()->isInstalled() ? 'true' : 'false'));
 
-			if(app()->checkUserConfigExists()){
+			if(ConfigLoader::checkUserConfigExists()){
 				$this->write('Found user config file.');
 			} else {
 				$this->write('User config was NOT FOUND.');

@@ -84,7 +84,7 @@ class Router  {
 		$bits = array();
 
 		// if mod_rewrite enabled, and request doesn't look like a non-rewrite request
-		if(app()->config('enable_mod_rewrite') && strpos(app()->server->getQueryString('REQUEST_URI'), '.php?') === false){
+		if(config()->get('enable_mod_rewrite') && strpos(app()->server->getQueryString('REQUEST_URI'), '.php?') === false){
 
 			// we force the entire url as replacement because
 			// an interface app name may be the same as a module
@@ -138,7 +138,7 @@ class Router  {
 			$modules = array_keys(app()->getModuleRegistry());
 			if(!in_array(ucwords($this->map['module']), $modules)){
 				$this->map['method'] = $this->map['module'];
-				$this->map['module'] = app()->config('default_module');
+				$this->map['module'] = config()->get('default_module');
 			}
 		}
 
@@ -170,7 +170,7 @@ class Router  {
 	protected function applyRouteMap($path){
 
 		$path			= $this->stripQuery($path);
-		$routes			= app()->config('routes');
+		$routes			= config()->get('routes');
 		$map			= false;
 		$matched_keys	= array();
 		$matches		= array();
@@ -286,7 +286,7 @@ class Router  {
 	 * @access private
 	 */
 	protected function identifyRequestedMethodForLoad(){
-		return $this->map['method'] ?: app()->config('default_method');
+		return $this->map['method'] ?: config()->get('default_method');
 	}
 
 
@@ -315,7 +315,7 @@ class Router  {
 				}
 			} else {
 
-				$default = app()->config('default_module_no_config');
+				$default = config()->get('default_module_no_config');
 
 			}
 		} else {
@@ -344,7 +344,7 @@ class Router  {
 		if(user()->isLoggedIn()){
 
 			$default = $this->map['method'];
-			$default = $default ? $default : app()->config('default_method');
+			$default = $default ? $default : config()->get('default_method');
 
 		}
 		elseif($this->map['method'] == 'authenticate' || $this->map['method'] == 'forgot'){
@@ -414,7 +414,7 @@ class Router  {
 	public function loadInterfaceLanguage($interface = false){
 
 		$languages 		= array();
-		$lang_setting 	= app()->config('language');
+		$lang_setting 	= config()->get('language');
 
 		// load the interface language library
 		$path = $interface ? APPLICATION_PATH.DS.strtolower($interface) : INTERFACE_PATH;
@@ -443,7 +443,7 @@ class Router  {
 	public function loadModuleLanguage($module = false, $interface = false){
 
 		$languages 		= array();
-		$lang_setting 	= app()->config('language');
+		$lang_setting 	= config()->get('language');
 
 		// load the module-specific language library
 		if(!in_array($module.'_'.$interface, $this->_loaded_languages)){
@@ -508,14 +508,14 @@ class Router  {
 		}
 		
 		// load the interface language file
-		if(app()->config('enable_languages')){
+		if(config()->get('enable_languages')){
 			$this->loadInterfaceLanguage();
 		}
 
 		if($this->method() && user()->userHasAccess()){
 
 			// load the module language file
-			if(app()->config('enable_languages')){
+			if(config()->get('enable_languages')){
 				$this->loadLibraryLanguages();
 				$this->loadModuleLanguage();
 			}
@@ -612,7 +612,7 @@ class Router  {
 	 */
 	public function appUrl(){
 		$url = $this->domainUrl();
-		$url .= app()->config('application_url') ? app()->config('application_url') : $this->getPath();
+		$url .= config()->get('application_url') ? config()->get('application_url') : $this->getPath();
 		return $url;
 	}
 
@@ -669,7 +669,7 @@ class Router  {
         } else {
 
             // if no mod_rewrite, we need to handle the paths appropriately
-            if(app()->config('enable_mod_rewrite') && strpos(app()->server->getQueryString('REQUEST_URI'), '.php?') === false){
+            if(config()->get('enable_mod_rewrite') && strpos(app()->server->getQueryString('REQUEST_URI'), '.php?') === false){
 
                 $redirected = stripslashes(get()->getQueryString('redirected'));
                 $interface = LS ? LS : '';
@@ -708,6 +708,7 @@ class Router  {
 	 */
 	public function interfaceUrl($interface = false){
         $interface = ($interface !== false ? $interface : LS);
+		$interface = ($interface == "app") ? "" : $interface;
         return $this->appUrl() . (empty($interface) ? '' : '/' . $interface);
     }
 
@@ -718,9 +719,9 @@ class Router  {
 	 * @access public
 	 */
 	public function uploadsUrl(){
-		$browser_url = app()->config('upload_browser_path');
+		$browser_url = config()->get('upload_browser_path');
 		if(!$browser_url){
-			$browser_url = str_replace(APPLICATION_PATH, $this->appUrl(), app()->config('upload_server_path'));
+			$browser_url = str_replace(APPLICATION_PATH, $this->appUrl(), config()->get('upload_server_path'));
 		}
 		return $browser_url;
     }
@@ -732,12 +733,12 @@ class Router  {
 	 * @access public
 	 */
 	public function staticUrl($interface = false){
-		if(app()->config('static_content_url')){
-			return app()->config('static_content_url');
+		if(config()->get('static_content_url')){
+			return config()->get('static_content_url');
 		} else {
 			$interface = $interface !== false ? $interface : LS;
-			if(is_array(app()->config('interface_global_folder_replace'))){
-				$replace = app()->config('interface_global_folder_replace');
+			if(is_array(config()->get('interface_global_folder_replace'))){
+				$replace = config()->get('interface_global_folder_replace');
 				if(array_key_exists($interface, $replace)){
 					$interface = $replace[$interface];
 				}

@@ -3,7 +3,10 @@
 // define the name of our app instance
 // leave this blank if root instance, i.e. app
 // not running in a subdirectory
-define('LOADING_SECTION', 'Admin');
+$folder = explode( "/", dirname(__FILE__) );
+$app_name = $folder[ (count($folder) - 2) ];
+define('LOADING_SECTION', ucwords( $app_name ));
+define('DS', DIRECTORY_SEPARATOR);
 
 // set execution start time
 define('EXECUTION_START', microtime());
@@ -12,23 +15,25 @@ define('EXECUTION_START', microtime());
 // you're varying from the default install, these should not
 // need to be changed.
 
+define('BASE_PATH', str_replace("/". $app_name . "/webroot", "", dirname(__FILE__)) );
+
 // define the file path to our system directory
-if(file_exists(dirname(__FILE__) . '/system')){
-	define('SYSTEM_PATH', dirname(__FILE__) . '/system');
+if(file_exists(BASE_PATH . '/system')){
+	define('SYSTEM_PATH', BASE_PATH . '/system');
 } else {
-	define('SYSTEM_PATH', str_replace(strtolower(LOADING_SECTION), '', dirname(__FILE__) . 'system'));
+	define('SYSTEM_PATH', str_replace(strtolower(LOADING_SECTION), '', BASE_PATH . 'system'));
 }
 
 // define the file path to our root application directory
-define('APPLICATION_PATH', str_replace(DIRECTORY_SEPARATOR . "system", '', SYSTEM_PATH)); // path to the entire application root
-define('MODULES_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'modules');
-define('PLUGINS_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'plugins');
+define('APPLICATION_PATH', str_replace(DS . "system", '', SYSTEM_PATH)); // path to the entire application root
+define('MODULES_PATH', APPLICATION_PATH . DS . 'modules');
+define('PLUGINS_PATH', APPLICATION_PATH . DS . 'plugins');
 
 // here we'll quicly check for absolute minimal php5 support
 if(version_compare(phpversion(), "5.3.0", 'ge')){
 
 	// include the bootstrap file
-	include(SYSTEM_PATH . DIRECTORY_SEPARATOR . 'bootstrap.php');
+	include(SYSTEM_PATH . DS . 'bootstrap.php');
 
 	// quickly, we need to run any pre-bootstrap plugin hooks
 
@@ -38,12 +43,13 @@ if(version_compare(phpversion(), "5.3.0", 'ge')){
 		// load plugins with hooks we're calling next
 		Bootstrap::callPluginHook('before_bootstrap_execute', $plugins);
 
-	// load our config files
-	$config = Bootstrap::loadAllConfigs();
+	// Run the config loader - which returns complete Default -> App -> Config object.
+	include(SYSTEM_PATH . DS . 'config' . DS . 'ConfigLoader.php');
+	$config = ConfigLoader::load();
 
 	// load the application system class
 	if(!class_exists('App')){
-		require(SYSTEM_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'App.php');
+		require(SYSTEM_PATH . DS . 'app' . DS . 'App.php');
 	}
 
 	// create an instance of our entire app

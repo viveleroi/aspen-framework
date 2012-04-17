@@ -255,7 +255,7 @@ class File  {
 	 * @access private
 	 */
 	private function typeCheck(){
-		return in_array(str_replace(".", '', $this->file_extension), app()->config('allowed_file_extensions'));
+		return in_array(str_replace(".", '', $this->file_extension), config()->get('allowed_file_extensions'));
 	}
 	
 
@@ -287,7 +287,7 @@ class File  {
 	 * @access public
 	 */
 	public function upload($form_field = false, $overwrite = false, $timestamp = true, $rename = false){
-		if(app()->config('enable_uploads')){
+		if(config()->get('enable_uploads')){
 			if($this->setUploadDirectory() && app()->files->isArray($form_field)){
 				return $this->upload_files($form_field, $rename, $overwrite, $timestamp);
 			}
@@ -305,7 +305,7 @@ class File  {
 	 */
 	public function setUploadDirectory(){
 		
-		$this->upload_directory = app()->config('upload_server_path');
+		$this->upload_directory = config()->get('upload_server_path');
 		$this->browser_url = router()->uploadsUrl();
 
 		// check the status of the folder
@@ -394,8 +394,8 @@ class File  {
 		if(is_array($file)){
 
 			// if file size is within limits
-			if($file['size'] > app()->config('upload_max_file_size')){
-				$return_info['max_size'] = app()->config('upload_max_file_size');
+			if($file['size'] > config()->get('upload_max_file_size')){
+				$return_info['max_size'] = config()->get('upload_max_file_size');
 				error()->raise(2, "Upload failed: file size exceeded maximum.", __FILE__, __LINE__);
 				$file['error'] 	= 2;
 			}

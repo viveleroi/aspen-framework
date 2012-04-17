@@ -13,7 +13,7 @@
  * @package Aspen_Framework
  * @uses Module
  */
-class Index_Admin extends Module {
+class Index_App extends Module {
 
 
 	/**

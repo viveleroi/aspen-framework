@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', false);
+ini_set('display_errors', true);
 error_reporting(E_ALL);
 
 /**
@@ -43,7 +43,7 @@ function &app(){
 	$APP = Base::get_instance();
 	// set the timezone - we do this here so it's more global than
 	// if it were called from bootstrap
-	date_default_timezone_set($APP->config('timezone'));
+	date_default_timezone_set($APP->config->get('timezone'));
 	return $APP;
 }
 
@@ -94,16 +94,25 @@ function &cookie(){
 
 
 /**
+ * Shortcut to return an instance of session params
+ * @return object
+ */
+function &config(){
+	return app()->config;
+}
+
+
+/**
  * Bootstrap, loads all of our configurations and required classes.
  * @package Aspen_Framework
  */
 class Bootstrap extends Base {
-
+	
 	/**
-	 * @var object $cache Holds the cache control object
+	 * @var array $config Holds an array of all configuration settings
 	 * @access public
 	 */
-	public $cache = false;
+	public $config = false;
 
 	/**
 	 * @var object $db Holds the database object
@@ -134,12 +143,6 @@ class Bootstrap extends Base {
 	 * @access public
 	 */
 	public $html = false;
-
-	/**
-	 * @var object $install Holds our installer object
-	 * @access public
-	 */
-	public $install = false;
 
 	/**
 	 * @var object $log System logging methods
@@ -213,12 +216,6 @@ class Bootstrap extends Base {
 	 */
 	public $user = false;
 
-	/**
-	 * @var object $xml Holds the xml format object
-	 * @access public
-	 */
-	public $xml = false;
-
 
 	/**********************************************
 	 * PUBLIC SUPERGLOBAL/PEREGRINE DEFINITIONS
@@ -272,12 +269,6 @@ class Bootstrap extends Base {
 	 ****************************/
 
 	/**
-	 * @var array $config Holds an array of all configuration settings
-	 * @access private
-	 */
-	private $_config = false;
-
-	/**
 	 * @var array $config Holds an array of table child keys
 	 * @access private
 	 */
@@ -317,20 +308,19 @@ class Bootstrap extends Base {
 	 */
 	public function __construct($config){
 
-		// assign configuration data
-		$this->_config = $config;
+		// Store configuration object
+		$this->config = $config;
 
 		if(!defined('LOADING_SECTION')){
-			define('LOADING_SECTION', '');
+			define('LOADING_SECTION', 'app');
 		}
 
 		// set a few constants
 		define('LS', strtolower(LOADING_SECTION));
-		define('DS', DIRECTORY_SEPARATOR);
-
+		
 		$interface = LS;
-		if(is_array($this->config('interface_global_folder_replace'))){
-			$replace = $this->config('interface_global_folder_replace');
+		if(is_array($this->config->get('interface_global_folder_replace'))){
+			$replace = $this->config->get('interface_global_folder_replace');
 			if(array_key_exists(LS, $replace)){
 				$interface = $replace[LS];
 			}
@@ -352,15 +342,15 @@ class Bootstrap extends Base {
 
 		// check whether or not the config file exists
 		// if not, route to default
-		if(!Bootstrap::checkUserConfigExists()){
-			$this->router->_selected_module = $this->config('default_module_no_config');
-			$this->router->_selected_method = $this->config('default_method');
+		if(!ConfigLoader::checkUserConfigExists()){
+			$this->router->_selected_module = config()->get('default_module_no_config');
+			$this->router->_selected_method = config()->get('default_method');
 		}
 
 		$this->setVersionConstants();
 
 		// set monetary locale
-		setlocale(LC_MONETARY, $this->config('currency_locale'));
+		setlocale(LC_MONETARY, config()->get('currency_locale'));
 
 		// load all of the module registry files into a local var
 		$this->_module_registry = $this->parseModuleRegistries();
@@ -375,12 +365,12 @@ class Bootstrap extends Base {
 		$this->loadSystemModelExtensions();
 
 		// enable system logging
-		if($this->config('enable_logging')){
+		if(config()->get('enable_logging')){
 			$this->log->enable();
 		}
 
 		// throw a db error if the config exists, we're not installing, but the db connection fails
-		if(!$this->db && $this->checkUserConfigExists() && $this->router->module() != "Install_Admin"){
+		if(!$this->db && ConfigLoader::checkUserConfigExists() && $this->router->module() != "Install_Admin"){
 			trigger_error('General database failure.', E_USER_ERROR);
 			exit;
 		} else {
@@ -394,6 +384,15 @@ class Bootstrap extends Base {
 			$this->log->write('Skipping loading Application Interface module, INCLUDE_ONLY is true.');
 		}
 	}
+	
+	
+	/**
+	 * Returns the current configuration object in use.
+	 * @return type 
+	 */
+	public function getConfig(){
+		return $this->config;
+	}
 
 
 	/**
@@ -403,10 +402,10 @@ class Bootstrap extends Base {
 	private function setVersionConstants(){
 
 		// update app version
-		define('VERSION', $this->formatVersionNumber($this->config('application_version')));
+		define('VERSION', $this->formatVersionNumber(config()->get('application_version')));
 
 		// update app build, if used
-		define('BUILD', $this->formatVersionNumber($this->config('application_build'), true));
+		define('BUILD', $this->formatVersionNumber(config()->get('application_build'), true));
 
 		// update app build, if used
 		define('VERSION_COMPLETE', 'v'.VERSION.' b'.BUILD.' Aspen-'.FRAMEWORK_REV);
@@ -422,7 +421,7 @@ class Bootstrap extends Base {
 	public function isInstalled(){
 
 		// check for user config
-		$installed = Bootstrap::checkUserConfigExists();
+		$installed = ConfigLoader::checkUserConfigExists();
 
 		if($installed){
 			if(isset($this->db) && is_object($this->db)){
@@ -438,116 +437,6 @@ class Bootstrap extends Base {
 
 		return (bool)$installed;
 
-	}
-
-
-	/**
-	 * Loads the default config file
-	 * @return array
-	 * @access private
-	 */
-	static public function loadDefaultConfig(){
-
-		$config = false;
-
-		include(SYSTEM_PATH . DIRECTORY_SEPARATOR . 'config.default.php');
-
-		if(!defined('APP_CONFIG_PATH')){
-			define('APP_CONFIG_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . "app.default.config.php");
-		}
-
-		if(file_exists(APP_CONFIG_PATH)){
-			include(APP_CONFIG_PATH);
-		}
-
-		return $config;
-
-	}
-
-
-	/**
-	 * Verifies whether or not the user config file exists
-	 * @param string $config_path Path to configuration location
-	 * @return boolean
-	 * @access public
-	 */
-	static public function checkUserConfigExists($config_path = false){
-
-		if(!$config_path){
-
-			// set user config file location, using config prefix if set by server
-			// (allows multiple "instances" of single install)
-			if(!defined('CONFIG_PREFIX')){ define('CONFIG_PREFIX', ''); }
-			$config_path = APPLICATION_PATH . DIRECTORY_SEPARATOR . CONFIG_PREFIX . 'config.php';
-
-		}
-
-		return file_exists($config_path) ? $config_path : false;
-
-	}
-
-
-	/**
-	 * Loads all config files
-	 * @return array
-	 * @access private
-	 */
-	static public function loadAllConfigs(){
-
-		// load the default first
-		$all_config = Bootstrap::loadDefaultConfig();
-
-		// then try to load the user config file
-		if($config_path = Bootstrap::checkUserConfigExists()){
-
-			include($config_path);
-
-			// update our config with the user-set params
-			if(isset($config) && is_array($config)){
-				foreach($config as $param => $value){
-					$all_config[$param] = $value;
-				}
-				define('USER_CONFIG_LOADED', true);
-			}
-		}
-
-		return $all_config;
-
-	}
-
-
-	/**
-	 * Returns a configuration value from config files
-	 * @param string $key
-	 * @return mixed
-	 * @access public
-	 */
-	public function config($key = false){
-		if($key && isset($this->_config[$key])){
-			return $this->_config[$key];
-		}
-		return false;
-	}
-
-
-	/**
-	 * Returns the configuration array
-	 * @return array
-	 * @access public
-	 */
-	public function getConfig(){
-		return $this->_config;
-	}
-
-
-	/**
-	 * Sets a config value
-	 * @param string $key
-	 * @param mixed $value
-	 * @access public
-	 */
-	public function setConfig($key, $value){
-		$this->_config[$key] = $value;
 	}
 
 
@@ -575,14 +464,14 @@ class Bootstrap extends Base {
 										'root' => SYSTEM_PATH));
 			$this->loadSystemLibraryArray($system_class_array);
 
-			$this->db = ADONewConnection($this->config('db_extension'));
+			$this->db = ADONewConnection(config()->get('db_extension'));
 			$this->db->SetFetchMode(ADODB_FETCH_ASSOC);
 
 			if(!$this->db->Connect(
-				$this->config('db_hostname'),
-				$this->config('db_username'),
-				$this->config('db_password'),
-				$this->config('db_database'))){
+				config()->get('db_hostname'),
+				config()->get('db_username'),
+				config()->get('db_password'),
+				config()->get('db_database'))){
 					$this->db = false;
 			}
 		} else {
@@ -591,8 +480,8 @@ class Bootstrap extends Base {
 
 		// compile our final array of classes to load
 		$all_classes 	= array();
-		$base_classes 	= $this->config('load_core_class');
-		$add_classes 	= $this->config('load_add_core_class');
+		$base_classes 	= config()->get('load_core_class');
+		$add_classes 	= config()->get('load_add_core_class');
 		$module_classes = $this->listModelLibraries();
 
 		// Merge user custom classes from config into base classes
@@ -660,23 +549,23 @@ class Bootstrap extends Base {
     	// set framework-related html purifier settings
     	if($this->isLibraryLoaded('HTMLPurifier')){
 	    	$html_config = HTMLPurifier_Config::createDefault();
-	    	if($this->config('enable_cache')){
-	    		$html_config->set('Cache.SerializerPath', $this->config('cache_dir'));
+	    	if(config()->get('enable_cache')){
+	    		$html_config->set('Cache.SerializerPath', config()->get('cache_dir'));
 	    	} else {
 	    		$html_config->set('Cache.DefinitionImpl', null);
 	    	}
 
 	    	// set user-defined html purifier settings
-	    	if(is_array($this->config('html_purifier_settings')) && count($this->config('html_purifier_settings')) > 0){
-	    		foreach($this->config('html_purifier_settings') as $setting){
+	    	if(is_array(config()->get('html_purifier_settings')) && count(config()->get('html_purifier_settings')) > 0){
+	    		foreach(config()->get('html_purifier_settings') as $setting){
 	    			$html_config->set($setting[0].'.'.$setting[1], $setting[2]);
 	    		}
 	    	}
 
 	    	// load custom filters
-	    	if(is_array($this->config('html_purifier_custom_filters'))){
+	    	if(is_array(config()->get('html_purifier_custom_filters'))){
 	    		$classes = array();
-	    		foreach($this->config('html_purifier_custom_filters') as $filter){
+	    		foreach(config()->get('html_purifier_custom_filters') as $filter){
 	    			include(SYSTEM_PATH.DS.'security'.DS.'Htmlpurifier'.DS.'standalone'.DS.'HTMLPurifier'.DS.'Filter/'.$filter['name'].'.php');
 	    			$classes[] = new $filter['class'];
 	    		}
@@ -689,8 +578,8 @@ class Bootstrap extends Base {
 //			$html_config->set('HTML.DefinitionID', 'xxxx');
 //			$html_config->set('HTML.DefinitionRev', 2);
 			$def = $html_config->getHTMLDefinition(true);
-	    	if(is_array($this->config('html_purifier_new_attributes')) && count($this->config('html_purifier_new_attributes')) > 0){
-	    		foreach($this->config('html_purifier_new_attributes') as $attr){
+	    	if(is_array(config()->get('html_purifier_new_attributes')) && count(config()->get('html_purifier_new_attributes')) > 0){
+	    		foreach(config()->get('html_purifier_new_attributes') as $attr){
 					$def->addAttribute($attr[0], $attr[1], $attr[2]);
 	    		}
 	    	}
@@ -839,7 +728,7 @@ class Bootstrap extends Base {
 	 */
 	private function listModelExtensions(){
 
-		$models = $this->config('models');
+		$models = config()->get('models');
 		$models = is_array($models) ? $models : array();
 
 		// pull in any models defined in register.xml files
@@ -1208,7 +1097,7 @@ class Bootstrap extends Base {
 
 			// check the targetApp is set, if so we need to verify it
 			if(isset($tmp_reg->targetApplication) && isset($tmp_reg->targetApplication->guid)){
-				if($tmp_reg->targetApplication->guid == $this->config('application_guid')){
+				if($tmp_reg->targetApplication->guid == config()->get('application_guid')){
 
 					$this->log->write('targetApplication set and matched for ' . $tmp_reg->classname . ' module.');
 
@@ -1235,7 +1124,6 @@ class Bootstrap extends Base {
 
 				$classname = $tmp_reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
 				$file = MODULES_PATH . DS . $tmp_reg->folder . DS . $classname. '.php';
-
 				if(file_exists($file)){
 					include($file);
 					$this->{$classname} = new $classname;
@@ -1265,7 +1153,7 @@ class Bootstrap extends Base {
 	 */
 	private function registryVersionMatch($min, $max){
 
-		$app_vers = $this->config('application_version');
+		$app_vers = config()->get('application_version');
 
 		if(empty($app_vers)){
 			$this->error->raise(1, 'Module requires a version check, but the application version is empty.', __FILE__, __LINE__);

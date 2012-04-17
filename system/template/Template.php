@@ -89,24 +89,6 @@ class Template  {
 	 */
 	private $terms;
 	
-	/**
-	 * @var string CDTNL_CMT Holds the template string for a conditional comment
-	 * @access private
-	 */
-	const CDTNL_CMT = '<!--[%s]>%s<![endif]-->';
-	
-	/**
-	 * @var string CSS_ELM Holds the template string for a css include
-	 * @access private
-	 */
-	const CSS_ELM = '<link rel="%s" href="%s" media="%s"%s />';
-	
-	/**
-	 * @var string SCRIPT_ELM Holds the template string for a javascript include
-	 * @access private
-	 */
-	const SCRIPT_ELM = '<script src="%s"></script>';
-	
 	
 	/**
 	 * Returns the layouts directory
@@ -132,30 +114,49 @@ class Template  {
 	
 	
 	/**
+	 * This method allows you to add resources to the page. Every resource
+	 * should be passed here, as an appropriate object. The template will
+	 * print/use the resource depending its type.
+	 */
+	public function add_resource( $resource ){
+		
+		if( is_object($resource) ){
+			
+			// Handle javascript objects by printing their script elements
+			if( $resource instanceof Aspen_JavaScript){
+				$this->_load_js[] = $resource;
+			}
+			
+			// Handle css objects by printing their link/style elements
+			if( $resource instanceof Aspen_Css){
+				$this->_load_css[] = $resource;
+			}
+		}
+	}
+	
+	
+	/**
+	 * Allows the user to add custom styles which will be printed with module header
+	 * @param string $selector
+	 * @param string $attr
+	 * @param string $value
+	 */
+	public function setCssStyle($selector, $attr, $value){
+		$this->_css_styles[] = array('selector'=>$selector,'attr'=>$attr,'value'=>$value);
+	}
+	
+	
+	/**
 	 * Sorts and re-arranges css/javascript includes
 	 */
 	public function prepareMediaIncludes(){
-		if(!empty($this->_load_css)){
-			ksort($this->_load_css, SORT_STRING);
-			// re-arrange to ensure all modules are second
-			$m = array();
-			$i = array();
-			foreach($this->_load_css as $css){
-				${$css['from']}[] = $css;
-			}
-			$this->_load_css = array_merge($i, $m);
-		}
-		// append any js files for loading
-		if(!empty($this->_load_js)){
-			ksort($this->_load_js, SORT_STRING);
-			// re-arrange to ensure all modules are second
-			$m = array();
-			$i = array();
-			foreach($this->_load_js as $js){
-				${$js['from']}[] = $js;
-			}
-			$this->_load_js = array_merge($i, $m);
-		}
+//		if(!empty($this->_load_css)){
+//			ksort($this->_load_css, SORT_STRING);
+//		}
+//		// append any js files for loading
+//		if(!empty($this->_load_js)){
+//			ksort($this->_load_js, SORT_STRING);
+//		}
 	}
 
 
@@ -170,13 +171,7 @@ class Template  {
 		// append any css files for loading
 		if(!empty($this->_load_css)){
 			foreach($this->_load_css as $css){
-				$file = $this->staticUrl($css);
-				$link = sprintf(self::CSS_ELM, $css['rel'], $file, $css['media'], ($css['title'] ? ' title="'.$css['title'].'"' : ''));
-				if(!empty($css['cdtnl_cmt'])){
-					printf(self::CDTNL_CMT, $css['cdtnl_cmt']."\n", $link);
-				} else {
-					print $link."\n";
-				}
+				print $css->write();
 			}
 		}
 		// append any custom css styles
@@ -188,7 +183,7 @@ class Template  {
 			print '</style>'."\n";
 		}
 		// append any js files for loading
-		if(app()->config('print_js_variables')){
+		if(config()->get('print_js_variables')){
 			print '<script>'."\n";
 			print 'var INTERFACE_URL = "'.router()->interfaceUrl().'";'."\n";
 			if(is_array($this->_load_js_vars)){
@@ -204,8 +199,8 @@ class Template  {
 		}
 		if(!empty($this->_load_js)){
 			foreach($this->_load_js as $js){
-				if($js['in'] == 'header'){
-					$this->printJs($js);
+				if($js->getLoadIn() == 'header'){
+					print $js->write();
 				}
 			}
 		}
@@ -220,105 +215,10 @@ class Template  {
 		$this->prepareMediaIncludes();
 		if(!empty($this->_load_js)){
 			foreach($this->_load_js as $js){
-				if($js['in'] == 'footer'){
+				if($js->getLoadIn() == 'footer'){
 					$this->printJs($js);
 				}
 			}
-		}
-	}
-	
-	
-	/**
-	 * Prints the javascript file include
-	 * @param type $js
-	 */
-	public function printJs($js){
-		$file = $this->staticUrl($js);
-		$link = sprintf(self::SCRIPT_ELM, $file);
-		if(!empty($js['cdtnl_cmt'])){
-			printf(self::CDTNL_CMT."\n", $js['cdtnl_cmt'], $link);
-		} else {
-			print $link."\n";
-		}
-	}
-
-
-	/**
-	 * CSS2 Supported types are: all, braille, embossed, handheld, print, projection, screen, speech, tty, tv
-	 * http://www.w3.org/TR/CSS2/media.html
-	 * @param array $args
-	 * @access public
-	 * @return string
-	 */
-	public function addCss($path, $args = false){
-
-		$base = array(
-					'url' => false,
-					'file' => false,
-					'rel' => 'stylesheet',
-					'title' => false,
-					'from' => 'm',
-					'media' => 'all',
-					'cdtnl_cmt' => '',
-					'basepath' => false,
-					'ext' => 'css',
-					'interface'=>false
-				);
-		
-		$path = $this->parseMediaFilePath($path);
-		$base = array_merge($base, $path);
-		$args = (is_array($args) ? array_merge($base, $args) : $base);
-
-		// merge any incoming args and append the load array
-		if(isset($args['order'])){
-			array_splice($this->_load_css,$args['order'],0,array($args));
-		} else {
-			$this->_load_css[] = $args;
-		}
-	}
-
-
-	/**
-	 * Allows the user to add custom styles which will be printed with module header
-	 * @param string $selector
-	 * @param string $attr
-	 * @param string $value
-	 */
-	public function setCssStyle($selector, $attr, $value){
-		$this->_css_styles[] = array('selector'=>$selector,'attr'=>$attr,'value'=>$value);
-	}
-
-
-	/**
-	 * Adds a javascript include to the header, from either the header template or the current module
-	 * @param string $filename
-	 * @param string $type
-	 * @param string $basepath
-	 * @access public
-	 * @return string
-	 */
-	public function addJs($path, $args = false){
-		
-		$base = array(
-					'url' => false,
-					'file' => false,
-					'from' => 'm',
-					'cdtnl_cmt' => '',
-					'basepath' => false,
-					'ext' => 'js',
-					'interface'=>false,
-					'in' => 'header'
-				);
-		
-		$path = $this->parseMediaFilePath($path);
-		$base = array_merge($base, $path);
-		$args = (is_array($args) ? array_merge($base, $args) : $base);
-
-		// merge any incoming args and append the load array
-		if(isset($args['order'])){
-			array_splice($this->_load_js,$args['order'],0,array($args));
-		} else {
-			$this->_load_js[] = $args;
 		}
 	}
 
@@ -364,7 +264,7 @@ class Template  {
 	}
 	
 	
-		/**
+	/**
 	 *
 	 * @param type $path
 	 * @return type 
@@ -469,7 +369,7 @@ class Template  {
 		$this->set($data);
 
 		// if token auth on, we need to generate a token
-		if(app()->config('require_form_token_auth')){
+		if(config()->get('require_form_token_auth')){
 			$token = app()->security->generateFormToken();
 		}
 		
@@ -586,7 +486,7 @@ class Template  {
 		
 			$r['method'] = (is_array($path) && isset($path[0]) ? $path[0] : router()->method());
 			$r['module'] = (is_array($path) && isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module())));
-			$r['interface'] = (is_array($path) && isset($path[2]) ? strtolower($path[2]) : (LS != '' ? LS : ''));
+			$r['interface'] = (is_array($path) && isset($path[2]) ? strtolower($path[2]) : (LS != '' && LS != 'app' ? LS : ''));
 		} else {
 			if($type == 'module'){
 				$r['module'] = router()->cleanModule($path[0]);
@@ -595,7 +495,7 @@ class Template  {
 				$r['module'] = router()->module();
 				$r['method'] = $path[0];
 			}
-			$r['interface'] = (LS != '' ? LS : '');
+			$r['interface'] = (LS != '' && LS != 'app' ? LS : '');
 		}
 		return $r;
 	}
@@ -635,7 +535,7 @@ class Template  {
 		$url = router()->interfaceUrl($r['interface']);
 		
 		// if mod rewrite/clean urls are off
-		if(!app()->config('enable_mod_rewrite')){
+		if(!config()->get('enable_mod_rewrite')){
 
 			$url .= sprintf('/index.php?module=%s&method=%s', $r['module'], $r['method']);
 
@@ -653,7 +553,7 @@ class Template  {
 		} else {
 
 			// Determine if there are any routes that need to be used instead
-			$routes = app()->config('routes');
+			$routes = config()->get('routes');
 
 			$route_mask = false;
 			if(is_array($routes)){
@@ -675,10 +575,10 @@ class Template  {
 
 			// Otherwise, just build it as normal
 			if(!$route_mask){
-				if($r['module'] != strtolower(app()->config('default_module')) || !empty($bits)){
+				if($r['module'] != strtolower(config()->get('default_module')) || !empty($bits)){
 					$url .= sprintf('/%s', $r['module']);
 				}
-				$url .= $r['method'] != app()->config('default_method') || is_array($bits) ? sprintf('/%s', $r['method']) : '';
+				$url .= $r['method'] != config()->get('default_method') || is_array($bits) ? sprintf('/%s', $r['method']) : '';
 			}
 
 			if(is_array($bits)){
@@ -695,8 +595,13 @@ class Template  {
 		}
 		
 		$url = rtrim($url, '/').'/'; // always use a trailing slash but never more
-
-		return app()->config('lowercase_urls') ? strtolower($url) : $url;
+		$url = config()->get('lowercase_urls') ? strtolower($url) : $url;
+		
+		if($r['interface'] == "app" || $r['interface'] == ""){
+			$url = str_replace("_app", "", $url);
+		}
+		
+		return $url;
 
 	}
 
@@ -750,7 +655,7 @@ class Template  {
 	 * @access public
 	 */
 	public function ajaxUrl($path = false, $bits = false){
-		$orig_config = app()->config('enable_mod_rewrite');
+		$orig_config = config()->get('enable_mod_rewrite');
 		app()->setConfig('enable_mod_rewrite', false); // turn off rewrite urls
 		$url = $this->url($path, $bits);
 		app()->setConfig('enable_mod_rewrite', $orig_config); // turn them back to what they were
@@ -884,7 +789,7 @@ class Template  {
 
 		if($total_pages > 1){
 
-            $link_limit = app()->config('pagination_link_limit');
+            $link_limit = config()->get('pagination_link_limit');
             $limit_balance = ceil(($link_limit / 2));
 
 			// previous
@@ -893,7 +798,7 @@ class Template  {
 			}
 
 			// if we need to display the other page numbers
-			if(app()->config('pagination_show_page_numbers')){
+			if(config()->get('pagination_show_page_numbers')){
 
 				// add in the first page
 				$selected = $current_page == 1 ? ' at' : '';
@@ -992,7 +897,7 @@ class Template  {
 		$this->page_title = str_replace('{lang_title}', text(strtolower($module).':'.$method.':head-title'), $this->page_title);
 		$this->page_title = str_replace('{module}', ucwords($module), $this->page_title);
 		$this->page_title = str_replace('{method}', ucwords(router()->method()), $this->page_title);
-		$this->page_title .= '&nbsp;&ndash;&nbsp;'.app()->config('application_name');
+		$this->page_title .= '&nbsp;&ndash;&nbsp;'.config()->get('application_name');
 
 		return $this->page_title;
 
@@ -1034,8 +939,8 @@ class Template  {
 	 */
 	public function pref_date($gmdate, $format = false, $timezone = false){
 
-		$timezone	= $timezone ? $timezone : app()->config('timezone');
-		$format		= $format ? $format : app()->config('date_format');
+		$timezone	= $timezone ? $timezone : config()->get('timezone');
+		$format		= $format ? $format : config()->get('date_format');
 
 		// try to get a user timezone setting
 		if($user_id = session()->getInt('user_id')){
