@@ -2,16 +2,10 @@
 
 # THIS SCRIPT WAS DESIGNED TO PREPARE ASPEN FRAMEWORK FOR A PRODUCTION RELEASE
 
-# if [ $# -ne 3 ]; then
-#      echo 1>&2 Usage: 1.0 rc1 Release_Candidate
-#      exit 0
-# fi
-
-# if [ $2 = "final" ]; then
-#      versname=$1
-# else 
-#      versname=$1$2
-# fi
+if [ $# -ne 1 ]; then
+	echo 1>&2 Usage: ./build.sh branch
+	exit 0
+fi
 
 # remove any existing exports
 rm -rf aspen-framework
@@ -21,7 +15,7 @@ git clone git@github.com:botskonet/aspen-framework.git
 cd aspen-framework
 
 # checkout the proper branch
-#git checkout --track -b $1$2 origin/$1$2
+git checkout --track -b $1 origin/$1
 
 # get the git revision number 
 gitvers=`git describe`
