@@ -442,7 +442,7 @@ class Template  {
 			$class = ($add_class?$add_class:'');
 			if($r['method'] == router()->method()
 					&& ucwords($r['module']) == router()->cleanModule(router()->module())){
-				$class = ' at';
+				$class = ' '.config()->get('active_link_class_name');
 			}
 
 			$link = sprintf('<a href="%s" title="%s"%s>%s</a>',
@@ -467,7 +467,7 @@ class Template  {
 	 * @return string
 	 */
 	public function at($path = false, $type = 'method'){
-		return (router()->here($path,$type) ? ' class="at"' : '');
+		return (router()->here($path,$type) ? ' class="'.config()->get('active_link_class_name').'"' : '');
 	}
 	
 	

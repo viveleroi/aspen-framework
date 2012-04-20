@@ -246,6 +246,9 @@
 
 	// form error message wrapping (wraps each message inside of holder)
 	$config['form_error_line_html'] = "<li>%s</li>\n";
+	
+	// template "at" class name
+	$config['active_link_class_name'] = "at";
 
 	// Toggle the display of other page numbers in pagination.
 	// If off, only the current page will display with prev/next links

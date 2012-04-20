@@ -846,6 +846,11 @@ class Router  {
 			}
 		}
 
+		$replacements = config()->get('interface_global_folder_replace');
+		foreach($replacements as $key => $replacement){
+			$selected_module = str_replace("_".$replacement, $key, strtolower($selected_module));
+		}
+
 		if($r['module'] && strtolower($selected_module) == strtolower($r['module'])){
 			if($r['method']){
 				if(is_array($r['method'])){

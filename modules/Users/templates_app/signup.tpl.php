@@ -5,6 +5,10 @@
 	<fieldset>
 		<ol>
 			<li>
+				<label for="username"><?= text('signup:username'); ?>:</label>
+				<input type="text" id="username" name="username" value="<?= $form->cv('username') ?>" class="text" />
+			</li>
+			<li>
 				<label for="email"><?= text('signup:email'); ?>:</label>
 				<input type="text" id="email" name="email" value="<?= $form->cv('email') ?>" class="text" />
 			</li>
