@@ -80,7 +80,7 @@ class Error  {
 		}
 
 		$error = array(
-				'application' => config()->get('application'),
+				'application' => config()->get('application_name'),
 				'version_complete' => VERSION_COMPLETE,
 				'version' => VERSION,
 				'build' => BUILD,
