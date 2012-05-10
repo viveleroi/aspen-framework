@@ -323,6 +323,8 @@ class User  {
 			// set an authentication cookie
 			$this->_setAuthenticationCookie( 'authentication_key', $this->getAuthenticationKey($account['email'], $account['id']) );
 			$this->_setAuthenticationCookie( 'user_id', $account['id'] );
+			
+			app()->refreshCage('session');
 
 		}
 	}
