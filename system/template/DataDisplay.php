@@ -37,7 +37,7 @@ class DataDisplay  {
 			}
 			$this->data = $data;
 		} else {
-			error()->raise(1, text('dberror:datadisplay_call_error', $name), __FILE__, __LINE__);
+			error()->raise(1, text('dberror:datadisplay_init_error', $name), __FILE__, __LINE__);
 		}
 	}
 
