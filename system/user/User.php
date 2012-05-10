@@ -447,13 +447,17 @@ class User  {
 
 		$authenticated 	= false;
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : session()->getInt('user_id');
-
+//		$user_id		= $user_id ? $user_id : session()->getInt('user_id');
+		
 		if(IS_ADMIN){
 			$authenticated = true;
 		} else {
 
 			if($this->isLoggedIn()){
+				
+				// Setting user id here, to ensure that the cookie authentication 
+				// has already restored the session
+				$user_id = $user_id ? $user_id : session()->getInt('user_id');
 
 				// first identify any groups this user belongs to
 				$model = model()->open('user_group_link');
