@@ -22,6 +22,14 @@ class Aspen_Resource {
 	protected $cdtnl_cmt;
 	
 	/**
+	 * 
+	 * @var type 
+	 */
+	protected $opts = array(
+		'cache-bust' => true
+	);
+	
+	/**
 	 * @var string Url to resource 
 	 */
 	protected $path;
@@ -31,6 +39,28 @@ class Aspen_Resource {
 	 * @access private
 	 */
 	const CDTNL_CMT = '<!--[%s]>%s<![endif]-->';
+	
+	
+	/**
+	 * Adds a new css resource
+	 * @param string $path 
+	 */
+	public function __construct( $path, $opts = false ) {
+		$this->mergeOpts($opts);
+		$this->path = $path;
+		$this->path = $this->getFullUrl();
+	}
+	
+	
+	/**
+	 * Merges incoming options with defaults
+	 * @param type $opts 
+	 */
+	protected function mergeOpts($opts){
+		if(is_array($opts) && !empty($opts)){
+			$this->opts = array_merge($this->opts, $opts);
+		}
+	}
 	
 	
 	/**
@@ -48,6 +78,13 @@ class Aspen_Resource {
 	 * @return string 
 	 */
 	protected function getFullUrl(){
+		
+		if($this->opts['cache-bust']){
+			$cb = config()->get('application_build');
+			if(config()->get('enable_cache_busting') && !empty($cb)){
+				$this->path .= '?v='.$cb;  
+			}
+		}
 		
 		if(strpos($this->path, "http") === false){
 			return router()->staticUrl() . $this->path;

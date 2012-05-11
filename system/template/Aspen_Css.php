@@ -42,16 +42,6 @@ class Aspen_Css extends Aspen_Resource {
 	
 	
 	/**
-	 * Adds a new css resource
-	 * @param string $path 
-	 */
-	public function __construct( $path ) {
-		$this->path = $path;
-		$this->path = $this->getFullUrl();
-	}
-	
-	
-	/**
 	 * Sets the element type for write
 	 * @param type $type 
 	 */

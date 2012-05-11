@@ -122,6 +122,10 @@
 	// when any js files included.
 	$config['print_js_variables'] = true;
 	
+	// Aspen can append the application_build tag to the static resources 
+	// to allow browsers to bust caches
+	$config['enable_cache_busting'] = true;
+	
 	// Interface support files folder.
 	// Any files that are global to the interface (images, js, css, templates)
 	// may be stored in a different folder than the interface. If so,
