@@ -58,9 +58,10 @@ class Aspen_Resource {
 	
 	
 	/**
-	 * 
+	 * You need to override this with your own
+	 * resource methods.
 	 */
-	public function write(){
-		// placeholder
+	public function __toString(){
+		return "";
 	}
 }

@@ -57,13 +57,13 @@ class Aspen_Javascript extends Aspen_Resource {
 	
 	/**
 	 * Builds the output based on the parameters 
-	 */
-	public function write(){
+	 */	
+	public function __toString(){
 		$link = sprintf(self::SCRIPT_ELM, $this->path);
 		if($this->cdtnl_cmt){
-			printf(self::CDTNL_CMT, $this->cdtnl_cmt."\n", $link);
+			return sprintf(self::CDTNL_CMT, $this->cdtnl_cmt."\n", $link);
 		} else {
-			print $link."\n";
+			return $link."\n";
 		}
 	}
 }

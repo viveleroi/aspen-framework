@@ -171,7 +171,7 @@ class Template  {
 		// append any css files for loading
 		if(!empty($this->_load_css)){
 			foreach($this->_load_css as $css){
-				print $css->write();
+				print $css;
 			}
 		}
 		// append any custom css styles
@@ -200,7 +200,7 @@ class Template  {
 		if(!empty($this->_load_js)){
 			foreach($this->_load_js as $js){
 				if($js->getLoadIn() == 'header'){
-					print $js->write();
+					print $js;
 				}
 			}
 		}

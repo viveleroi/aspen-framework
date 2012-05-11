@@ -65,13 +65,13 @@ class Aspen_Css extends Aspen_Resource {
 	/**
 	 * Builds the output based on the parameters 
 	 */
-	public function write(){
+	public function __toString(){
 		$temp = ($this->elem_type == "link" ? self::CSS_ELM_LINK : self::CSS_ELM_STYLE);
 		$link = sprintf($temp, $this->path, $this->media, $this->rel);
 		if($this->cdtnl_cmt){
-			printf(self::CDTNL_CMT, $this->cdtnl_cmt."\n", $link);
+			return sprintf(self::CDTNL_CMT, $this->cdtnl_cmt."\n", $link);
 		} else {
-			print $link."\n";
+			return $link."\n";
 		}
 	}
 }
