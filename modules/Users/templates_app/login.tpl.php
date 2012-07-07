@@ -1,6 +1,6 @@
 <h2><?php print text('login:title'); ?></h2>
 <?php print sml()->printMessage(); ?>
-<form action="<?php print $this->action('authenticate'); ?>" method="post">
+<form action="<?= Url::path('authenticate')->action(); ?>" method="post">
 	<fieldset>
 		<ol>
 			<li>

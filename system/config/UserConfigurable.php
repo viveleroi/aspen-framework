@@ -37,12 +37,15 @@ class UserConfigurable {
 		 * the following cases, those configurations will be used 
 		 */
 		if(isset($this->production) && is_array($this->production) && in_array($server, $this->production)){
+			define('ENVIRONMENT', 'production');
 			$this->config = $this->production( $config );
 		}
 		else if(isset($this->staging) && is_array($this->staging) && in_array($server, $this->staging)){
+			define('ENVIRONMENT', 'staging');
 			$this->config = $this->staging( $config );
 		}
 		else {
+			define('ENVIRONMENT', 'development');
 			$this->config = $this->development( $config );
 		}
 	}

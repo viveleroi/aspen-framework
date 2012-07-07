@@ -89,6 +89,12 @@ class Template  {
 	 */
 	private $terms;
 	
+	/**
+	 * Holds the current template file path
+	 * @var type 
+	 */
+	private $template;
+	
 	
 	/**
 	 * Returns the layouts directory
@@ -337,24 +343,20 @@ class Template  {
 	 * @access public
 	 */
 	public function page(){
-	
-		$page = $this->page ? $this->page : router()->method();
-		if(router()->method() == 'add'){
-			if(!file_exists($this->getModuleTemplateDir().DS.'add.tpl.php')){
-				$page = 'edit';
-			}
-		}
-		$template = $this->getModuleTemplateDir().DS.$page.'.tpl.php';
 		
-		if(file_exists($template) && strpos($template, APPLICATION_PATH) !== false){
+		if(!$this->template){
+			$this->setPage();
+		}
+		
+		if(file_exists($this->template) && strpos($this->template, APPLICATION_PATH) !== false){
 			// pass through variables
 			if(is_array($this->_data)){
 				foreach($this->_data as $var => $value){
 					$$var = $value;
 				}
 			}
-			app()->log->write('Including template ' . $template);
-			include($template);
+			app()->log->write('Including template ' . $this->template);
+			include($this->template);
 		}
 	}
 
@@ -407,8 +409,17 @@ class Template  {
 	 * Set the current page template.
 	 * @param string $page 
 	 */
-	public function setPage($page){
+	public function setPage( $page = false, $module = false ){
+		
 		$this->page = $page;
+		$page = $this->page ? $this->page : router()->method();
+		if(router()->method() == 'add'){
+			if(!file_exists($this->getModuleTemplateDir( $module ).DS.'add.tpl.php')){
+				$page = 'edit';
+			}
+		}
+		$this->template = $this->getModuleTemplateDir( $module ).DS.$page.'.tpl.php';
+		
 	}
 
 
@@ -424,42 +435,6 @@ class Template  {
 
 
 	/**
-	 * Adds a new link
-	 * @param string $title
-	 * @param string $module
-	 * @param string $method
-	 * @param string $text
-	 */
-	public function link($text, $path, $bits = false, $title = false, $add_class = false){
-		
-		$r = $this->parseNamespacePath($path);
-		$title = $title ? $title : $text;
-
-		$link = '';
-		if(user()->userHasAccess($r['module'], $r['method'], $r['interface'])){
-
-			// highlight the link if the user is at the page
-			$class = ($add_class?$add_class:'');
-			if($r['method'] == router()->method()
-					&& ucwords($r['module']) == router()->cleanModule(router()->module())){
-				$class = ' '.config()->get('active_link_class_name');
-			}
-
-			$link = sprintf('<a href="%s" title="%s"%s>%s</a>',
-								$this->xhtmlUrl($path, $bits),
-								strip_tags($title),
-								(!empty($class) ? ' class="'.$class.'"' : ''),
-								$text
-							);
-
-		}
-
-		return $link;
-
-	}
-
-
-	/**
 	 * Returns class attribute if the user is at the selected location
 	 * @param string $module
 	 * @param string $method
@@ -468,36 +443,6 @@ class Template  {
 	 */
 	public function at($path = false, $type = 'method'){
 		return (router()->here($path,$type) ? ' class="'.config()->get('active_link_class_name').'"' : '');
-	}
-	
-	
-	/**
-	 * Parses an interface/module/method path for the individual parts
-	 * @param string $path
-	 * @return string 
-	 */
-	public function parseNamespacePath($path = false, $type = 'method'){
-		if($path){
-			$path = explode('/',$path);
-			$path = is_array($path) ? array_reverse($path) : $path;
-		}
-		
-		if(count($path) > 1 || empty($path)){
-		
-			$r['method'] = (is_array($path) && isset($path[0]) ? $path[0] : router()->method());
-			$r['module'] = (is_array($path) && isset($path[1]) ? router()->cleanModule($path[1]) : strtolower(router()->cleanModule(router()->module())));
-			$r['interface'] = (is_array($path) && isset($path[2]) ? strtolower($path[2]) : (LS != '' && LS != 'app' ? LS : ''));
-		} else {
-			if($type == 'module'){
-				$r['module'] = router()->cleanModule($path[0]);
-				$r['method'] = false;
-			} else {
-				$r['module'] = router()->module();
-				$r['method'] = $path[0];
-			}
-			$r['interface'] = (LS != '' && LS != 'app' ? LS : '');
-		}
-		return $r;
 	}
 	
 	
@@ -522,131 +467,6 @@ class Template  {
 
 
 	/**
-	 * Returns a URL using a module and method
-	 * @param string $module
-	 * @param array $bits Additional arguments to pass through the url
-	 * @param string $method
-	 * @return string
-	 * @access public
-	 */
-	public function url($path = false, $bits = false){
-		
-		$r = $this->parseNamespacePath($path);
-		$url = router()->interfaceUrl($r['interface']);
-		
-		// if mod rewrite/clean urls are off
-		if(!config()->get('enable_mod_rewrite')){
-
-			$url .= sprintf('/index.php?module=%s&method=%s', $r['module'], $r['method']);
-
-			if(is_array($bits)){
-				foreach($bits as $bit => $value){
-					if(is_array($value)){
-						foreach($value as $key => $val){
-							$url .= '&' . $bit . '[' . $key . ']=' . urlencode($val);
-						}
-					} else {
-						$url .= '&' . $bit . '=' . urlencode($value);
-					}
-				}
-			}
-		} else {
-
-			// Determine if there are any routes that need to be used instead
-			$routes = config()->get('routes');
-
-			$route_mask = false;
-			if(is_array($routes)){
-				foreach($routes as $mask => $route){
-					if(strtolower($route['module']) == strtolower($r['module']) && strtolower($route['method']) == strtolower($r['method'])){
-						// if the interface is also set, it must match
-						if(isset($route['interface'])){
-							if(strtolower($route['interface']) == strtolower($r['interface'])){
-								$route_mask = $mask;
-								$url .= '/'.$route['uri'];
-							}
-						} else {
-							$route_mask = $mask;
-							$url .= '/'.$route['uri'];
-						}
-					}
-				}
-			}
-
-			// Otherwise, just build it as normal
-			if(!$route_mask){
-				if($r['module'] != strtolower(config()->get('default_module')) || !empty($bits)){
-					$url .= sprintf('/%s', $r['module']);
-				}
-				$url .= $r['method'] != config()->get('default_method') || is_array($bits) ? sprintf('/%s', $r['method']) : '';
-			}
-
-			if(is_array($bits)){
-				foreach($bits as $bit => $value){
-					if(is_array($value)){
-						foreach($value as $key => $val){
-							$url .= '/' . $bit . '[' . $key . ']=' . urlencode($val);
-						}
-					} else {
-						$url .= '/' . urlencode($value);
-					}
-				}
-			}
-		}
-		
-		$url = rtrim($url, '/').'/'; // always use a trailing slash but never more
-		$url = config()->get('lowercase_urls') ? strtolower($url) : $url;
-		
-		if($r['interface'] == "app" || $r['interface'] == ""){
-			$url = str_replace("_app", "", $url);
-		}
-		
-		return $url;
-
-	}
-
-
-	/**
-	 * Returns a properly-encoded URL using a module and method
-	 * @param string $module
-	 * @param array $bits Additional arguments to pass through the url
-	 * @param string $method
-	 * @return string
-	 * @access public
-	 */
-	public function xhtmlUrl($path = false, $bits = false){
-		return $this->encodeTextEntities($this->url($path, $bits));
-	}
-
-
-	/**
-	 * Encodes entities that appear in text only, not html
-	 * @param string $string
-	 * @return string
-	 * @access public
-	 */
-	public function encodeTextEntities($string){
-		return str_replace("&", "&#38;", $string);
-	}
-	
-
-	/**
-	 * Returns a properly-encoded URL using a method
-	 * @param string $method
-	 * @param string $module
-	 * @param string $interface
-	 * @return string
-	 * @access public
-	 */
-	public function action($path = false, $bits = false){
-		if(router()->arg(1) && !$bits){
-			$bits = array('id' => router()->arg(1));
-		}
-		return $this->xhtmlUrl($path, $bits);
-	}
-
-
-	/**
 	 * Returns a properly-encoded URL using a module and method
 	 * @param string $module
 	 * @param array $bits Additional arguments to pass through the url
@@ -657,7 +477,7 @@ class Template  {
 	public function ajaxUrl($path = false, $bits = false){
 		$orig_config = config()->get('enable_mod_rewrite');
 		app()->setConfig('enable_mod_rewrite', false); // turn off rewrite urls
-		$url = $this->url($path, $bits);
+		$url = Url::path($path, $bits);
 		app()->setConfig('enable_mod_rewrite', $orig_config); // turn them back to what they were
 		return $url;
 	}
@@ -679,7 +499,7 @@ class Template  {
 				$new_params[$key] = $value;
 			}
 		}
-		return $this->link($text, $path, $new_params);
+		return Link::path($text, $path, $new_params);
 	}
 
 
@@ -725,7 +545,7 @@ class Template  {
 			$map = router()->getOriginalMap();
 			$path = $map['module'].'/'.$map['method'];
 		}
-		return $this->url($path, $new_params);
+		return Url::path($path, $new_params);
 	}
 
 
@@ -762,9 +582,9 @@ class Template  {
 		// create the link
 		$html = sprintf('<a href="%s" title="%s" class="%s">%s</a>',
 								$url,
-								'Sort ' . $this->encodeTextEntities($title) . ' column ' . ($new_direction == 'ASC' ? 'ascending' : 'descending'),
+								'Sort ' . Link::encodeTextEntities($title) . ' column ' . ($new_direction == 'ASC' ? 'ascending' : 'descending'),
 								$class.$add_class,
-								$this->encodeTextEntities($title)
+								Link::encodeTextEntities($title)
 							);
 
 		return $html;
@@ -1050,9 +870,9 @@ class Template  {
 					}
 
 					printf('<option value="%s"%s>%s</option>' . "\n",
-								$this->encodeTextEntities($value),
+								Link::encodeTextEntities($value),
 								$match,
-								$this->encodeTextEntities($option[$keys[1]]));
+								Link::encodeTextEntities($option[$keys[1]]));
 				} else {
 
 					// match
@@ -1064,9 +884,9 @@ class Template  {
 					}
 
 					printf('<option value="%s"%s>%s</option>' . "\n",
-								$this->encodeTextEntities($key),
+								Link::encodeTextEntities($key),
 								$match,
-								$this->encodeTextEntities($option));
+								Link::encodeTextEntities($option));
 
 				}
 

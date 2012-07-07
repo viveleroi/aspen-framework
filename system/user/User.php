@@ -86,8 +86,8 @@ class User  {
 			$body = str_replace('{username}', $form->cv('username'), $body);
 			$body = str_replace('{email}', $form->cv('email'), $body);
 			$body = str_replace('{app}', config()->get('application_name'), $body);
-			$body = str_replace('{url}', template()->url('users/login'), $body);
-			$body = str_replace('{forgot}', template()->url('users/forgot'), $body);
+			$body = str_replace('{url}', Url::path('users/login'), $body);
+			$body = str_replace('{forgot}', Url::path('users/forgot'), $body);
 			app()->mail->Body 		= $body;
 
 			app()->mail->Send();

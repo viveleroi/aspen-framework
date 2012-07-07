@@ -6,7 +6,7 @@
 <?php if(IS_EDIT_PAGE){ ?>
 <p><a href="<?php print $this->xhtmlUrl('delete', array('id' => $form->cv('id'))) ?>" onclick="return confirm('<?php print text('userform:delete_warn'); ?>')"><?php print text('userform:delete_link'); ?></a></p>
 <?php } ?>
-<form method="post" action="<?php print $this->action(); ?>">
+<form method="post" action="<?= Url::path()->action(); ?>">
 	<fieldset>
 		<legend><?php print text('userform:profile'); ?></legend>
 		<ol>

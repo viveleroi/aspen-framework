@@ -887,7 +887,7 @@ class Router  {
 	 * @access public
 	 */
 	public function returnToReferrer(){
-		$location = session()->getUri('referring_page', template()->url('view'));
+		$location = session()->getUri('referring_page', Url::path('view'));
 		if(!empty($location)){
 			$this->redirectToUrl($location);
 		}
@@ -901,7 +901,7 @@ class Router  {
 	 * @access public
 	 */
 	public function redirect($path = false, $bits = false){
-		$this->redirectToUrl( template()->url($path, $bits), false, true);
+		$this->redirectToUrl( Url::path($path, $bits), false, true);
     }
 
 

@@ -375,11 +375,13 @@
 	$config['load_core_class'][] = array('classname' => 'Date');
 	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false);
+	$config['load_core_class'][] = array('classname' => 'Url','autoload'=>false,'filename'=>'Url','folder' => 'router');
 	$config['load_core_class'][] = array('classname' => 'Template');
 	$config['load_core_class'][] = array('classname' => 'Aspen_Resource','autoload'=>false,'filename'=>'Aspen_Resource','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Aspen_Javascript','autoload'=>false,'filename'=>'Aspen_Javascript','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Aspen_Css','autoload'=>false,'filename'=>'Aspen_Css','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'DataDisplay','autoload'=>false,'filename'=>'DataDisplay','folder' => 'template');
+	$config['load_core_class'][] = array('classname' => 'Link','autoload'=>false,'filename'=>'Link','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Error','folder' => 'errors','autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'File', 'folder' => 'files');
 	$config['load_core_class'][] = array('classname' => 'HTMLPurifier',

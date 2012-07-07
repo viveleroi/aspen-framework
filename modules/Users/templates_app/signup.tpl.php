@@ -1,7 +1,7 @@
 <h2><?= text('signup:title'); ?></h2>
 <?= sml()->printMessage(); ?>
 <?= $form->printErrors(); ?>
-<form id="frm-signup" action="<?= $this->action(); ?>" method="post">
+<form id="frm-signup" action="<?= Url::path()->action(); ?>" method="post">
 	<fieldset>
 		<ol>
 			<li>
