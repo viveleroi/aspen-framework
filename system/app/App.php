@@ -34,6 +34,9 @@ class App extends Bootstrap {
 		}
 
 		if(config()->get('enable_authentication_support')){
+			
+			// determine user's authentication status
+			$this->user->determineUserAuthentication();
 
 			// load all default user preferences
 			if($this->params->session->getInt('user_id')){

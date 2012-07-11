@@ -23,6 +23,13 @@ function &user(){
  * @package Aspen_Framework
  */
 class User  {
+	
+	
+	/**
+	 * Holds boolean for whether or not user has been authenticated
+	 * @var type 
+	 */
+	private $authenticated = false;
 
 
 	/**
@@ -403,6 +410,53 @@ class User  {
 		return (empty($redirect) ? router()->interfaceUrl() : $redirect);
 	}
 
+	
+	/**
+	 * Returns whether or not the user is logged in
+	 * @return boolean
+	 * @access public
+	 */
+	final public function determineUserAuthentication(){
+		$auth_key = sha1(session()->getEmail('email') . session()->getInt('user_id'));
+		if(app()->checkDbConnection()){
+			if(
+				session()->getInt('authenticated', false) &&
+				session()->getAlnum('authentication_key') == $auth_key &&
+				session()->getAlnum('domain_key') == $this->getDomainKeyValue()
+				){
+					$this->authenticated = true;
+			}
+			elseif( $this->authenticateCookie() ){
+				$this->authenticated = true;
+			}
+		}
+		if($this->authenticated){
+			$this->verifyAuthenticationAllowed();
+		}
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public function verifyAuthenticationAllowed(){
+		// validate that this user is allowed to login. If this value changed between
+		// last login, they may have a cookie that allows them to remain logged
+		// in
+		if(session()->isDigits('user_id')){
+			$user = model()->open('users', session()->getInt('user_id'));
+			if($user){
+				if(!$user['allow_login']){
+					$this->logout();
+					router()->redirect('users/login');
+				}
+			} else {
+				$this->logout();
+				router()->redirect('users/login');
+			}
+		}
+	}
+	
 
 	/**
 	 * Returns whether or not the user is logged in
@@ -410,21 +464,7 @@ class User  {
 	 * @access public
 	 */
 	final public function isLoggedIn(){
-		$authenticated 	= false;
-		$auth_key 		= sha1(session()->getEmail('email') . session()->getInt('user_id'));
-		if(app()->checkDbConnection()){
-			if(
-				session()->getInt('authenticated', false) &&
-				session()->getAlnum('authentication_key') == $auth_key &&
-				session()->getAlnum('domain_key') == $this->getDomainKeyValue()
-				){
-					$authenticated = true;
-			}
-			elseif( $this->authenticateCookie() ){
-				$authenticated = true;
-			}
-		}
-		return $authenticated;
+		return $this->authenticated;
 	}
 
 
@@ -573,6 +613,7 @@ class User  {
 	 * @access public
 	 */
 	public function logout(){
+		$this->authenticated = false;
 		$_SESSION = array();
 		session_destroy();
 		setcookie( 'authentication_key', false, time() - 3600, '/' );
