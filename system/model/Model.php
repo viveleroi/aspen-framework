@@ -1356,6 +1356,15 @@ class Model  {
 			$this->base_having($str, $field, $value, $match);
 		}
 	}
+	
+	
+	/**
+	 * 
+	 * @param type $str
+	 */
+	public function addHavingCondition( $str = false, $field = false, $value = false, $match = 'AND' ){
+		$this->base_having($str, $field, $value, $match);
+	}
 
 
 //+-----------------------------------------------------------------------+

@@ -244,6 +244,12 @@
 
 	// session message wrapping html
 	$config['sml_message_html'] = '<p class="%2$s">%1$s</p>';
+	
+	// session message success class
+	$config['sml_message_class_success'] = 'success';
+	
+	// session message error class
+	$config['sml_message_class_error'] = 'error';
 
 	// form error message wrapping (wraps area of possibly multiple errors)
 	$config['form_error_wrapping_html'] = '<ul class="error">%s</ul>';

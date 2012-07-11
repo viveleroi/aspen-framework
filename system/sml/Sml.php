@@ -41,11 +41,11 @@ class Sml  {
 
 		// Interpret boolean values
 		if($class === 0 || $class === false){
-			$class = 'error';
+			$class = config()->get('sml_message_class_error');
 		}
 
 		if($class === 1 || $class === true){
-			$class = 'success';
+			$class = config()->get('sml_message_class_success');
 		}
 
 		/* pull the session if it exists */
