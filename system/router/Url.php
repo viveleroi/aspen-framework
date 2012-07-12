@@ -31,6 +31,12 @@ class Url {
 	 *
 	 * @var type 
 	 */
+	protected $query_string_bits = array();
+	
+	/**
+	 *
+	 * @var type 
+	 */
 	protected $urlencode = true;
 	
 	/**
@@ -90,6 +96,16 @@ class Url {
 	
 	
 	/**
+	 * 
+	 * @param type $bits
+	 */
+	public function query( $bits ){
+		$this->query_string_bits = array_merge($this->query_string_bits, $bits);
+		return $this;
+	}
+	
+	
+	/**
 	 * Parses an interface/module/method path for the individual parts
 	 * @param string $path
 	 * @return string 
@@ -144,6 +160,10 @@ class Url {
 					}
 				}
 			}
+			
+			// append all forced query string bits
+			$url .= http_build_query($this->query_string_bits);
+			
 		} else {
 
 			// Determine if there are any routes that need to be used instead
@@ -186,9 +206,14 @@ class Url {
 					}
 				}
 			}
+			
+			$url = rtrim($url, '/').'/'; // always use a trailing slash but never more
+			
+			// append all forced query string bits
+			$url .= '?'.http_build_query($this->query_string_bits);
+			
 		}
 		
-		$url = rtrim($url, '/').'/'; // always use a trailing slash but never more
 		$url = config()->get('lowercase_urls') ? strtolower($url) : $url;
 		
 		if($r['interface'] == "app" || $r['interface'] == ""){
@@ -216,8 +241,17 @@ class Url {
 	 * 
 	 * @return type
 	 */
-	public function __toString(){
+	public function getUrl(){
 		$this->buildUrl();
-		return Link::encodeTextEntities($this->url);
+		return $this->url;
+	}
+	
+	
+	/**
+	 * 
+	 * @return type
+	 */
+	public function __toString(){
+		return Link::encodeTextEntities( $this->getUrl() );
 	}
 }

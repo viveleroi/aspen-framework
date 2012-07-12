@@ -51,9 +51,16 @@ class Config {
 	}
 	
 	
-	// @todo implement
-	public function extend(){
-		
+	/**
+	 *
+	 * @param type $key
+	 * @param type $value 
+	 */
+	public function add( $key, $value ){
+		if(!isset($this->_config[$key]) || !is_array($this->_config[$key])){
+			$this->_config[$key] = array();
+		}
+		$this->_config[$key][] = $value;
 	}
 	
 	
