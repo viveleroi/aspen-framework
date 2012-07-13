@@ -67,6 +67,12 @@ class Router  {
 	 * @access private
 	 */
 	public function __construct(){
+		
+		if(config()->get('enable_authentication_support')){
+			
+			// determine user's authentication status
+			user()->determineUserAuthentication();
+		}
 
 		// map the url elements and then identify the module/method to load
 		$this->mapRequest();

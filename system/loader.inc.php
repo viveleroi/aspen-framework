@@ -16,6 +16,7 @@ define('SYSTEM_PATH', dirname(__FILE__));
 define('APPLICATION_PATH', str_replace(DIRECTORY_SEPARATOR . "system", '', SYSTEM_PATH));
 define('MODULES_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'modules');
 define('PLUGINS_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'plugins');
+define('DS', DIRECTORY_SEPARATOR);
 
 // set execution start time
 define('EXECUTION_START', microtime());
@@ -75,7 +76,10 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 	
 		define('LOADING_SECTION', ucwords($interface));
 
-		$config = Bootstrap::loadAllConfigs();
+		// Run the config loader - which returns complete Default -> App -> Config object.
+		include(SYSTEM_PATH . DS . 'config' . DS . 'ConfigLoader.php');
+		$config = ConfigLoader::load();
+	
 		return new Bootstrap($config);
 	}
 	

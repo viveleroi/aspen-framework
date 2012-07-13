@@ -210,7 +210,9 @@ class Url {
 			$url = rtrim($url, '/').'/'; // always use a trailing slash but never more
 			
 			// append all forced query string bits
-			$url .= '?'.http_build_query($this->query_string_bits);
+			if(!empty($this->query_string_bits)){
+				$url .= '?'.http_build_query($this->query_string_bits);
+			}
 			
 		}
 		
