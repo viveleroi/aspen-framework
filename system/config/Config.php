@@ -79,18 +79,12 @@ class Config {
 			if(isset($_SERVER['HOSTNAME'])){
 				$Server = $_SERVER['HOSTNAME'];
 			} else {
-				
+				// attempt to gather the hostname from the network settings, usually
+				// only when run from cli/cron
 				if(file_exists('/etc/sysconfig/network')){
-					// attempt to gather the hostname from the network settings, usually
-					// only when run from cli/cron
 					preg_match('/HOSTNAME=(.*)/', file_get_contents('/etc/sysconfig/network'), $network);
 					$hostname = explode("=", $network[0]);
 					$Server = (isset($hostname[1]) ? $hostname[1] : false);
-				} else {
-					
-					if(defined('ASPEN_ENVIRONMENT')){
-						$Server = ASPEN_ENVIRONMENT;
-					}
 				}
 			}
 		}

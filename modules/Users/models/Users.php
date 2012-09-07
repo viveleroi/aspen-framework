@@ -65,8 +65,9 @@ class UsersModel extends Model {
 			$this->addError('email', text('db:error:email'));
 		} else {
 
-			// if we're adding the record, check for existing email
-			if(!$primary_key){
+			// if we're adding the record, or using an email that isn't this user's
+			//check for existing email
+			if( !$primary_key || $clean->getEmail('email') == session()->getEmail('email')){
 				$user = $this->open('users');
 				$user->where('email', $clean->getEmail('email'));
 				$unique = $user->results();

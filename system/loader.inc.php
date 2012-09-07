@@ -13,10 +13,10 @@
  */
 // define our application paths
 define('SYSTEM_PATH', dirname(__FILE__));
-define('APPLICATION_PATH', str_replace(DIRECTORY_SEPARATOR . "system", '', SYSTEM_PATH));
-define('MODULES_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'modules');
-define('PLUGINS_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'plugins');
 define('DS', DIRECTORY_SEPARATOR);
+define('APPLICATION_PATH', str_replace(DS . "system", '', SYSTEM_PATH));
+define('MODULES_PATH', APPLICATION_PATH . DS . 'modules');
+define('PLUGINS_PATH', APPLICATION_PATH . DS . 'plugins');
 
 // set execution start time
 define('EXECUTION_START', microtime());
@@ -41,7 +41,7 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 			
 			$module = ucwords(strtolower($module));
 			
-			$loc = MODULES_PATH.DIRECTORY_SEPARATOR.$module.DIRECTORY_SEPARATOR.$module.".php";
+			$loc = MODULES_PATH.DS.$module.DS.$module.".php";
 			if(!defined('INCLUDE_ONLY_PATH')){
 				define('INCLUDE_ONLY_PATH', $loc);
 			}
@@ -49,8 +49,10 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 			if(file_exists(INCLUDE_ONLY_PATH)){
 	
 				if(require(INCLUDE_ONLY_PATH)){
-					// load our config files
-					$config = Bootstrap::loadAllConfigs();
+					
+					// Run the config loader - which returns complete Default -> App -> Config object.
+					include(SYSTEM_PATH . DS . 'config' . DS . 'ConfigLoader.php');
+					$config = ConfigLoader::load();
 	
 					$module_object = new $module($config);
 					return $module_object;
@@ -79,7 +81,7 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 		// Run the config loader - which returns complete Default -> App -> Config object.
 		include(SYSTEM_PATH . DS . 'config' . DS . 'ConfigLoader.php');
 		$config = ConfigLoader::load();
-	
+					
 		return new Bootstrap($config);
 	}
 	

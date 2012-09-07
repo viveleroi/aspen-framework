@@ -1150,6 +1150,18 @@ class Model  {
 		$vals = is_array($values) ? implode('","', $values) : $values;
 		$this->whereCustom(sprintf('%s NOT IN ("%s")', $field, $vals), $match);
 	}
+	
+	
+	/**
+	 * Adds a standard where not in condition
+	 * @param string $field
+	 * @param mixed $value
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereNotInSubquery($field, $query, $match = 'AND'){
+		$this->whereCustom(sprintf('%s NOT IN (%s)', $field, $query), $match);
+	}
 
 
 	/**
