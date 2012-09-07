@@ -67,7 +67,7 @@ class UsersModel extends Model {
 
 			// if we're adding the record, or using an email that isn't this user's
 			//check for existing email
-			if( !$primary_key || $clean->getEmail('email') == session()->getEmail('email')){
+			if( !$primary_key || $clean->getEmail('email') != session()->getEmail('email')){
 				$user = $this->open('users');
 				$user->where('email', $clean->getEmail('email'));
 				$unique = $user->results();

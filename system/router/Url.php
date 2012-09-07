@@ -112,7 +112,7 @@ class Url {
 	 */
 	public function parseNamespacePath($path = false, $type = 'method'){
 		if($path){
-			$path = explode('/',$path);
+			$path = explode('/',urldecode($path));
 			$path = is_array($path) ? array_reverse($path) : $path;
 		}
 		
