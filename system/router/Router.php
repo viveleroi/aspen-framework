@@ -907,7 +907,7 @@ class Router  {
 	 * @access public
 	 */
 	public function redirect($path = false, $bits = false){
-		$this->redirectToUrl( Url::path($path, $bits), false, true);
+		$this->redirectToUrl( Url::path($path, $bits)->getUrl(), false, true);
     }
 
 
