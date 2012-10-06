@@ -20,7 +20,7 @@ error_reporting(E_ALL);
  * have a record of which AF revision
  * you're using.
  */
-define('FRAMEWORK_REV', 'Git-Version');
+define('FRAMEWORK_REV', '2.0-14-g4059c4b');
 
 
 /**
@@ -425,13 +425,9 @@ class Bootstrap extends Base {
 
 		if($installed){
 			if(isset($this->db) && is_object($this->db)){
-				// attempt a query to see if tables installed
-				$results = $this->db->Execute('SHOW TABLES');
-				$installed = $results ? $results->RecordCount() : false;
+				$installed = $this->checkDbConnection();
 			} else {
-
 				$installed = false;
-
 			}
 		}
 
@@ -454,26 +450,15 @@ class Bootstrap extends Base {
 		if(defined('USER_CONFIG_LOADED') && USER_CONFIG_LOADED){
 
 			/**************
-			 * Load the database class
+			 * Connect to the DB
 			 */
-			$system_class_array = array(array(
-										'classname' => 'ADONewConnection',
-										'folder' => 'adodb',
-										'filename' => 'adodb.inc',
-										'autoload' => false,
-										'root' => SYSTEM_PATH));
-			$this->loadSystemLibraryArray($system_class_array);
-
-			$this->db = ADONewConnection(config()->get('db_extension'));
-			$this->db->SetFetchMode(ADODB_FETCH_ASSOC);
-
-			if(!$this->db->Connect(
-				config()->get('db_hostname'),
-				config()->get('db_username'),
-				config()->get('db_password'),
-				config()->get('db_database'))){
-					$this->db = false;
-			}
+			$this->db = mysqli_connect(
+					config()->get('db_hostname'),
+					config()->get('db_username'),
+					config()->get('db_password'),
+					config()->get('db_database')
+			) or 
+			die("Problem connecting: " . mysqli_error());
 		} else {
 			$this->db = false;
 		}
@@ -831,7 +816,7 @@ class Bootstrap extends Base {
 	 */
 	public function checkDbConnection(){
 		if($this->db){
-			if($this->db->Execute('SHOW TABLES')){
+			if(mysqli_query($this->db, "SELECT 1")){
 				return true;
 			}
 		} else {

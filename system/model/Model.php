@@ -270,15 +270,9 @@ class Model  {
 	 * @param type $table
 	 * @return type 
 	 */
-	public function tableExists($table, $db = false){
-		if(!is_object($db)){
-			$db = $this->_db;
-		}
-		$tables = $db->MetaTables('TABLES');
-		if (!is_array($tables)) {
-			return false;
-		}
-		return in_array($table, $tables);
+	public function tableExists($table){
+		$table = app()->getDatabaseSchema($table);
+		return is_array($table);
 	}
 
 
@@ -588,9 +582,64 @@ class Model  {
 		$db_map = array();
 
 		// pull a list of all tables
-		$tables = $this->_db->MetaTables();
+		$tables = array();
+		$result = mysqli_query($this->_db, 'SHOW TABLES');
+		while ($row = mysqli_fetch_array($result)){
+			$tables[] = $row[0];
+		}
+		
 		foreach($tables as $table){
-			$db_map[$table]['schema'] = $this->_db->MetaColumns($table, false);
+
+			// build table column data
+			$columns = array();
+			$result = mysqli_query($this->_db, sprintf('SHOW COLUMNS FROM `%s`', $table) );
+			while ($row = mysqli_fetch_assoc($result)){
+				
+				$col = new stdClass();
+				
+				$col->name = $row['Field'];
+				
+				// split type into type(length):
+				$col->scale = null;
+				if (preg_match("/^(.+)\((\d+),(\d+)/", $row['Type'], $query_array)) {
+					$col->type = $query_array[1];
+					$col->max_length = is_numeric($query_array[2]) ? $query_array[2] : -1;
+					$col->scale = is_numeric($query_array[3]) ? $query_array[3] : -1;
+				} elseif (preg_match("/^(.+)\((\d+)/", $row['Type'], $query_array)) {
+					$col->type = $query_array[1];
+					$col->max_length = is_numeric($query_array[2]) ? $query_array[2] : -1;
+				} elseif (preg_match("/^(enum)\((.*)\)$/i", $row['Type'], $query_array)) {
+					$col->type = $query_array[1];
+					$arr = explode(",",$query_array[2]);
+					$col->enums = $arr;
+					$zlen = max(array_map("strlen",$arr)) - 2; // PHP >= 4.0.6
+					$col->max_length = ($zlen > 0) ? $zlen : 1;
+				} else {
+					$col->type = $row['Type'];
+					$col->max_length = -1;
+				}
+				$col->not_null = ($row['Null'] != 'YES');
+				$col->primary_key = ($row['Key'] == 'PRI');
+				$col->auto_increment = (strpos($row['Extra'], 'auto_increment') !== false);
+				$col->binary = (strpos($row['Type'],'blob') !== false || strpos($row['Type'],'binary') !== false);
+				$col->unsigned = (strpos($row['Type'],'unsigned') !== false);
+				$col->zerofill = (strpos($row['Type'],'zerofill') !== false);
+
+				if (!$col->binary) {
+					$d = $row['Default'];
+					if ($d != '' && $d != 'NULL') {
+						$col->has_default = true;
+						$col->default_value = $d;
+					} else {
+						$col->has_default = false;
+					}
+				}
+				
+				$columns[strtoupper($row['Field'])] = $col;
+				
+			}
+			
+			$db_map[$table]['schema'] = $columns;
 			$db_map[$table]['relation_only'] = false;
 
 			if(!isset($db_map[$table]['children'])){
@@ -703,7 +752,7 @@ class Model  {
 		}
 		$key = false;
 		if(isset($db['schema'])){
-			foreach($db['schema'] as $field => $vals){
+			foreach($db['schema'] as $vals){
 				if($vals->primary_key){
 					$key = $vals->name;
 				}
@@ -1153,18 +1202,6 @@ class Model  {
 		$vals = is_array($values) ? implode('","', $values) : $values;
 		$this->whereCustom(sprintf('%s NOT IN ("%s")', $field, $vals), $match);
 	}
-	
-	
-	/**
-	 * Adds a standard where not in condition
-	 * @param string $field
-	 * @param mixed $value
-	 * @param string $match
-	 * @access public
-	 */
-	public function whereNotInSubquery($field, $query, $match = 'AND'){
-		$this->whereCustom(sprintf('%s NOT IN (%s)', $field, $query), $match);
-	}
 
 
 	/**
@@ -1583,7 +1620,7 @@ class Model  {
 		
 		if(is_null($field)){
 			$this->sql['ORDER'] = '';
-			return;
+			return;	
 		}
 
 		if(isset($this->sql['FIELDS'])){
@@ -1815,13 +1852,14 @@ class Model  {
 
 			$this->last_query = $query;
 
-			if(!$results = $this->_db->Execute($query)){
+			$results = mysqli_query($this->_db, $query);
+			if(!$results){
 				// we don't want every query to show as failure here, so we use the true last location
 				$back = debug_backtrace();
 				$file = strpos($back[0]['file'], 'Model.php') ? $back[1]['file'] : $back[0]['file'];
 				$line = strpos($back[0]['file'], 'Model.php') ? $back[1]['line'] : $back[0]['line'];
 
-				error()->raise(2, $this->_db->ErrorMsg() . "\nSQL:\n" . $query, $file, $line);
+				error()->raise(2, mysqli_error() . "\nSQL:\n" . $query, $file, $line);
 
 			} else {
 				if(config()->get('log_verbosity') < 3){
@@ -1888,8 +1926,8 @@ class Model  {
 
 				$key = $key_field ? $key_field : $this->getPrimaryKey();
 
-				if($results->RecordCount()){
-					while($result = $results->FetchRow()){
+				if($results->num_rows){
+					while($result = mysqli_fetch_assoc($results)){
 
 						$schema = $this->getSchema();
 						$this->ignore($this->table);
@@ -1982,14 +2020,16 @@ class Model  {
 			// if any pagination, return found rows
 			if($this->paginate){
 				$results = $this->query('SELECT FOUND_ROWS()');
-				$this->_pagination['total_records'] = $results->fields['FOUND_ROWS()'];
-				$this->_pagination['current_page'] = $this->current_page;
-				$this->_pagination['per_page'] = $this->per_page;
-				$this->_pagination['total_pages'] = ceil($this->_pagination['total_records'] / $this->per_page);
-				$this->_pagination['showing_start'] = ($this->current_page - 1) * abs($this->per_page);
-				$show_end = $this->_pagination['showing_start']+$this->per_page;
-				$show_end = ($show_end >= $this->_pagination['total_records'] ? $this->_pagination['total_records'] : $show_end);
-				$this->_pagination['showing_end'] = $show_end;
+				while($row = mysqli_fetch_array($results)){
+					$this->_pagination['total_records'] = $row[0];
+					$this->_pagination['current_page'] = $this->current_page;
+					$this->_pagination['per_page'] = $this->per_page;
+					$this->_pagination['total_pages'] = ceil($this->_pagination['total_records'] / $this->per_page);
+					$this->_pagination['showing_start'] = ($this->current_page - 1) * abs($this->per_page);
+					$show_end = $this->_pagination['showing_start']+$this->per_page;
+					$show_end = ($show_end >= $this->_pagination['total_records'] ? $this->_pagination['total_records'] : $show_end);
+					$this->_pagination['showing_end'] = $show_end;
+				}
 			} else {
 				$this->_pagination['total_records'] = ($records ? count($records) : 0);
 			}
@@ -2008,7 +2048,7 @@ class Model  {
 		// if we're doing an INSERT
 		if($this->query_type == 'insert'){
 			if($this->query($sql)){
-				return $this->_db->Insert_ID();
+				return mysqli_insert_id($this->_db);
 			}
 		}
 
@@ -2192,7 +2232,7 @@ class Model  {
 
 		$this->query($sql);
 
-		return $this->_db->Insert_ID();
+		return mysqli_insert_id($this->_db);
 
 	}
 

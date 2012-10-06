@@ -62,9 +62,6 @@
 	// hostname for db
 	$config['db_hostname'] = 'localhost';
 
-	// adodb db extension
-	$config['db_extension'] = "mysql";
-
 
 /**
  * LANGUAGE FILE SETTINGS

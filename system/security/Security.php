@@ -62,13 +62,13 @@ class Security  {
 	    			$newArr[$key] = $this->clean_db_input($value, $allow_html);
 	    		} else {
 	    			$newArr[$key] = $allow_html ? $this->cleanHtml($value) : strip_tags($value);
-                    $newArr[$key] = mysql_real_escape_string($newArr[ $key ]);
+                    $newArr[$key] = mysqli_real_escape_string(app()->db, $newArr[ $key ]);
 	    		}
 	    	}
 	    	$var = $newArr;
 		} else {
 			$var = $allow_html ? $this->cleanHtml($var) : strip_tags($var);
-			$var = mysql_real_escape_string($var);
+			$var = mysqli_real_escape_string(app()->db, $var);
 		}
 	    return $var;
 	}

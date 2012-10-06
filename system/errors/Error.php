@@ -106,22 +106,22 @@ class Error  {
 					application, version, date, visitor_ip, referer_url, request_uri,
 					user_agent, error_type, error_file, error_line, error_message)
 				VALUES ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")',
-					mysql_real_escape_string($error['application']),
-					mysql_real_escape_string($error['version_complete']),
-					mysql_real_escape_string($error['date']),
-					mysql_real_escape_string($error['visitor_ip']),
-					mysql_real_escape_string($error['referrer_url']),
-					mysql_real_escape_string($error['request_uri']),
-					mysql_real_escape_string($error['user_agent']),
-					mysql_real_escape_string($error['error_no']),
-					mysql_real_escape_string($error['file']),
-					mysql_real_escape_string($error['line']),
-					mysql_real_escape_string($error['error_message'])
+					mysqli_real_escape_string(app()->db, $error['application']),
+					mysqli_real_escape_string(app()->db, $error['version_complete']),
+					mysqli_real_escape_string(app()->db, $error['date']),
+					mysqli_real_escape_string(app()->db, $error['visitor_ip']),
+					mysqli_real_escape_string(app()->db, $error['referrer_url']),
+					mysqli_real_escape_string(app()->db, $error['request_uri']),
+					mysqli_real_escape_string(app()->db, $error['user_agent']),
+					mysqli_real_escape_string(app()->db, $error['error_no']),
+					mysqli_real_escape_string(app()->db, $error['file']),
+					mysqli_real_escape_string(app()->db, $error['line']),
+					mysqli_real_escape_string(app()->db, $error['error_message'])
 				);
 
-			if(!app()->db->Execute($error_sql)){
+			if(!mysqli_query(app()->db, $error_sql)){
 				print 'There was an error trying to log the most recent error to the database:<p>'
-						.  app()->db->ErrorMsg()
+						.  mysqli_error()
 						. '<p>Query was:</p>' . $error_sql;
 						exit;
 			}
