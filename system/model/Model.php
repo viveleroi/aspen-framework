@@ -1577,6 +1577,11 @@ class Model  {
 	 * @access public
 	 */
 	public function orderBy($field = false, $dir = false, $sort_location = false){
+		
+		if(is_null($field)){
+			$this->sql['ORDER'] = '';
+			return;
+		}
 
 		if(isset($this->sql['FIELDS'])){
 
@@ -1590,8 +1595,8 @@ class Model  {
 					// remove any table references
 					foreach($fields as $key => $tmp_field){
 						$fields[$key] = preg_replace('/(.*)\./', '', $tmp_field);
-						$fields[$key] = preg_replace('/(.*)as /', '', $tmp_field);
-						$fields[$key] = str_replace(array('DISTINCT '), '', $tmp_field);
+						$fields[$key] = preg_replace('/(.*)as /', '', $fields[$key]);
+						$fields[$key] = str_replace(array('DISTINCT '), '', $fields[$key]);
 					}
 
 					// remove any table reference from our field
