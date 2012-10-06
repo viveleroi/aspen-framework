@@ -275,6 +275,9 @@ class Model  {
 			$db = $this->_db;
 		}
 		$tables = $db->MetaTables('TABLES');
+		if (!is_array($tables)) {
+			return false;
+		}
 		return in_array($table, $tables);
 	}
 
