@@ -815,8 +815,8 @@ class Template  {
 
 			$getArray = model()->query($sql);
 
-			if($getArray->RecordCount()){
-				while($getArrayRow = $getArray->FetchRow()){
+			if($getArray->num_rows){
+				while($getArrayRow = mysqli_fetch_assoc($getArray)){
 					if($select_id){
 						if($select_id == $selectField){
 							$val = $getArrayRow[$selectField];

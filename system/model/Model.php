@@ -813,9 +813,9 @@ class Model  {
 
 		if($table){
 			$records = $this->query(sprintf('SHOW TABLE STATUS LIKE "%s"', $table));
-			if($records->RecordCount()){
-				while($record = $records->FetchRow()){
-					return $record;
+			if($records->num_rows){
+				while($row = mysqli_fetch_array($records)){
+					return $row;
 				}
 			}
 		}
