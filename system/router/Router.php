@@ -818,6 +818,9 @@ class Router  {
 	/**
 	 * Returns the module name without the interface in case it was provided
 	 * that way.
+	 * 
+	 * However, do not do so if the interface is empty, because then just the 
+	 * undercore would be removed.
 	 *
 	 * @param string $module
 	 * @param string $interface
@@ -826,7 +829,7 @@ class Router  {
 	public function cleanModule($module = false, $interface = false){
 		$module = $module ? $module : $this->module();
 		$interface = $interface ? $interface : LOADING_SECTION;
-		return str_replace('_'.ucwords($interface), '', $module);
+		return empty($interface) ? $module : str_replace('_'.ucwords($interface), '', $module);
 	}
 
 
