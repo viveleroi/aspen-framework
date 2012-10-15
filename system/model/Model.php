@@ -25,6 +25,16 @@ function &model(){
 class Model  {
 	
 	/**
+	 * Holds some information about our final decision that can be returned
+	 * to the calling code.
+	 * @var type 
+	 */
+	public $query_info = array(
+		'sort_by' => false,
+		'sort_direction' => false
+	);
+	
+	/**
 	 * @var array Holds a database connection
 	 * @access private
 	 */
@@ -1676,6 +1686,9 @@ class Model  {
 					$sort['sort_by'] = $this->table.'.'.$this->getPrimaryKey();
 				}
 			}
+			
+			$this->query_info['sort_by'] = $sort['sort_by'];
+			$this->query_info['sort_direction'] = $sort['sort_direction'];
 
 			$this->sql['ORDER'] = sprintf("ORDER BY %s %s", $sort['sort_by'], $sort['sort_direction']);
 
@@ -2121,6 +2134,15 @@ class Model  {
 		$this->sql		= false;
 		$this->error	= false;
 		$this->errors	= array();
+	}
+	
+	
+	/**
+	 * 
+	 * @return type
+	 */
+	public function getQueryInfo(){
+		return $this->query_info;
 	}
 
 
