@@ -385,6 +385,7 @@
 	$config['load_core_class'][] = array('classname' => 'Aspen_Css','autoload'=>false,'filename'=>'Aspen_Css','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'DataDisplay','autoload'=>false,'filename'=>'DataDisplay','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Link','autoload'=>false,'filename'=>'Link','folder' => 'template');
+	$config['load_core_class'][] = array('classname' => 'LinkSort','autoload'=>false,'filename'=>'LinkSort','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Error','folder' => 'errors','autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'File', 'folder' => 'files');
 	$config['load_core_class'][] = array('classname' => 'HTMLPurifier',
