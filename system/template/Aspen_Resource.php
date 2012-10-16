@@ -81,7 +81,7 @@ class Aspen_Resource {
 		
 		if($this->opts['cache-bust']){
 			$cb = config()->get('application_build');
-			if(config()->get('enable_cache_busting') && !empty($cb)){
+			if(config()->get('enable_cache_busting') && !empty($cb) && $cb != "Git-Version"){
 				$this->path .= '?v='.$cb;  
 			}
 		}

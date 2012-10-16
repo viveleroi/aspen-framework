@@ -222,7 +222,7 @@ class Template  {
 		if(!empty($this->_load_js)){
 			foreach($this->_load_js as $js){
 				if($js->getLoadIn() == 'footer'){
-					$this->printJs($js);
+					print $js;
 				}
 			}
 		}

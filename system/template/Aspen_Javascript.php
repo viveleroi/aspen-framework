@@ -18,7 +18,7 @@ class Aspen_Javascript extends Aspen_Resource {
 	/**
 	 * @var type 
 	 */
-	protected $_load_in = 'header';
+	protected $_load_in = 'footer';
 	
 	/**
 	 * @var string SCRIPT_ELM Holds the template string for a javascript include
