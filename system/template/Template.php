@@ -797,7 +797,7 @@ class Template  {
 		// If the type is ENUM, we'll get the possible values from
 		// the database
 		if($method == "ENUM"){
-			$my_enums = app()->db->MetaColumns($selectTable, false);
+			$schema = app()->getDatabaseSchema($selectTable);
 			foreach($my_enums as $value){
 				if($value->name == $selectField){
 					foreach($value->enums as $choice){

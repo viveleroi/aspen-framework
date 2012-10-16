@@ -1872,7 +1872,7 @@ class Model  {
 				$file = strpos($back[0]['file'], 'Model.php') ? $back[1]['file'] : $back[0]['file'];
 				$line = strpos($back[0]['file'], 'Model.php') ? $back[1]['line'] : $back[0]['line'];
 
-				error()->raise(2, mysqli_error() . "\nSQL:\n" . $query, $file, $line);
+				error()->raise(2, mysqli_error($this->_db) . "\nSQL:\n" . $query, $file, $line);
 
 			} else {
 				if(config()->get('log_verbosity') < 3){

@@ -130,16 +130,15 @@ class Preferences  {
 		foreach($edit_prefs as $pref){
 			$record[$pref] = app()->settings->getConfig($pref, $user_id);
 		}
-
+		
 		// process the form if submitted
-		if(post()->keyExists('preferences-submit')){
-			$config = model()->open('config');
-			foreach($record as $field => $existing_value){
+		$config = model()->open('config');
+		foreach($record as $field => $existing_value){
+			if(post()->keyExists($field)){
 				$record[$field] = post()->getRaw($field);
 				$config->query( sprintf('DELETE FROM config WHERE config_key = "%s" AND user_id = "%s"', $field, $user_id) );
 				$config->insert( array('current_value'=>$record[$field],'config_key'=>$field,'user_id'=>$user_id));
 			}
-			sml()->say('Your user preferences have been saved successfully.', true);
 		}
 
 		return new Prefs($record);

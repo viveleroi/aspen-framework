@@ -844,7 +844,8 @@ class Router  {
 
 		$here = false;
 		
-		$r = template()->parseNamespacePath($path, $type);
+		$u = new Url();
+		$r = $u->parseNamespacePath($path, $type);
 		$r['module'] = $r['module'] . ($r['interface'] ? '_' . $r['interface']  : false);
 		$selected_module = $this->module();
 
