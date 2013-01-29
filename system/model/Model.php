@@ -23,23 +23,23 @@ function &model(){
  * @package Aspen_Framework
  */
 class Model  {
-	
+
 	/**
 	 * Holds some information about our final decision that can be returned
 	 * to the calling code.
-	 * @var type 
+	 * @var type
 	 */
 	public $query_info = array(
 		'sort_by' => false,
 		'sort_direction' => false
 	);
-	
+
 	/**
 	 * @var array Holds a database connection
 	 * @access private
 	 */
 	private $_db = false;
-	
+
 	/**
 	 * @var array Whether or not the query is distinct
 	 * @access private
@@ -124,7 +124,7 @@ class Model  {
 	 * @access private
 	 */
 	private $paginate = false;
-	
+
 	/**
 	 * @var array Holds all data about pagination results
 	 * @access private
@@ -166,7 +166,7 @@ class Model  {
 	 * @access private
 	 */
 	private $sql;
-	
+
 	/**
 	 * @var string Holds a temporary db object
 	 * @access private
@@ -194,23 +194,23 @@ class Model  {
 //+-----------------------------------------------------------------------+
 //| OPEN / SET / GET FUNCTIONS
 //+-----------------------------------------------------------------------+
-	
-	
+
+
 	/**
 	 * Sets a temporary database handler
 	 * @param type $db
-	 * @return Model 
+	 * @return Model
 	 */
 	public function setDb($db = false){
 		$this->_tmpdb = is_object($db) ? $db : false;
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * Loads the temporary database handler
 	 * @param type $db
-	 * @return Model 
+	 * @return Model
 	 */
 	public function loadDb($db = false){
 		$this->_db = is_object($db) ? $db : app()->db;
@@ -273,12 +273,12 @@ class Model  {
 		return $final_obj;
 
 	}
-	
-	
+
+
 	/**
 	 * Does a table exist?
 	 * @param type $table
-	 * @return type 
+	 * @return type
 	 */
 	public function tableExists($table){
 		$table = app()->getDatabaseSchema($table);
@@ -422,12 +422,12 @@ class Model  {
 		return $clean;
 
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @param type $fields
-	 * @param type $primary_key 
+	 * @param type $primary_key
 	 */
 	public function validate($fields = false, $primary_key = false){
 		$clean = $this->pre_validate($fields,$primary_key);
@@ -597,18 +597,18 @@ class Model  {
 		while ($row = mysqli_fetch_array($result)){
 			$tables[] = $row[0];
 		}
-		
+
 		foreach($tables as $table){
 
 			// build table column data
 			$columns = array();
 			$result = mysqli_query($this->_db, sprintf('SHOW COLUMNS FROM `%s`', $table) );
 			while ($row = mysqli_fetch_assoc($result)){
-				
+
 				$col = new stdClass();
-				
+
 				$col->name = $row['Field'];
-				
+
 				// split type into type(length):
 				$col->scale = null;
 				if (preg_match("/^(.+)\((\d+),(\d+)/", $row['Type'], $query_array)) {
@@ -644,11 +644,11 @@ class Model  {
 						$col->has_default = false;
 					}
 				}
-				
+
 				$columns[strtoupper($row['Field'])] = $col;
-				
+
 			}
-			
+
 			$db_map[$table]['schema'] = $columns;
 			$db_map[$table]['relation_only'] = false;
 
@@ -689,12 +689,12 @@ class Model  {
 		return $db_map;
 
 	}
-	
-	
+
+
 	/**
 	 * Wrapper for db schema, that properly handles secondary database handlers
 	 * @param type $table
-	 * @return type 
+	 * @return type
 	 */
 	private function getDatabaseSchema($table){
 		$schema = app()->getDatabaseSchema($table);
@@ -929,7 +929,7 @@ class Model  {
 	 * @access private
 	 */
 	private function select_base($fields = false, $distinct = false){
-		
+
 		$this->_distinct = $distinct;
 
 		// begin the select
@@ -1337,7 +1337,7 @@ class Model  {
 	 * @access public
 	 */
 	public function wherePast($field, $include_today = false, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s< UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) <%s UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
 	}
 
 
@@ -1361,7 +1361,7 @@ class Model  {
 	 * @access public
 	 */
 	public function whereFuture($field, $include_today = false, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s> UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) >%s UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
 	}
 
 
@@ -1376,8 +1376,21 @@ class Model  {
 	public function inPastXDays($field, $day_count = 7, $include_range = true, $match = 'AND'){
 		$this->base_where('%s TO_DAYS(NOW()) - TO_DAYS(%s) '.($include_range ? '<' : '').'= ' . $day_count, $field, false, $match);
 	}
-	
-	
+
+
+    /**
+     * Finds timestamps in the last $day_count days
+     * @param string $field
+     * @param string $day_count
+     * @param boolean $include_range
+     * @param string $match
+     * @access public
+     */
+    public function inFutureXDays($field, $day_count = 7, $include_range = true, $match = 'AND'){
+        $this->base_where('%s TO_DAYS(%s) - TO_DAYS(NOW()) BETWEEN 0 AND ' . $day_count, $field, false, $match);
+    }
+
+
 	/**
 	 * Forms the basis of the having clauses
 	 * @param string $sprint_string
@@ -1401,8 +1414,8 @@ class Model  {
 		$this->parenth_start = false;
 
 	}
-	
-	
+
+
 	/**
 	 * Adds a standard having condition
 	 * @param string $field
@@ -1418,10 +1431,10 @@ class Model  {
 			$this->base_having($str, $field, $value, $match);
 		}
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param type $str
 	 */
 	public function addHavingCondition( $str = false, $field = false, $value = false, $match = 'AND' ){
@@ -1598,7 +1611,7 @@ class Model  {
 			// if neither existing, or save-as names are called, leave
 			// any stored name as-is.
 		}
-		
+
 		// save the filters to the config table
 		app()->settings->setConfig('filter.'.$location_key, serialize($filters), $user_id);
 
@@ -1627,10 +1640,10 @@ class Model  {
 	 * @access public
 	 */
 	public function orderBy($field = false, $dir = false, $sort_location = false){
-		
+
 		if(is_null($field)){
 			$this->sql['ORDER'] = '';
-			return;	
+			return;
 		}
 
 		if(isset($this->sql['FIELDS'])){
@@ -1686,7 +1699,7 @@ class Model  {
 					$sort['sort_by'] = $this->table.'.'.$this->getPrimaryKey();
 				}
 			}
-			
+
 			$this->query_info['sort_by'] = $sort['sort_by'];
 			$this->query_info['sort_direction'] = $sort['sort_direction'];
 
@@ -1746,15 +1759,15 @@ class Model  {
 	 * @access public
 	 */
 	public function paginate(){
-		
+
 		$this->paginate = true;
-		
+
 		// determine current page
 		$this->current_page = 1;
 		if(get()->isDigits('page')){
 			$this->current_page = get()->getInt('page');
 		}
-		
+
 		// determine per page
 		$this->per_page = settings()->getConfig('pagination_per_page');
 		if(get()->isDigits('per_page')){
@@ -1764,7 +1777,7 @@ class Model  {
 		// limit query
 		$query_offset = ($this->current_page - 1) * abs($this->per_page);
 		$this->limit($query_offset,$this->per_page);
-		
+
 	}
 
 
@@ -1823,7 +1836,7 @@ class Model  {
 			}
 
 			$sql .= ' ' . (isset($this->sql['GROUP']) ? $this->sql['GROUP'] : '');
-			
+
 			if(isset($this->sql['HAVING']) && array($this->sql['HAVING'])){
 				$sql .= ' ' . implode(" ", $this->sql['HAVING']);
 			}
@@ -1959,7 +1972,7 @@ class Model  {
 										$this->ignore($child_table);
 										$this->ignore($join_table);
 										$child->ignore($this->get_ignore());
-									
+
 										$val = $this->contains[$child_table];
 										if($val){
 											$child->contains($val);
@@ -1982,7 +1995,7 @@ class Model  {
 							if(isset($schema['parents'])){
 								foreach($schema['parents'] as $child_table){
 									if(!in_array($child_table, $this->ignore_tables) && (array_key_exists($child_table, $this->contains))){
-		
+
 										$this->ignore($child_table);
 										$field = $i->singularize($child_table).'_id';
 										if(isset($result[$field])){
@@ -2090,12 +2103,12 @@ class Model  {
 			$this->data_display = $class;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Returns pagination data, or a specific key
 	 * @param type $key
-	 * @return type 
+	 * @return type
 	 */
 	public function pagination($key = false){
 		if($key){
@@ -2135,10 +2148,10 @@ class Model  {
 		$this->error	= false;
 		$this->errors	= array();
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @return type
 	 */
 	public function getQueryInfo(){
@@ -2372,7 +2385,7 @@ class Model  {
 
 		// Pass through the before_insert function
 		$fields = $this->before_insert($fields);
-		
+
 		// validate & filter fields
 		$fields = $this->validate($fields);
 
@@ -2421,7 +2434,7 @@ class Model  {
 				foreach($this->schema['children'] as $real_table => $table){
 					if(isset($fields[ucwords($table)]) && is_array($fields[ucwords($table)])){
 						$arr = $fields[ucwords($table)];
-						
+
 						$_tmp_arr = array('vals'=>$arr);
 						$_tmp_arr = Peregrine::sanitize($_tmp_arr);
 						if(!$_tmp_arr->isEmpty('vals')){
@@ -2507,7 +2520,7 @@ class Model  {
 			$where_field = $this->getPrimaryKey();
 			$update_id = $where_value;
 		}
-		
+
 		// validate & filter fields
 		$fields = $this->validate($fields,$update_id);
 
@@ -2671,15 +2684,15 @@ class Model  {
 		}
 		return $res;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @param type $activity_id
 	 * @param type $field
 	 * @param type $old_value
 	 * @param type $new_value
-	 * @return type 
+	 * @return type
 	 */
 	public function activity_log_change_delta($activity_id, $field, $old_value, $new_value){
 		$res = false;

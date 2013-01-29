@@ -147,7 +147,7 @@ class Date {
 				elseif(date("Y-m-d", $date) == date("Y-m-d", mktime(0, 0, 0, date("m"), date("d")-1, date("y")))){
 					$return_date = 'Yesterday';
 				}
-				elseif($days_between > 0 && $days_between < 7){
+				elseif($days_between > 0 && $days_between <= 7){
 					// if this week
 					if(date("W") == date("W", $date)){
 						$return_date = "This " . date("l", $date);
