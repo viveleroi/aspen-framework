@@ -119,7 +119,7 @@ class DataDisplay  {
 		$address .= empty($zip) ? '' : $zip . "<br />";
 		$address .= empty($country) ? '' : $country . "<br />";
 
-		return $this->na($address);
+		return DataDisplay::na($address);
 
 	}
 	

@@ -125,7 +125,7 @@ class Users_App extends Module {
 	 * @access public
 	 */
 	public function authenticate(){
-		if(user()->authenticate()){
+        if( user()->authenticate( post()->getRaw('user'), post()->getRaw('pass') ) ){
 			router()->redirectToUrl(user()->postLoginRedirect());
 		} else {
 			user()->login_failed();
