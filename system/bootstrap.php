@@ -20,7 +20,7 @@ error_reporting(E_ALL);
  * have a record of which AF revision
  * you're using.
  */
-define('FRAMEWORK_REV', '');
+define('FRAMEWORK_REV', 'Git-Version');
 
 
 /**
