@@ -218,18 +218,16 @@ class User  {
                 $user['password'] = $user['password_confirm'] = $new_pass;
                 $auth->update($user, $user['id']);
 
-                if(app()->db->Affected_Rows()){
-                    app()->mail->AddAddress($form->cv('user'));
-                    app()->mail->From      	= config()->get('email_sender');
-                    app()->mail->FromName  	= config()->get('email_sender_name');
-                    app()->mail->Mailer    	= "mail";
-                    app()->mail->ContentType= 'text/html';
-                    app()->mail->Subject   	= config()->get('password_reset_subject');
-                    app()->mail->Body 		= str_replace('{new_pass}', $new_pass, config()->get('password_reset_body'));
-                    app()->mail->Send();
-                    app()->mail->ClearAddresses();
-                    return 1;
-                }
+                app()->mail->AddAddress($form->cv('user'));
+                app()->mail->From      	= config()->get('email_sender');
+                app()->mail->FromName  	= config()->get('email_sender_name');
+                app()->mail->Mailer    	= "mail";
+                app()->mail->ContentType= 'text/html';
+                app()->mail->Subject   	= config()->get('password_reset_subject');
+                app()->mail->Body 		= str_replace('{new_pass}', $new_pass, config()->get('password_reset_body'));
+                app()->mail->Send();
+                app()->mail->ClearAddresses();
+                return 1;
             } else {
                 return -1;
             }
