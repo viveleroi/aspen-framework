@@ -388,10 +388,6 @@
 	$config['load_core_class'][] = array('classname' => 'LinkSort','autoload'=>false,'filename'=>'LinkSort','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Error','folder' => 'errors','autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'File', 'folder' => 'files');
-	$config['load_core_class'][] = array('classname' => 'HTMLPurifier',
-									'folder' => 'security/Htmlpurifier',
-									'var' => 'html',
-									'autoload'=>false);
 	$config['load_core_class'][] = array('classname' => 'Log');
 	$config['load_core_class'][] = array('classname' => 'Model');
 	$config['load_core_class'][] = array('classname' => 'Inflector','autoload'=>false,'folder'=>'utils');
@@ -420,6 +416,13 @@
  */
 
 	/*
+	 *
+
+	// HTML Purification
+	$config['load_core_class'][] = array('classname' => 'HTMLPurifier',
+									'folder' => 'security/Htmlpurifier',
+									'var' => 'html',
+									'autoload'=>false);
 
 	// Xml encoding and output functionality
 	$config['load_add_core_class'][] = array('classname' => 'Xml', 'folder' => 'formats');
