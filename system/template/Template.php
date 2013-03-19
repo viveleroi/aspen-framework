@@ -696,7 +696,7 @@ class Template  {
 	 */
 	public function selectArray(
 								$selectTable, $selectField, $method = "ENUM",
-								$orderby = 'id', $select_id = false, $where = false, $text_as_vals = false){
+								$orderby = 'id', $select_id = false, $where = false){
 
 		$return_select_array = array();
 
