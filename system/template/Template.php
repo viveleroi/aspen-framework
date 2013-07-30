@@ -511,9 +511,8 @@ class Template  {
 	public function paginateLinks($pages){
 
 		$current_page	= $pages['current_page'];
-		$per_page		= $pages['per_page'];
 		$total_pages	= $pages['total_pages'];
-		$url			= $this->selfUrl().'?';
+        $url			= Url::path().'?';
 
 		// build the html list item
 		$html = '';

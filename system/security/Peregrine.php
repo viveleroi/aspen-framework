@@ -39,14 +39,14 @@ class CageBase {
 			$this->_raw = $arr;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Allows the user to combine fields into a specified printf string
 	 * and then validate the entire string with any Peregrine method.
 	 *
      * Example: this allows the user to combine three-field-phone numbers
- 	 * and validate the entire string. 
+ 	 * and validate the entire string.
 	 *
 	 * $p->post->combine('%s%s%s', array('area','prefix','suffix'), 'getPhone'));
 	 *
@@ -217,14 +217,14 @@ class CageBase {
 			return empty($val);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Implodes a multi-dimensional array, which is useful for
 	 * checking if the array contains any data, at any point.
 	 * @param string $glue
 	 * @param array $pieces
-	 * @return string 
+	 * @return string
 	 */
 	protected function multi_implode($glue, $pieces){
 		$string='';
@@ -300,8 +300,8 @@ class CageBase {
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Compare two values
 	 *
@@ -523,8 +523,8 @@ class CageBase {
 
 		return ($mod == $value[$length - 1]);
 	}
-	
-	
+
+
 	/**
 	 * Check for a valid currency
 	 * @param string $key
@@ -535,8 +535,8 @@ class CageBase {
 		$val = $this->getRaw($key);
 		return (bool) preg_match('/^(?!\x{00a2})\p{Sc}?(?!0,?\d)(?:\d{1,3}(?:([, .])\d{3})?(?:\1\d{3})*|(?:\d+))((?!\1)[,.]\d{2})?$/u', $val);
 	}
-	
-	
+
+
 	/**
 	 * Compare the ssn numerically, allowing for hyphens and spaces only
 	 * @param string $key
@@ -547,8 +547,8 @@ class CageBase {
 		$value = str_replace(array('-',' '), '', $this->getRaw($key));
 		return ($value == $this->getSsn($key));
 	}
-	
-	
+
+
 	/**
 	 * Check for a valid UUID
 	 * @param string $key
@@ -559,12 +559,12 @@ class CageBase {
 		$val = $this->getRaw($key);
 		return (bool) preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $val);
 	}
-	
-	
+
+
 	/**
 	 * Determines if a string is a valid date representation. Please note, this
 	 * only verifies the format, not the validity of the actual date.
-	 * 
+	 *
 	 * Formats:
 	 *  dmy 27-12-2006 or 27-12-06 separators can be a space, period, dash, forward slash
 	 * 	mdy 12-27-2006 or 12-27-06 separators can be a space, period, dash, forward slash
@@ -601,7 +601,7 @@ class CageBase {
 		}
 	}
 
-	
+
 	/**
 	 * Determines if a string is a valid time representation. Please note, this
 	 * only verifies the format, not the validity of the actual time.
@@ -613,7 +613,7 @@ class CageBase {
 		$val = $this->getRaw($key);
 		return (bool) preg_match('%^((0?[1-9]|1[012])(:[0-5]\d){0,2}([AP]M|[ap]m))$|^([01]\d|2[0-3])(:[0-5]\d){0,2}$%', $val);
 	}
-	
+
 
 	/**
 	 * Determines if the string is a valid web address.
@@ -673,6 +673,20 @@ class CageBase {
 
 
 	/**
+     * @param bool $key
+     * @param null $default
+     * @return bool|null
+     */
+    public function getBooleanFromString($key = false, $default = NULL){
+        $default = $default === NULL ? false : $default;
+        if($this->keyExists($key)){
+            return strtolower($this->getKey($key)) === "true" ? true : false;
+        }
+        return $default;
+    }
+
+
+	/**
 	 * Returns a string of only alphabetical characters.
 	 *
 	 * @param string $key
@@ -718,8 +732,8 @@ class CageBase {
 		}
 		return $default;
 	}
-	
-	
+
+
 	/**
 	 * Returns an acceptable username string
 	 *
@@ -734,8 +748,8 @@ class CageBase {
 		}
 		return $default;
 	}
-	
-	
+
+
 	/**
 	 * Returns a string of characters allowed within addresses
 	 *
@@ -872,7 +886,7 @@ class CageBase {
 	/**
 	 * Returns a US postal code. In the form of either five digits, or nine
 	 * with a hyphen.
-	 * 
+	 *
 	 * @todo Implement alternate countries:
 	 *	uk - '/\\A\\b[A-Z]{1,2}[0-9][A-Z0-9]? [0-9][ABD-HJLNP-UW-Z]{2}\\b\\z/i'
 	 *  ca - '/\\A\\b[ABCEGHJKLMNPRSTVXY][0-9][A-Z] ?[0-9][A-Z][0-9]\\b\\z/i'
@@ -892,8 +906,8 @@ class CageBase {
 		}
 		return $default;
 	}
-	
-	
+
+
 	/**
 	 * Returns a US postal code. In the form of either five digits, or nine
 	 * with a hyphen.
@@ -988,8 +1002,8 @@ class CageBase {
 		}
 		return $default;
 	}
-	
-	
+
+
 	/**
 	 * Returns a phone number if it passes, with an optional strip argument
 	 * allowing the user to return the digits only (for use with db storage)
@@ -1004,14 +1018,14 @@ class CageBase {
 		if($this->isSetAndNotEmpty($key)){
 			return $this->isPhone($key) ? ($strip ? $this->getDigits($key) : $this->getKey($key)) : $default;
 		}
-		return $default;	
+		return $default;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Returns data formatted to a custom expression
-	 * 
+	 *
 	 * @param type $key
 	 * @param type $regex
 	 * @param type $default
