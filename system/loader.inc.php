@@ -15,7 +15,7 @@
 define('SYSTEM_PATH', dirname(__FILE__));
 define('DS', DIRECTORY_SEPARATOR);
 define('APPLICATION_PATH', str_replace(DS . "system", '', SYSTEM_PATH));
-define('MODULES_PATH', APPLICATION_PATH . DS . 'modules');
+define('CONTROLLERS_PATH', APPLICATION_PATH . DS . "app" . DS . 'controllers');
 define('PLUGINS_PATH', APPLICATION_PATH . DS . 'plugins');
 
 // set execution start time
@@ -41,7 +41,7 @@ if(version_compare(phpversion(), "5.1.0", 'ge')){
 			
 			$module = ucwords(strtolower($module));
 			
-			$loc = MODULES_PATH.DS.$module.DS.$module.".php";
+			$loc = CONTROLLERS_PATH.DS.$module.DS.$module.".php";
 			if(!defined('INCLUDE_ONLY_PATH')){
 				define('INCLUDE_ONLY_PATH', $loc);
 			}

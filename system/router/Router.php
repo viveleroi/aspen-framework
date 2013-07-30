@@ -54,6 +54,11 @@ class Router  {
 	 */
 	protected $_selected_arguments = array();
 
+    /**
+     * @var array Available controllers
+     */
+    protected $_controllers = array();
+
 	/**
 	 * @var array $map Holds our array of mapped URL routes
 	 * @access private
@@ -67,6 +72,8 @@ class Router  {
 	 * @access private
 	 */
 	public function __construct(){
+
+        $this->loadAvailableControllers();
 		
 		if(config()->get('enable_authentication_support')){
 			
@@ -81,16 +88,72 @@ class Router  {
 	}
 
 
+    /**
+     * @return array
+     */
+    public function getMap(){
+        return $this->map;
+    }
+
+
+    /**
+     * Caches a list of all available controller files
+     */
+    protected function loadAvailableControllers(){
+        $this->_controllers = $this->scanDirectoryForControllers( CONTROLLERS_PATH );
+    }
+
+
+    /**
+     * @param $dir
+     * @return array
+     */
+    protected function scanDirectoryForControllers( $dir ){
+        $controllers = array();
+        // open the folder
+        if(is_dir($dir)){
+            $dir_handle = @opendir($dir);
+            while ($file = readdir($dir_handle)) {
+                if($file != "." && $file != ".."){
+
+                    $fullpath = $dir.DS.$file;
+
+                    if( is_dir($fullpath) ){
+                        $controllers += $this->scanDirectoryForControllers( $fullpath );
+                    } else {
+                        $controllers[ $this->convertPathToControllerClass($fullpath) ] = $fullpath;
+                    }
+                }
+            }
+            closedir($dir_handle);
+        }
+        return $controllers;
+    }
+
+
+    /**
+     * @param $fullpath
+     * @return string
+     */
+    protected function convertPathToControllerClass( $fullpath ){
+        $path_arr = array_filter(explode(DS, str_replace( array(CONTROLLERS_PATH, '.php'), '', $fullpath)));
+        array_walk($path_arr, function(&$part) {
+            if( !empty($part) ){
+                $part = ucwords($part);
+            }
+        });
+        return (empty($path_arr) ? "Index" : implode('_', $path_arr) ).'_Controller';
+    }
+
+
 	/**
 	 * Maps URI elements to an internal array - either GET or clean urls
 	 * @access private
 	 */
 	protected function mapRequest(){
 
-		$bits = array();
-
 		// if mod_rewrite enabled, and request doesn't look like a non-rewrite request
-		if(config()->get('enable_mod_rewrite') && strpos(app()->server->getQueryString('REQUEST_URI'), '.php?') === false){
+//		if(config()->get('enable_mod_rewrite') && strpos(app()->server->getQueryString('REQUEST_URI'), '.php?') === false){
 
 			// we force the entire url as replacement because
 			// an interface app name may be the same as a module
@@ -103,56 +166,84 @@ class Router  {
 				$replace[] = $this->getPath();
 			}
 			$uri = $to_map = str_replace($replace, '', $this->domainUrl() . app()->server->getQueryString('REQUEST_URI'));
-			$uri = explode('/', $uri);
 
-			// If route mapping fails, then we need to parse the url for the default config
-			if(!$this->applyRouteMap($to_map)){
-				$this->map['module'] = isset($uri[1]) ? $this->stripQuery($uri[1]) : false;
-				$this->map['method'] = isset($uri[2]) ? $this->stripQuery($uri[2]) : false;
-			}
+            $_tmp_uri = rtrim($this->stripQuery($uri), '/');
 
-			// loop additional bits to pass to our arguments
-			if(!$this->map['bits']){
-				for($i = 3; $i < count($uri); $i++){
-					$bits[] = $this->stripQuery($uri[$i]);
-				}
-				$this->map['bits'] = $bits;
-			}
-		} else {
+            while( strpos($_tmp_uri, "/") !== false ){
 
-			$this->map['module'] = get()->getElemId('module');
-			$this->map['method'] = get()->getElemId('method');
+                $path = $this->convertPathToControllerClass( $_tmp_uri );
 
-			// loop additional bits to pass to our arguments
-			$get = app()->params->getRawSource('get');
+                if( array_key_exists($path, $this->_controllers) ){
 
-			if(is_array($get)){
-				foreach($get as $key => $value){
-					if($key != 'module' && $key != 'method'){
-						$bits[$key] = $this->stripQuery(get()->getRaw($key));
-					}
-				}
-				$this->map['bits'] = $bits;
-			}
-		}
+                    $method = str_replace(array($_tmp_uri,DS), '', $this->stripQuery($uri));
 
-		// we need to remove any left over query string from malformed mod_rewrite query
-		$this->map['method'] = $this->stripQuery($this->map['method']);
+                    // Ensure method exists
+                    require_once($this->_controllers[$path]);
+                    $mod = new $path;
+                    if( empty($method) || method_exists($mod,$method) ){
 
-		// If method provided in place of module, use it with default module
-		if(empty($this->map['method'])){
-			$modules = array_keys(app()->getModuleRegistry());
-			if(!in_array(ucwords($this->map['module']), $modules)){
-				$this->map['method'] = $this->map['module'];
-				$this->map['module'] = config()->get('default_module');
-			}
-		}
+                        $this->map['module'] = $path;
+                        $this->map['load_path'] = $this->_controllers[$path];
 
-		// append interface to module
-		if(!empty($this->map['module'])){
-			$this->map['module'] .= (LOADING_SECTION != '' ? '_'.LOADING_SECTION : '');
-		}
-		
+                        // the rest...
+                        $this->map['method'] = $method;
+
+                        // @todo determine what "bits" we have
+
+                        $this->map['bits'] = array_reverse( app()->params->getRawSource('get') );
+
+                        break;
+                    }
+                }
+
+                // Trim last uri part and try again
+                $_tmp_uri = str_replace( strrchr($_tmp_uri,'/'), '', $_tmp_uri );
+
+            }
+
+//		} else {
+
+//			$this->map['module'] = get()->getElemId('module');
+//			$this->map['method'] = get()->getElemId('method');
+//
+//			// loop additional bits to pass to our arguments
+//			$get = app()->params->getRawSource('get');
+//
+//			if(is_array($get)){
+//				foreach($get as $key => $value){
+//					if($key != 'module' && $key != 'method'){
+//						$bits[$key] = $this->stripQuery(get()->getRaw($key));
+//					}
+//				}
+//				$this->map['bits'] = $bits;
+//			}
+//		}
+
+        // Is this a method in the root controller?
+        require_once( CONTROLLERS_PATH . DS . 'Index.php' );
+        if( $this->map['module'] == false && class_exists('Index_Controller') ){
+
+            $args = explode('/', $this->stripQuery($uri));
+            if( isset($args[1]) ){
+
+                $_tmp_uri = str_replace(array('/'),'', $this->stripQuery($uri));
+                $index = new Index_Controller();
+                if( method_exists($index, $_tmp_uri) ){
+                    $this->map['module'] = "Index_Controller";
+                    $this->map['method'] = $args[1];
+                    $this->map['bits'] = array_slice($args,2);
+                    $this->map['load_path'] = $this->_controllers[$this->map['module']];
+                }
+            }
+        }
+
+         // Apply a route map
+         if( $this->map['module'] == false ){
+            if( !$this->applyRouteMap($uri) ){
+
+            }
+        }
+
 		$this->_original_map = $this->map;
 	}
 
@@ -237,6 +328,7 @@ class Router  {
 				$this->map['module']	=  isset($map['module']) ? $map['module'] : false;
 				$this->map['method']	=  isset($map['method']) ? $map['method'] : false;
 				$this->map['bits']		=  isset($map['bits']) ? $map['bits'] : false;
+                $this->map['load_path'] = $this->_controllers[$this->map['module']];
 				return true;
 			}
 		}
@@ -304,33 +396,35 @@ class Router  {
 	 */
 	protected function identifyAcceptedModuleForLoad(){
 
-		if(strtolower(get_class(app())) == "app"){
+//		if(strtolower(get_class(app())) == "app"){
+//
+//			if(app()->isInstalled()){
+//
+//				// do a quick check to see if the user is logged in or not
+//				// we need to create our own auth check, as the user module is not loaded at this point
+//				if(user()->isLoggedIn()){
+//
+//					$default = $this->map['module'] ? $this->map['module'] : false;
+//
+//				} else {
+//
+//					$default = 'Users' . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
+//
+//				}
+//			} else {
+//
+//				$default = config()->get('default_module_no_config');
+//
+//			}
+//		} else {
+//
+//			$default = get_class(app());
+//
+//		}
 
-			if(app()->isInstalled()){
+//		return $default;
 
-				// do a quick check to see if the user is logged in or not
-				// we need to create our own auth check, as the user module is not loaded at this point
-				if(user()->isLoggedIn()){
-
-					$default = $this->map['module'] ? $this->map['module'] : false;
-
-				} else {
-
-					$default = 'Users' . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
-
-				}
-			} else {
-
-				$default = config()->get('default_module_no_config');
-
-			}
-		} else {
-
-			$default = get_class(app());
-
-		}
-
-		return $default;
+        return $this->map['module'];
 
 	}
 
@@ -399,21 +493,6 @@ class Router  {
 
 
 	/**
-	 * Determines the parent of the current module, mainly for navigation purposes.
-	 * @return string
-	 * @access public
-	 */
-	public function getParentModule(){
-		$module = $this->module();
-		if(method_exists(app()->{$this->module()}, 'whosYourDaddy')){
-			$daddy = app()->{$this->module()}->whosYourDaddy();
-			$module = empty($daddy) ? $module : $daddy;
-		}
-		return $module;
-	}
-
-
-	/**
 	 * Loads the lanuage file for the current interface
 	 * @access private
 	 */
@@ -443,61 +522,6 @@ class Router  {
 
 
 	/**
-	 * Loads the lanuage file for the current module
-	 * @access private
-	 */
-	public function loadModuleLanguage($module = false, $interface = false){
-
-		$languages 		= array();
-		$lang_setting 	= config()->get('language');
-
-		// load the module-specific language library
-		if(!in_array($module.'_'.$interface, $this->_loaded_languages)){
-			$module = $this->cleanModule($module);
-			$module_lang_path = $this->getModulePath($module, $interface).DS. 'language' . DS . $lang_setting.'.php';
-			app()->log->write('Seeking module language library ' . $module_lang_path);
-			if(file_exists($module_lang_path)){
-				include($module_lang_path);
-				app()->log->write('Including module language library ' . $module_lang_path);
-				if(isset($lang[LS])){
-					$languages = array_merge($languages, $lang[LS]);
-				}
-				if(isset($lang['*'])){
-					$languages = array_merge($languages, $lang['*']);
-				}
-			}
-
-			$this->_loaded_languages[] = $module.'_'.$interface;
-
-			template()->loadLanguageTerms($languages);
-		}
-	}
-
-
-	/**
-	 * Loads all language files for user-created libraries.
-	 * @access private
-	 */
-	public function loadLibraryLanguages(){
-
-		$langs = array();
-
-		$libs = app()->getLoadedLibraries();
-		foreach($libs as $lib){
-			if(isset($lib['module']) && is_object($lib['module'])){
-				$langs[(string)$lib['module']->classname] = (string)$lib['module']->classname;
-			}
-		}
-		if(!empty($langs)){
-			foreach($langs as $module){
-				$this->loadModuleLanguage($module);
-			}
-		}
-		return $langs;
-	}
-
-
-	/**
 	 * Calls the module/method with arguments from the url
 	 * @access public
 	 */
@@ -520,12 +544,6 @@ class Router  {
 
 		if($this->method() && user()->userHasAccess()){
 
-			// load the module language file
-			if(config()->get('enable_languages')){
-				$this->loadLibraryLanguages();
-				$this->loadModuleLanguage();
-			}
-
 			// set the function arguments for the method
 			$i = 1;
 			foreach($this->map['bits'] as $bit){
@@ -537,6 +555,11 @@ class Router  {
 
 			if(isset(app()->{$this->module()})){
 				if(method_exists(app()->{$this->module()}, $this->method())){
+
+                    // Builds a request object
+                    $req = new stdClass();
+                    $req->method = server()->getAlpha('REQUEST_METHOD');
+                    app()->{$this->module()}->request = $req;
 
 					app()->log->write('Running Module: ' . $this->module() . '->' . $this->method());
 
@@ -754,72 +777,57 @@ class Router  {
 	}
 
 
-    /**
-	 * Returns an absolute URL to the module folder
-	 * @param string $module_name
-	 * @return string
-	 * @access public
-	 */
-	public function moduleUrl($module_name = false){
-		$module = $this->cleanModule($module_name);
-		$registry = app()->moduleRegistry(false, $module);
-		return isset($registry->folder) ? $this->appUrl() . '/modules/' . $registry->folder : false;
-	}
+//    /**
+//	 * Returns an absolute URL to the module folder
+//	 * @param string $module_name
+//	 * @return string
+//	 * @access public
+//	 */
+//	public function moduleUrl($module_name = false){
+//		$module = $this->cleanModule($module_name);
+//		$registry = app()->moduleRegistry(false, $module);
+//		return isset($registry->folder) ? $this->appUrl() . '/modules/' . $registry->folder : false;
+//	}
 
 
-	/**
-	 * Encodes a string for use in the url
-	 * @param string $var
-	 * @access public
-	 * @return string
-	 */
-	public function encodeForRewriteUrl($var, $lc = false){
-		$var = str_replace("?", "-question-", $var);
-		$var = str_replace("/", "-slash-", $var);
-		$var = str_replace("&", "-and-", $var);
-		$var = str_replace(" ", "_", $var);
-		$var = urlencode($var);
-		$var = ($lc ? strtolower($var) : $var);
-		return $var;
-	}
-
-
-	/**
-	 * Decodes a string for use in the url
-	 * @param string $var
-	 * @access public
-	 * @return string
-	 */
-	public function decodeForRewriteUrl($var){
-		$var = urldecode($var);
-		$var = str_replace("-question-", "?", $var);
-		$var = str_replace("-slash-", "/", $var);
-		$var = str_replace("-and-", "&", $var);
-		$var = str_replace("_", " ", $var);
-		return $var;
-	}
-
-
-	/**
-	 * Returns the server path to our module
-	 * @return string
-	 * @access public
-	 */
-	public function getModulePath($module = false, $interface = false){
-		$module = $this->cleanModule($module);
-		$registry = app()->moduleRegistry(false, $module, $interface);
-		if(isset($registry->folder)){
-			return MODULES_PATH . DS . $registry->folder;
-		}
-		return false;
-	}
+//	/**
+//	 * Encodes a string for use in the url
+//	 * @param string $var
+//	 * @access public
+//	 * @return string
+//	 */
+//	public function encodeForRewriteUrl($var, $lc = false){
+//		$var = str_replace("?", "-question-", $var);
+//		$var = str_replace("/", "-slash-", $var);
+//		$var = str_replace("&", "-and-", $var);
+//		$var = str_replace(" ", "_", $var);
+//		$var = urlencode($var);
+//		$var = ($lc ? strtolower($var) : $var);
+//		return $var;
+//	}
+//
+//
+//	/**
+//	 * Decodes a string for use in the url
+//	 * @param string $var
+//	 * @access public
+//	 * @return string
+//	 */
+//	public function decodeForRewriteUrl($var){
+//		$var = urldecode($var);
+//		$var = str_replace("-question-", "?", $var);
+//		$var = str_replace("-slash-", "/", $var);
+//		$var = str_replace("-and-", "&", $var);
+//		$var = str_replace("_", " ", $var);
+//		return $var;
+//	}
 
 
 	/**
 	 * Returns the module name without the interface in case it was provided
 	 * that way.
-	 * 
-	 * However, do not do so if the interface is empty, because then just the 
+	 *
+	 * However, do not do so if the interface is empty, because then just the
 	 * undercore would be removed.
 	 *
 	 * @param string $module
@@ -828,8 +836,7 @@ class Router  {
 	 */
 	public function cleanModule($module = false, $interface = false){
 		$module = $module ? $module : $this->module();
-		$interface = $interface ? $interface : LOADING_SECTION;
-		return empty($interface) ? $module : str_replace('_'.ucwords($interface), '', $module);
+		return empty($interface) ? $module : str_replace('_Controller', '', $module);
 	}
 
 

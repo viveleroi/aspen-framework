@@ -111,11 +111,10 @@ class Template  {
 	 * @return string
 	 * @access public
 	 */
-	public function getModuleTemplateDir($module = false, $interface = false){
-		$orig_interface = $interface;
-		$interface = $interface ? strtolower($interface) : LS;
-		$module = router()->cleanModule($module);
-        return router()->getModulePath($module, $orig_interface) . DS . 'templates' . ($interface == '' ? false : '_' . $interface);
+	public function getModuleTemplateDir($module = false){
+        $module = str_replace(array("_Controller"), '', router()->cleanModule($module));
+        $path = str_replace('_', DS, strtolower($module));
+        return VIEWS_PATH . DS . $path;
     }
 
 

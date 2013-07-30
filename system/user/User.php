@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @package 	Aspen_Framework
- * @subpackage 	System
- * @author 		Michael Botsko
- * @copyright 	2009 Trellis Development, LLC
- * @since 		1.0
+ * @package     Aspen_Framework
+ * @subpackage  System
+ * @author      Michael Botsko
+ * @copyright   2009 Trellis Development, LLC
+ * @since       1.0
  */
 
 
@@ -82,11 +82,11 @@ class User  {
         // send the confirmation email
         if($result){
             app()->mail->AddAddress($form->cv('email'));
-            app()->mail->From      	= config()->get('email_sender');
-            app()->mail->FromName  	= config()->get('email_sender_name');
-            app()->mail->Mailer    	= "mail";
+            app()->mail->SetFrom( config()->get('email_sender'), config()->get('email_sender_name'));
+            app()->mail->AddReplyTo(config()->get('email_sender'));
+            app()->mail->Mailer    	= "sendmail";
             app()->mail->ContentType= 'text/html';
-            app()->mail->Subject   	= text('signup:email:subject', config()->get('application_name'));
+            app()->mail->Subject    = text('signup:email:subject', config()->get('application_name'));
 
             $body = text('signup:email:body');
             $body = str_replace('{first_name}', $form->cv('first_name'), $body);
@@ -95,7 +95,7 @@ class User  {
             $body = str_replace('{app}', config()->get('application_name'), $body);
             $body = str_replace('{url}', Url::path('users/login'), $body);
             $body = str_replace('{forgot}', Url::path('users/forgot'), $body);
-            app()->mail->Body 		= $body;
+            app()->mail->Body       = $body;
 
             app()->mail->Send();
             app()->mail->ClearAddresses();
@@ -124,9 +124,9 @@ class User  {
             $result = $form->save($id);
         }
 
-        template()->set(array('form'		=>$form));
-        template()->set(array('preferences'	=>app()->prefs->edit( session()->getInt('user_id') )));
-        template()->set(array('timezones'	=>Date::timezone_list('america')));
+        template()->set(array('form'        =>$form));
+        template()->set(array('preferences' =>app()->prefs->edit( session()->getInt('user_id') )));
+        template()->set(array('timezones'   =>Date::timezone_list('america')));
 
         return $result;
 
@@ -219,12 +219,12 @@ class User  {
                 $auth->update($user, $user['id']);
 
                 app()->mail->AddAddress($form->cv('user'));
-                app()->mail->From      	= config()->get('email_sender');
-                app()->mail->FromName  	= config()->get('email_sender_name');
-                app()->mail->Mailer    	= "mail";
+                app()->mail->SetFrom( config()->get('email_sender'), config()->get('email_sender_name'));
+                app()->mail->AddReplyTo(config()->get('email_sender'));
+                app()->mail->Mailer    	= "sendmail";
                 app()->mail->ContentType= 'text/html';
-                app()->mail->Subject   	= config()->get('password_reset_subject');
-                app()->mail->Body 		= str_replace('{new_pass}', $new_pass, config()->get('password_reset_body'));
+                app()->mail->Subject    = config()->get('password_reset_subject');
+                app()->mail->Body       = str_replace('{new_pass}', $new_pass, config()->get('password_reset_body'));
                 app()->mail->Send();
                 app()->mail->ClearAddresses();
                 return 1;
@@ -268,7 +268,7 @@ class User  {
         $clean = Peregrine::sanitize($data);
 
         $auth = false;
-        $p	  = new PasswordHash();
+        $p    = new PasswordHash();
 
         if(($clean->isEmail('user') || $clean->getUsername('user')) && !$clean->isEmpty('pass')){
 
@@ -317,19 +317,19 @@ class User  {
 
         if($account){
 
-            $_SESSION['authenticated']		= true;
+            $_SESSION['authenticated']      = true;
             $_SESSION['authentication_key'] = $this->getAuthenticationKey($account['email'], $account['id']);
-            $_SESSION['domain_key'] 		= $this->getDomainKeyValue();
-            $_SESSION['email']				= $account['email'];
-            $_SESSION['username']			= $account['username'];
-            $_SESSION['first_name'] 		= $account['first_name'];
-            $_SESSION['last_name']			= $account['last_name'];
-            $_SESSION['latest_login'] 		= gmdate(DATE_FORMAT);
-            $_SESSION['last_login'] 		= $account['latest_login'];
-            $_SESSION['user_id'] 			= $account['id'];
+            $_SESSION['domain_key']         = $this->getDomainKeyValue();
+            $_SESSION['email']              = $account['email'];
+            $_SESSION['username']           = $account['username'];
+            $_SESSION['first_name']         = $account['first_name'];
+            $_SESSION['last_name']          = $account['last_name'];
+            $_SESSION['latest_login']       = gmdate(DATE_FORMAT);
+            $_SESSION['last_login']         = $account['latest_login'];
+            $_SESSION['user_id']            = $account['id'];
 
             // is this the very first login?
-            $_SESSION['first_login']		= Date::isEmptyDate($account['latest_login']);
+            $_SESSION['first_login']        = Date::isEmptyDate($account['latest_login']);
 
             // set an authentication cookie
             $this->_setAuthenticationCookie( 'authentication_key', $this->getAuthenticationKey($account['email'], $account['id']) );
@@ -491,9 +491,9 @@ class User  {
      */
     public function userHasInterfaceAccess($interface = false, $user_id = false){
 
-        $authenticated 	= false;
-        $interface 		= $interface ? $interface : LOADING_SECTION;
-//		$user_id		= $user_id ? $user_id : session()->getInt('user_id');
+        $authenticated  = false;
+        $interface      = $interface ? $interface : LOADING_SECTION;
+//      $user_id        = $user_id ? $user_id : session()->getInt('user_id');
 
         if(IS_ADMIN){
             $authenticated = true;
@@ -539,12 +539,12 @@ class User  {
      */
     public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
 
-        $authenticated 	= false;
-        $module 		= $module ? ucwords($module) : router()->module();
-        $method 		= $method ?: router()->method();
-        $interface 		= $interface ?: LOADING_SECTION;
-        $user_id		= $user_id ?: session()->getInt('user_id');
-        $module 		= str_replace('_'.$interface, '', $module);
+        $authenticated  = false;
+        $module         = $module ? ucwords($module) : router()->module();
+        $method         = $method ?: router()->method();
+        $interface      = $interface ?: LOADING_SECTION;
+        $user_id        = $user_id ?: session()->getInt('user_id');
+        $module         = str_replace('_'.$interface, '', $module);
 
         if(IS_ADMIN || $this->allowAnonymous($module, $method, $interface)){
             $authenticated = true;
@@ -594,7 +594,7 @@ class User  {
             return true;
         }
         if(app()->isInstalled()){
-            $module = ucwords(str_replace('_'.$interface, '', strtolower($module)));
+
             $interface = ucwords(strtolower($interface));
 
             foreach($this->permissions as $perm){
