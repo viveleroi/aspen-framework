@@ -1946,7 +1946,6 @@ class Model  {
 		if($this->query_type == 'select'){
 
 			$records = array();
-			$records = array();
 
 			if($results = $this->query($sql)){
 

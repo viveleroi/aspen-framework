@@ -196,7 +196,10 @@ class Template  {
 				foreach($this->_load_js_vars as $var => $value){
 					if(is_array($value)){
 						print 'var '. strtoupper($var).' = '.json_encode($value).';'."\n";
-					} else {
+					}
+                    elseif( is_bool($value) ) {
+                        print 'var '. strtoupper($var).' = '.addslashes($value).';'."\n";
+                    } else {
 						print 'var '. strtoupper($var).' = "'.addslashes($value).'";'."\n";
 					}
 				}
