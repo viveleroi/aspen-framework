@@ -50,6 +50,9 @@
  *
  */
 
+    // Disable the db entirely for non-db installs
+    $config['db_enable'] = true;
+
 	// connection username
 	$config['db_username'] = 'root';
 
@@ -344,7 +347,7 @@
  * @todo add url here
  */
 
-	$config['models']['config'] = array('root'=>SYSTEM_PATH.DIRECTORY_SEPARATOR.'settings');
+	$config['models']['config'] = array('root'=>SYSTEM_PATH.DIRECTORY_SEPARATOR.'settings'.DIRECTORY_SEPARATOR.'models');
 
 
 /**
@@ -372,14 +375,14 @@
  */
 
 	$config['load_core_class'][] = array('classname' => 'Peregrine', 'folder' => 'security', 'var'=>'params');
-	$config['load_core_class'][] = array('classname' => 'Security');
+	$config['load_core_class'][] = array('classname' => 'Security', 'folder' => 'security');
 	$config['load_core_class'][] = array('classname' => 'Phpass', 'folder' => 'security', 'autoload'=>false);
-	$config['load_core_class'][] = array('classname' => 'Utils','autoload'=>false);
-	$config['load_core_class'][] = array('classname' => 'Date');
-	$config['load_core_class'][] = array('classname' => 'User');
-	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false);
+	$config['load_core_class'][] = array('classname' => 'Utils','autoload'=>false, 'folder' => 'utils');
+	$config['load_core_class'][] = array('classname' => 'Date', 'folder' => 'date');
+	$config['load_core_class'][] = array('classname' => 'User', 'folder' => 'user');
+	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false, 'folder' => 'router');
 	$config['load_core_class'][] = array('classname' => 'Url','autoload'=>false,'filename'=>'Url','folder' => 'router');
-	$config['load_core_class'][] = array('classname' => 'Template');
+	$config['load_core_class'][] = array('classname' => 'Template', 'folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Aspen_Resource','autoload'=>false,'filename'=>'Aspen_Resource','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Aspen_Javascript','autoload'=>false,'filename'=>'Aspen_Javascript','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Aspen_Css','autoload'=>false,'filename'=>'Aspen_Css','folder' => 'template');
@@ -388,18 +391,18 @@
 	$config['load_core_class'][] = array('classname' => 'LinkSort','autoload'=>false,'filename'=>'LinkSort','folder' => 'template');
 	$config['load_core_class'][] = array('classname' => 'Error','folder' => 'errors','autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'File', 'folder' => 'files');
-	$config['load_core_class'][] = array('classname' => 'Log');
-	$config['load_core_class'][] = array('classname' => 'Model');
+	$config['load_core_class'][] = array('classname' => 'Log', 'folder' => 'log');
+	$config['load_core_class'][] = array('classname' => 'Model', 'folder' => 'model');
 	$config['load_core_class'][] = array('classname' => 'Inflector','autoload'=>false,'folder'=>'utils');
-	$config['load_core_class'][] = array('classname' => 'Module');
-	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail', 'filename'=>'class.phpmailer');
-	$config['load_core_class'][] = array('classname' => 'Settings');
-	$config['load_core_class'][] = array('classname' => 'Sml');
-	$config['load_core_class'][] = array('classname' => 'Form', 'autoload' => false);
+	$config['load_core_class'][] = array('classname' => 'Module', 'folder' => 'module');
+	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail', 'filename'=>'class.phpmailer', 'folder' => 'phpmailer');
+	$config['load_core_class'][] = array('classname' => 'Settings', 'folder' => 'settings');
+	$config['load_core_class'][] = array('classname' => 'Sml', 'folder' => 'sml');
+	$config['load_core_class'][] = array('classname' => 'Form', 'autoload' => false, 'folder' => 'form');
 
 	// if user auth enabled - otherwise this is no use
 	if($config['enable_authentication_support']){
-		$config['load_core_class'][] = array('classname' => 'Preferences', 'var' => 'prefs');
+		$config['load_core_class'][] = array('classname' => 'Preferences', 'var' => 'prefs', 'folder' => 'preferences');
 	}
 
 

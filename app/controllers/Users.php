@@ -13,7 +13,7 @@
  * @package Aspen_Framework
  * @uses Module
  */
-class Users_App extends Module {
+class Users_Controller extends Module {
 
 
 	/**

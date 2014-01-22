@@ -26,7 +26,10 @@ if(file_exists(BASE_PATH . '/system')){
 
 // define the file path to our root application directory
 define('APPLICATION_PATH', str_replace(DS . "system", '', SYSTEM_PATH)); // path to the entire application root
-define('MODULES_PATH', APPLICATION_PATH . DS . 'modules');
+define('CONTROLLERS_PATH', APPLICATION_PATH . DS . strtolower(LOADING_SECTION) . DS . 'controllers');
+define('VIEWS_PATH', APPLICATION_PATH . DS . strtolower(LOADING_SECTION) . DS . 'views');
+define('MODELS_PATH', APPLICATION_PATH . DS . strtolower(LOADING_SECTION) . DS . 'models');
+define('LIBS_PATH', APPLICATION_PATH . DS . strtolower(LOADING_SECTION) . DS . 'libs');
 define('PLUGINS_PATH', APPLICATION_PATH . DS . 'plugins');
 
 // here we'll quicly check for absolute minimal php5 support

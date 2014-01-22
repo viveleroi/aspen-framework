@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<package>
-	<type>Module</type>
-	<guid>eee1d8c0-d50a-11dc-95ff-0800200c9a66</guid>
-	<classname>Users</classname>
-	<name>Users</name>
-    <model>users</model>
-	<model>groups</model>
-</package>

@@ -251,7 +251,7 @@ class Model  {
 				$final_obj = new $class($table, $this->_tmpdb);
 			} else {
 				error()->raise(2, 'Failed loading model class: ' . $class, __FILE__, __LINE__);
-				$final_obj = new module($table, $this->_tmpdb);
+				$final_obj = new Model($table, $this->_tmpdb);
 			}
 			$this->setDb(false);
 
@@ -1885,6 +1885,8 @@ class Model  {
 				$file = strpos($back[0]['file'], 'Model.php') ? $back[1]['file'] : $back[0]['file'];
 				$line = strpos($back[0]['file'], 'Model.php') ? $back[1]['line'] : $back[0]['line'];
 
+                $this->addError($this->getPrimaryKey(), mysqli_error($this->_db));
+
 				error()->raise(2, mysqli_error($this->_db) . "\nSQL:\n" . $query, $file, $line);
 
 			} else {
@@ -1899,7 +1901,8 @@ class Model  {
 			}
 		}
 
-		$this->reset();
+        $this->sql = false;
+        $this->error = false;
 
 		return $results;
 
@@ -2145,7 +2148,6 @@ class Model  {
 	final public function reset(){
 		$this->sql		= false;
 		$this->error	= false;
-		$this->errors	= array();
 	}
 
 

@@ -15,6 +15,9 @@
 class Module {
 
 
+    public $request;
+
+
 	/**
 	 * Loads our default dashboard screen
 	 * @access public
@@ -43,4 +46,3 @@ class Module {
 		template()->page_title = $str;
 	}
 }
-?>

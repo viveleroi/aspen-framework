@@ -10,4 +10,9 @@ $lang['*']['dberror:title'] = 'Database Connection Error';
 $lang['*']['dberror:message'] = 'An error was encountered when trying to connect to the database.';
 $lang['*']['dberror:datadisplay_init_error'] = 'DataDisplay: Incoming data must be an array.';
 $lang['*']['dberror:datadisplay_call_error'] = 'DataDisplay: Invalid method "%s". Either the method or the array key does not exist.';
+
+
+$lang['*']['index:view:head-title'] = 'Welcome';
+$lang['*']['index:view:page-title'] = 'Welcome';
+$lang['*']['index:view:intro'] = 'This template is located in <code>modules/Index/templates_app/view.php</code>';
 ?>
