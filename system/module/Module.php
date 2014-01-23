@@ -14,17 +14,7 @@
  */
 class Module {
 
-
     public $request;
-
-
-	/**
-	 * Loads our default dashboard screen
-	 * @access public
-	 */
-	public function view(){
-		template()->display();
-	}
 
 
 	/**

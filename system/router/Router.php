@@ -29,7 +29,7 @@ class Router  {
 	 * @access private
 	 */
 	protected $_loaded_languages = array();
-	
+
 	/**
 	 * @var array $_original_map Holds the original mapped data
 	 * @access private
@@ -74,9 +74,9 @@ class Router  {
 	public function __construct(){
 
         $this->loadAvailableControllers();
-		
+
 		if(config()->get('enable_authentication_support')){
-			
+
 			// determine user's authentication status
 			user()->determineUserAuthentication();
 		}
@@ -437,7 +437,7 @@ class Router  {
 	 * @todo clean this up now that loadRequestedPagePath exists
 	 */
 	protected function identifyAcceptedMethodForLoad(){
-		
+
 		$default = 'view';
 
 		// do a basic login check as user module is not loaded at this point
@@ -536,7 +536,7 @@ class Router  {
 				$this->redirect('users/login');
 			}
 		}
-		
+
 		// load the interface language file
 		if(config()->get('enable_languages')){
 			$this->loadInterfaceLanguage();
@@ -546,10 +546,12 @@ class Router  {
 
 			// set the function arguments for the method
 			$i = 1;
-			foreach($this->map['bits'] as $bit){
-				$this->_selected_arguments[$i] = $bit;
-				$i++;
-			}
+            if(is_array($this->map['bits'])){
+                foreach($this->map['bits'] as $bit){
+                    $this->_selected_arguments[$i] = $bit;
+                    $i++;
+                }
+            }
 
 			app()->log->write('Looking for Module: ' . $this->module() . '->' . $this->method());
 
@@ -622,8 +624,8 @@ class Router  {
 		$url = strip_tags(urldecode($url));
 		return $url;
 	}
-	
-	
+
+
 	/**
 	 * Returns the original map data, usually useful if there's
 	 * an alias url
@@ -850,7 +852,7 @@ class Router  {
 	public function here($path, $type = 'method'){
 
 		$here = false;
-		
+
 		$u = new Url();
 		$r = $u->parseNamespacePath($path, $type);
 		$r['module'] = $r['module'] . ($r['interface'] ? '_' . $r['interface']  : false);
@@ -954,7 +956,7 @@ class Router  {
 	 * @param integer $status
 	 */
 	public function header_code($status = false){
-		
+
 		$codes = array(
 				100 => 'Continue',
 				101 => 'Switching Protocols',
@@ -1001,11 +1003,11 @@ class Router  {
 			header($header);
 		}
 	}
-		
-	
+
+
 	/**
 	 * Is the request an ajax-based request?
-	 * @return type 
+	 * @return type
 	 */
 	public function isAjax(){
 		return server()->equals('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest');

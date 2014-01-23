@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', false);
+ini_set('display_errors', true);
 error_reporting(E_ALL);
 
 /**
@@ -775,9 +775,8 @@ class Bootstrap extends Base {
             foreach($models as $table => $model){
                 if(is_array($model)){
 
-                    $filename   = isset($model['filename']) ? $model['filename'] : ucwords(strtolower($table));
+                    $filename   = isset($model['filename']) ? ucwords(strtolower($model['filename'])) : ucwords(strtolower($table));
                     $filepath   = $model['root'] . DS . $filename . '.php';
-
                     if(!class_exists( ucwords($table).'Model' )){
                         if(!include($filepath)){
                             $this->error->raise(1, "Failed loading model extension: " . $table, __FILE__, __LINE__);
@@ -906,7 +905,7 @@ class Bootstrap extends Base {
      */
     protected function loadRequestedController(){
         $map = $this->router->getMap();
-        if( file_exists($map['load_path']) ){
+        if( isset($map['load_path']) && file_exists($map['load_path']) ){
             require_once($map['load_path']);
             $this->{$map['module']} = new $map['module'];
         }
