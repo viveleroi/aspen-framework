@@ -175,25 +175,28 @@ class Router  {
 
                 if( array_key_exists($path, $this->_controllers) ){
 
-                    $method = str_replace(array($_tmp_uri,DS), '', $this->stripQuery($uri));
+                    $method = $remainingPath = str_replace(array($_tmp_uri,DS), '', $this->stripQuery($uri));
 
                     // Ensure method exists
                     require_once($this->_controllers[$path]);
                     $mod = new $path;
-                    if( empty($method) || method_exists($mod,$method) ){
-
-                        $this->map['module'] = $path;
-                        $this->map['load_path'] = $this->_controllers[$path];
-
-                        // the rest...
-                        $this->map['method'] = $method;
-
-                        // @todo determine what "bits" we have
-
-                        $this->map['bits'] = array_reverse( app()->params->getRawSource('get') );
-
-                        break;
+                    if( empty($method) || !method_exists($mod,$method) ){
+                        $method = "view";
                     }
+
+                    $this->map['module'] = $path;
+                    $this->map['load_path'] = $this->_controllers[$path];
+
+                    // the rest...
+                    $this->map['method'] = $method;
+
+                    // @todo determine what "bits" we have
+                    if( !empty($remainingPath) ){
+                        $this->map['bits'] = explode('/',$remainingPath);
+                    }
+                    $this->map['bits'] = array_merge($this->map['bits'],array_reverse( app()->params->getRawSource('get') ));
+
+                    break;
                 }
 
                 // Trim last uri part and try again
@@ -558,10 +561,17 @@ class Router  {
 			if(isset(app()->{$this->module()})){
 				if(method_exists(app()->{$this->module()}, $this->method())){
 
-                    // Builds a request object
-                    $req = new stdClass();
-                    $req->method = server()->getAlpha('REQUEST_METHOD');
-                    app()->{$this->module()}->request = $req;
+                // Builds a request object
+                $req = new stdClass();
+                $req->method = server()->getAlpha('REQUEST_METHOD');
+                if( $req->method == "POST" ){
+                    $input = trim(file_get_contents('php://input'));
+                    if( !empty($input) ){
+                        $inputArr = json_decode($input,true);
+                        $req->input = Peregrine::sanitize($inputArr);
+                    }
+                }
+                app()->{$this->module()}->request = $req;
 
 					app()->log->write('Running Module: ' . $this->module() . '->' . $this->method());
 

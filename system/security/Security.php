@@ -16,45 +16,13 @@ class Security  {
 
 
 	/**
-	 * Handles escaping data for entry into the database.
-	 * @param mixed $data
-	 * @param boolean $allow_html Whether or not to allow html
-	 * @return mixed
-	 * @access public
-	 */
-	public function dbescape($data, $allow_html = false) {
-		$data = $this->clean_slashes($data);
-		return $this->clean_db_input($data, $allow_html);
-	}
-
-
-	/**
-	 * Strips slashes from string or array
-	 * @param mixed $data
-	 * @return mixed
-	 * @access public
-	 */
-	public function clean_slashes($data) {
-		if (is_array($data)) {
-			$newArr = array();
-	    	foreach($data as $key => $value){
-	    		$newArr[$key] = $this->clean_slashes($value);
-	    	}
-	    	return $newArr;
-		} else {
-			return stripslashes($data);
-		}
-	}
-
-
-	/**
 	 * Adds escaping for database input
 	 * @param mixed $var
 	 * @param boolean $allow_html
 	 * @return mixed
 	 * @access private
 	 */
-	private function clean_db_input($var = false, $allow_html = false){
+	public function dbescape($var = false, $allow_html = false){
 		if (is_array($var)) {
 			$newArr = array();
 	    	foreach($var as $key => $value){
