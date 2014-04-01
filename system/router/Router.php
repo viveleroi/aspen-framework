@@ -163,8 +163,10 @@ class Router  {
 				// try also to replace with app path minus the LS. If someone is masking the LS
 				// then it may not be seen in the uri.
 				$replace[] = $this->appUrl();
+                $replace[] = $this->domainUrl();
 				$replace[] = $this->getPath();
 			}
+
 			$uri = $to_map = str_replace($replace, '', $this->domainUrl() . app()->server->getQueryString('REQUEST_URI'));
 
             $_tmp_uri = rtrim($this->stripQuery($uri), '/');
@@ -175,13 +177,23 @@ class Router  {
 
                 if( array_key_exists($path, $this->_controllers) ){
 
-                    $method = $remainingPath = str_replace(array($_tmp_uri,DS), '', $this->stripQuery($uri));
+                    $remainingPath = explode('/', str_replace($_tmp_uri, '', $this->stripQuery($uri)));
+
+                    array_shift($remainingPath);
+
+                    $method = false;
+                    if( sizeof($remainingPath) > 0 ){
+                        $method = $remainingPath[0];
+                    }
 
                     // Ensure method exists
                     require_once($this->_controllers[$path]);
                     $mod = new $path;
+
                     if( empty($method) || !method_exists($mod,$method) ){
                         $method = "view";
+                    } else {
+                        array_shift($remainingPath);
                     }
 
                     $this->map['module'] = $path;
@@ -192,7 +204,10 @@ class Router  {
 
                     // @todo determine what "bits" we have
                     if( !empty($remainingPath) ){
-                        $this->map['bits'] = explode('/',$remainingPath);
+                        $this->map['bits'] = $remainingPath;
+                    }
+                    if( !is_array($this->map['bits']) ){
+                        $this->map['bits'] = array();
                     }
                     $this->map['bits'] = array_merge($this->map['bits'],array_reverse( app()->params->getRawSource('get') ));
 
@@ -561,17 +576,19 @@ class Router  {
 			if(isset(app()->{$this->module()})){
 				if(method_exists(app()->{$this->module()}, $this->method())){
 
-                // Builds a request object
-                $req = new stdClass();
-                $req->method = server()->getAlpha('REQUEST_METHOD');
-                if( $req->method == "POST" ){
-                    $input = trim(file_get_contents('php://input'));
-                    if( !empty($input) ){
-                        $inputArr = json_decode($input,true);
-                        $req->input = Peregrine::sanitize($inputArr);
+                    app()->{$this->module()}->aspen_init();
+
+                    // Builds a request object
+                    $req = new stdClass();
+                    $req->method = server()->getAlpha('REQUEST_METHOD');
+                    if( $req->method == "POST" ){
+                        $input = trim(file_get_contents('php://input'));
+                        if( !empty($input) ){
+                            $inputArr = json_decode($input,true);
+                            $req->input = Peregrine::sanitize($inputArr);
+                        }
                     }
-                }
-                app()->{$this->module()}->request = $req;
+                    app()->{$this->module()}->request = $req;
 
 					app()->log->write('Running Module: ' . $this->module() . '->' . $this->method());
 
