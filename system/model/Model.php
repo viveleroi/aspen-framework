@@ -2602,11 +2602,21 @@ class Model  {
 	 * @param <type> $fields
 	 */
 	protected function getDefaults($fields = false){
+        // Apply manual defaults
 		foreach($this->field_defaults as $field => $default){
 			if(!isset($fields[$field]) || empty($fields[$field])){
 				$fields[$field] = $default;
 			}
 		}
+        // Enforce some mysql defaults, especially for strict mode
+        foreach( $fields as $field => $value ){
+            if( !isset($this->schema['schema'][strtoupper($field)]) ) continue;
+            $col = $this->schema['schema'][strtoupper($field)];
+            // If value is empty but col is numeric, force 0
+            if( empty($value) && in_array($col->type, config()->get('mysql_field_group_int'))){
+                $fields[$field] = 0;
+            }
+        }
 		$this->field_defaults = array();
 		return $fields;
 	}
